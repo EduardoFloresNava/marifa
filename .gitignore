@@ -1,0 +1,11 @@
+.project
+.settings/
+plugin/plugin.php
+/nbproject/private/
+/nbproject/
+config/database.php
+config/update.php
+router.php
+plugin/
+EXAMPLE
+TODO
