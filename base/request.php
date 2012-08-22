@@ -42,8 +42,9 @@ class Base_Request {
 	/**
 	 * Agregamos una llamada al stack
 	 * @param string $call Url llamada.
+	 * @param string $method
 	 */
-	public static function addStack($call)
+	public static function addStack($call, $method = 'GET')
 	{
 		// Verificamos que sea un arreglo.
 		if ( ! is_array(self::$request))
@@ -52,7 +53,7 @@ class Base_Request {
 		}
 
 		// Agregamos la petición al stack.
-		self::$request[] = $call;
+		self::$request[] = array($call, $method);
 	}
 
 	/**
@@ -108,4 +109,27 @@ class Base_Request {
 	{
 		return ! isset($_SERVER['HTTP_USER_AGENT']);
 	}
+
+	/**
+	 * Obtenemos el método de la petición.
+	 * @return string
+	 */
+	public static function method()
+	{
+		return strtoupper($_SERVER['REQUEST_METHOD']);
+	}
+
+	/**
+	 * Tests if the current request is an AJAX request by checking the
+	 * X-Requested-With HTTP request header that most popular JS frameworks
+	 * now set for AJAX calls.
+	 *
+	 * @return  bool
+	 */
+	public static function is_ajax()
+	{
+		return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+			strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+	}
+
 }
