@@ -42,8 +42,6 @@ if (DEBUG)
 {
 	// Información de rendimiento para depuración.
 	$timestart = microtime(TRUE);
-	$memstart = memory_get_usage(TRUE);
-	$memstart2 = memory_get_usage();
 }
 
 /**
@@ -134,11 +132,15 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 	// Generamos la lista de plugins.
 	Plugin_Manager::getInstance()->regenerar_lista();
 }
+
+// Iniciamos la session.
+Session::start('random_value');
+
 // Cargamos el despachador y damos el control al controlador correspondiente.
 Dispatcher::dispatch();
 
 if (DEBUG)
 {
 	// Mostramos rendimiento.
-	echo(Update_Utils::formatBytes(memory_get_usage(TRUE) - $memstart, 1).' - '.Update_Utils::formatBytes(memory_get_usage() - $memstart2, 1).' - '.round(microtime(true) - $timestart, 1).'s');
+	echo(Update_Utils::formatBytes(memory_get_peak_usage(), 1).' - '.round(microtime(true) - $timestart, 1).'s');
 }
