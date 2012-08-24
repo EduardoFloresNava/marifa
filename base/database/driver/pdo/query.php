@@ -126,23 +126,88 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 	/**
 	 * Obtenemos un elemento del resultado.
 	 * @param $type Tipo de retorno de los valores.
+	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return mixed
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function get_record($type = Database_Query::FETCH_ASSOC)
+	public function get_record($type = Database_Query::FETCH_ASSOC, $cast = NULL)
 	{
-		return $this->query->fetch($this->fetch_mode_pdo($type));
+		// Si no hay cast, revolvemos rápidamente para no afectar rendimiento.
+		if ($cast === NULL)
+		{
+			return $this->query->fetch($this->fetch_mode_pdo($type));
+		}
+
+		switch ($type)
+		{
+			case Database_Query::FETCH_NUM:
+				// Obtenemos el arreglo.
+				$resultado = $this->query->fetch($this->fetch_mode_pdo($type));
+
+				// Expandimos listado de cast.
+				$cast = $this->expand_cast_list($cast, count($resultado));
+
+				// Realizamos el cast.
+				$c = count($resultado);
+				for ($i = 0; $i < $c; $i++)
+				{
+					$resultado[$i] = $this->cast_field($resultado[$i], $cast[$i]);
+				}
+
+				return $resultado;
+			case Database_Query::FETCH_OBJ:
+				// Obtenemos el objeto.
+				$object = $this->query->fetch($this->fetch_mode_pdo($type));
+
+				// Expandimos la lista de cast.
+				$cast = $this->expand_cast_list($cast, array_keys(get_object_vars($object)));
+
+				// Realizamos el cast.
+				foreach($cast as $k => $v)
+				{
+					$object->$k = $this->cast_field($object->$k, $v);
+				}
+
+				return $object;
+			case Database_Query::FETCH_ASSOC:
+			default:
+				// Obtenemos el arreglo.
+				$resultado = $this->query->fetch($this->fetch_mode_pdo($type));
+
+				// Expandimos la lista de cast.
+				$cast = $this->expand_cast_list($cast, array_keys($resultado));
+
+				// Realizamos el cast.
+				foreach($cast as $k => $v)
+				{
+					$resultado[$k] = $this->cast_field($resultado[$k], $v);
+				}
+
+				return $resultado;
+		}
 	}
 
 	/**
 	 * Obtenemos un arreglo de elementos.
 	 * @param $type Tipo de retorno de los valores.
+	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return array
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function get_records($type = self::FETCH_ASSOC)
+	public function get_records($type = self::FETCH_ASSOC, $cast = NULL)
 	{
-		return $this->query->fetchAll($this->fetch_mode_pdo($type));
+		// Si no hay cast, usamos forma corta para no afectar el rendimiento.
+		if ($cast === NULL)
+		{
+			return $this->query->fetchAll($this->fetch_mode_pdo($type));
+		}
+
+		$rst = array();
+		while ($row = $this->get_record($type, $cast))
+		{
+			$rst[] = $row;
+		}
+		return $rst;
 	}
 
 	/**
@@ -153,7 +218,59 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 	 */
 	public function current()
 	{
-		return $this->query->fetch($this->fetch_mode_pdo($this->fetch_type), PDO::FETCH_ORI_ABS, $this->position);
+		// Si no hay cast usamos forma corta para minimizar la perdidad de rendimiento.
+		if ($this->cast === NULL)
+		{
+			return $this->query->fetch($this->fetch_mode_pdo($this->fetch_type), PDO::FETCH_ORI_ABS, $this->position);
+		}
+
+		switch ($type)
+		{
+			case Database_Query::FETCH_NUM:
+				// Obtenemos el arreglo.
+				$resultado = $this->query->fetch($this->fetch_mode_pdo($this->fetch_type), PDO::FETCH_ORI_ABS, $this->position);
+
+				// Expandimos listado de cast.
+				$cast = $this->expand_cast_list($this->cast, count($resultado));
+
+				// Realizamos el cast.
+				$c = count($resultado);
+				for ($i = 0; $i < $c; $i++)
+				{
+					$resultado[$i] = $this->cast_field($resultado[$i], $cast[$i]);
+				}
+
+				return $resultado;
+			case Database_Query::FETCH_OBJ:
+				// Obtenemos el objeto.
+				$object = $this->query->fetch($this->fetch_mode_pdo($this->fetch_type), PDO::FETCH_ORI_ABS, $this->position);
+
+				// Expandimos la lista de cast.
+				$cast = $this->expand_cast_list($this->cast, array_keys(get_object_vars($object)));
+
+				// Realizamos el cast.
+				foreach($cast as $k => $v)
+				{
+					$object->$k = $this->cast_field($object->$k, $v);
+				}
+
+				return $object;
+			case Database_Query::FETCH_ASSOC:
+			default:
+				// Obtenemos el arreglo.
+				$resultado = $this->query->fetch($this->fetch_mode_pdo($this->fetch_type), PDO::FETCH_ORI_ABS, $this->position);
+
+				// Expandimos la lista de cast.
+				$cast = $this->expand_cast_list($this->cast, array_keys($resultado));
+
+				// Realizamos el cast.
+				foreach($cast as $k => $v)
+				{
+					$resultado[$k] = $this->cast_field($resultado[$k], $v);
+				}
+
+				return $resultado;
+		}
 	}
 
 	/**

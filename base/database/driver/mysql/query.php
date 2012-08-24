@@ -96,31 +96,82 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 	/**
 	 * Obtenemos un elemento del resultado.
 	 * @param $type Tipo de retorno de los valores.
+	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return mixed
 	 */
-	public function get_record($type = Database_Query::FETCH_ASSOC)
+	public function get_record($type = Database_Query::FETCH_ASSOC, $cast = NULL)
 	{
 		switch ($type)
 		{
 			case Database_Query::FETCH_NUM:
-				return mysql_fetch_array($this->query, MYSQL_NUM);
+				// Obtenemos el arreglo.
+				$resultado = mysql_fetch_array($this->query, MYSQL_NUM);
+
+				// Verificamos si hay que hcaer cast. Sirve a fines de rendimiento.
+				if ($cast !== NULL)
+				{
+					// Expandimos listado de cast.
+					$cast = $this->expand_cast_list($cast, count($resultado));
+
+					// Realizamos el cast.
+					$c = count($resultado);
+					for ($i = 0; $i < $c; $i++)
+					{
+						$resultado[$i] = $this->cast_field($resultado[$i], $cast[$i]);
+					}
+				}
+
+				return $resultado;
 			case Database_Query::FETCH_OBJ:
-				return mysql_fetch_object($this->query);
+				// Obtenemos el objeto.
+				$object = mysql_fetch_object($this->query);
+
+				// Verificamos si hay que hcaer cast. Sirve a fines de rendimiento.
+				if ($cast !== NULL)
+				{
+					// Expandimos la lista de cast.
+					$cast = $this->expand_cast_list($cast, array_keys(get_object_vars($object)));
+
+					// Realizamos el cast.
+					foreach($cast as $k => $v)
+					{
+						$object->$k = $this->cast_field($object->$k, $v);
+					}
+				}
+
+				return $object;
 			case Database_Query::FETCH_ASSOC:
 			default:
-				return mysql_fetch_array($this->query, MYSQL_ASSOC);
+				// Obtenemos el arreglo.
+				$resultado = mysql_fetch_array($this->query, MYSQL_ASSOC);
+
+				// Verificamos si hay que hcaer cast. Sirve a fines de rendimiento.
+				if ($cast !== NULL)
+				{
+					// Expandimos la lista de cast.
+					$cast = $this->expand_cast_list($cast, array_keys($resultado));
+
+					// Realizamos el cast.
+					foreach($cast as $k => $v)
+					{
+						$resultado[$k] = $this->cast_field($resultado[$k], $v);
+					}
+				}
+
+				return $resultado;
 		}
 	}
 
 	/**
 	 * Obtenemos un arreglo de elementos.
 	 * @param $type Tipo de retorno de los valores.
+	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return array
 	 */
-	public function get_records($type = self::FETCH_ASSOC)
+	public function get_records($type = self::FETCH_ASSOC, $cast = NULL)
 	{
 		$rst = array();
-		while ($row = $this->get_record($type))
+		while ($row = $this->get_record($type, $cast))
 		{
 			$rst[] = $row;
 		}
@@ -135,7 +186,7 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 	public function current()
 	{
 		mysql_data_seek($this->query, $this->position);
-		return $this->get_record($this->fetch_type);
+		return $this->get_record($this->fetch_type, $this->cast);
 	}
 
 	/**

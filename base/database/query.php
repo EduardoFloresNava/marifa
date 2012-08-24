@@ -44,15 +44,46 @@ abstract class Base_Database_Query implements Iterator {
 	const FETCH_ASSOC = 1;
 
 	/**
-	 * Obtenems los elementos como un objeto.
+	 * Obtenemos los elementos como un objeto.
 	 */
 	const FETCH_OBJ = 2;
+
+	/**
+	 * Campo de tipo ENTERO.
+	 */
+	const FIELD_INT = 0;
+
+	/**
+	 * Campo de tipo REAL.
+	 */
+	const FIELD_FLOAT = 1;
+
+	/**
+	 * Campo de tipo STRING.
+	 */
+	const FIELD_STRING = 2;
+
+	/**
+	 * Campo de tipo FECHA.
+	 */
+	const FIELD_DATE = 3;
+
+	/**
+	 * Campo de tipo FECHA Y HORA.
+	 */
+	const FIELD_DATETIME = 4;
 
 	/**
 	 * Tipo de valor devuelto en las iteraciones.
 	 * @var int
 	 */
 	protected $fetch_type = self::FETCH_NUM;
+
+	/**
+	 * Tipo de cast a aplicar a los valores devueltos en las iteraciones.
+	 * @var int|array
+	 */
+	protected $cast = NULL;
 
 	/**
 	 * Asignamos el tipo por defecto usado cuando se devuelven datos.
@@ -70,6 +101,39 @@ abstract class Base_Database_Query implements Iterator {
 	}
 
 	/**
+	 * Asignamos el cast por defecto usado cuando se devuelven datos.
+	 * @param int|array $cast Cast a realizar
+	 */
+	public function set_cast_type($cast)
+	{
+		$this->cast = $cast;
+	}
+
+	/**
+	 * Realizamos el cast de un campo según los tipos provistos para las base de
+	 * datos.
+	 * @param mixed $field Campo a convertir.
+	 * @param int $cast Tipo de dato deseado.
+	 * @return mixed
+	 */
+	protected function cast_field($field, $cast)
+	{
+		switch ($cast)
+		{
+			case self::FIELD_INT:
+				return (int) $field;
+			case self::FIELD_FLOAT:
+				return (float) $field;
+			case self::FIELD_DATE:
+			case self::FIELD_DATETIME:
+			case self::FIELD_STRING:
+				return (string) $field;
+			default:
+				return $field;
+		}
+	}
+
+	/**
 	 * Devolvemos la cantidad de filas afectadas por la consulta
 	 * @return int
 	 */
@@ -77,42 +141,95 @@ abstract class Base_Database_Query implements Iterator {
 
 	/**
 	 * Obtenemos un valor simple de una consulta.
+	 * @param int $cast Cast a aplicar al resultado.
 	 * @return string
 	 */
-	public function get_var()
+	public function get_var($cast = NULL)
 	{
 		$dt = $this->get_record(self::FETCH_NUM);
 
-		return is_array($dt) && isset($dt[0]) ? $dt[0] : NULL;
+		return is_array($dt) && isset($dt[0]) ? $this->cast_field($dt[0], $cast) : NULL;
+	}
+
+	/**
+	 * Expandimos la lista de CAST a la cantidad indicada.
+	 * @param array $list Arreglo de entrada.
+	 * @param int|array $cant Cantidad de campos que debe tener el arreglo de salida.
+	 * O arreglo con las claves de arreglo de salida.
+	 * @return array
+	 */
+	protected function expand_cast_list($list, $cant)
+	{
+		// Armamos arreglo inicial.
+		if ( ! is_array($list))
+		{
+			$list = $list == NULL ? array() : array($list);
+		}
+
+		if ( ! is_array($cant))
+		{
+			foreach($cant as $k)
+			{
+				if ( ! isset($list[$k]))
+				{
+					$list[$k] = NULL;
+				}
+			}
+		}
+		else
+		{
+			// Lo expandimos hasta completar.
+			while(count($list) < $cant)
+			{
+				$list[] = NULL;
+			}
+		}
+
+		return $list;
 	}
 
 	/**
 	 * Obtenemos un arreglo asociativo usando el primer parámetro como clave.
+	 * @param int|array $cast Cast a aplicar a los elementos. El 1ro para las
+	 * claves y el 2do para los valores.
 	 * @return array
 	 */
-	public function get_pairs()
+	public function get_pairs($cast = NULL)
 	{
+		// Expandimos la lista de cast.
+		$cast = $this->expand_cast_list($cast, 2);
+
 		$dt = $this->get_records(self::FETCH_NUM);
 		$rst = array();
 		foreach($dt as $data)
 		{
-			$rst[$data[0]] = $data[1];
+			// Verificamos si hay cast o no. Se valida a fines de rendimiento.
+			if ($cast !== NULL)
+			{
+				$rst[$this->cast_field($data[0], $cast[0])] = $this->cast_field($data[1], $cast[1]);
+			}
+			else
+			{
+				$rst[$data[0]] = $data[1];
+			}
 		}
 		return $rst;
 	}
 
 	/**
 	 * Obtenemos un elemento del resultado.
-	 * @param $type Tipo de retorno de los valores.
+	 * @param int $type Tipo de retorno de los valores.
+	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return mixed
 	 */
-	abstract public function get_record($type = self::FETCH_ASSOC);
+	abstract public function get_record($type = self::FETCH_ASSOC, $cast = NULL);
 
 	/**
 	 * Obtenemos un arreglo de elementos.
-	 * @param $type Tipo de retorno de los valores.
+	 * @param int $type Tipo de retorno de los valores.
+	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return array
 	 */
-	abstract public function get_records($type = self::FETCH_ASSOC);
+	abstract public function get_records($type = self::FETCH_ASSOC, $cast = NULL);
 
 }

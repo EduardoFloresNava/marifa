@@ -68,26 +68,6 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 	}
 
 	/**
-	 * Convertimos un modo de devolver un registro al correspondiente de PDO.
-	 * @param int $type Tipo de dato a convertir.
-	 * @return int Tipo de dato convertido.
-	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
-	 */
-	protected function fetch_mode_pdo($type)
-	{
-		switch ($type)
-		{
-			case Database_Query::FETCH_NUM:
-				return PDO::FETCH_NUM;
-			case Database_Query::FETCH_OBJ:
-				return PDO::FETCH_OBJ;
-			case Database_Query::FETCH_ASSOC:
-			default:
-				return PDO::FETCH_ASSOC;
-		}
-	}
-
-	/**
 	 * Devolvemos la cantidad de filas afectadas por la consulta
 	 *
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
@@ -101,38 +81,76 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 	/**
 	 * Obtenemos un elemento del resultado.
 	 * @param $type Tipo de retorno de los valores.
+	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return mixed
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function get_record($type = Database_Query::FETCH_ASSOC)
+	public function get_record($type = Database_Query::FETCH_ASSOC, $cast = NULL)
 	{
 		$this->next();
 		switch ($type)
 		{
 			case Database_Query::FETCH_NUM:
-				return $this->query->fetch_array(MYSQLI_NUM);
+				// Obtenemos el arreglo.
+				$resultado = $this->query->fetch_array(MYSQLI_NUM);
+
+				// Expandimos listado de cast.
+				$cast = $this->expand_cast_list($cast, count($resultado));
+
+				// Realizamos el cast.
+				$c = count($resultado);
+				for ($i = 0; $i < $c; $i++)
+				{
+					$resultado[$i] = $this->cast_field($resultado[$i], $cast[$i]);
+				}
+
+				return $resultado;
 			case Database_Query::FETCH_OBJ:
-				return $this->query->fetch_object();
+				// Obtenemos el objeto.
+				$object = $this->query->fetch_object();
+
+				// Expandimos la lista de cast.
+				$cast = $this->expand_cast_list($cast, array_keys(get_object_vars($object)));
+
+				// Realizamos el cast.
+				foreach($cast as $k => $v)
+				{
+					$object->$k = $this->cast_field($object->$k, $v);
+				}
+
+				return $object;
 			case Database_Query::FETCH_ASSOC:
 			default:
-				return $this->query->fetch_array(MYSQLI_ASSOC);
+				// Obtenemos el arreglo.
+				$resultado = $this->query->fetch_array(MYSQLI_ASSOC);
+
+				// Expandimos la lista de cast.
+				$cast = $this->expand_cast_list($cast, array_keys($resultado));
+
+				// Realizamos el cast.
+				foreach($cast as $k => $v)
+				{
+					$resultado[$k] = $this->cast_field($resultado[$k], $v);
+				}
+
+				return $resultado;
 		}
 	}
 
 	/**
 	 * Obtenemos un arreglo de elementos.
 	 * @param $type Tipo de retorno de los valores.
+	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return array
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function get_records($type = self::FETCH_ASSOC)
+	public function get_records($type = self::FETCH_ASSOC, $cast = NULL)
 	{
 		$this->rewind();
 		$rst = array();
-		while($this->valid())
+		while ($row = $this->get_record($type, $cast))
 		{
-			$rst[] = $this->current($type);
-			$this->next();
+			$rst[] = $row;
 		}
 		return $rst;
 	}
@@ -146,7 +164,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 	public function current()
 	{
 		$this->query->field_seek($this->position);
-		return $this->get_record($this->fetch_type);
+		return $this->get_record($this->fetch_type, $this->cast);
 	}
 
 	/**

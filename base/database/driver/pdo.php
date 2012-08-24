@@ -106,23 +106,11 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	 */
 	public function query($query, $params = array())
 	{
-		// Creamos la consulta.
-		try {
-			$sth = $this->dbh->prepare($query);
-		}
-		catch(PDOException $e)
-		{
-			throw new Exception_Database("Error generando la consulta: '{$e->getMessage()}'", $e->getCode(), $e);
-		}
-
-		// Verificamos sea arreglo.
-		if ( ! is_array($params) && $params !== NULL)
-		{
-			$params = array($params);
-		}
+		// Cargamos la consulta.
+		$sth = $this->make_query($query, $params);
 
 		// Ejecutamos la consulta.
-		if ($sth->execute($params))
+		if ($sth->execute())
 		{
 			// Generamos un objeto para dar compatibilidad al resto de motores.
 			return new Database_Driver_Pdo_Query($sth);
@@ -133,6 +121,214 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 			$err_data = $sth->errorInfo();
 			throw new Exception_Database("Error ejecutando la consulta: '{$err_data[2]}'", $err_data[0]);
 			return FALSE;
+		}
+	}
+
+	/**
+	 * Creamos una consulta y asignamos los campos correspondientes.
+	 * @param string $query Consulta.
+	 * @param mixed $params Parámetros
+	 * @return PDOStatement
+	 * @throws Exception_Database
+	 */
+	protected function make_query($query, $params)
+	{
+		// Generamos la consulta y sus campos.
+		list($query, $fields) = $this->get_query_data($query, $params);
+
+		// Creamos la consulta.
+		try {
+			$sth = $this->dbh->prepare($query);
+		}
+		catch(PDOException $e)
+		{
+			throw new Exception_Database("Error generando la consulta: '{$e->getMessage()}'", $e->getCode(), $e);
+		}
+
+		// Asignamos todos los campos.
+		foreach($fields as $f)
+		{
+			$sth->bindValue(is_int($f[0]) ? $f[0] + 1 : $f[0], $f[1], $f[2]);
+		}
+
+		return $sth;
+	}
+
+	/**
+	 * Expandimos un campo de la consulta.
+	 * Si $field es numerico, pasamos de tener 1 ? a tener $cantidad ?.
+	 * En caso de ser string, pasamos de :$field a n :$field_n.
+	 * @param string $query Consulta a expandir.
+	 * @param int|string $field Campo a expandir.
+	 * @param int $cantidad Cantidad de campos necesarios.
+	 */
+	protected function expand_field($query, $field, $cantidad)
+	{
+		if (is_int($field)) // Procesamos como ENTERO.
+		{
+			// Generamos arreglo de datos.
+			$expand = array();
+			for($i = 0; $i < $cantidad; $i++)
+			{
+				$expand[] = '?';
+			}
+
+			// Reemplazamos.
+			$offset = 0;
+			for($i = 0; $i < $field; $i++)
+			{
+				$offset = strpos($query, '?', $offset) + 1;
+			}
+
+			$query = substr_replace($query, implode(', ', $expand), $offset - 1, 1);
+		}
+		else
+		{
+			// Generamos arreglo de datos.
+			$expand = array();
+			for($i = 0; $i < $cantidad; $i++)
+			{
+				$expand[] = $field.'_'.($i + 1);
+			}
+
+			// Reemplazamos.
+			$query = preg_replace('/'.preg_quote($field).'/', implode(', ', $expand), $query, 1);
+		}
+
+		return $query;
+	}
+
+	/**
+	 * Procesamos los campos y la consulta generando una nueva consulta y
+	 * la lista de asiganciones de campos para PDO.
+	 * @param string $query
+	 * @param mixed|array $params
+	 * @return array
+	 */
+	protected function get_query_data($query, $params)
+	{
+		// Convertimos en arreglo.
+		if ( ! is_array($params))
+		{
+			$params = array($params);
+		}
+
+		// Procesamos la consulta y los campos.
+		$param_rst = array();
+
+		$add = 0; // Desplazamiento por arreglos.
+		foreach($params as $k => $v)
+		{
+			// Calculamos claves aplicando desplazamiento.
+			$ku = is_int($k) ? $k + $add : $k;
+
+			// Obtenemos los datos.
+			list($query, $pa, $p) = $this->get_query_field($query, $ku, $v);
+
+			// Vemos de insertar los valores generados.
+			if ($p > 0 || $p == -1)
+			{
+				foreach($pa as $vv)
+				{
+					$param_rst[] = $vv;
+				}
+
+				if ($p == -1)
+				{
+					$p = 0;
+				}
+			}
+			else
+			{
+				$param_rst[] = $pa;
+			}
+
+			// Actualizamos el desplazamiento.
+			$add += $p;
+		}
+
+		return array($query, $param_rst);
+	}
+
+	protected function get_query_field($query, $field, $object)
+	{
+		// Convertimos el arreglo a parametros.
+		if (is_object($object))
+		{
+			// Es un objeto, lo transformamos a una cadena.
+			return array($query, array($field, ( string ) $object, PDO::PARAM_STR), 0);
+		}
+		elseif (is_numeric($object))
+		{
+			// Es un número, lo convertimos.
+
+			// Verificamos si es un entero.
+			if (is_int($object))
+			{
+				return array($query, array($field, $object, PDO::PARAM_INT), 0);
+			}
+
+			// Verificamos si puede tratarse como un entero.
+			if ((( int ) $object) == $object)
+			{
+				return array($query, array($field, (int) $object, PDO::PARAM_INT), 0);
+			}
+
+			// Lo tratamos como un real.
+			return array($query, array($field, (float) $object, PDO::PARAM_STR), 0);
+		}
+		elseif (is_array($object))
+		{
+			// Es un arreglo, lo procesamos.
+
+			if (is_int($field))
+			{
+				// Implementamos desplazamiento.
+
+				// Cantidad de campos.
+				$c = count($object);
+
+				// Expandimos la consulta.
+				$query = $this->expand_field($query, $field + 1, $c);
+
+				// Generamos lista de campos.
+				$fs = array();
+				for($i = 0; $i < $c; $i++)
+				{
+					$aux = $this->get_query_field($query, $field + $i, $object[$i]);
+					$fs[] = $aux[1];
+				}
+				return array($query, $fs, $c - 1);
+			}
+			else
+			{
+				// No hace falta desplazar.
+
+				// Cantidad de campos.
+				$c = count($object);
+
+				// Expandimos la consulta.
+				$query = $this->expand_field($query, $field, $c);
+
+				// Generamos lista de campos.
+				$fs = array();
+				for($i = 0; $i < $c; $i++)
+				{
+					$aux = $this->get_query_field($query, $field.'_'.($i+1), $object[$i]);
+					$fs[] = $aux[1];
+				}
+				return array($query, $fs, -1);
+			}
+		}
+		elseif ($object === NULL)
+		{
+			// Dato NULO
+			return array($query, array($field, $object, PDO::PARAM_NULL), 0);
+		}
+		else
+		{
+			//Suponemos una cadena.
+			return array($query, array($field, $object, PDO::PARAM_STR), 0);
 		}
 	}
 
@@ -149,23 +345,11 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	 */
 	private function write_query($query, $params = array())
 	{
-		// Creamos la consulta.
-		try {
-			$sth = $this->dbh->prepare($query);
-		}
-		catch(PDOException $e)
-		{
-			throw new Exception_Database("Error generando la consulta: '{$e->getMessage()}'", $e->getCode(), $e);
-		}
-
-		// Verificamos sea arreglo.
-		if ( ! is_array($params) && $params !== NULL)
-		{
-			$params = array($params);
-		}
+		// Cargamos la consulta.
+		$sth = $this->make_query($query, $params);
 
 		// Realizamos la consulta
-		$rst = $sth->execute($params);
+		$rst = $sth->execute();
 
 		if ($rst)
 		{
