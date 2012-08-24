@@ -132,4 +132,22 @@ class Base_Request {
 			strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
 	}
 
+	/**
+	 * Redireccionamos a la ruta provista.
+	 * @param string|array $url URL o segmentos de la URL a donde redireccionar.
+	 */
+	public static function redirect($url)
+	{
+		// Si tenemos los segmentos generamos la URL.
+		if (is_array($url))
+		{
+			$url = '/'.implode('/', $url);
+		}
+
+		//TODO: agregamos directorio base.
+
+		// Redireccionamos.
+		header("Location: $url");
+	}
+
 }
