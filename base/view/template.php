@@ -1,0 +1,1 @@
+{if="isset($contenido)"}{$contenido}{/if}

@@ -15,8 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
@@ -25,31 +23,69 @@
  */
 
 /**
- * Clase base para todos los modelos.
- * Se encarga de cargar la base de datos y realizar tareas comunes.
+ * Modelo del usuario.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @version    0.1
+ * @since      0.1
  * @package    Marifa/Base
  * @subpackage Model
  */
 class Base_Model_Usuario extends Model {
 
 	/**
-	 * Constructor del modelo
+	 * ID del usuario cargado por el modelo.
+	 * @var int
 	 */
-	public function __construct()
+	protected $id;
+
+	/**
+	 * Arreglo con la información del usuario.
+	 * @var array
+	 */
+	protected $data;
+
+	/**
+	 * Constructor del modelo
+	 * @param int $id ID del usuario a cargar.
+	 */
+	public function __construct($id = NULL)
 	{
+		// Iniciamos el modelo.
 		parent::__construct();
+
+		// Seteamos ID del usuario.
+		$this->id = $id;
 	}
 
 	/**
-	 * Metodo para mostrar el entorno.
-	 * Lo usamos para mostrar la sobreescritura.
+	 * Obtenemos el valor de un campo del usuario.
+	 * @param string $field Nombre del campo a obtener.
+	 * @return mixed
 	 */
-	public function get_name()
+	public function get($field)
 	{
-		return "en base";
+		if ($this->data === NULL)
+		{
+			// Obtenemos los campos.
+			$rst = $this->db->query('SELECT * FROM usuario WHERE id = ? LIMIT 1', $this->id)->get_record();
+
+			if (is_array($rst))
+			{
+				$this->data = $rst;
+			}
+		}
+
+		return isset($this->data[$field]) ? $this->data[$field] : NULL;
+	}
+
+	/**
+	 * Obtenemos una propiedad del usuario.
+	 * @param string $field Nombre del campo.
+	 * @return mixed
+	 */
+	public function __get($field)
+	{
+		return $this->get($field);
 	}
 
 }

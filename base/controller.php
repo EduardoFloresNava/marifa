@@ -34,10 +34,22 @@
 class Base_Controller {
 
 	/**
-	 * Constructor general del controlador.
-	 *
-	 * Aquí deben ponerse el código general a todos los controladores.
+	 * Cargamos la plantilla base.
 	 */
-	public function __construct() {}
+	public function __construct()
+	{
+		// Cargamos la plantilla base.
+		$this->template = View::factory('template');
+	}
 
+	/**
+	 * Mostramos el template.
+	 */
+	public function __destruct()
+	{
+		if ( ! Request::is_ajax())
+		{
+			$this->template->show();
+		}
+	}
 }
