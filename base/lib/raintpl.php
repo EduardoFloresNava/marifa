@@ -312,7 +312,6 @@ class Base_Lib_RainTPL {
 
 			// if the template doesn't exsist throw an error
 			if( self::$check_template_update && !file_exists( $this->tpl['tpl_filename'] ) ){
-				var_dump($this->tpl['tpl_filename']);
 				$e = new RainTpl_NotFoundException( 'Template '. $tpl_basename .' not found!' );
 				throw $e->setTemplateFile($this->tpl['tpl_filename']);
 			}
