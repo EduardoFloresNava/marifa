@@ -35,6 +35,7 @@ class Base_Model {
 
 	/**
 	 * Instancia de la base de datos.
+	 * @var Database_Driver
 	 */
 	protected $db;
 

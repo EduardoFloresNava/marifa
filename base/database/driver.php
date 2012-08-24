@@ -50,7 +50,7 @@ abstract class Base_Database_Driver {
 	 * datos de la base de datos, como puede ser un SELECT.
 	 * @param string $query Consulta SQL.
 	 * @param array $params Arreglo con los parametros a reemplazar.
-	 * @return mixed Objeto resultado de la consulta.
+	 * @return Database_Query Objeto resultado de la consulta.
 	 */
 	abstract public function query($query, $params = array());
 
