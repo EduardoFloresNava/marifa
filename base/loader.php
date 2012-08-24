@@ -44,20 +44,6 @@ class Base_Loader {
 		// Tranformamos el nombre de la clase a un path equivalente.
 		$fclass = self::inflector($class);
 
-		if (substr($class, 0, 5) !== 'Base_' && substr($class, 0, 7) !== 'Plugin_')
-		{
-			if (file_exists(APP_BASE.DS.'marifa'.DS.$fclass.'.'.FILE_EXT))
-			{
-				// Incluimos el archivo.
-				require_once(APP_BASE.DS.'marifa'.DS.$fclass.'.'.FILE_EXT);
-			}
-			else
-			{
-				eval("class $class extends Base_$class {}");
-			}
-			return TRUE;
-		}
-
 		if (file_exists(APP_BASE.DS.'marifa'.DS.$fclass.'.'.FILE_EXT))
 		{
 			// Incluimos el archivo.
