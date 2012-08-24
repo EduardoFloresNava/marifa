@@ -1,6 +1,6 @@
 <?php defined('APP_BASE') or die('No direct access allowed.');
 /**
- * database.php is part of Marifa.
+ * exception.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,21 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.1
  * @filesource
  * @package		Marifa/Base
- * @subpackage  Exception
+ * @subpackage  Database
  */
 
 /**
- * Excepcion de la base de datos.
+ * Alias de Base_Database_Exception
  *
- * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @version    0.1
- * @package    Marifa/Base
- * @subpackage Exception
+ * @package    Marifa/Marifa
+ * @subpackage Database
  */
-class Base_Exception_Database extends Exception {}
+class Database_Exception extends Base_Database_Exception {}
