@@ -109,7 +109,7 @@ class Base_RainTPL extends Lib_RainTPL {
 	 */
 	public function parse()
 	{
-		return $this->parse(NULL, TRUE);
+		return $this->draw(NULL, TRUE);
 	}
 
 	/**
