@@ -119,7 +119,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		{
 			// Error ejecutando la consulta.
 			$err_data = $sth->errorInfo();
-			throw new Exception_Database("Error ejecutando la consulta: '{$err_data[2]}'", $err_data[0]);
+			throw new Database_Exception("Error ejecutando la consulta: '{$err_data[2]}'", $err_data[0]);
 			return FALSE;
 		}
 	}
@@ -129,7 +129,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	 * @param string $query Consulta.
 	 * @param mixed $params Parámetros
 	 * @return PDOStatement
-	 * @throws Exception_Database
+	 * @throws Database_Exception
 	 */
 	protected function make_query($query, $params)
 	{
@@ -142,7 +142,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		}
 		catch(PDOException $e)
 		{
-			throw new Exception_Database("Error generando la consulta: '{$e->getMessage()}'", $e->getCode(), $e);
+			throw new Database_Exception("Error generando la consulta: '{$e->getMessage()}'", $e->getCode(), $e);
 		}
 
 		// Asignamos todos los campos.
@@ -372,7 +372,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		{
 			// Hubo un problema, generamos la excepción.
 			$err_data = $sth->errorInfo();
-			throw new Exception_Database("Error ejecutando la consulta: '{$err_data[2]}'", $err_data[0]);
+			throw new Database_Exception("Error ejecutando la consulta: '{$err_data[2]}'", $err_data[0]);
 			return FALSE;
 		}
 	}

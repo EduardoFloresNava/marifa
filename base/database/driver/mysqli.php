@@ -85,8 +85,8 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		$this->dbh = new mysqli($this->host, $this->username, $this->password, $this->db_name);
 		if ($this->dbh->connect_errno)
 		{
-			$e = new Exception_Database($this->dbh->connect_error, $this->dbh->connect_errno);
-			throw new Exception_Database('No se ha podido conectar al servidor de base de datos.', 100, $e);
+			$e = new Database_Exception($this->dbh->connect_error, $this->dbh->connect_errno);
+			throw new Database_Exception('No se ha podido conectar al servidor de base de datos.', 100, $e);
 			$this->dbh = NULL;
 
 			// Hubo un problema en la coneccion.
@@ -114,7 +114,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		// Creamos la consulta.
 		if ( ! $sth = $this->dbh->prepare($query))
 		{
-			throw new Exception_Database("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
+			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
 		// Verificamos sea arreglo.
@@ -151,7 +151,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 			// Lo asociamos.
 			if ( ! call_user_func_array(array($sth, 'bind_param'), array_merge($type, $params)))
 			{
-				throw new Exception_Database("Error asociando los parametros a la consulta: '{$sth->error}'", $sth->errno);
+				throw new Database_Exception("Error asociando los parametros a la consulta: '{$sth->error}'", $sth->errno);
 			}
 		}
 
@@ -164,7 +164,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		else
 		{
 			// Error ejecutando la consulta.
-			throw new Exception_Database("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
+			throw new Database_Exception("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
 			return FALSE;
 		}
 	}
@@ -185,7 +185,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		// Creamos la consulta.
 		if ( ! $sth = $this->dbh->prepare($query))
 		{
-			throw new Exception_Database("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
+			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
 		// Verificamos sea arreglo.
@@ -222,7 +222,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 			// Lo asociamos.
 			if ( ! call_user_func_array(array($sth, 'bind_param'), array_merge($type, $params)))
 			{
-				throw new Exception_Database("Error asociando los parametros a la consulta: '{$sth->error}'", $sth->errno);
+				throw new Database_Exception("Error asociando los parametros a la consulta: '{$sth->error}'", $sth->errno);
 			}
 		}
 
@@ -234,7 +234,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		else
 		{
 			// Error ejecutando la consulta.
-			throw new Exception_Database("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
+			throw new Database_Exception("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
 			return FALSE;
 		}
 	}

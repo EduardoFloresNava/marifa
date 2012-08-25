@@ -76,7 +76,7 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 	/**
 	 * Asignamos el tipo por defecto usado cuando se devuelven datos.
 	 * @param int $type Tipo a usar.
-	 * @throws Exception_Database
+	 * @throws Database_Exception
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
 	public function set_fetch_type($type)

@@ -88,14 +88,14 @@ abstract class Base_Database_Query implements Iterator {
 	/**
 	 * Asignamos el tipo por defecto usado cuando se devuelven datos.
 	 * @param int $type Tipo a usar.
-	 * @throws Exception_Database
+	 * @throws Database_Exception
 	 */
 	public function set_fetch_type($type)
 	{
 		// Validamos el tipo.
 		if ( ! in_array($type, array(self::FETCH_NUM, self::FETCH_ASSOC, self::FETCH_OBJ)))
 		{
-			throw new Exception_Database('Invalid fetch type');
+			throw new Database_Exception('Invalid fetch type');
 		}
 		$this->fetch_type = $type;
 	}
@@ -118,18 +118,21 @@ abstract class Base_Database_Query implements Iterator {
 	 */
 	protected function cast_field($field, $cast)
 	{
-		switch ($cast)
+		if ($cast === self::FIELD_INT)
 		{
-			case self::FIELD_INT:
-				return (int) $field;
-			case self::FIELD_FLOAT:
-				return (float) $field;
-			case self::FIELD_DATE:
-			case self::FIELD_DATETIME:
-			case self::FIELD_STRING:
-				return (string) $field;
-			default:
-				return $field;
+			return (int) $field;
+		}
+		elseif ($cast === self::FIELD_FLOAT)
+		{
+			return (float) $field;
+		}
+		elseif ($cast === self::FIELD_DATE || $cast === self::FIELD_DATETIME || $cast === self::FIELD_STRING)
+		{
+			return (string) $field;
+		}
+		else
+		{
+			return $field;
 		}
 	}
 
@@ -166,7 +169,7 @@ abstract class Base_Database_Query implements Iterator {
 			$list = $list == NULL ? array() : array($list);
 		}
 
-		if ( ! is_array($cant))
+		if (is_array($cant))
 		{
 			foreach($cant as $k)
 			{

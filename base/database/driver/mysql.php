@@ -103,15 +103,15 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 			$this->conn = @mysql_connect($this->host, $this->user, $this->pass);
 			if ($this->conn === FALSE)
 			{
-				$e = new Exception_Database(mysql_error(), mysql_errno());
-				throw new Exception_Database('No se ha podido conectar al servidor de base de datos.', 100, $e);
+				$e = new Database_Exception(mysql_error(), mysql_errno());
+				throw new Database_Exception('No se ha podido conectar al servidor de base de datos.', 100, $e);
 			}
 
 			if( ! @mysql_select_db($this->db, $this->conn))
 			{
 				$this->conn = NULL;
-				$e = new Exception_Database(mysql_error(), mysql_errno());
-				throw new Exception_Database('No se ha podido seleccionar la base de datos.', 101, $e);
+				$e = new Database_Exception(mysql_error(), mysql_errno());
+				throw new Database_Exception('No se ha podido seleccionar la base de datos.', 101, $e);
 			}
 		}
 	}
@@ -166,7 +166,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		}
 		else
 		{
-			throw new Exception_Database('No hay una conección a la base de datos extablecida.', 102);
+			throw new Database_Exception('No hay una conección a la base de datos extablecida.', 102);
 			return FALSE;
 		}
 	}
@@ -209,7 +209,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 			else
 			{
 				// Generamos una excepción.
-				throw new Exception_Database("Error al ejecutar la consulta: '".mysql_error()."'", mysql_errno());
+				throw new Database_Exception("Error al ejecutar la consulta: '".mysql_error()."'", mysql_errno());
 
 				// Devolvemos falso para indicar que no fue correcto.
 				return FALSE;
@@ -217,7 +217,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		}
 		else
 		{
-			throw new Exception_Database('No hay una conección a la base de datos extablecida.', 102);
+			throw new Database_Exception('No hay una conección a la base de datos extablecida.', 102);
 			return FALSE;
 		}
 	}
@@ -246,7 +246,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 			else
 			{
 				// Generamos una excepción.
-				throw new Exception_Database("Error al ejecutar la consulta: '".mysql_error()."'", mysql_errno());
+				throw new Database_Exception("Error al ejecutar la consulta: '".mysql_error()."'", mysql_errno());
 
 				// Devolvemos falso para indicar que no fue correcto.
 				return FALSE;
@@ -254,7 +254,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		}
 		else
 		{
-			throw new Exception_Database('No hay una conección a la base de datos extablecida.', 102);
+			throw new Database_Exception('No hay una conección a la base de datos extablecida.', 102);
 			return FALSE;
 		}
 	}
@@ -283,7 +283,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 			else
 			{
 				// Generamos una excepción.
-				throw new Exception_Database("Error al ejecutar la consulta: '".mysql_error()."'", mysql_errno());
+				throw new Database_Exception("Error al ejecutar la consulta: '".mysql_error()."'", mysql_errno());
 
 				// Devolvemos falso para indicar que no fue correcto.
 				return FALSE;
@@ -291,7 +291,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		}
 		else
 		{
-			throw new Exception_Database('No hay una conección a la base de datos establecida.', 102);
+			throw new Database_Exception('No hay una conección a la base de datos establecida.', 102);
 			return FALSE;
 		}
 	}
