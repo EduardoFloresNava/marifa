@@ -244,4 +244,12 @@ class Base_Model_Usuario extends Model {
 		return new Model_Usuario_Rango($this->get('rango'));
 	}
 
+	/**
+	 * Obtenemos el modelo de configuraciones del usuario.
+	 * @return Model_Usuario_Configuracion
+	 */
+	public function configuracion()
+	{
+		return new Model_Usuario_Configuracion($this->id);
+	}
 }

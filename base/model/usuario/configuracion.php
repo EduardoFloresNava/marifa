@@ -23,7 +23,7 @@
  */
 
 /**
- * Modelo de configuraciones generales del sistema.
+ * Modelo de configuraciones del usuario.
  *
  * @since      0.1
  * @package    Marifa/Base
@@ -32,55 +32,29 @@
 class Base_Model_Configuracion extends Model {
 
 	/**
-	 * Seteamos el valor por defecto de una configuracion.
-	 * Si no existe creamos la clave con el valor actual igual al por defecto.
-	 * @param string $name Clave de la configuracion.
-	 * @param mixed $value Valor a setear.
+	 * ID del usuario dueño de las propiedades.
+	 * @var int
 	 */
-	public function set_default($name, $value)
+	protected $usuario_id;
+
+	/**
+	 * Instanciamos las configuraciones del usuario.
+	 * @param int $usuario_id ID del usuario.
+	 */
+	public function __construct($usuario_id)
 	{
-		if (isset($this->$name))
-		{
-			$this->db->update('UPDATE configuracion SET default = ? WHERE clave = ?', array($value, $name));
-		}
-		else
-		{
-			$this->db->insert('INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array($name, $value, $value));
-		}
+		parent::__construct();
+
+		$this->usuario_id = $usuario_id;
 	}
 
 	/**
-	 * Restauramos el valor por defecto de la clave.
-	 * @param string $name Clave a restaurar.
-	 * @return bool FALSE si no existe.
+	 * Obtenemos el listado de campos de configuración que tiene el usaurio.
+	 * @return array
 	 */
-	public function restore_default($name)
+	public function lista()
 	{
-		if (isset($this->$name))
-		{
-			$this->db->update('UPDATE configuracion SET valor = defecto WHERE clave = ?', $name);
-		}
-		else
-		{
-			return FALSE;
-		}
-	}
-
-	/**
-	 * Obtenemos el valor por defecto de una clave.
-	 * @param string $name Nombre de la clave a obtener.
-	 * @return mixed
-	 */
-	public function get_default($name)
-	{
-		if (isset($this->$name))
-		{
-			return $this->db->query('SELECT default FROM configuracion WHERE clave = ?', $name)->get_var();
-		}
-		else
-		{
-			throw new Exception('No existe la clave.');
-		}
+		return $this->db->query('SELECT clave, valor FROM usuario_configuracion WHERE usuario_id = ?', $this->usuario_id)->get_pairs();
 	}
 
 	/**
@@ -92,7 +66,7 @@ class Base_Model_Configuracion extends Model {
 	{
 		if (isset($this->$name))
 		{
-			return $this->db->query('SELECT valor FROM configuracion WHERE clave = ?', $name)->get_var();
+			return $this->db->query('SELECT valor FROM usuario_configuracion WHERE clave = ? AND usuario_id = ?', array($name, $this->usuario_id))->get_var();
 		}
 		else
 		{
@@ -110,11 +84,11 @@ class Base_Model_Configuracion extends Model {
 	{
 		if (isset($this->$name))
 		{
-			$this->db->update('UPDATE configuracion SET valor = ? WHERE clave = ?', array($value, $name));
+			$this->db->update('UPDATE usuario_configuracion SET valor = ? WHERE clave = ? AND usuario_id = ?', array($value, $name, $this->usuario_id));
 		}
 		else
 		{
-			$this->db->insert('INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array($name, $value, $value));
+			$this->db->insert('INSERT INTO usuario_configuracion (usuario_id, clave, valor) VALUES (?, ?, ?)', array($this->usuario_id, $name, $value));
 		}
 	}
 
@@ -125,7 +99,7 @@ class Base_Model_Configuracion extends Model {
 	 */
 	public function __isset($name)
 	{
-		return $this->db->query('SELECT clave FROM configuracion WHERE clave = ? LIMIT 1', $name)->num_rows() > 0;
+		return $this->db->query('SELECT clave FROM usuario_configuracion WHERE clave = ? AND usuario_id LIMIT 1', array($name, $this->usuario_id))->num_rows() > 0;
 	}
 
 	/**
@@ -134,7 +108,6 @@ class Base_Model_Configuracion extends Model {
 	 */
 	public function __unset($name)
 	{
-		$this->db->delete('DELETE FROM configuracion WHERE clave = ?', $name);
+		$this->db->delete('DELETE FROM usuario_configuracion WHERE clave = ? AND usuario_id', array($name, $this->usuario_id));
 	}
-
 }
