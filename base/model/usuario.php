@@ -199,9 +199,9 @@ class Base_Model_Usuario extends Model {
 
 	/**
 	 * Creamos una nueva cuenta de usuario.
-	 * @param string $nick
-	 * @param string $email
-	 * @param string $password
+	 * @param string $nick Nick del usuario
+	 * @param string $email E-Mail del usuario.
+	 * @param string $password Contraseña del usuario.
 	 * @return int|bool FALSE si no se pudo crear. En caso de ser correcto el ID
 	 * del usuario insertado o NULL si no es soportado por el motor.
 	 * @throws Exception
