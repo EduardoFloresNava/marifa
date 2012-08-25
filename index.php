@@ -29,7 +29,7 @@
  */
 if (isset($_SERVER['MARIFA_DEBUG']))
 {
-	define('DEBUG', (bool)$_SERVER['MARIFA_DEBUG']);
+	define('DEBUG', (bool) $_SERVER['MARIFA_DEBUG']);
 }
 else
 {
