@@ -6,6 +6,6 @@ plugin/plugin.php
 config/database.php
 config/update.php
 router.php
-plugin/
+/plugin/
 EXAMPLE
 TODO
