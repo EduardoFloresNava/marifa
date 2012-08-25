@@ -235,4 +235,13 @@ class Base_Model_Usuario extends Model {
 		return $cant > 0 ? $id : FALSE;
 	}
 
+	/**
+	 * Obtenemos el rango del usuario.
+	 * @return Model_Usuario_Rango
+	 */
+	public function rango()
+	{
+		return new Model_Usuario_Rango($this->get('rango'));
+	}
+
 }
