@@ -96,7 +96,7 @@ class Base_Loader {
 	 */
 	protected static function inflector($class)
 	{
-		return strtolower(preg_replace('/\/+/', '/', preg_replace('/\_/', '/', $class)));
+		return strtolower(preg_replace('/\/+/', DS, preg_replace('/\_/', DS, $class)));
 	}
 
 }
