@@ -193,6 +193,7 @@ abstract class Base_Database_Query implements Iterator {
 
 	/**
 	 * Obtenemos un arreglo asociativo usando el primer parámetro como clave.
+	 * En caso de solo tener 1 elemento, se lo usa de valor y las claves son enteros.
 	 * @param int|array $cast Cast a aplicar a los elementos. El 1ro para las
 	 * claves y el 2do para los valores.
 	 * @return array
@@ -209,11 +210,27 @@ abstract class Base_Database_Query implements Iterator {
 			// Verificamos si hay cast o no. Se valida a fines de rendimiento.
 			if ($cast !== NULL)
 			{
-				$rst[$this->cast_field($data[0], $cast[0])] = $this->cast_field($data[1], $cast[1]);
+				// Verificamos si tenemos 1 o 2.
+				if (count($data) == 1)
+				{
+					$rst[] = $this->cast_field($data[0], $cast[0]);
+				}
+				else
+				{
+					$rst[$this->cast_field($data[0], $cast[0])] = $this->cast_field($data[1], $cast[1]);
+				}
 			}
 			else
 			{
-				$rst[$data[0]] = $data[1];
+				// Verificamos si tenemos 1 o 2.
+				if (count($data) == 1)
+				{
+					$rst[] = $data[0];
+				}
+				else
+				{
+					$rst[$data[0]] = $data[1];
+				}
 			}
 		}
 		return $rst;
