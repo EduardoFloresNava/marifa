@@ -141,10 +141,8 @@ class Base_Model_Usuario extends Model {
 					// Seteamos el usuario actual.
 					$this->id = $data['id'];
 
-					//TODO: Verificar la compatibilidad de fechas del servidor de base de datos y el web.
-
 					// Actualizamos el inicio de session.
-					$this->db->update('UPDATE usuario SET lastlogin = NOW(), lastactive = NOW(), lastip = ? WHERE id = ?', array(ip2long(IP::getIpAddr()), $this->id));
+					$this->db->update('UPDATE usuario SET lastlogin = ?, lastactive = ?, lastip = ? WHERE id = ?', array(date('Y/m/d H:i:s'), date('Y/m/d H:i:s'), ip2long(IP::getIpAddr()), $this->id));
 
 					break;
 				case self::ESTADO_PENDIENTE:  // Cuenta por activar.
@@ -163,6 +161,55 @@ class Base_Model_Usuario extends Model {
 		{
 			// No existe el usuario.
 			return -1;
+		}
+	}
+
+	/**
+	 * Actualizamos el nick del usuario reservando su exclusividad.
+	 * @param string $nick Nick a utilizar.
+	 * @throws Exception El nick está ocupado.
+	 */
+	public function cambiar_nick($nick)
+	{
+		// Verificamos que no lo tenga otro usuario.
+		if ($this->db->query('SELECT id FROM usuario WHERE nick = ? AND id != ? LIMIT 1', array($nick, $this->id))->num_rows() > 0)
+		{
+			throw new Exception('El nick está ocupado por otro usuario');
+		}
+
+		// Verificamos que no lo tenga ocupado otro usuario.
+		if ($this->db->query('SELECT nick FROM usuario_nick WHERE nick = ? AND usuario_id != ? LIMIT 1', array($nick, $this->id))->num_rows() > 0)
+		{
+			throw new Exception('El nick está reservado por otro usuario');
+		}
+
+		// Obtenemos el nick actual.
+		$actual = $this->get('nick');
+
+		// Agregamos la actualización al historial.
+		$this->db->insert('INSERT INTO usuario_nick (usuario_id, nick, fecha) VALUES (?, ?, ?)', array($this->id, $actual, date('Y/m/d H:i:s')));
+
+		// Actualizamos el nick del usuario.
+		$this->db->update('UPDATE usuario SET nick = ? WHERE id = ?', array($nick, $this->id));
+
+		// Seteamos el valor en los datos actuales.
+		$this->data['nick'] = $nick;
+	}
+
+	public function actualizar_contrasena($password)
+	{
+		// Generamos el hash.
+		$enc = new Phpass(8, FALSE);
+		$enc_password = $enc->HashPassword($password);
+		unset($enc);
+
+		// Actualizamos la base de datos.
+		$this->db->update('UPDATE usuario SET password = ? WHERE id = ?', array($enc_password, $this->id));
+
+		// Actualizamos la cargada.
+		if (is_array($this->data))
+		{
+			$this->data['password'] = $enc_password;
 		}
 	}
 
