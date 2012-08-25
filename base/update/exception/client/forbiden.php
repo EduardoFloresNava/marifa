@@ -32,4 +32,4 @@
  * @subpackage Update/Exception/Client
  * @package    Marifa/Base
  */
-class Base_Update_Exception_Client extends Exception {}
+class Base_Update_Exception_Client_Forbiden extends Exception {}

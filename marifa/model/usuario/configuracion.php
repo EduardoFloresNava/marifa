@@ -1,6 +1,6 @@
 <?php defined('APP_BASE') or die('No direct access allowed.');
 /**
- * token.php is part of Marifa.
+ * configuracion.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,21 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.3
  * @filesource
- * @subpackage  Update/Exception/Client
  * @package		Marifa/Base
+ * @subpackage  Model/Usuario
  */
 
 /**
- * Excepcion del cliente, el token no es válido.
+ * Alias de Base_Model_Usuario_Configuracion
  *
- * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @since      Versión 0.3
- * @subpackage Update/Exception/Client
- * @package    Marifa/Base
+ * @package    Marifa/Marifa
+ * @subpackage Model/Usuario
  */
-class Base_Update_Exception_Client_Token extends Exception {}
+class Model_Usuario_Configuracion extends Base_Model_Usuario_Configuracion {}

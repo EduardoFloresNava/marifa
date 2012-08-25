@@ -15,21 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.3
  * @filesource
- * @subpackage  Update/Exception/Client
  * @package		Marifa/Base
+ * @subpackage  Update/Exception/Client
  */
 
 /**
- * Excepcion del cliente, el token no es válido.
+ * Alias de Base_Update_Exception_Client_Token
  *
- * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @since      Versión 0.3
+ * @package    Marifa/Marifa
  * @subpackage Update/Exception/Client
- * @package    Marifa/Base
  */
-class Base_Update_Exception_Client_Token extends Exception {}
+class Update_Exception_Client_Token extends Base_Update_Exception_Client_Token {}

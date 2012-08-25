@@ -29,7 +29,7 @@
  * @package    Marifa/Base
  * @subpackage Model
  */
-class Base_Model_Configuracion extends Model {
+class Base_Model_Usuario_Configuracion extends Model {
 
 	/**
 	 * ID del usuario dueño de las propiedades.
