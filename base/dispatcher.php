@@ -263,42 +263,43 @@ class Base_Dispatcher {
 					}
 					else
 					{
-						$cont = new $controller_name;
-					}
-
-					if ( ! method_exists($cont, $accion))
-					{
-						if ( ! $throw)
+						// Verificamos exista método.
+						$r_c = new ReflectionClass($controller_name);
+						if ( ! $r_c->hasMethod($accion))
 						{
-							Error::show_error("No existe la acción '$accion' para el controlador '$controller_name'", 404);
+							if ( ! $throw)
+							{
+								Error::show_error("No existe la acción '$accion' para el controlador '$controller_name'", 404);
+							}
+							else
+							{
+								throw new Exception("No existe la acción '$accion' para el controlador '$controller_name'", 404);
+							}
 						}
 						else
 						{
-							throw new Exception("No existe la acción '$accion' para el controlador '$controller_name'", 404);
+							$cont = new $controller_name;
 						}
 					}
-					else
+
+					// Obtenemos la cantidad de parámetros necesaria.
+					$r_m = new ReflectionMethod($cont, $accion);
+					$p_n = $r_m->getNumberOfRequiredParameters();
+
+					// Expandemos el arreglo de parámetros con NULL si es necesario.
+					while(count($args) < $p_n)
 					{
-						// Obtenemos la cantidad de parámetros necesaria.
-						$r_m = new ReflectionMethod($cont, $accion);
-						$p_n = $r_m->getNumberOfRequiredParameters();
-
-						// Expandemos el arreglo de parámetros con NULL si es necesario.
-						while(count($args) < $p_n)
-						{
-							$args[] = NULL;
-						}
-
-						Request::addStack($url);
-						// No hubo problemas, llamamos.
-						$rst = call_user_func_array(array(
-								$cont,
-								$accion
-						), $args);
-						Request::popStack();
-						return $rst;
+						$args[] = NULL;
 					}
 
+					Request::addStack($url);
+					// No hubo problemas, llamamos.
+					$rst = call_user_func_array(array(
+							$cont,
+							$accion
+					), $args);
+					Request::popStack();
+					return $rst;
 				}
 				else
 				{
@@ -375,40 +376,42 @@ class Base_Dispatcher {
 		}
 		else
 		{
-			$cont = new $controller_name;
-		}
-
-		if ( ! method_exists($cont, $accion))
-		{
-			if ( ! $throw)
+			// Verificamos exista método.
+			$r_c = new ReflectionClass($controller_name);
+			if ( ! $r_c->hasMethod($accion))
 			{
-				Error::show_error("No existe la acción '$accion' para el controlador '$controller_name'", 404);
+				if ( ! $throw)
+				{
+					Error::show_error("No existe la acción '$accion' para el controlador '$controller_name'", 404);
+				}
+				else
+				{
+					throw new Exception("No existe la acción '$accion' para el controlador '$controller_name'", 404);
+				}
 			}
 			else
 			{
-				throw new Exception("No existe la acción '$accion' para el controlador '$controller_name'", 404);
+				$cont = new $controller_name;
 			}
 		}
-		else
+
+		// Obtenemos la cantidad de parámetros necesaria.
+		$r_m = new ReflectionMethod($cont, $accion);
+		$p_n = $r_m->getNumberOfRequiredParameters();
+
+		// Expandemos el arreglo de parámetros con NULL si es necesario.
+		while(count($args) < $p_n)
 		{
-			// Obtenemos la cantidad de parámetros necesaria.
-			$r_m = new ReflectionMethod($cont, $accion);
-			$p_n = $r_m->getNumberOfRequiredParameters();
-
-			// Expandemos el arreglo de parámetros con NULL si es necesario.
-			while(count($args) < $p_n)
-			{
-				$args[] = NULL;
-			}
-
-			Request::addStack($url);
-			// No hubo problemas, llamamos.
-			$rst = call_user_func_array(array(
-					$cont,
-					$accion
-			), $args);
-			Request::popStack();
-			return $rst;
+			$args[] = NULL;
 		}
+
+		Request::addStack($url);
+		// No hubo problemas, llamamos.
+		$rst = call_user_func_array(array(
+				$cont,
+				$accion
+		), $args);
+		Request::popStack();
+		return $rst;
 	}
 }
