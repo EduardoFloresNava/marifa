@@ -45,6 +45,7 @@ class Base_View {
 	{
 		// No usarmos las URL's de RainTPL.
 		RainTPL::configure('base_url', NULL);
+		RainTPL::configure('path_replace', NULL);
 
 		// Configuramos directorio de los template's. Seteamos base para que nuestra
 		// extensión se encarge.
