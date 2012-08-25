@@ -226,16 +226,8 @@ class Base_Model_Usuario extends Model {
 		unset($enc);
 
 		// Creamos arreglo con los datos.
-		$info = array(
-			$nick,
-			$enc_password,
-			$email,
-			0,
-			10,
-			10,
-			date('Y/m/d H:i:s'),
-			0,
-		);
+		//TODO: Agregar rango.
+		$info = array($nick, $enc_password, $email, 0, 10, 10, date('Y/m/d H:i:s'), 0);
 
 		// Creamos la cuenta.
 		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, puntos_disponibles, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', array_values($info));
