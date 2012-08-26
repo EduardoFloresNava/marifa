@@ -74,6 +74,11 @@ abstract class Base_Database_Query implements Iterator {
 	const FIELD_DATETIME = 4;
 
 	/**
+	 * Campo del tipo booleano.
+	 */
+	const FIELD_BOOL = 5;
+
+	/**
 	 * Tipo de valor devuelto en las iteraciones.
 	 * @var int
 	 */
@@ -129,6 +134,10 @@ abstract class Base_Database_Query implements Iterator {
 		elseif ($cast === self::FIELD_DATE || $cast === self::FIELD_DATETIME || $cast === self::FIELD_STRING)
 		{
 			return (string) $field;
+		}
+		elseif ($cast === self::FIELD_BOOL)
+		{
+			return (bool) $field;
 		}
 		else
 		{
