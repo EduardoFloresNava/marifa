@@ -32,12 +32,34 @@
 class Base_Controller_Home extends Controller {
 
 	/**
+	 * Submenu de la portada.
+	 * @param string $selected Elemento seleccionado.
+	 * @return array
+	 */
+	protected function submenu_logout($selected = NULL)
+	{
+		return array(
+		   'inicio' => array('link' => '/', 'caption' => 'Inicio', 'active' => $selected == 'inicio'),
+		   'buscador' => array('link' => '/paquetes', 'caption' => 'Paquetes', 'active' => $selected == 'buscador'),
+	   );
+	}
+
+	/**
 	 * Portada del sitio.
 	 */
 	public function action_index()
 	{
 		// Cargamos la portada.
 		$portada = View::factory('home/index');
+
+		// Acciones para menu offline.
+		if ( ! Session::is_set('usuario_id'))
+		{
+			// Seteamos menu offline.
+			$this->template->assign('master_bar', parent::base_menu_logout('posts'));
+
+			$this->template->assign('top_bar', $this->submenu_logout('inicio'));
+		}
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());

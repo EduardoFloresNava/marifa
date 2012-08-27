@@ -46,6 +46,13 @@ class Base_Controller {
 	{
 		// Cargamos la plantilla base.
 		$this->template = View::factory('template');
+
+		// Acciones para menu offline.
+		if ( ! Session::is_set('usuario_id'))
+		{
+			// Seteamos menu offline.
+			$this->template->assign('user_header', View::factory('header/logout')->parse());
+		}
 	}
 
 	/**
@@ -57,5 +64,20 @@ class Base_Controller {
 		{
 			$this->template->show();
 		}
+	}
+
+	/**
+	 * Menu principal para el estado desconectado.
+	 * @param string $activo Clave activa.
+	 * @return array
+	 */
+	protected function base_menu_logout($activo = NULL)
+	{
+		return array(
+			'posts' => array('link' => '/', 'caption' => 'Posts', 'active' => $activo == 'posts'),
+			'comunidades' => array('link' => '/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
+			'fotos' => array('link' => '/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
+			'tops' => array('link' => '/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
+		);
 	}
 }

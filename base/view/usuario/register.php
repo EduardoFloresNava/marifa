@@ -1,13 +1,13 @@
-{if="isset($error)"}
-<div class="alert">
-    <a class="close" data-dismiss="alert">×</a>
-    <strong>Error: </strong>{$error}
-</div>
-{/if}
-
 <form class="form-horizontal" action="/usuario/register" method="POST">
     <fieldset>
-        <legend>Inicio de Sessi&oacute;n</legend>
+        <legend>Nueva cuenta</legend>
+
+		{if="isset($error)"}
+		<div class="alert">
+			<a class="close" data-dismiss="alert">×</a>
+			<strong>Error: </strong>{$error}
+		</div>
+		{/if}
 
         <div class="control-group{if="$error_nick"} error{/if}">
             <label class="control-label" for="nick">Nick</label>
@@ -22,13 +22,6 @@
             <div class="controls">
                 <input type="text" id="email" name="email" value="{$email}" />
                 <p class="help-inline">Su casilla de E-Mail. Su formato debe ser nombre@dominio.tdl</p>
-            </div>
-        </div>
-
-        <div class="control-group{if="$error_c_email"} error{/if}">
-            <label class="control-label" for="c_email">Confirmar E-Mail</label>
-            <div class="controls">
-                <input type="text" id="c_email" name="c_email" value="{$c_email}" />
             </div>
         </div>
 

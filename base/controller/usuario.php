@@ -32,6 +32,17 @@
  */
 class Base_Controller_Usuario extends Controller {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! Session::is_set('usuario_id'))
+		{
+			// Seteamos menu offline.
+			$this->template->assign('master_bar', parent::base_menu_logout());
+		}
+	}
+
 	/**
 	 * Inicio de sessión de un usuario.
 	 */
@@ -41,7 +52,7 @@ class Base_Controller_Usuario extends Controller {
 		if (Session::is_set('usuario_id'))
 		{
 			// Lo enviamos al perfil.
-			Request::redirect('/perfil');
+			Request::redirect('/');
 		}
 
 		// Asignamos el título.
@@ -129,9 +140,9 @@ class Base_Controller_Usuario extends Controller {
 		$view_usuario = View::factory('usuario/register');
 
 		// Pasamos toda la información a la vista.
-		foreach(array('nick', 'email', 'c_email', 'password', 'c_password') as $field)
+		foreach(array('nick', 'email', 'password', 'c_password') as $field)
 		{
-			$view_usuario->assign($field, '');
+			$view_usuario->assign($field, in_array($field, array('nick', 'email')) ? (isset($_POST[$field]) ? $_POST[$field] : ''): '');
 			$view_usuario->assign('error_'.$field, FALSE);
 		}
 
@@ -140,7 +151,7 @@ class Base_Controller_Usuario extends Controller {
 		{
 			// Verificamos los datos enviados.
 			$error = FALSE;
-			foreach(array('nick', 'email', 'c_email', 'password', 'c_password') as $field)
+			foreach(array('nick', 'email', 'password', 'c_password') as $field)
 			{
 				if ( ! isset($_POST[$field]) || empty($_POST[$field]))
 				{
@@ -156,7 +167,7 @@ class Base_Controller_Usuario extends Controller {
 			else
 			{
 				// Pasamos toda la información a la vista.
-				foreach(array('nick', 'email', 'c_email') as $field)
+				foreach(array('nick', 'email') as $field)
 				{
 					$view_usuario->assign($field, $_POST[$field]);
 				}
@@ -176,15 +187,6 @@ class Base_Controller_Usuario extends Controller {
 				{
 					$view_usuario->assign('error_email', TRUE);
 					$error = TRUE;
-				}
-				else
-				{
-					// Verificamos que concuerden.
-					if ($_POST['email'] != $_POST['c_email'])
-					{
-						$view_usuario->assign('error_c_email', TRUE);
-						$error = TRUE;
-					}
 				}
 
 				// Verificamos contraseña.
