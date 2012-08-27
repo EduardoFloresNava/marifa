@@ -34,6 +34,12 @@
 class Base_Controller {
 
 	/**
+	 * Plantilla Base.
+	 * @var RainTPL
+	 */
+	protected $template;
+
+	/**
 	 * Cargamos la plantilla base.
 	 */
 	public function __construct()
