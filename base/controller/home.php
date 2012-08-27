@@ -15,8 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
@@ -25,32 +23,24 @@
  */
 
 /**
- * Controlador de ejemplo.
+ * Controlador de la portada.
  *
- * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @version    0.1
+ * @since      Versión 0.1
  * @package    Marifa/Base
  * @subpackage Controller
  */
 class Base_Controller_Home extends Controller {
 
 	/**
-	 * Constructor del controlador.
-	 */
-	public function __construct()
-	{
-		// Llamamos al contructor padre.
-		parent::__construct();
-	}
-
-	/**
-	 * Index.
+	 * Portada del sitio.
 	 */
 	public function action_index()
 	{
-		View::factory('home')->draw();
-		$m = new Model_Comentario;
-		$m->get_name();
+		// Cargamos la portada.
+		$portada = View::factory('home/index');
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $portada->parse());
 	}
 
 	/**
