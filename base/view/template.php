@@ -58,46 +58,21 @@
                 </div>
             </div>
         </div>
-
         <div class="container">
-            {if="isset($top_bar)"}
-            <div class="row-fluid">
-                <div class="{if="isset($nav_bar)"}span9{else}span12{/if}">
-                    <ul class="nav nav-tabs">
-                        {loop="top_bar"}
-                        <li{if="$value.active"}  class="active"{/if}>
-                            <a href="{$value.link}">{$value.caption}{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
-                        </li>
-                        {/loop}
-                    </ul>
-                    {$contenido}
-                </div>
-                {if="isset($nav_bar)"}
-                <div class="span3">
-                    {$nav_bar}
-                </div>
-                {/if}
-            </div>
-            {else}
-            <div class="row-fluid">
-                <div class="{if="isset($nav_bar)"}span9{else}span12{/if}">
-                    {$contenido}
-                </div>
-                {if="isset($nav_bar)"}
-                <div class="span3">
-                    {$nav_bar}
-                </div>
-                {/if}
-            </div>
-            {/if}
-
-            <hr>
-
-            <footer>
-                <p>&copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Equipo desarrollo Marifa {if="isset($execution)"} - {$execution}{/if}</p>
-            </footer>
-
-        </div><!--/.fluid-container-->
+			{if="isset($top_bar)"}
+			<ul class="nav nav-tabs">
+				{loop="top_bar"}
+				<li{if="$value.active"}  class="active"{/if}>
+					<a href="{$value.link}">{$value.caption}{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
+				</li>
+				{/loop}
+			</ul>
+			{/if}
+			{$contenido}
+		</div>
+		<footer class="footer container">
+			<p>&copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Equipo desarrollo Marifa {if="isset($execution)"} - {$execution}{/if}</p>
+		</footer>
 
         <!-- Le javascript
         ================================================== -->
