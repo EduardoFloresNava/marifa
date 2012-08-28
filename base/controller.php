@@ -53,6 +53,26 @@ class Base_Controller {
 			// Seteamos menu offline.
 			$this->template->assign('user_header', View::factory('header/logout')->parse());
 		}
+		else
+		{
+			$this->template->assign('user_header', $this->make_user_header()->parse());
+		}
+	}
+
+	/**
+	 * Generamos el menu de usuario a colocar en la cabecera.
+	 * @return RainTPL
+	 */
+	protected function make_user_header()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('header/login');
+
+		// Cargamos el usuario y sus datos.
+		$usuario = new Model_Usuario((int) Session::get('usuario_id'));
+		$vista->assign('usuario', $usuario->as_array());
+
+		return $vista;
 	}
 
 	/**
