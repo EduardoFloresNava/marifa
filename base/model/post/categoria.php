@@ -29,19 +29,29 @@
  * @package    Marifa/Base
  * @subpackage Model
  */
-class Base_Model_Post_Categoria extends Model {
+class Base_Model_Post_Categoria extends Model_Dataset {
 
 	/**
-	 * ID de la categoria actual.
-	 * @var int
+	 * Nombre de la tabla para el dataset
+	 * @var string
 	 */
-	protected $id;
+	protected $table = 'post_categoria';
 
 	/**
-	 * Campos de la categoria cargada.
+	 * Clave primaria.
 	 * @var array
 	 */
-	protected $data;
+	protected $primary_key = array('id' => NULL);
+
+	/**
+	 * Listado de campos y sus tipos.
+	 */
+	protected $fields = array(
+		'id' => Database_Query::FIELD_INT,
+		'nombre' => Database_Query::FIELD_STRING,
+		'seo' => Database_Query::FIELD_STRING,
+		'imagen' => Database_Query::FIELD_STRING,
+	);
 
 	/**
 	 * Cargamos una categoria.
@@ -50,39 +60,7 @@ class Base_Model_Post_Categoria extends Model {
 	public function __construct($id = NULL)
 	{
 		parent::__construct();
-		$this->id = $id;
-	}
-
-	/**
-	 * Obtenemos el valor de un campo del usuario.
-	 * @param string $field Nombre del campo a obtener.
-	 * @return mixed
-	 */
-	public function get($field)
-	{
-		if ($this->data === NULL)
-		{
-			// Obtenemos los campos.
-			$rst = $this->db->query('SELECT * FROM post_categoria WHERE id = ? LIMIT 1', $this->id)
-				->get_record(array('id' => Database_Query::FIELD_INT));
-
-			if (is_array($rst))
-			{
-				$this->data = $rst;
-			}
-		}
-
-		return isset($this->data[$field]) ? $this->data[$field] : NULL;
-	}
-
-	/**
-	 * Obtenemos una propiedad del usuario.
-	 * @param string $field Nombre del campo.
-	 * @return mixed
-	 */
-	public function __get($field)
-	{
-		return $this->get($field);
+		$this->primary_key['id'] = $id;
 	}
 
 	/**
@@ -91,14 +69,8 @@ class Base_Model_Post_Categoria extends Model {
 	 */
 	public function load_by_seo($seo)
 	{
-		$rst = $this->db->query('SELECT * FROM post_categoria WHERE seo = ? LIMIT 1', $seo)
-			->get_record(array('id' => Database_Query::FIELD_INT));
-
-		if (is_array($rst))
-		{
-			$this->id = $rst['id'];
-			$this->data = $rst;
-		}
+		parent::load(array('seo' => $seo));
+		$this->primary_key['id'] = $this->get('id');
 	}
 
 	/**
@@ -107,14 +79,8 @@ class Base_Model_Post_Categoria extends Model {
 	 */
 	public function load_by_nombre($nombre)
 	{
-		$rst = $this->db->query('SELECT * FROM post_categoria WHERE nombre = ? LIMIT 1', $nombre)
-			->get_record(array('id' => Database_Query::FIELD_INT));
-
-		if (is_array($rst))
-		{
-			$this->id = $rst['id'];
-			$this->data = $rst;
-		}
+		parent::load(array('nombre' => $nombre));
+		$this->primary_key['id'] = $this->get('id');
 	}
 
 	/**
@@ -144,7 +110,7 @@ class Base_Model_Post_Categoria extends Model {
 		}
 
 		// Actualizamos los datos.
-		$this->db->update('UPDATE post_categoria SET nombre = ? AND seo = ? WHERE id = ?', array($nombre, $seo, $this->id));
+		$this->db->update('UPDATE post_categoria SET nombre = ? AND seo = ? WHERE id = ?', array($nombre, $seo, $this->primary_key['id']));
 	}
 
 	/**
@@ -162,7 +128,7 @@ class Base_Model_Post_Categoria extends Model {
 	 */
 	public function cambiar_imagen($imagen)
 	{
-		$this->db->update('UPDATE post_categoria SET imagen = ? WHERE id = ?', array($imagen, $this->id));
+		$this->db->update('UPDATE post_categoria SET imagen = ? WHERE id = ?', array($imagen, $this->primary_key['id']));
 	}
 
 	/**
@@ -178,7 +144,7 @@ class Base_Model_Post_Categoria extends Model {
 		}
 
 		// Borramos.
-		$this->db->delete('DELETE FROM post_categoria WHERE id = ?', $this->id);
+		$this->db->delete('DELETE FROM post_categoria WHERE id = ?', $this->primary_key['id']);
 	}
 
 	/**
@@ -188,7 +154,7 @@ class Base_Model_Post_Categoria extends Model {
 	public function posts()
 	{
 		// Obtenemos la lista.
-		$rst = $this->db->query('SELECT id FROM post WHERE post_categoria_id = ?', $this->id);
+		$rst = $this->db->query('SELECT id FROM post WHERE post_categoria_id = ?', $this->primary_key['id']);
 		$rst->set_cast_type(array('id' => Database_Query::FIELD_INT));
 
 		$lst = array();
@@ -206,7 +172,7 @@ class Base_Model_Post_Categoria extends Model {
 	 */
 	public function cantidad_posts()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post WHERE post_categoria_id = ?', $this->id)->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT COUNT(*) FROM post WHERE post_categoria_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -215,6 +181,6 @@ class Base_Model_Post_Categoria extends Model {
 	 */
 	public function tiene_posts()
 	{
-		return $this->db->query('SELECT post_categoria_id FROM post WHERE post_categoria_id = ? LIMIT 1', $this->id)->num_rows() > 0;
+		return $this->db->query('SELECT post_categoria_id FROM post WHERE post_categoria_id = ? LIMIT 1', $this->primary_key['id'])->num_rows() > 0;
 	}
 }

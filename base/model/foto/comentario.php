@@ -29,19 +29,30 @@
  * @package    Marifa/Base
  * @subpackage Model
  */
-class Base_Model_Foto_Comentario extends Model {
+class Base_Model_Foto_Comentario extends Model_Dataset {
 
 	/**
-	 * ID del post.
-	 * @var int
+	 * Nombre de la tabla para el dataset
+	 * @var string
 	 */
-	protected $id;
+	protected $table = 'foto_comentario';
 
 	/**
-	 * Datos del post.
+	 * Clave primaria.
 	 * @var array
 	 */
-	protected $data;
+	protected $primary_key = array('id' => NULL);
+
+	/**
+	 * Listado de campos y sus tipos.
+	 */
+	protected $fields = array(
+		'id' => Database_Query::FIELD_INT,
+		'foto_id' => Database_Query::FIELD_INT,
+		'usuario_id' => Database_Query::FIELD_INT,
+		'comentario' => Database_Query::FIELD_STRING,
+		'fecha' => Database_Query::FIELD_DATETIME
+	);
 
 	/**
 	 * Constructor del post.
@@ -51,46 +62,7 @@ class Base_Model_Foto_Comentario extends Model {
 	{
 		parent::__construct();
 
-		$this->id = $id;
-	}
-
-	/**
-	 * Obtenemos el valor de un campo del comentario.
-	 * @param string $field Nombre del campo a obtener.
-	 * @return mixed
-	 */
-	public function get($field)
-	{
-		if ($this->data === NULL)
-		{
-			// Obtenemos los campos.
-			$rst = $this->db->query('SELECT * FROM foto_comentario WHERE id = ? LIMIT 1', $this->id)
-				->get_record(Database_Query::FETCH_ASSOC,
-					array(
-						'id' => Database_Query::FIELD_INT,
-						'foto_id' => Database_Query::FIELD_INT,
-						'usuario_id' => Database_Query::FIELD_INT,
-						'fecha' => Database_Query::FIELD_DATETIME
-					)
-				);
-
-			if (is_array($rst))
-			{
-				$this->data = $rst;
-			}
-		}
-
-		return isset($this->data[$field]) ? $this->data[$field] : NULL;
-	}
-
-	/**
-	 * Obtenemos una propiedad del comentario.
-	 * @param string $field Nombre del campo.
-	 * @return mixed
-	 */
-	public function __get($field)
-	{
-		return $this->get($field);
+		$this->primary_key['id'] = $id;
 	}
 
 	/**

@@ -29,19 +29,29 @@
  * @package    Marifa/Base
  * @subpackage Model
  */
-class Base_Model_Usuario_Rango extends Model {
+class Base_Model_Usuario_Rango extends Model_Dataset {
 
 	/**
-	 * ID del rango
-	 * @var int
+	 * Nombre de la tabla para el dataset
+	 * @var string
 	 */
-	protected $id;
+	protected $table = 'usuario_rango';
 
 	/**
-	 * Datos del rango.
-	 * @var int
+	 * Clave primaria.
+	 * @var array
 	 */
-	protected $data;
+	protected $primary_key = array('id' => NULL);
+
+	/**
+	 * Listado de campos y sus tipos.
+	 */
+	protected $fields = array(
+		'id' => Database_Query::FIELD_INT,
+		'nombre' => Database_Query::FIELD_STRING,
+		'color' => Database_Query::FIELD_INT,
+		'imagen' => Database_Query::FIELD_STRING
+	);
 
 
 	/**
@@ -52,39 +62,7 @@ class Base_Model_Usuario_Rango extends Model {
 	{
 		parent::__construct();
 
-		$this->id = $id;
-	}
-
-	/**
-	 * Obtenemos el valor de un campo del rango.
-	 * @param string $field Nombre del campo a obtener.
-	 * @return mixed
-	 */
-	public function get($field)
-	{
-		if ($this->data === NULL)
-		{
-			// Obtenemos los campos.
-			$rst = $this->db->query('SELECT id, nombre, color, imagen FROM usuario_rango WHERE id = ? LIMIT 1', $this->id)
-				->get_record(Database_Query::FETCH_ASSOC, array('id' => Database_Query::FIELD_INT, 'color' => Database_Query::FIELD_INT));
-
-			if (is_array($rst))
-			{
-				$this->data = $rst;
-			}
-		}
-
-		return isset($this->data[$field]) ? $this->data[$field] : NULL;
-	}
-
-	/**
-	 * Obtenemos una propiedad del rango del usuario.
-	 * @param string $field Nombre del campo.
-	 * @return mixed
-	 */
-	public function __get($field)
-	{
-		return $this->get($field);
+		$this->primary_key['id'] = $id;
 	}
 
 	/**
@@ -93,7 +71,7 @@ class Base_Model_Usuario_Rango extends Model {
 	 */
 	public function permisos()
 	{
-		return $this->db->query('SELECT permiso FROM usuario_rango_permiso WHERE rango_id = ?', $this->id)->get_pairs();
+		return $this->db->query('SELECT permiso FROM usuario_rango_permiso WHERE rango_id = ?', $this->primary_key['id'])->get_pairs();
 	}
 
 	/**
@@ -104,7 +82,7 @@ class Base_Model_Usuario_Rango extends Model {
 	{
 		if ( ! $this->tiene_permiso($permiso))
 		{
-			$this->db->insert('INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (?, ?)', $this->id, $permiso);
+			$this->db->insert('INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (?, ?)', $this->primary_key['id'], $permiso);
 		}
 	}
 
@@ -114,7 +92,7 @@ class Base_Model_Usuario_Rango extends Model {
 	 */
 	public function borrar_permiso($permiso)
 	{
-		$this->db->delete('DELETE FROM usuario_rango_permiso WHERE rango_id = ? AND permiso = ?', array($this->id, $permiso));
+		$this->db->delete('DELETE FROM usuario_rango_permiso WHERE rango_id = ? AND permiso = ?', array($this->primary_key['id'], $permiso));
 	}
 
 	/**
@@ -124,7 +102,7 @@ class Base_Model_Usuario_Rango extends Model {
 	 */
 	public function tiene_permiso($permiso)
 	{
-		return $this->db->query('SELECT permiso FROM usuario_rango_permiso WHERE rango_id = ? AND permiso = ? LIMIT 1', array($this->id, $permiso))->num_rows() > 0;
+		return $this->db->query('SELECT permiso FROM usuario_rango_permiso WHERE rango_id = ? AND permiso = ? LIMIT 1', array($this->primary_key['id'], $permiso))->num_rows() > 0;
 	}
 
 	/**
@@ -141,10 +119,10 @@ class Base_Model_Usuario_Rango extends Model {
 		}
 
 		// Borramos la lista de permisos.
-		$this->db->delete('DELETE FROM usuario_rango_permiso WHERE rango_id = ?', $this->id);
+		$this->db->delete('DELETE FROM usuario_rango_permiso WHERE rango_id = ?', $this->primary_key['id']);
 
 		// Borramos el rango.
-		$this->db->delete('DELETE FROM usuario_rango WHERE id = ?', $this->id);
+		$this->db->delete('DELETE FROM usuario_rango WHERE id = ?', $this->primary_key['id']);
 
 		return TRUE;
 	}
@@ -155,7 +133,7 @@ class Base_Model_Usuario_Rango extends Model {
 	 */
 	public function usuarios()
 	{
-		return $this->db->query('SELECT id FROM usuario WHERE rango = ?', $this->id)->get_pairs(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT id FROM usuario WHERE rango = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -164,7 +142,7 @@ class Base_Model_Usuario_Rango extends Model {
 	 */
 	public function tiene_usuarios()
 	{
-		return $this->db->query('SELECT id FROM usuario WHERE rango = ? LIMIT 1', $this->id)->num_rows() > 0;
+		return $this->db->query('SELECT id FROM usuario WHERE rango = ? LIMIT 1', $this->primary_key['id'])->num_rows() > 0;
 	}
 
 	/**
@@ -197,7 +175,7 @@ class Base_Model_Usuario_Rango extends Model {
 		if ($cant > 0)
 		{
 			// Seteamos el ID del actual.
-			$this->id = $id;
+			$this->primary_key['id'] = $id;
 
 			// Agregamos los permisos.
 			if (count($permisos) > 0)
@@ -228,9 +206,9 @@ class Base_Model_Usuario_Rango extends Model {
 	 */
 	public function renombrar($nombre)
 	{
-		if ($this->id !== NULL)
+		if ($this->primary_key['id'] !== NULL)
 		{
-			return $this->db->update('UPDATE usuario_rango SET nombre = ? WHERE id = ?', array($nombre, $this->id)) > 0;
+			return $this->db->update('UPDATE usuario_rango SET nombre = ? WHERE id = ?', array($nombre, $this->primary_key['id'])) > 0;
 		}
 		else
 		{
@@ -252,9 +230,9 @@ class Base_Model_Usuario_Rango extends Model {
 			$color = hexdec($color);
 		}
 
-		if ($this->id !== NULL)
+		if ($this->primary_key['id'] !== NULL)
 		{
-			return $this->db->update('UPDATE usuario_rango SET color = ? WHERE id = ?', array($color, $this->id)) > 0;
+			return $this->db->update('UPDATE usuario_rango SET color = ? WHERE id = ?', array($color, $this->primary_key['id'])) > 0;
 		}
 		else
 		{
@@ -270,9 +248,9 @@ class Base_Model_Usuario_Rango extends Model {
 	 */
 	public function cambiar_imagen($imagen)
 	{
-		if ($this->id !== NULL)
+		if ($this->primary_key['id'] !== NULL)
 		{
-			return $this->db->update('UPDATE usuario_rango SET imagen = ? WHERE id = ?', array($imagen, $this->id)) > 0;
+			return $this->db->update('UPDATE usuario_rango SET imagen = ? WHERE id = ?', array($imagen, $this->primary_key['id'])) > 0;
 		}
 		else
 		{

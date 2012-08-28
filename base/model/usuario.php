@@ -30,7 +30,7 @@
  * @package    Marifa/Base
  * @subpackage Model
  */
-class Base_Model_Usuario extends Model {
+class Base_Model_Usuario extends Model_Dataset {
 
 	/**
 	 * Cuenta sin activar por medio de email.
@@ -53,16 +53,34 @@ class Base_Model_Usuario extends Model {
 	const ESTADO_BANEADA = 3;
 
 	/**
-	 * ID del usuario cargado por el modelo.
-	 * @var int
+	 * Nombre de la tabla para el dataset
+	 * @var string
 	 */
-	protected $id;
+	protected $table = 'usuario';
 
 	/**
-	 * Arreglo con la información del usuario.
+	 * Clave primaria.
 	 * @var array
 	 */
-	protected $data;
+	protected $primary_key = array('id' => NULL);
+
+	/**
+	 * Listado de campos y sus tipos.
+	 */
+	protected $fields = array(
+		'id' => Database_Query::FIELD_INT,
+		'nick' => Database_Query::FIELD_STRING,
+		'password' => Database_Query::FIELD_STRING,
+		'email' => Database_Query::FIELD_STRING,
+		'rango' => Database_Query::FIELD_INT,
+		'puntos' => Database_Query::FIELD_INT,
+		'puntos_disponibles' => Database_Query::FIELD_INT,
+		'registro' => Database_Query::FIELD_DATETIME,
+		'lastlogin' => Database_Query::FIELD_DATETIME,
+		'lastactive' => Database_Query::FIELD_DATETIME,
+		'lastip' => Database_Query::FIELD_INT,
+		'estado' => Database_Query::FIELD_INT
+	);
 
 	/**
 	 * Constructor del modelo
@@ -74,38 +92,7 @@ class Base_Model_Usuario extends Model {
 		parent::__construct();
 
 		// Seteamos ID del usuario.
-		$this->id = $id;
-	}
-
-	/**
-	 * Obtenemos el valor de un campo del usuario.
-	 * @param string $field Nombre del campo a obtener.
-	 * @return mixed
-	 */
-	public function get($field)
-	{
-		if ($this->data === NULL)
-		{
-			// Obtenemos los campos.
-			$rst = $this->db->query('SELECT * FROM usuario WHERE id = ? LIMIT 1', $this->id)->get_record();
-
-			if (is_array($rst))
-			{
-				$this->data = $rst;
-			}
-		}
-
-		return isset($this->data[$field]) ? $this->data[$field] : NULL;
-	}
-
-	/**
-	 * Obtenemos una propiedad del usuario.
-	 * @param string $field Nombre del campo.
-	 * @return mixed
-	 */
-	public function __get($field)
-	{
-		return $this->get($field);
+		$this->primary_key['id'] = $id;
 	}
 
 	/**
@@ -139,10 +126,10 @@ class Base_Model_Usuario extends Model {
 					Session::set('usuario_id', $data['id']);
 
 					// Seteamos el usuario actual.
-					$this->id = $data['id'];
+					$this->primary_key['id'] = $data['id'];
 
 					// Actualizamos el inicio de session.
-					$this->db->update('UPDATE usuario SET lastlogin = ?, lastactive = ?, lastip = ? WHERE id = ?', array(date('Y/m/d H:i:s'), date('Y/m/d H:i:s'), ip2long(IP::getIpAddr()), $this->id));
+					$this->db->update('UPDATE usuario SET lastlogin = ?, lastactive = ?, lastip = ? WHERE id = ?', array(date('Y/m/d H:i:s'), date('Y/m/d H:i:s'), ip2long(IP::getIpAddr()), $this->primary_key['id']));
 
 					break;
 				case self::ESTADO_PENDIENTE:  // Cuenta por activar.
@@ -172,13 +159,13 @@ class Base_Model_Usuario extends Model {
 	public function cambiar_nick($nick)
 	{
 		// Verificamos que no lo tenga otro usuario.
-		if ($this->db->query('SELECT id FROM usuario WHERE nick = ? AND id != ? LIMIT 1', array($nick, $this->id))->num_rows() > 0)
+		if ($this->db->query('SELECT id FROM usuario WHERE nick = ? AND id != ? LIMIT 1', array($nick, $this->primary_key['id']))->num_rows() > 0)
 		{
 			throw new Exception('El nick está ocupado por otro usuario');
 		}
 
 		// Verificamos que no lo tenga ocupado otro usuario.
-		if ($this->db->query('SELECT nick FROM usuario_nick WHERE nick = ? AND usuario_id != ? LIMIT 1', array($nick, $this->id))->num_rows() > 0)
+		if ($this->db->query('SELECT nick FROM usuario_nick WHERE nick = ? AND usuario_id != ? LIMIT 1', array($nick, $this->primary_key['id']))->num_rows() > 0)
 		{
 			throw new Exception('El nick está reservado por otro usuario');
 		}
@@ -187,10 +174,10 @@ class Base_Model_Usuario extends Model {
 		$actual = $this->get('nick');
 
 		// Agregamos la actualización al historial.
-		$this->db->insert('INSERT INTO usuario_nick (usuario_id, nick, fecha) VALUES (?, ?, ?)', array($this->id, $actual, date('Y/m/d H:i:s')));
+		$this->db->insert('INSERT INTO usuario_nick (usuario_id, nick, fecha) VALUES (?, ?, ?)', array($this->primary_key['id'], $actual, date('Y/m/d H:i:s')));
 
 		// Actualizamos el nick del usuario.
-		$this->db->update('UPDATE usuario SET nick = ? WHERE id = ?', array($nick, $this->id));
+		$this->db->update('UPDATE usuario SET nick = ? WHERE id = ?', array($nick, $this->primary_key['id']));
 
 		// Seteamos el valor en los datos actuales.
 		$this->data['nick'] = $nick;
@@ -204,7 +191,7 @@ class Base_Model_Usuario extends Model {
 		unset($enc);
 
 		// Actualizamos la base de datos.
-		$this->db->update('UPDATE usuario SET password = ? WHERE id = ?', array($enc_password, $this->id));
+		$this->db->update('UPDATE usuario SET password = ? WHERE id = ?', array($enc_password, $this->primary_key['id']));
 
 		// Actualizamos la cargada.
 		if (is_array($this->data))
@@ -297,6 +284,6 @@ class Base_Model_Usuario extends Model {
 	 */
 	public function configuracion()
 	{
-		return new Model_Usuario_Configuracion($this->id);
+		return new Model_Usuario_Configuracion($this->primary_key['id']);
 	}
 }

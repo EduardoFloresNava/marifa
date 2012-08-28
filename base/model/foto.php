@@ -32,16 +32,31 @@
 class Base_Model_Foto extends Model {
 
 	/**
-	 * ID del post.
-	 * @var int
+	 * Nombre de la tabla para el dataset
+	 * @var string
 	 */
-	protected $id;
+	protected $table = 'foto';
 
 	/**
-	 * Datos del post.
+	 * Clave primaria.
 	 * @var array
 	 */
-	protected $data;
+	protected $primary_key = array('id' => NULL);
+
+	/**
+	 * Listado de campos y sus tipos.
+	 */
+	protected $fields = array(
+		'id' => Database_Query::FIELD_INT,
+		'usuario_id' => Database_Query::FIELD_INT,
+		'creacion' => Database_Query::FIELD_DATETIME,
+		'titulo' => Database_Query::FIELD_STRING,
+		'descripcion' => Database_Query::FIELD_STRING,
+		'url' => Database_Query::FIELD_STRING,
+		'estado' => Database_Query::FIELD_INT,
+		'ultima_visita' => Database_Query::FIELD_DATETIME,
+		'visitas' => Database_Query::FIELD_INT
+	);
 
 	/**
 	 * Constructor del post.
@@ -51,48 +66,7 @@ class Base_Model_Foto extends Model {
 	{
 		parent::__construct();
 
-		$this->id = $id;
-	}
-
-	/**
-	 * Obtenemos el valor de un campo de la foto.
-	 * @param string $field Nombre del campo a obtener.
-	 * @return mixed
-	 */
-	public function get($field)
-	{
-		if ($this->data === NULL)
-		{
-			// Obtenemos los campos.
-			$rst = $this->db->query('SELECT * FROM foto WHERE id = ? LIMIT 1', $this->id)
-				->get_record(Database_Query::FETCH_ASSOC,
-					array(
-						'id' => Database_Query::FIELD_INT,
-						'usuario_id' => Database_Query::FIELD_INT,
-						'creacion' => Database_Query::FIELD_DATETIME,
-						'estado' => Database_Query::FIELD_INT,
-						'ultima_visita' => Database_Query::FIELD_DATETIME,
-						'visitas' => Database_Query::FIELD_INT
-					)
-				);
-
-			if (is_array($rst))
-			{
-				$this->data = $rst;
-			}
-		}
-
-		return isset($this->data[$field]) ? $this->data[$field] : NULL;
-	}
-
-	/**
-	 * Obtenemos una propiedad de la foto.
-	 * @param string $field Nombre del campo.
-	 * @return mixed
-	 */
-	public function __get($field)
-	{
-		return $this->get($field);
+		$this->primary_key['id'] = $id;
 	}
 
 	/**
@@ -109,7 +83,7 @@ class Base_Model_Foto extends Model {
 	 */
 	public function agregar_visita()
 	{
-		$this->db->update('UPDATE foto SET visitas = visitas + 1, ultima_visita = ? WHERE id = ?', array(date('Y/m/d H:i:s'), $this->id));
+		$this->db->update('UPDATE foto SET visitas = visitas + 1, ultima_visita = ? WHERE id = ?', array(date('Y/m/d H:i:s'), $this->primary_key['id']));
 
 		// Invalidamos información para su nueva carga.
 		if (is_array($this->data))
@@ -124,7 +98,7 @@ class Base_Model_Foto extends Model {
 	 */
 	public function votos()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM foto_voto WHERE foto_id = ?', $this->id)->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT COUNT(*) FROM foto_voto WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -134,7 +108,7 @@ class Base_Model_Foto extends Model {
 	 */
 	public function ya_voto($usuario_id)
 	{
-		return $this->db->query('SELECT foto_id FROM foto_voto WHERE foto_id = ? AND usuario_id = ? LIMIT 1', array($this->id, $usuario_id))->num_rows() > 0;
+		return $this->db->query('SELECT foto_id FROM foto_voto WHERE foto_id = ? AND usuario_id = ? LIMIT 1', array($this->primary_key['id'], $usuario_id))->num_rows() > 0;
 	}
 
 	/**
@@ -143,7 +117,7 @@ class Base_Model_Foto extends Model {
 	 */
 	public function votar($usuario_id)
 	{
-		$this->db->insert('INSERT INTO foto_voto (foto_id, usuario_id) VALUES (?, ?)', array($this->id, $usuario_id));
+		$this->db->insert('INSERT INTO foto_voto (foto_id, usuario_id) VALUES (?, ?)', array($this->primary_key['id'], $usuario_id));
 	}
 
 	/**
@@ -152,7 +126,7 @@ class Base_Model_Foto extends Model {
 	 */
 	public function favoritos()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM foto_favorito WHERE foto_id = ?', $this->id)->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT COUNT(*) FROM foto_favorito WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -162,7 +136,7 @@ class Base_Model_Foto extends Model {
 	 */
 	public function es_favorito($usuario_id)
 	{
-		return $this->db->query('SELECT foto_id FROM foto_favorito WHERE foto_id = ? AND usuario_id = ? LIMIT 1', array($this->id, $usuario_id))->num_rows() > 0;
+		return $this->db->query('SELECT foto_id FROM foto_favorito WHERE foto_id = ? AND usuario_id = ? LIMIT 1', array($this->primary_key['id'], $usuario_id))->num_rows() > 0;
 	}
 
 	/**
@@ -171,7 +145,7 @@ class Base_Model_Foto extends Model {
 	 */
 	public function agregar_favorito($usuario_id)
 	{
-		$this->db->insert('INSERT INTO foto_favorito (foto_id, usuario_id) VALUES (?, ?)', array($this->id, $usuario_id));
+		$this->db->insert('INSERT INTO foto_favorito (foto_id, usuario_id) VALUES (?, ?)', array($this->primary_key['id'], $usuario_id));
 	}
 
 	/**
@@ -181,7 +155,7 @@ class Base_Model_Foto extends Model {
 	public function comentarios()
 	{
 		//TODO: estado de los comentarios de las fotos. Agregarlo a la base de datos.
-		$rst = $this->db->query('SELECT id FROM foto_comentario WHERE foto_id = ?', $this->id);
+		$rst = $this->db->query('SELECT id FROM foto_comentario WHERE foto_id = ?', $this->primary_key['id']);
 		$rst->set_cast_type(array('id' => Database_Query::FIELD_INT));
 
 		$lst = array();
@@ -200,7 +174,7 @@ class Base_Model_Foto extends Model {
 	 */
 	public function comentar($comentario, $usuario_id)
 	{
-		$this->db->insert('INSERT INTO foto_comentario (foto_id, usuario_id, comentario, fecha) VALUES (?, ?, ?, ?)', array($this->id, $usuario_id, $comentario, date('Y/m/d H:i:s')));
+		$this->db->insert('INSERT INTO foto_comentario (foto_id, usuario_id, comentario, fecha) VALUES (?, ?, ?, ?)', array($this->primary_key['id'], $usuario_id, $comentario, date('Y/m/d H:i:s')));
 	}
 
 	/**
@@ -210,7 +184,7 @@ class Base_Model_Foto extends Model {
 	public function actualizar_estado($estado)
 	{
 		//TODO: Constantes de estado.
-		$this->db->update('UPDATE foto SET estado = ? WHERE id = ?', array($estado, $this->id));
+		$this->db->update('UPDATE foto SET estado = ? WHERE id = ?', array($estado, $this->primary_key['id']));
 	}
 
 	/**
@@ -228,7 +202,7 @@ class Base_Model_Foto extends Model {
 
 		if ($c > 0)
 		{
-			$this->id = $id;
+			$this->primary_key['id'] = $id;
 			return TRUE;
 		}
 		else
@@ -243,8 +217,8 @@ class Base_Model_Foto extends Model {
 	public function borrar()
 	{
 		//TODO: borrar votos y favoritos.
-		$this->db->delete('DELETE FROM foto_voto WHERE foto_id = ?', $this->id);
-		$this->db->delete('DELETE FROM foto_favorito WHERE foto_id = ?', $this->id);
-		$this->db->delete('DELETE FROM foto WHERE id = ?', $this->id);
+		$this->db->delete('DELETE FROM foto_voto WHERE foto_id = ?', $this->primary_key['id']);
+		$this->db->delete('DELETE FROM foto_favorito WHERE foto_id = ?', $this->primary_key['id']);
+		$this->db->delete('DELETE FROM foto WHERE id = ?', $this->primary_key['id']);
 	}
 }

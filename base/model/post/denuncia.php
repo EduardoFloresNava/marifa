@@ -29,19 +29,32 @@
  * @package    Marifa/Base
  * @subpackage Model
  */
-class Base_Model_Post_Denuncia extends Model {
+class Base_Model_Post_Denuncia extends Model_Dataset {
 
 	/**
-	 * ID de la denuncia.
-	 * @var int
+	 * Nombre de la tabla para el dataset
+	 * @var string
 	 */
-	protected $id;
+	protected $table = 'post_denuncia';
 
 	/**
-	 * Arreglo con la información de la denuncia.
+	 * Clave primaria.
 	 * @var array
 	 */
-	protected $data;
+	protected $primary_key = array('id' => NULL);
+
+	/**
+	 * Listado de campos y sus tipos.
+	 */
+	protected $fields = array(
+		'id' => Database_Query::FIELD_INT,
+		'post_id' => Database_Query::FIELD_INT,
+		'usuario_id' => Database_Query::FIELD_INT,
+		'motivo' => Database_Query::FIELD_INT,
+		'comentario' => Database_Query::FIELD_DATETIME,
+		'fecha' => Database_Query::FIELD_DATETIME,
+		'estado' => Database_Query::FIELD_INT,
+	);
 
 	/**
 	 * Cargamos una denuncia.
@@ -51,46 +64,7 @@ class Base_Model_Post_Denuncia extends Model {
 	{
 		parent::__construct();
 
-		$this->id = $id;
-	}
-
-	/**
-	 * Obtenemos el valor de un campo de la denuncia.
-	 * @param string $field Nombre del campo a obtener.
-	 * @return mixed
-	 */
-	public function get($field)
-	{
-		if ($this->data === NULL)
-		{
-			// Obtenemos los campos.
-			$rst = $this->db->query('SELECT * FROM post_denuncia WHERE id = ? LIMIT 1', $this->id)
-				->get_record(array(
-					'id' => Database_Query::FIELD_INT,
-					'post_id' => Database_Query::FIELD_INT,
-					'usuario_id' => Database_Query::FIELD_INT,
-					'motivo' => Database_Query::FIELD_INT,
-					'fecha' => Database_Query::FIELD_DATETIME,
-					'estado' => Database_Query::FIELD_INT,
-				));
-
-			if (is_array($rst))
-			{
-				$this->data = $rst;
-			}
-		}
-
-		return isset($this->data[$field]) ? $this->data[$field] : NULL;
-	}
-
-	/**
-	 * Obtenemos una propiedad de la denuncia.
-	 * @param string $field Nombre del campo.
-	 * @return mixed
-	 */
-	public function __get($field)
-	{
-		return $this->get($field);
+		$this->primary_key['id'] = $id;
 	}
 
 	/**

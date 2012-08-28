@@ -29,21 +29,33 @@
  * @package    Marifa/Base
  * @subpackage Model
  */
-class Base_Model_Post_Comentario extends Model {
+class Base_Model_Post_Comentario extends Model_Dataset {
 
 	//TODO: Agregar estados.
 
 	/**
-	 * ID del comentario
-	 * @var int
+	 * Nombre de la tabla para el dataset
+	 * @var string
 	 */
-	protected $id;
+	protected $table = 'post_comentario';
 
 	/**
-	 * Información del comentario.
+	 * Clave primaria.
 	 * @var array
 	 */
-	protected $data;
+	protected $primary_key = array('id' => NULL);
+
+	/**
+	 * Listado de campos y sus tipos.
+	 */
+	protected $fields = array(
+		'id' => Database_Query::FIELD_INT,
+		'post_id' => Database_Query::FIELD_INT,
+		'usuario_id' => Database_Query::FIELD_INT,
+		'fecha' => Database_Query::FIELD_DATETIME,
+		'contenido' => Database_Query::FIELD_STRING,
+		'estado' => Database_Query::FIELD_INT,
+	);
 
 	/**
 	 * Cargamos un comentario.
@@ -53,45 +65,7 @@ class Base_Model_Post_Comentario extends Model {
 	{
 		parent::__construct();
 
-		$this->id = $id;
-	}
-
-	/**
-	 * Obtenemos el valor de un campo del comentario.
-	 * @param string $field Nombre del campo a obtener.
-	 * @return mixed
-	 */
-	public function get($field)
-	{
-		if ($this->data === NULL)
-		{
-			// Obtenemos los campos.
-			$rst = $this->db->query('SELECT * FROM post_comentario WHERE id = ? LIMIT 1', $this->id)
-				->get_record(array(
-					'id' => Database_Query::FIELD_INT,
-					'post_id' => Database_Query::FIELD_INT,
-					'usuario_id' => Database_Query::FIELD_INT,
-					'fecha' => Database_Query::FIELD_DATETIME,
-					'estado' => Database_Query::FIELD_INT,
-				));
-
-			if (is_array($rst))
-			{
-				$this->data = $rst;
-			}
-		}
-
-		return isset($this->data[$field]) ? $this->data[$field] : NULL;
-	}
-
-	/**
-	 * Obtenemos una propiedad del comentario.
-	 * @param string $field Nombre del campo.
-	 * @return mixed
-	 */
-	public function __get($field)
-	{
-		return $this->get($field);
+		$this->primary_key['id'] = $id;
 	}
 
 	/**
@@ -118,7 +92,7 @@ class Base_Model_Post_Comentario extends Model {
 	 */
 	public function actualizar_estado($estado)
 	{
-		return $this->db->update('UPDATE post_comentario SET estado = ? WHERE id = ?', array($estado, $this->id));
+		return $this->db->update('UPDATE post_comentario SET estado = ? WHERE id = ?', array($estado, $this->primary_key['id']));
 	}
 
 	/**
@@ -128,7 +102,7 @@ class Base_Model_Post_Comentario extends Model {
 	 */
 	public function ya_voto($usuario_id)
 	{
-		$this->db->query('SELECT usuario_id FROM post_comentario_voto WHERE usuario_id = ? AND post_comentario_id = ? LIMIT 1', array($usuario_id, $this->id))->num_rows() > 0;
+		$this->db->query('SELECT usuario_id FROM post_comentario_voto WHERE usuario_id = ? AND post_comentario_id = ? LIMIT 1', array($usuario_id, $this->primary_key['id']))->num_rows() > 0;
 	}
 
 	/**
@@ -140,7 +114,7 @@ class Base_Model_Post_Comentario extends Model {
 	{
 		$cantidad = $positivo ? 1 : -1;
 
-		$this->db->insert('INSERT INTO post_comentario_voto (post_comentario_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->id, $usuario_id, $cantidad));
+		$this->db->insert('INSERT INTO post_comentario_voto (post_comentario_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->primary_key['id'], $usuario_id, $cantidad));
 	}
 
 	/**
@@ -149,6 +123,6 @@ class Base_Model_Post_Comentario extends Model {
 	 */
 	public function cantidad_votos()
 	{
-		return $this->db->query('SELECT SUM(cantidad) FROM post_comentario_voto WHERE post_comentario_id = ?', $this->id)->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT SUM(cantidad) FROM post_comentario_voto WHERE post_comentario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 }

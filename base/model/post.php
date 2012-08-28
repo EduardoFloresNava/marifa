@@ -29,19 +29,37 @@
  * @package    Marifa/Base
  * @subpackage Model
  */
-class Base_Model_Post extends Model {
+class Base_Model_Post extends Model_Dataset {
 
 	/**
-	 * ID del post.
-	 * @var int
+	 * Nombre de la tabla para el dataset
+	 * @var string
 	 */
-	protected $id;
+	protected $table = 'post';
 
 	/**
-	 * Datos del post.
+	 * Clave primaria.
 	 * @var array
 	 */
-	protected $data;
+	protected $primary_key = array('id' => NULL);
+
+	/**
+	 * Listado de campos y sus tipos.
+	 */
+	protected $fields = array(
+		'id' => Database_Query::FIELD_INT,
+		'usuario_id' => Database_Query::FIELD_INT,
+		'post_categoria_id' => Database_Query::FIELD_INT,
+		'comunidad_id' => Database_Query::FIELD_INT,
+		'titulo' => Database_Query::FIELD_STRING,
+		'contenido' => Database_Query::FIELD_STRING,
+		'fecha' => Database_Query::FIELD_DATETIME,
+		'vistas' => Database_Query::FIELD_INT,
+		'privado' => Database_Query::FIELD_BOOL,
+		'sponsored' => Database_Query::FIELD_BOOL,
+		'sticky' => Database_Query::FIELD_BOOL,
+		'estado' => Database_Query::FIELD_INT
+	);
 
 	/**
 	 * Constructor del post.
@@ -51,52 +69,7 @@ class Base_Model_Post extends Model {
 	{
 		parent::__construct();
 
-		$this->id = $id;
-	}
-
-	/**
-	 * Obtenemos el valor de un campo del post.
-	 * @param string $field Nombre del campo a obtener.
-	 * @return mixed
-	 */
-	public function get($field)
-	{
-		if ($this->data === NULL)
-		{
-			// Obtenemos los campos.
-			$rst = $this->db->query('SELECT * FROM post WHERE id = ? LIMIT 1', $this->id)
-				->get_record(Database_Query::FETCH_ASSOC,
-					array(
-						'id' => Database_Query::FIELD_INT,
-						'usuario_id' => Database_Query::FIELD_INT,
-						'post_categoria_id' => Database_Query::FIELD_INT,
-						'comunidad_id' => Database_Query::FIELD_INT,
-						'fecha' => Database_Query::FIELD_DATETIME,
-						'vistas' => Database_Query::FIELD_INT,
-						'privado' => Database_Query::FIELD_BOOL,
-						'sponsored' => Database_Query::FIELD_BOOL,
-						'sticky' => Database_Query::FIELD_BOOL,
-						'estado' => Database_Query::FIELD_INT
-					)
-				);
-
-			if (is_array($rst))
-			{
-				$this->data = $rst;
-			}
-		}
-
-		return isset($this->data[$field]) ? $this->data[$field] : NULL;
-	}
-
-	/**
-	 * Obtenemos una propiedad del post.
-	 * @param string $field Nombre del campo.
-	 * @return mixed
-	 */
-	public function __get($field)
-	{
-		return $this->get($field);
+		$this->primary_key['id'] = $id;
 	}
 
 	/**
@@ -113,7 +86,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function agregar_vista()
 	{
-		$this->db->update('UPDATE post SET vistas = vistas + 1 WHERE id = ?', $this->id);
+		$this->db->update('UPDATE post SET vistas = vistas + 1 WHERE id = ?', $this->primary_key['id']);
 	}
 
 	/**
@@ -122,7 +95,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function compartir($usuario_id)
 	{
-		$this->db->insert('INSERT INTO post_compartido (post_id, usuario_id) VALUES (?, ?)', array($this->id, $usuario_id));
+		$this->db->insert('INSERT INTO post_compartido (post_id, usuario_id) VALUES (?, ?)', array($this->primary_key['id'], $usuario_id));
 	}
 
 	/**
@@ -132,7 +105,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function fue_compartido($usuario_id)
 	{
-		return $this->db->query('SELECT post_id FROM post_compartido WHERE post_id = ? AND usuario_id = ? LIMIT 1', array($this->id, $usuario_id))->num_rows() > 0;
+		return $this->db->query('SELECT post_id FROM post_compartido WHERE post_id = ? AND usuario_id = ? LIMIT 1', array($this->primary_key['id'], $usuario_id))->num_rows() > 0;
 	}
 
 	/**
@@ -141,7 +114,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function veces_compartido()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post_compartido WHERE post_id = ?', $this->id)->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT COUNT(*) FROM post_compartido WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -150,7 +123,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function seguir($usuario_id)
 	{
-		$this->db->insert('INSERT INTO post_seguidor (post_id, usuario_id) VALUES (?, ?)', array($this->id, $usuario_id));
+		$this->db->insert('INSERT INTO post_seguidor (post_id, usuario_id) VALUES (?, ?)', array($this->primary_key['id'], $usuario_id));
 	}
 
 	/**
@@ -160,7 +133,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function es_seguidor($usuario_id)
 	{
-		return $this->db->query('SELECT post_id FROM post_seguidor WHERE post_id = ? AND usuario_id = ? LIMIT 1', array($this->id, $usuario_id))->num_rows() > 0;
+		return $this->db->query('SELECT post_id FROM post_seguidor WHERE post_id = ? AND usuario_id = ? LIMIT 1', array($this->primary_key['id'], $usuario_id))->num_rows() > 0;
 	}
 
 	/**
@@ -169,7 +142,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function cantidad_seguidores()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post_seguidor WHERE post_id = ?', $this->id)->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT COUNT(*) FROM post_seguidor WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -178,7 +151,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function favorito($usuario_id)
 	{
-		$this->db->insert('INSERT INTO post_favorito (post_id, usuario_id) VALUES (?, ?)', array($this->id, $usuario_id));
+		$this->db->insert('INSERT INTO post_favorito (post_id, usuario_id) VALUES (?, ?)', array($this->primary_key['id'], $usuario_id));
 	}
 
 	/**
@@ -188,7 +161,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function es_favorito($usuario_id)
 	{
-		return $this->db->query('SELECT post_id FROM post_favorito WHERE post_id = ? AND usuario_id = ? LIMIT 1', array($this->id, $usuario_id))->num_rows() > 0;
+		return $this->db->query('SELECT post_id FROM post_favorito WHERE post_id = ? AND usuario_id = ? LIMIT 1', array($this->primary_key['id'], $usuario_id))->num_rows() > 0;
 	}
 
 	/**
@@ -197,7 +170,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function cantidad_favoritos()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post_favorito WHERE post_id = ?', $this->id)->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT COUNT(*) FROM post_favorito WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -206,7 +179,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function etiquetas()
 	{
-		return $this->db->query('SELECT nombre FROM post_tag WHERE post_id = ?', $this->id)->get_pairs();
+		return $this->db->query('SELECT nombre FROM post_tag WHERE post_id = ?', $this->primary_key['id'])->get_pairs();
 	}
 
 	/**
@@ -224,7 +197,7 @@ class Base_Model_Post extends Model {
 		// Agregamos las etiquetas.
 		foreach($etiqueta as $e)
 		{
-			$this->db->insert('INSERT INTO post_tag (post_id, nombre) VALUES (?, ?)', array($this->id, $e));
+			$this->db->insert('INSERT INTO post_tag (post_id, nombre) VALUES (?, ?)', array($this->primary_key['id'], $e));
 		}
 	}
 
@@ -237,11 +210,11 @@ class Base_Model_Post extends Model {
 		if (is_array($etiqueta))
 		{
 			//FIXME: Depurar SQL y reemplazo enh los motores soportados.
-			$this->db->delete('DELETE FROM post_tag WHERE post_id = ? AND nombre IN (?)', array($this->id, $etiqueta));
+			$this->db->delete('DELETE FROM post_tag WHERE post_id = ? AND nombre IN (?)', array($this->primary_key['id'], $etiqueta));
 		}
 		else
 		{
-			$this->db->delete('DELETE FROM post_tag WHERE post_id = ? AND nombre = ?', array($this->id, $etiqueta));
+			$this->db->delete('DELETE FROM post_tag WHERE post_id = ? AND nombre = ?', array($this->primary_key['id'], $etiqueta));
 		}
 	}
 
@@ -251,7 +224,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function puntos()
 	{
-		return $this->db->query('SELECT SUM(puntos) FROM post_punto WHERE post_id = ?', $this->id)->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT SUM(puntos) FROM post_punto WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -261,7 +234,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function dio_puntos($usuario_id)
 	{
-		return $this->db->query('SELECT usuario_id FROM post_punto WHERE post_id = ? AND usuario_id = ?', array($this->id, $usuario_id))->num_rows() > 0;
+		return $this->db->query('SELECT usuario_id FROM post_punto WHERE post_id = ? AND usuario_id = ?', array($this->primary_key['id'], $usuario_id))->num_rows() > 0;
 	}
 
 	/**
@@ -271,7 +244,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function dar_puntos($usuario_id, $cantidad)
 	{
-		$this->db->insert('INSERT INTO post_punto (post_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->id, $usuario_id, $cantidad));
+		$this->db->insert('INSERT INTO post_punto (post_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->primary_key['id'], $usuario_id, $cantidad));
 	}
 
 	/**
@@ -310,7 +283,7 @@ class Base_Model_Post extends Model {
 		//TODO: UTILIZAR ESTADO DE LOS COMENTARIOS.
 		//TODO: IMPLEMENTAR UTILIZACION DIRECTA DE MODELOS EN LOS RESULTADOS.
 		//TODO: DIFERENCIAR 1 estado de un arreglo. Mejora rendimiento SQL.
-		$rst = $this->db->query('SELECT id FROM post_comentario WHERE post_id = ? AND estado IN (?)', array($this->id, $estado));
+		$rst = $this->db->query('SELECT id FROM post_comentario WHERE post_id = ? AND estado IN (?)', array($this->primary_key['id'], $estado));
 		$rst->set_cast_type(array('id' => Database_Query::FIELD_INT));
 
 		$lst = array();
@@ -330,7 +303,7 @@ class Base_Model_Post extends Model {
 	{
 		$this->db->insert('INSERT INTO post_comentario (post_id, usuario_id, fecha, contenido, estado) VALUES (?, ?, ?, ?, ?)',
 			array(
-				$this->id,
+				$this->primary_key['id'],
 				$usuario_id,
 				date('Y/m/d H:i:s'),
 				$contenido,
@@ -348,7 +321,7 @@ class Base_Model_Post extends Model {
 	{
 		$this->db->insert('INSERT INTO post_denuncia (post_id, usuario_id, motivo, comentario, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)',
 			array(
-				$this->id,
+				$this->primary_key['id'],
 				$usuario_id,
 				$motivo,
 				$comentario,
@@ -365,7 +338,7 @@ class Base_Model_Post extends Model {
 	public function existe_denuncia($usuario_id)
 	{
 		//TODO: Ver estado necesario para no poder enviar.
-		return $this->db->query('SELECT id FROM post_denuncia WHERE post_id = ? AND usuario_id = ?', array($this->id, $usuario_id))->num_rows() > 0;
+		return $this->db->query('SELECT id FROM post_denuncia WHERE post_id = ? AND usuario_id = ?', array($this->primary_key['id'], $usuario_id))->num_rows() > 0;
 	}
 
 	/**
@@ -374,7 +347,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function actualizar_estado($estado)
 	{
-		$this->db->update('UPDATE post SET estado = ? WHERE id = ?', array($estado, $this->id));
+		$this->db->update('UPDATE post SET estado = ? WHERE id = ?', array($estado, $this->primary_key['id']));
 	}
 
 	/**
@@ -383,7 +356,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function setear_sticky($sticky)
 	{
-		$this->db->update('UPDATE post SET sticky = ? WHERE id = ?', array($sticky, $this->id));
+		$this->db->update('UPDATE post SET sticky = ? WHERE id = ?', array($sticky, $this->primary_key['id']));
 	}
 
 	/**
@@ -392,7 +365,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function setear_sponsored($sponsored)
 	{
-		$this->db->update('UPDATE post SET sponsored = ? WHERE id = ?', array($sponsored, $this->id));
+		$this->db->update('UPDATE post SET sponsored = ? WHERE id = ?', array($sponsored, $this->primary_key['id']));
 	}
 
 	/**
@@ -401,7 +374,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function setear_privado($privado)
 	{
-		$this->db->update('UPDATE post SET privado = ? WHERE id = ?', array($privado, $this->id));
+		$this->db->update('UPDATE post SET privado = ? WHERE id = ?', array($privado, $this->primary_key['id']));
 	}
 
 	/**
@@ -410,7 +383,7 @@ class Base_Model_Post extends Model {
 	 */
 	public function modificar_contenido($contenido)
 	{
-		$this->db->update('UPDATE post SET contenido = ? WHERE id = ?', array($contenido, $this->id));
+		$this->db->update('UPDATE post SET contenido = ? WHERE id = ?', array($contenido, $this->primary_key['id']));
 	}
 
 	/**
@@ -420,7 +393,7 @@ class Base_Model_Post extends Model {
 	public function cambiar_categoria($categoria_id)
 	{
 		//FIXME: Verificar si es lógico cambiar de categoria al post.
-		$this->db->update('UPDATE post SET post_catergoria_id = ? WHERE id = ?', array($categoria_id, $this->id));
+		$this->db->update('UPDATE post SET post_catergoria_id = ? WHERE id = ?', array($categoria_id, $this->primary_key['id']));
 	}
 
 }
