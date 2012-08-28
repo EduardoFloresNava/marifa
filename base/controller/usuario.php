@@ -272,4 +272,17 @@ class Base_Controller_Usuario extends Controller {
 		$this->template->assign('contenido', $view_usuario->parse());
 		unset($view_usuario);
 	}
+
+	/**
+	 * Cerramos la sessión del usuario.
+	 */
+	public function action_logout()
+	{
+		if (Session::is_set('usuario_id'))
+		{
+			Session::un_set('usuario_id');
+			Session::un_set();
+		}
+		Request::redirect('/');
+	}
 }
