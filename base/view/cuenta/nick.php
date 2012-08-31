@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="span12">
+	<div class="span10">
 		<form class="form-horizontal" action="" method="POST">
 			<fieldset>
 				<legend>Cambiar Nick</legend>
@@ -49,5 +49,8 @@
 				</div>
 			</fieldset>
 		</form>
+	</div>
+	<div class="span2">
+		<img class="thumbnail" src="{function="Utils::get_gravatar($email, 150, 150)"}" />
 	</div>
 </div>

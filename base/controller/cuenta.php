@@ -237,7 +237,7 @@ class Base_Controller_Cuenta extends Controller {
 						if (Utils::prop($model_usuario->perfil(), 'origen', NULL) != $pais.'.'.$estado)
 						{
 							$model_usuario->perfil()->origen = $pais.'.'.$estado;
-							$view->assign('origen', $paise.'.'.$estado);
+							$view->assign('origen', $pais.'.'.$estado);
 							$view->assign('estado_origen', 1);
 							$view->assign('success', 'Datos actualizados correctamente.');
 						}
@@ -267,6 +267,8 @@ class Base_Controller_Cuenta extends Controller {
 
 		// Cargamos el usuario.
 		$model_usuario = new Model_Usuario((int) Session::get('usuario_id'));
+
+		$view->assign('email', $model_usuario->email);
 
 		// Seteamos los datos actuales.
 		$view->assign('error', array());
@@ -716,6 +718,10 @@ class Base_Controller_Cuenta extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('cuenta/password');
 
+		// Cargamos el usuario actual.
+		$model_usuario = new Model_Usuario((int) Session::get('usuario_id'));
+		$view->assign('email', $model_usuario->email);
+
 		// Valores por defecto.
 		$view->assign('error', NULL);
 		$view->assign('error_actual', NULL);
@@ -767,9 +773,6 @@ class Base_Controller_Cuenta extends Controller {
 				}
 				else
 				{
-					// Cargamos el usuario actual.
-					$model_usuario = new Model_Usuario((int) Session::get('usuario_id'));
-
 					// Verificamos la contraseña.
 					$enc = new Phpass(8, FALSE);
 
@@ -806,6 +809,8 @@ class Base_Controller_Cuenta extends Controller {
 
 		// Cargamos el usuario actual.
 		$model_usuario = new Model_Usuario((int) Session::get('usuario_id'));
+
+		$view->assign('email', $model_usuario->email);
 
 		// Valores por defecto.
 		$view->assign('nick_actual', $model_usuario->nick);

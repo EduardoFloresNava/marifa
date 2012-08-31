@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="span12">
+	<div class="span10">
 		<form method="POST" class="form-horizontal" action="">
 
 			{loop="$error"}
@@ -112,5 +112,8 @@
 				<button type="submit" class="btn btn-primary">Actualizar</button>
 			</div>
 		</form>
+	</div>
+	<div class="span2">
+		<img class="thumbnail" src="{function="Utils::get_gravatar($email, 150, 150)"}" />
 	</div>
 </div>
