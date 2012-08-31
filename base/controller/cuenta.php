@@ -78,14 +78,6 @@ class Base_Controller_Cuenta extends Controller {
 		$view->assign('estado_email', 0);
 		$view->assign('origen', Utils::prop($model_usuario->perfil(), 'origen'));
 		$view->assign('estado_origen', 0);
-
-
-		$view->assign('pais', Utils::prop($model_usuario->perfil(), 'pais'));
-		$view->assign('estado_pais', 0);
-		$view->assign('estado', Utils::prop($model_usuario->perfil(), 'estado'));
-		$view->assign('estado_estado', 0);
-
-
 		$view->assign('sexo', Utils::prop($model_usuario->perfil(), 'sexo'));
 		$view->assign('estado_sexo', 0);
 		$view->assign('nacimiento', explode('-', Utils::prop($model_usuario->perfil(), 'nacimiento')));
@@ -129,6 +121,7 @@ class Base_Controller_Cuenta extends Controller {
 							//TODO: pedir validación de la misma.
 							$model_usuario->cambiar_email($m);
 
+							$view->assign('email', $m);
 							$view->assign('success', 'Datos actualizados correctamente.');
 							$view->assign('estado_email', 1);
 						}
@@ -156,6 +149,7 @@ class Base_Controller_Cuenta extends Controller {
 						// Actualizo sexo.
 						$model_usuario->perfil()->sexo = trim($_POST['sexo']);
 
+						$view->assign('sexo', trim($_POST['sexo']));
 						$view->assign('success', 'Datos actualizados correctamente.');
 						$view->assign('estado_sexo', 1);
 					}
@@ -211,6 +205,7 @@ class Base_Controller_Cuenta extends Controller {
 						if (Utils::prop($model_usuario->perfil(), 'nacimiento', NULL) != $fecha)
 						{
 							$model_usuario->perfil()->nacimiento = $fecha;
+							$view->assign('nacimiento', explode('-', $fecha));
 							$view->assign('estado_nacimiento', 1);
 							$view->assign('success', 'Datos actualizados correctamente.');
 						}
@@ -242,6 +237,7 @@ class Base_Controller_Cuenta extends Controller {
 						if (Utils::prop($model_usuario->perfil(), 'origen', NULL) != $pais.'.'.$estado)
 						{
 							$model_usuario->perfil()->origen = $pais.'.'.$estado;
+							$view->assign('origen', $paise.'.'.$estado);
 							$view->assign('estado_origen', 1);
 							$view->assign('success', 'Datos actualizados correctamente.');
 						}
@@ -268,6 +264,425 @@ class Base_Controller_Cuenta extends Controller {
 
 		// Cargamos la vista.
 		$view = View::factory('cuenta/perfil');
+
+		// Cargamos el usuario.
+		$model_usuario = new Model_Usuario((int) Session::get('usuario_id'));
+
+		// Seteamos los datos actuales.
+		$view->assign('error', array());
+
+		$fields = array(
+			'nombre',
+			'mensaje_personal',
+			'web',
+			'facebook',
+			'twitter',
+
+			'hacer_amigos',
+			'conocer_gente_intereses',
+			'conocer_gente_negocios',
+			'encontrar_pareja',
+			'de_todo',
+
+			'estado_civil',
+			'hijos',
+			'vivo_con',
+
+			'mi_altura',
+			'mi_peso',
+
+			'color_pelo',
+			'color_ojos',
+			'complexion',
+			'mi_dieta',
+			'fumo',
+			'tomo_alcohol',
+
+			'tatuajes',
+			'piercings',
+
+			'estudios',
+
+			'idioma_espanol',
+			'idioma_ingles',
+			'idioma_portugues',
+			'idioma_frances',
+			'idioma_italiano',
+			'idioma_aleman',
+			'idioma_otro',
+
+			'empresa',
+			'profesion',
+
+			'sector',
+
+			'nivel_ingresos',
+
+			'intereses_personales',
+			'habilidades_profesionales',
+			'mis_intereses',
+			'hobbies',
+			'series_tv_favoritas',
+			'musica_favorita',
+			'deportes_y_equipos_favoritos',
+			'libros_favoritos',
+			'peliculas_favoritas',
+			'comida_favorita',
+			'mis_heroes',
+		);
+
+		foreach($fields as $value)
+		{
+			$view->assign($value, Utils::prop($model_usuario->perfil(), $value));
+			$view->assign('estado_'.$value, 0);
+		}
+
+		if (Request::method() == 'POST')
+		{
+			$errors = array();
+
+			// Verificamos el nombre.
+			if (isset($_POST['nombre']) && ! empty($_POST['nombre']))
+			{
+				$view->assign('nombre', trim($_POST['nombre']));
+				// Verificamos el formato.
+				//TODO: Caracteres extra.
+				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/', $_POST['nombre']))
+				{
+					$errors[] = 'El nombre seleccionado no es correcto.';
+					$view->assign('estado_nombre', -1);
+				}
+				else
+				{
+					// Verifico no sea el actual.
+					if (trim($_POST['nombre']) != Utils::prop($model_usuario->perfil(), 'nombre', NULL))
+					{
+						// Actualizo nombre.
+						$model_usuario->perfil()->nombre = trim($_POST['nombre']);
+
+						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('estado_nombre', 1);
+					}
+				}
+			}
+
+			// Verificamos el mensaje personal.
+			if (isset($_POST['mensaje_personal']) && ! empty($_POST['mensaje_personal']))
+			{
+				$view->assign('mensaje_personal', trim($_POST['mensaje_personal']));
+				// Verificamos el formato.
+				//TODO: Caracteres extra.
+				if ( ! preg_match('/^[a-zA-Z0-9\.,:\'"\s]{6,400}$/', $_POST['mensaje_personal']))
+				{
+					$errors[] = 'El mensaje personal seleccionado no es correcto.';
+					$view->assign('estado_mensaje_personal', -1);
+				}
+				else
+				{
+					// Verifico no sea el actual.
+					if (trim($_POST['mensaje_personal']) != Utils::prop($model_usuario->perfil(), 'mensaje_personal', NULL))
+					{
+						// Actualizo nombre.
+						$model_usuario->perfil()->mensaje_personal = trim($_POST['mensaje_personal']);
+
+						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('estado_mensaje_personal', 1);
+					}
+				}
+			}
+
+			// Verificamos la web.
+			if (isset($_POST['web']) && ! empty($_POST['web']))
+			{
+				$view->assign('web', trim($_POST['web']));
+				// Verificamos el formato.
+				if ( ! preg_match("/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i", $_POST['web']))
+				{
+					$errors[] = 'El sitio personal seleccionado no es correcto.';
+					$view->assign('estado_web', -1);
+				}
+				else
+				{
+					// Verifico no sea el actual.
+					if (trim($_POST['web']) != Utils::prop($model_usuario->perfil(), 'web', NULL))
+					{
+						// Actualizo nombre.
+						$model_usuario->perfil()->web = trim($_POST['web']);
+
+						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('estado_web', 1);
+					}
+				}
+			}
+
+			// Verificamos la URL de facebook.
+			if (isset($_POST['facebook']) && ! empty($_POST['facebook']))
+			{
+				$view->assign('facebook', trim($_POST['facebook']));
+				// Verificamos el formato.
+				if ( ! preg_match('/^[a-z\d.]{5,}$/i', $_POST['facebook']))
+				{
+					$errors[] = 'La URL de facebook no es correcta.';
+					$view->assign('estado_facebook', -1);
+				}
+				else
+				{
+					// Verifico no sea el actual.
+					if (trim($_POST['facebook']) != Utils::prop($model_usuario->perfil(), 'facebook', NULL))
+					{
+						// Actualizo nombre.
+						$model_usuario->perfil()->facebook = trim($_POST['facebook']);
+
+						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('estado_facebook', 1);
+					}
+				}
+			}
+
+			// Verificamos la URL de facebook.
+			if (isset($_POST['twitter']) && ! empty($_POST['twitter']))
+			{
+				$view->assign('twitter', trim($_POST['twitter']));
+				// Verificamos el formato.
+				if ( ! preg_match('/^[a-z\d.]{5,}$/i', $_POST['twitter']))
+				{
+					$errors[] = 'La URL de twitter no es correcta.';
+					$view->assign('estado_twitter', -1);
+				}
+				else
+				{
+					// Verifico no sea el actual.
+					if (trim($_POST['twitter']) != Utils::prop($model_usuario->perfil(), 'twitter', NULL))
+					{
+						// Actualizo nombre.
+						$model_usuario->perfil()->twitter = trim($_POST['twitter']);
+
+						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('estado_twitter', 1);
+					}
+				}
+			}
+
+			// Validacion de checkboxes
+			$me_gustaria_listado = array(
+				'hacer_amigos',
+				'conocer_gente_intereses',
+				'conocer_gente_negocios',
+				'encontrar_pareja',
+				'de_todo',
+				'tatuajes',
+				'piercings',
+			);
+			foreach($me_gustaria_listado as $key)
+			{
+				$checked = isset($_POST[$key]);
+
+				if (Utils::prop($model_usuario->perfil(), $key, NULL) != $checked)
+				{
+					// Actualizo nombre.
+					$model_usuario->perfil()->$key = $checked;
+
+					$view->assign('success', 'Datos actualizados correctamente.');
+					$view->assign($key, $checked);
+					$view->assign('estado_'.$key, 1);
+				}
+			}
+			unset($me_gustaria_listado);
+
+			// Altura.
+			if (isset($_POST['mi_altura']) && ! empty($_POST['mi_altura']))
+			{
+				$altura = (int) $_POST['mi_altura'];
+				$view->assign('mi_altura', $altura);
+				// Verificamos el formato.
+				if ($altura <= 0 || $altura > 500)
+				{
+					$errors[] = 'La altura ingresada no es correcta.';
+					$view->assign('estado_mi_altura', -1);
+				}
+				else
+				{
+					// Verifico no sea el actual.
+					if ($altura != Utils::prop($model_usuario->perfil(), 'mi_altura', NULL))
+					{
+						// Actualizo nombre.
+						$model_usuario->perfil()->mi_altura = $altura;
+
+						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('estado_mi_altura', 1);
+					}
+				}
+			}
+
+			// Peso.
+			if (isset($_POST['mi_peso']) && ! empty($_POST['mi_peso']))
+			{
+				$peso = (float) $_POST['mi_peso'];
+				$view->assign('mi_peso', $peso);
+				// Verificamos el formato.
+				if ($peso <= 0 || $peso > 1000)
+				{
+					$errors[] = 'El peso ingresado no es correcto.';
+					$view->assign('estado_mi_peso', -1);
+				}
+				else
+				{
+					// Verifico no sea el actual.
+					if ($peso != Utils::prop($model_usuario->perfil(), 'mi_peso', NULL))
+					{
+						// Actualizo nombre.
+						$model_usuario->perfil()->mi_peso = $peso;
+
+						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('estado_mi_peso', 1);
+					}
+				}
+			}
+
+			// Validaciones de select's.
+			$select_list = array(
+				'estado_civil' => array('El estado civil es incorrecto.', array('soltero', 'novio', 'casado', 'divorciado', 'viudo', 'en_algo')),
+				'hijos' => array('La información sobre sus hijos es incorrecta.', array('no_tengo', 'algun_dia', 'no_son_lo_mio', 'tengo_vivo_con_ellos', 'tengo_no_vivo_con_ellos')),
+				'vivo_con' => array('La información sobre quien vive es incorrecta.', array('solo', 'mis_padres', 'mi_pareja', 'con_amigos', 'otro')),
+				'color_pelo' => array('El color de pelo provisto es incorrecto.', array('negro', 'castano_oscuro', 'castano_claro', 'rubio', 'pelirrojo', 'gris', 'verde', 'naranja', 'morado', 'azul', 'canoso', 'tenido', 'rapado', 'calvo')),
+				'color_ojos' => array('El color de ojos provisto es incorrecto.', array('negros', 'marrones', 'celestes', 'verdes', 'grises')),
+				'complexion' => array('La complexión provista es incorrecta.', array('delgado', 'atletico', 'normal', 'kilos_mas', 'corpulento')),
+				'mi_dieta' => array('La dieta provista es incompleta.', array('vegetariana', 'lacto_vegetariana', 'organica', 'de_todo', 'comida_basura')),
+				'fumo' => array('La información sobre cuanto fuma es incorrecta.', array('no', 'casualmente', 'socialmente', 'regularmente', 'mucho')),
+				'tomo_alcohol' => array('La información sobre su consumo de alcohol es incorrecta.', array('no', 'casualmente', 'socialmente', 'regularmente', 'mucho')),
+
+				'estudios' => array('La información sobre sus estudios en incorrecta.', array('sin_estudios', 'primario_en_curso', 'primario_completo', 'secundario_en_curso', 'secundario_completo', 'terciario_en_curso', 'terciario_completo', 'universitario_en_curso', 'universitario_completo', 'post_grado_en_curso', 'post_grado_completo')),
+				'idioma_espanol' => array('La información sobre el idioma español es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_ingles' => array('La información sobre el idioma inglés es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_portugues' => array('La información sobre el idioma portugués es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_frances' => array('La información sobre el idioma francés es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_italiano' => array('La información sobre el idioma italiano es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_aleman' => array('La información sobre el idioma alemán es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_otro' => array('La información sobre el idioma otro es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+
+				'sector' => array('El sector seleccionado es incorrecto.', array('sin_respuesta', 'abastecimiento', 'administracion', 'apoderado_aduanal', 'asesoria_en_comercio_exterior', 'asesoria_legal_internacional', 'asistente_de_trafico', 'auditoria', 'calidad', 'call_center', 'capacitacion_comercio_exterior', 'comercial', 'comercio_exterior', 'compras', 'compras_internacionalesimportacion', 'comunicacion_social', 'comunicaciones_externas', 'comunicaciones_internas', 'consultoria', 'consultorias_comercio_exterior', 'contabilidad', 'control_de_gestion', 'creatividad', 'diseno', 'distribucion', 'ecommerce', 'educacion', 'finanzas', 'finanzas_internacionales', 'gerencia_direccion_general', 'impuestos', 'ingenieria', 'internet', 'investigacion_y_desarrollo', 'jovenes_profesionales', 'legal', 'logistica', 'mantenimiento', 'marketing', 'medio_ambiente', 'mercadotecnia_internacional', 'multimedia', 'otra', 'pasantias', 'periodismo', 'planeamiento', 'produccion', 'produccion_e_ingenieria', 'recursos_humanos', 'relaciones_institucionales_publicas', 'salud', 'seguridad_industrial', 'servicios', 'soporte_tecnico', 'tecnologia', 'tecnologias_de_la_informacion', 'telecomunicaciones', 'telemarketing', 'traduccion', 'transporte', 'ventas', 'ventas_internacionalesexportacion')),
+
+				'nivel_ingresos' => array('El nivel de ingresos seleccionado no es correcto.', array('sin_ingresos', 'bajos', 'intermedios', 'altos')),
+			);
+			foreach($select_list as $key => $datos)
+			{
+				if (isset($_POST[$key]) && ! empty($_POST[$key]))
+				{
+					$view->assign($key, trim($_POST[$key]));
+					// Verificamos el formato.
+					if ( ! in_array(trim($_POST[$key]), $datos[1]))
+					{
+						$errors[] = $datos[0];
+						$view->assign('estado_'.$key, -1);
+					}
+					else
+					{
+						// Verifico no sea el actual.
+						if (trim($_POST[$key]) != Utils::prop($model_usuario->perfil(), $key, NULL))
+						{
+							// Actualizo nombre.
+							$model_usuario->perfil()->$key = trim($_POST[$key]);
+
+							$view->assign('success', 'Datos actualizados correctamente.');
+							$view->assign('estado_'.$key, 1);
+						}
+					}
+				}
+			}
+
+			// Verificamos la profesión.
+			if (isset($_POST['profesion']) && ! empty($_POST['profesion']))
+			{
+				$view->assign('profesion', trim($_POST['profesion']));
+				// Verificamos el formato.
+				//TODO: Caracteres extra.
+				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/', $_POST['profesion']))
+				{
+					$errors[] = 'La profesión seleccionada no es correcta.';
+					$view->assign('estado_profesion', -1);
+				}
+				else
+				{
+					// Verifico no sea el actual.
+					if (trim($_POST['profesion']) != Utils::prop($model_usuario->perfil(), 'profesion', NULL))
+					{
+						// Actualizo nombre.
+						$model_usuario->perfil()->profesion = trim($_POST['profesion']);
+
+						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('estado_profesion', 1);
+					}
+				}
+			}
+
+			// Verificamos la empresa.
+			if (isset($_POST['empresa']) && ! empty($_POST['empresa']))
+			{
+				$view->assign('empresa', trim($_POST['empresa']));
+				// Verificamos el formato.
+				//TODO: Caracteres extra.
+				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/', $_POST['empresa']))
+				{
+					$errors[] = 'La empresa seleccionada no es correcta.';
+					$view->assign('estado_empresa', -1);
+				}
+				else
+				{
+					// Verifico no sea el actual.
+					if (trim($_POST['empresa']) != Utils::prop($model_usuario->perfil(), 'empresa', NULL))
+					{
+						// Actualizo nombre.
+						$model_usuario->perfil()->empresa = trim($_POST['empresa']);
+
+						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('estado_empresa', 1);
+					}
+				}
+			}
+
+			// Descripciones de gustos y demás de textareas.
+			$textareas = array(
+				'intereses_personales' => 'Los intereses personales son incorrectos.',
+				'habilidades_profesionales' => 'Las habilidades profesionales son incorrectas.',
+				'mis_intereses' => 'Los intereses son incorrectos.',
+				'hobbies' => 'Los hobbies son incorrectos.',
+				'series_tv_favoritas' => 'Las series de TV favoritas son incorrectas.',
+				'musica_favorita' => 'La música favorita es incorrecta.',
+				'deportes_y_equipos_favoritos' => 'Los deportes y equipos favoritos son incorrectos.',
+				'libros_favoritos' => 'Los libros favoritos son incorrectos.',
+				'peliculas_favoritas' => 'Las peliculas favoritas son incorrectas.',
+				'comida_favorita' => 'La comida favorita es incorrecta.',
+				'mis_heroes' => 'Los heroes son incorrectos.'
+			);
+			foreach ($textareas as $key => $value)
+			{
+				if (isset($_POST[$key]) && ! empty($_POST[$key]))
+				{
+					$view->assign($key, trim($_POST[$key]));
+					// Verificamos el formato.
+					if ( ! preg_match('/^[a-z0-9\.,:\'"\s]{6,400}$/i', $_POST[$key]))
+					{
+						$errors[] = $value;
+						$view->assign('estado_'.$key, -1);
+					}
+					else
+					{
+						// Verifico no sea el actual.
+						if (trim($_POST[$key]) != Utils::prop($model_usuario->perfil(), $key, NULL))
+						{
+							// Actualizo nombre.
+							$model_usuario->perfil()->$key = trim($_POST[$key]);
+
+							$view->assign('success', 'Datos actualizados correctamente.');
+							$view->assign('estado_'.$key, 1);
+						}
+					}
+				}
+			}
+			unset($textareas);
+
+			$view->assign('error', $errors);
+		}
 
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu_login());
@@ -397,6 +812,8 @@ class Base_Controller_Cuenta extends Controller {
 		$view->assign('nick', '');
 		$view->assign('error_nick', NULL);
 		$view->assign('error_password', NULL);
+
+		//TODO: Listado de nicks para elegir uno anterior.
 
 		if (Request::method() == 'POST')
 		{

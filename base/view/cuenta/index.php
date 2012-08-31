@@ -108,8 +108,9 @@
 				</div>
 			</div>
 
-			<button type="submit" class="btn btn-primary">Actualizar</button>
-
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary">Actualizar</button>
+			</div>
 		</form>
 	</div>
 </div>

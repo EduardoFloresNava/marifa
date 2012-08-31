@@ -32,8 +32,9 @@
 					</div>
 				</div>
 
-				<button type="submit" class="btn btn-primary">Cambiar</button>
-
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">Cambiar</button>
+				</div>
 			</fieldset>
 		</form>
 	</div>

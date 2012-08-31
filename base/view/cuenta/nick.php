@@ -44,8 +44,9 @@
 					</div>
 				</div>
 
-				<button type="submit" class="btn btn-primary">Actualizar nick</button>
-
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">Actualizar nick</button>
+				</div>
 			</fieldset>
 		</form>
 	</div>
