@@ -131,9 +131,13 @@ abstract class Base_Database_Query implements Iterator {
 		{
 			return (float) $field;
 		}
-		elseif ($cast === self::FIELD_DATE || $cast === self::FIELD_DATETIME || $cast === self::FIELD_STRING)
+		elseif ($cast === self::FIELD_STRING)
 		{
 			return (string) $field;
+		}
+		elseif ($cast === self::FIELD_DATE || $cast === self::FIELD_DATETIME)
+		{
+			return new DateTime($field);
 		}
 		elseif ($cast === self::FIELD_BOOL)
 		{
