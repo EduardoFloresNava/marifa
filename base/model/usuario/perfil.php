@@ -1,6 +1,6 @@
 <?php defined('APP_BASE') or die('No direct access allowed.');
 /**
- * configuracion.php is part of Marifa.
+ * perfil.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,13 @@
  */
 
 /**
- * Modelo de configuraciones del usuario.
+ * Modelo de los campos que tiene el perfil.
  *
  * @since      0.1
  * @package    Marifa/Base
  * @subpackage Model
  */
-class Base_Model_Usuario_Configuracion extends Model {
+class Base_Model_Usuario_Perfil extends Model {
 
 	/**
 	 * ID del usuario dueño de las propiedades.
@@ -54,7 +54,7 @@ class Base_Model_Usuario_Configuracion extends Model {
 	 */
 	public function lista()
 	{
-		return $this->db->query('SELECT clave, valor FROM usuario_configuracion WHERE usuario_id = ?', $this->usuario_id)->get_pairs();
+		return $this->db->query('SELECT campo, valor FROM usuario_perfil WHERE usuario_id = ?', $this->usuario_id)->get_pairs();
 	}
 
 	/**
@@ -66,7 +66,7 @@ class Base_Model_Usuario_Configuracion extends Model {
 	{
 		if (isset($this->$name))
 		{
-			return $this->db->query('SELECT valor FROM usuario_configuracion WHERE clave = ? AND usuario_id = ?', array($name, $this->usuario_id))->get_var();
+			return $this->db->query('SELECT valor FROM usuario_perfil WHERE campo = ? AND usuario_id = ?', array($name, $this->usuario_id))->get_var();
 		}
 		else
 		{
@@ -84,11 +84,11 @@ class Base_Model_Usuario_Configuracion extends Model {
 	{
 		if (isset($this->$name))
 		{
-			$this->db->update('UPDATE usuario_configuracion SET valor = ? WHERE clave = ? AND usuario_id = ?', array($value, $name, $this->usuario_id));
+			$this->db->update('UPDATE usuario_perfil SET valor = ? WHERE campo = ? AND usuario_id = ?', array($value, $name, $this->usuario_id));
 		}
 		else
 		{
-			$this->db->insert('INSERT INTO usuario_configuracion (usuario_id, clave, valor) VALUES (?, ?, ?)', array($this->usuario_id, $name, $value));
+			$this->db->insert('INSERT INTO usuario_perfil (usuario_id, campo, valor) VALUES (?, ?, ?)', array($this->usuario_id, $name, $value));
 		}
 	}
 
@@ -99,7 +99,7 @@ class Base_Model_Usuario_Configuracion extends Model {
 	 */
 	public function __isset($name)
 	{
-		return $this->db->query('SELECT clave FROM usuario_configuracion WHERE clave = ? AND usuario_id = ? LIMIT 1', array($name, $this->usuario_id))->num_rows() > 0;
+		return $this->db->query('SELECT campo FROM usuario_perfil WHERE campo = ? AND usuario_id = ? LIMIT 1', array($name, $this->usuario_id))->num_rows() > 0;
 	}
 
 	/**
@@ -108,6 +108,7 @@ class Base_Model_Usuario_Configuracion extends Model {
 	 */
 	public function __unset($name)
 	{
-		$this->db->delete('DELETE FROM usuario_configuracion WHERE clave = ? AND usuario_id', array($name, $this->usuario_id));
+		$this->db->delete('DELETE FROM usuario_perfil WHERE campo = ? AND usuario_id', array($name, $this->usuario_id));
 	}
+
 }

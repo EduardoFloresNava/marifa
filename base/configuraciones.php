@@ -38,6 +38,46 @@ class Base_Configuraciones {
 	protected static $data = array();
 
 	/**
+	 * Carga un archivo de configuraciones y lo devuelve.
+	 * @param string $file Nombre del archivo a cargar.
+	 * @param boolean $prepend_name Si agregamos previamente un arreglo con el nombre
+	 * del archivo.
+	 * @return array
+	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
+	 */
+	public static function obtener($file, $prepend_name = FALSE)
+	{
+		// Comprobamos que exista el archivo.
+		if ( ! file_exists($file))
+		{
+			throw new Exception("No existe el archivo de configuraciones '$file'.", 1);
+		}
+
+		// Comprobamos si hay que agregar el nombre del archivo a las llamadas.
+		if ($prepend_name)
+		{
+			// Obtenemos el nombre de archivo, sin extension.
+			$fi = pathinfo($file);
+
+			if ( ! isset($fi['filename']))
+			{
+				$fi['filename'] = substr($fi['basename'], 0, (-1) * strlen($fi['extension']) - 1);
+			}
+
+			$name = $fi['filename'];
+			unset($fi);
+
+			// Cargamos las configuraciones.
+			return array($name => include ($file));
+		}
+		else
+		{
+			// Cargamos las configuraciones
+			return include ($file);
+		}
+	}
+
+	/**
 	 * Carga un archivo de configuraciones y lo agrega a la lista de configuraciones
 	 * global.
 	 * @param string $file Nombre del archivo a cargar.
