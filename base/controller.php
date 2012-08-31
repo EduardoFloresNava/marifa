@@ -100,4 +100,21 @@ class Base_Controller {
 			'tops' => array('link' => '/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
 		);
 	}
+
+	/**
+	 * Menu principal para el estado conectado.
+	 * @param string $activo Clave activa.
+	 * @return array
+	 */
+	protected function base_menu_login($activo = NULL)
+	{
+		//TODO: administración y moderación.
+		return array(
+			'inicio' => array('link' => '/mi', 'caption' => 'Inicio', 'active' => $activo == 'inicio'),
+			'posts' => array('link' => '/', 'caption' => 'Posts', 'active' => $activo == 'posts'),
+			'comunidades' => array('link' => '/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
+			'fotos' => array('link' => '/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
+			'tops' => array('link' => '/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
+		);
+	}
 }

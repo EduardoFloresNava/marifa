@@ -183,6 +183,10 @@ class Base_Model_Usuario extends Model_Dataset {
 		$this->data['nick'] = $nick;
 	}
 
+	/**
+	 * Cambiamos la contraseña de acceso del usuario.
+	 * @param string $password Nueva contraseña.
+	 */
 	public function actualizar_contrasena($password)
 	{
 		// Generamos el hash.
@@ -198,6 +202,15 @@ class Base_Model_Usuario extends Model_Dataset {
 		{
 			$this->data['password'] = $enc_password;
 		}
+	}
+
+	/**
+	 * Actualizamos el email de la cuenta del usuario.
+	 * @param string $email Nueva casilla de correo del usuario.
+	 */
+	public function cambiar_email($email)
+	{
+		$this->db->update('UPDATE usuario SET email = ? WHERE id = ?', array($email, $this->primary_key['id']));
 	}
 
 	/**
@@ -285,5 +298,14 @@ class Base_Model_Usuario extends Model_Dataset {
 	public function configuracion()
 	{
 		return new Model_Usuario_Configuracion($this->primary_key['id']);
+	}
+
+	/**
+	 * Obtenemos el modelo del perfil del usuario actual.
+	 * @return Model_Usuario_Perfil
+	 */
+	public function perfil()
+	{
+		return new Model_Usuario_Perfil($this->primary_key['id']);
 	}
 }
