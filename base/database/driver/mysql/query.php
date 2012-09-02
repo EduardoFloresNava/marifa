@@ -107,6 +107,12 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 				// Obtenemos el arreglo.
 				$resultado = mysql_fetch_array($this->query, MYSQL_NUM);
 
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_array($resultado))
+				{
+					return $resultado;
+				}
+
 				// Verificamos si hay que hcaer cast. Sirve a fines de rendimiento.
 				if ($cast !== NULL)
 				{
@@ -126,6 +132,12 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 				// Obtenemos el objeto.
 				$object = mysql_fetch_object($this->query);
 
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_object($object))
+				{
+					return $object;
+				}
+
 				// Verificamos si hay que hcaer cast. Sirve a fines de rendimiento.
 				if ($cast !== NULL)
 				{
@@ -144,6 +156,12 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 			default:
 				// Obtenemos el arreglo.
 				$resultado = mysql_fetch_array($this->query, MYSQL_ASSOC);
+
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_array($resultado))
+				{
+					return $resultado;
+				}
 
 				// Verificamos si hay que hcaer cast. Sirve a fines de rendimiento.
 				if ($cast !== NULL)

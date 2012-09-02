@@ -94,6 +94,12 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 				// Obtenemos el arreglo.
 				$resultado = $this->query->fetch_array(MYSQLI_NUM);
 
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_array($resultado))
+				{
+					return $resultado;
+				}
+
 				// Expandimos listado de cast.
 				$cast = $this->expand_cast_list($cast, count($resultado));
 
@@ -109,6 +115,12 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 				// Obtenemos el objeto.
 				$object = $this->query->fetch_object();
 
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_object($object))
+				{
+					return $object;
+				}
+
 				// Expandimos la lista de cast.
 				$cast = $this->expand_cast_list($cast, array_keys(get_object_vars($object)));
 
@@ -123,6 +135,12 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 			default:
 				// Obtenemos el arreglo.
 				$resultado = $this->query->fetch_array(MYSQLI_ASSOC);
+
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_array($resultado))
+				{
+					return $resultado;
+				}
 
 				// Expandimos la lista de cast.
 				$cast = $this->expand_cast_list($cast, array_keys($resultado));
