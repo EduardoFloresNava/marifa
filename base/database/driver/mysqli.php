@@ -117,6 +117,8 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
+		Profiler_Profiler::getInstance()->logQuery($query);
+
 		// Verificamos sea arreglo.
 		if ( ! is_array($params) && $params !== NULL)
 		{
@@ -187,6 +189,8 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		{
 			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
+
+		Profiler_Profiler::getInstance()->logQuery($query);
 
 		// Verificamos sea arreglo.
 		if ( ! is_array($params) && $params !== NULL)

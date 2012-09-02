@@ -141,6 +141,7 @@ Dispatcher::dispatch();
 
 if (DEBUG)
 {
+	Profiler_Profiler::getInstance()->display();
 	// Mostramos rendimiento.
-	echo(Update_Utils::formatBytes(memory_get_peak_usage(), 1).' - '.round(microtime(true) - $timestart, 1).'s');
+	//echo(Update_Utils::formatBytes(memory_get_peak_usage(), 1).' - '.round(microtime(true) - $timestart, 1).'s');
 }

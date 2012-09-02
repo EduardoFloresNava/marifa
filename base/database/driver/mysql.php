@@ -162,6 +162,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
+			Profiler_Profiler::getInstance()->logQuery($query);
 			return new Database_Driver_Mysql_Query($query, $this->conn);
 		}
 		else
@@ -196,6 +197,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
+			Profiler_Profiler::getInstance()->logQuery($query);
 			$query = mysql_query($query, $this->conn);
 
 			if ($query === TRUE)
@@ -236,6 +238,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
+			Profiler_Profiler::getInstance()->logQuery($query);
 			$query = mysql_query($query, $this->conn);
 
 			if ($query === TRUE)
@@ -273,6 +276,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
+			Profiler_Profiler::getInstance()->logQuery($query);
 			$query = mysql_query($query, $this->conn);
 
 			if ($query === TRUE)

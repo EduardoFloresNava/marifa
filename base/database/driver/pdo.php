@@ -109,6 +109,8 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		// Cargamos la consulta.
 		$sth = $this->make_query($query, $params);
 
+		Profiler_Profiler::getInstance()->logQuery($sth->queryString);
+
 		// Ejecutamos la consulta.
 		if ($sth->execute())
 		{
@@ -347,6 +349,8 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	{
 		// Cargamos la consulta.
 		$sth = $this->make_query($query, $params);
+
+		Profiler_Profiler::getInstance()->logQuery($sth->queryString);
 
 		// Realizamos la consulta
 		$rst = $sth->execute();
