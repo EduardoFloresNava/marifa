@@ -164,7 +164,16 @@ abstract class Base_Database_Query implements Iterator {
 	{
 		$dt = $this->get_record(self::FETCH_NUM);
 
-		return is_array($dt) && isset($dt[0]) ? $this->cast_field($dt[0], $cast) : NULL;
+		$v = is_array($dt) && isset($dt[0]) ? $dt[0] : NULL;
+
+		if ($cast !== NULL)
+		{
+			return $this->cast_field($v, $cast);
+		}
+		else
+		{
+			return $v;
+		}
 	}
 
 	/**
