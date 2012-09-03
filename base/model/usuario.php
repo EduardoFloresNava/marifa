@@ -308,4 +308,44 @@ class Base_Model_Usuario extends Model_Dataset {
 	{
 		return new Model_Usuario_Perfil($this->primary_key['id']);
 	}
+
+	/**
+	 * Cantidad de seguidores que tiene el usuario.
+	 * @return int
+	 */
+	public function cantidad_seguidores()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Cantidad de posts que realizó el usuario.
+	 * @return int
+	 */
+	public function cantidad_posts()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Cantidad de comentarios que realizó el usuario.
+	 * @return int
+	 */
+	public function cantidad_comentarios()
+	{
+		$c = 0;
+		$c += $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		$c += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		$c += $this->db->query('SELECT COUNT(*) FROM comunidad_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return $c;
+	}
+
+	/**
+	 * Cantidad de puntos que tiene el usuario.
+	 * @return int
+	 */
+	public function cantidad_puntos()
+	{
+		return (int) $this->db->query('SELECT SUM(cantidad) FROM post_punto, post WHERE post.id = post_punto.post_id AND post.usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+	}
 }
