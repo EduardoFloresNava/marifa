@@ -87,6 +87,7 @@ class Base_Model_Post extends Model_Dataset {
 	public function agregar_vista()
 	{
 		$this->db->update('UPDATE post SET vistas = vistas + 1 WHERE id = ?', $this->primary_key['id']);
+		$this->update_value('vistas', $this->get('vistas') + 1);
 	}
 
 	/**
@@ -224,7 +225,7 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function puntos()
 	{
-		return $this->db->query('SELECT SUM(puntos) FROM post_punto WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT SUM(cantidad) FROM post_punto WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -245,6 +246,7 @@ class Base_Model_Post extends Model_Dataset {
 	public function dar_puntos($usuario_id, $cantidad)
 	{
 		$this->db->insert('INSERT INTO post_punto (post_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->primary_key['id'], $usuario_id, $cantidad));
+		$this->db->update('UPDATE usuario SET puntos_disponibles = puntos_disponibles - ? WHERE id = ?', array($cantidad, $usuario_id));
 	}
 
 	/**
@@ -284,12 +286,12 @@ class Base_Model_Post extends Model_Dataset {
 		//TODO: IMPLEMENTAR UTILIZACION DIRECTA DE MODELOS EN LOS RESULTADOS.
 		//TODO: DIFERENCIAR 1 estado de un arreglo. Mejora rendimiento SQL.
 		$rst = $this->db->query('SELECT id FROM post_comentario WHERE post_id = ? AND estado IN (?)', array($this->primary_key['id'], $estado));
-		$rst->set_cast_type(array('id' => Database_Query::FIELD_INT));
+		$rst->set_cast_type(Database_Query::FIELD_INT);
 
 		$lst = array();
 		foreach($rst as $v)
 		{
-			$lst[] = new Model_Post_Comentario($v['id']);
+			$lst[] = new Model_Post_Comentario($v[0]);
 		}
 		return $lst;
 	}
@@ -394,6 +396,40 @@ class Base_Model_Post extends Model_Dataset {
 	{
 		//FIXME: Verificar si es lógico cambiar de categoria al post.
 		$this->db->update('UPDATE post SET post_catergoria_id = ? WHERE id = ?', array($categoria_id, $this->primary_key['id']));
+	}
+
+	/**
+	 * Creamos un nuevo post.
+	 * @param int $usuario_id Usuario que crea el post.
+	 * @param string $titulo Título del post.
+	 * @param string $contenido Contenido del post.
+	 * @param int $categoria_id Categoria del post.
+	 * @param bool $privado Solo usuarios registrados.
+	 * @param bool $sponsored Post patrocinado.
+	 * @param bool $sticky Post fijo en la portada.
+	 * @param int $comunidad Comunidad donde se publica. NULL para general.
+	 * @return int
+	 */
+	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $comunidad = NULL)
+	{
+		list($id, ) = $this->db->insert(
+			'INSERT INTO post ( usuario_id, post_categoria_id, comunidad_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			array(
+				$usuario_id,
+				$categoria_id,
+				$comunidad,
+				$titulo,
+				$contenido,
+				date('Y/m/d H:i:s'),
+				0,
+				$privado,
+				$sponsored,
+				$sticky,
+				0 //TODO: Ver estado de los posts.
+			)
+		);
+
+		return $id;
 	}
 
 }
