@@ -57,6 +57,7 @@ class Base_Controller {
 		{
 			$this->template->assign('user_header', $this->make_user_header()->parse());
 		}
+		$this->template->assign('contenido', '');
 	}
 
 	/**

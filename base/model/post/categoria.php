@@ -183,4 +183,14 @@ class Base_Model_Post_Categoria extends Model_Dataset {
 	{
 		return $this->db->query('SELECT post_categoria_id FROM post WHERE post_categoria_id = ? LIMIT 1', $this->primary_key['id'])->num_rows() > 0;
 	}
+
+	/**
+	 * Listado de categorias disponibles.
+	 * @return array
+	 */
+	public function lista()
+	{
+		return $this->db->query('SELECT seo, nombre, imagen FROM post_categoria')
+			->get_records();
+	}
 }

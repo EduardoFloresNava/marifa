@@ -102,7 +102,7 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 	 */
 	public function ya_voto($usuario_id)
 	{
-		$this->db->query('SELECT usuario_id FROM post_comentario_voto WHERE usuario_id = ? AND post_comentario_id = ? LIMIT 1', array($usuario_id, $this->primary_key['id']))->num_rows() > 0;
+		return $this->db->query('SELECT usuario_id FROM post_comentario_voto WHERE usuario_id = ? AND post_comentario_id = ? LIMIT 1', array($usuario_id, $this->primary_key['id']))->num_rows() > 0;
 	}
 
 	/**

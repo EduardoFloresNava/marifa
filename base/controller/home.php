@@ -45,6 +45,20 @@ class Base_Controller_Home extends Controller {
 	}
 
 	/**
+	 * Submenu de la portada.
+	 * @param string $selected Elemento seleccionado.
+	 * @return array
+	 */
+	protected function submenu_login($selected = NULL)
+	{
+		return array(
+			'inicio' => array('link' => '/', 'caption' => 'Inicio', 'active' => $selected == 'inicio'),
+			'buscador' => array('link' => '/paquetes', 'caption' => 'Paquetes', 'active' => $selected == 'buscador'),
+			'nuevo' => array('link' => '/post/nuevo', 'caption' => 'Agregar Post', 'active' => $selected == 'nuevo'),
+	   );
+	}
+
+	/**
 	 * Portada del sitio.
 	 */
 	public function action_index()
@@ -59,6 +73,13 @@ class Base_Controller_Home extends Controller {
 			$this->template->assign('master_bar', parent::base_menu_logout('posts'));
 
 			$this->template->assign('top_bar', $this->submenu_logout('inicio'));
+		}
+		else
+		{
+			// Seteamos menu offline.
+			$this->template->assign('master_bar', parent::base_menu_login('posts'));
+
+			$this->template->assign('top_bar', $this->submenu_login('inicio'));
 		}
 
 		// Asignamos la vista a la plantilla base.

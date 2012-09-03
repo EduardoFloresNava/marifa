@@ -107,6 +107,14 @@ class Base_Model_Dataset extends Model {
 		return $this->get($field);
 	}
 
+	protected function update_value($field, $value)
+	{
+		if (isset($this->data) && isset($this->data[$field]))
+		{
+			$this->data[$field] = $value;
+		}
+	}
+
 	/**
 	 * Listado de campos en un listado asociativo.
 	 * @return array
