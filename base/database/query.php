@@ -203,10 +203,13 @@ abstract class Base_Database_Query implements Iterator {
 		}
 		else
 		{
-			// Lo expandimos hasta completar.
-			while(count($list) < $cant)
+			// Expandimos hasta completar.
+			for($i = 0; $i < $cant; $i++)
 			{
-				$list[] = NULL;
+				if ( ! isset($list[$i]))
+				{
+					$list[$i] = NULL;
+				}
 			}
 		}
 
