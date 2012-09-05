@@ -29,7 +29,7 @@
  * @package    Marifa/Base
  * @subpackage Model
  */
-class Base_Model_Foto extends Model {
+class Base_Model_Foto extends Model_Dataset {
 
 	/**
 	 * Nombre de la tabla para el dataset
@@ -98,7 +98,7 @@ class Base_Model_Foto extends Model {
 	 */
 	public function votos()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM foto_voto WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT SUM(cantidad) FROM foto_voto WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -114,10 +114,12 @@ class Base_Model_Foto extends Model {
 	/**
 	 * Agregamos el voto del usuario a la foto.
 	 * @param int $usuario_id ID del usuario que va a votar.
+	 * @param bool $positivo Si es un voto positivo o negativo.
 	 */
-	public function votar($usuario_id)
+	public function votar($usuario_id, $positivo = TRUE)
 	{
-		$this->db->insert('INSERT INTO foto_voto (foto_id, usuario_id) VALUES (?, ?)', array($this->primary_key['id'], $usuario_id));
+		$cantidad = $positivo ? 1 : -1;
+		$this->db->insert('INSERT INTO foto_voto (foto_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->primary_key['id'], $usuario_id, $cantidad));
 	}
 
 	/**
@@ -156,12 +158,12 @@ class Base_Model_Foto extends Model {
 	{
 		//TODO: estado de los comentarios de las fotos. Agregarlo a la base de datos.
 		$rst = $this->db->query('SELECT id FROM foto_comentario WHERE foto_id = ?', $this->primary_key['id']);
-		$rst->set_cast_type(array('id' => Database_Query::FIELD_INT));
+		$rst->set_cast_type(Database_Query::FIELD_INT);
 
 		$lst = array();
 		foreach($rst as $r)
 		{
-			$lst[] = new Model_Foto_Comentario($r['id']);
+			$lst[] = new Model_Foto_Comentario($r[0]);
 		}
 
 		return $lst;
@@ -169,10 +171,10 @@ class Base_Model_Foto extends Model {
 
 	/**
 	 * Comentamos en una foto.
-	 * @param string $comentario Comentario a insertar.
 	 * @param int $usuario_id ID del usuario que comenta la foto.
+	 * @param string $comentario Comentario a insertar.
 	 */
-	public function comentar($comentario, $usuario_id)
+	public function comentar($usuario_id, $comentario)
 	{
 		$this->db->insert('INSERT INTO foto_comentario (foto_id, usuario_id, comentario, fecha) VALUES (?, ?, ?, ?)', array($this->primary_key['id'], $usuario_id, $comentario, date('Y/m/d H:i:s')));
 	}
