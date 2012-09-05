@@ -81,7 +81,7 @@ class Base_Controller {
 	 */
 	public function __destruct()
 	{
-		if ( ! Request::is_ajax())
+		if (is_object($this->template) && ! Request::is_ajax())
 		{
 			$this->template->show();
 		}
