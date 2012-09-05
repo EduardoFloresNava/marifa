@@ -210,12 +210,10 @@ class Base_Controller_Post extends Controller {
 		{
 			Session::set('post_comentario_error', 'El comentario debe tener entre 20 y 400 caracteres.');
 
-			die(Dispatcher::call('/post/index/'.$post));
+			// Evitamos la salida de la vista actual.
+			$this->template = NULL;
 
-			// Cargamos el post.
-			$view = Dispatcher::call();
-			$view->assign('comentario_error', '');
-			$view->assign('comentario_content', $comentario);
+			Dispatcher::call('/post/index/'.$post, TRUE);
 		}
 		else
 		{
@@ -226,17 +224,8 @@ class Base_Controller_Post extends Controller {
 
 			Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
 
-			die(Dispatcher::call('/post/index/'.$post));
-
-			/**
-
-			// Cargamos el post.
-			$view = Dispatcher::call('/post/index/'.$post);
-			$view->assign('comentario_success', 'El comentario se ha realizado correctamente.');*/
+			Request::redirect('/post/index/'.$post);
 		}
-
-		// Mostramos la vista.
-		$this->template->assign('contenido', $view->parse());
 	}
 
 	public function action_favorito($post)
