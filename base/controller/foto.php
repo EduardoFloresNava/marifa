@@ -51,11 +51,6 @@ class Base_Controller_Foto extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('foto/ver');
 
-		if (Session::get('usuario_id') != $model_foto->as_object()->usuario_id)
-		{
-			$model_foto->agregar_visita();
-		}
-
 		// Mi id.
 		$view->assign('me', Session::get('usuario_id'));
 
@@ -82,6 +77,9 @@ class Base_Controller_Foto extends Controller {
 		}
 		else
 		{
+			// Computamos la visita.
+			$model_foto->agregar_visita();
+
 			$view->assign('es_favorito', $model_foto->es_favorito( (int)Session::get('usuario_id')));
 			$view->assign('ya_vote', $model_foto->ya_voto( (int)Session::get('usuario_id')));
 		}
@@ -101,6 +99,7 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('comentario_content', isset($_POST['comentario']) ? $_POST['comentario'] : NULL);
 		$view->assign('comentario_error', Session::get_flash('post_comentario_error'));
 		$view->assign('comentario_success', Session::get_flash('post_comentario_success'));
+		$view->assign('success', Session::get_flash('success'));
 
 
 		// Menu.
@@ -134,10 +133,38 @@ class Base_Controller_Foto extends Controller {
 			// Verificamos puntuación.
 			if ( ! $model_foto->ya_voto($usuario_id))
 			{
+				Session::set('success', 'El voto fue guardado correctamente.').
 				$model_foto->votar($usuario_id, $voto);
 			}
 		}
 		Request::redirect('/foto/index/'.$model_foto->foto_id);
+	}
+
+	public function action_favorito($foto)
+	{
+		// Convertimos el post a ID.
+		$foto = (int) $foto;
+
+		// Cargamos el post.
+		$model_foto = new Model_Foto($foto);
+
+		// Verificamos exista.
+		if ( ! is_array($model_foto->as_array()))
+		{
+			Request::redirect('/');
+		}
+
+		// Verifica autor.
+		if ($model_foto->usuario_id != Session::get('usuario_id'))
+		{
+			// Verificamos el voto.
+			if ( ! $model_foto->es_favorito((int) Session::get('usuario_id')))
+			{
+				Session::set('success', 'Foto agregada a favoritos correctamente.').
+				$model_foto->agregar_favorito((int) Session::get('usuario_id'));
+			}
+		}
+		Request::redirect('/foto/index/'.$foto);
 	}
 
 	public function action_comentar($foto)

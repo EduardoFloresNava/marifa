@@ -12,6 +12,10 @@
 		<p><strong>Comentarios:</strong> {$usuario.comentarios}</p>
 	</div>
 	<div class="span10">
+		{if="isset($success)"}
+		<div class="alert alert-success">
+			<strong>&iexcl;Felicidades!</strong> {$success}
+		</div>{/if}
 		<!--
 		<div class="row-fluid">
 			LISTADO DE FOTOS DEL USUARIO.
@@ -27,6 +31,14 @@
 				{if="!$ya_vote"}<a href="/foto/votar/{$foto.id}/1" class="btn btn-success"><i class="icon-white icon-thumbs-up"></i></a>{/if}
 				<span href="#" class="btn{if="$foto.votos != 0"} {if="$foto.votos < 0"}btn-danger{else}btn-success{/if}{/if}">Votos: {$foto.votos}</span>
 				{if="!$ya_vote"}<a href="/foto/votar/{$foto.id}/-1" class="btn btn-danger"><i class="icon-white icon-thumbs-down"></i></a>{/if}
+			</div>
+			<div class="btn-group">
+				{if="!$es_favorito"}<a href="/foto/favorito/{$foto.id}" class="btn btn-success"><i class="icon-white icon-star"></i> Agregar a favoritos</a>{/if}
+				<span href="#" class="btn">Favoritos: {$foto.favoritos}</span>
+			</div>
+			<div class="btn-group">
+				<span href="#" class="btn">Visitas: {$foto.visitas}</span>
+				{if="$foto.visitas > 0"}<span href="#" class="btn">&Uacute;ltima visita: {function="$foto.ultima_visita->format('d/m/Y H:i:s')"}</span>{/if}
 			</div>
 			{if="$me != NULL && $foto.usuario_id != $me"}
 			<div class="btn-group pull-right">
