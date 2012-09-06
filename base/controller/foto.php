@@ -31,6 +31,22 @@
  */
 class Base_Controller_Foto extends Controller {
 
+	/**
+	 * Listado de pestañas de la foto.
+	 * @param int $action Pestaña seleccionada.
+	 */
+	protected function submenu($activo, $login = FALSE)
+	{
+		$lst = array();
+		$lst['index'] = array('link' => '/foto/', 'caption' => 'Fotos', 'active' => $activo == 'index');
+		if($login)
+		{
+			$lst['nuevo'] = array('link' => '/foto/nueva', 'caption' => 'Agregar Foto', 'active' => $activo == 'nuevo');
+			$lst['mis_fotos'] = array('link' => '/foto/mis_fotos', 'caption' => 'Mis Fotos', 'active' => $activo == 'mis_fotos');
+		}
+		return $lst;
+	}
+
 	public function action_index($foto)
 	{
 		// Convertimos la foto a ID.
@@ -104,7 +120,7 @@ class Base_Controller_Foto extends Controller {
 
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu_login('foto'));
-		//$this->template->assign('top_bar', $this->submenu('index'));
+		$this->template->assign('top_bar', $this->submenu('index', Session::is_set('usuario_id')));
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());
@@ -235,7 +251,7 @@ class Base_Controller_Foto extends Controller {
 
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu_login('foto'));
-		//$this->template->assign('top_bar', $this->submenu('nuevo'));
+		$this->template->assign('top_bar', $this->submenu('nuevo', TRUE));
 
 		if (Request::method() == 'POST')
 		{
