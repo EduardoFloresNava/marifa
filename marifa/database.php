@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * database.php is part of Marifa.
  *
@@ -17,12 +17,13 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Alias de Base_Database
  *
- * @package    Marifa/Marifa
+ * @package    Marifa\Marifa
  */
 class Database extends Base_Database {}

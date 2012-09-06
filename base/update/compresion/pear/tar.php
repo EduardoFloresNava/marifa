@@ -32,34 +32,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @category   File_Formats
- * @package    Marifa/Base
- * @subpackage Update/Compresion/Pear
+ * @package    Marifa\Base
+ * @subpackage Update\Compresion\Pear
  * @author     Vincent Blavet <vincent@phpconcept.net>
  * @copyright  1997-2010 The Authors
  * @license    http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @version    CVS: $Id$
  * @link       http://pear.php.net/package/Archive_Tar
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Constante para formato TAR.
- * @package    Marifa/Base
- * @subpackage Update/Compresion/Pear
+ * @package    Marifa\Base
+ * @subpackage Update\Compresion\Pear
  */
 define('ARCHIVE_TAR_ATT_SEPARATOR', 90001);
 
 /**
  * Constante para formato TAR.
- * @package    Marifa/Base
- * @subpackage Update/Compresion/Pear
+ * @package    Marifa\Base
+ * @subpackage Update\Compresion\Pear
  */
 define('ARCHIVE_TAR_END_BLOCK', pack("a512", ''));
 
 /**
  * Creates a (compressed) Tar archive
  *
- * @package    Marifa/Base
- * @subpackage Update/Compresion/Pear
+ * @package    Marifa\Base
+ * @subpackage Update\Compresion\Pear
  * @author     Vincent Blavet <vincent@phpconcept.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @version    $Revision$

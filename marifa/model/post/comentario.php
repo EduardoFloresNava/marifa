@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * comentario.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Model/Post
+ * @package		Marifa\Base
+ * @subpackage  Model
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Alias de Base_Model_Post_Comentario
  *
- * @package    Marifa/Marifa
- * @subpackage Model/Post
+ * @package    Marifa\Marifa
+ * @subpackage Model
  */
 class Model_Post_Comentario extends Base_Model_Post_Comentario {}

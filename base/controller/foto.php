@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * home.php is part of Marifa.
  *
@@ -18,22 +18,24 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Controller
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Controlador de la portada.
  *
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Controller
  */
 class Base_Controller_Foto extends Controller {
 
 	/**
 	 * Listado de pestañas de la foto.
-	 * @param int $action Pestaña seleccionada.
+	 * @param int $activo Pestaña seleccionada.
+	 * @param bool $login Menu para usuario logueado o no.
 	 */
 	protected function submenu($activo, $login = FALSE)
 	{
@@ -47,6 +49,10 @@ class Base_Controller_Foto extends Controller {
 		return $lst;
 	}
 
+	/**
+	 * Mostramos una foto.
+	 * @param int $foto ID de la foto.
+	 */
 	public function action_index($foto)
 	{
 		// Convertimos la foto a ID.
@@ -126,6 +132,11 @@ class Base_Controller_Foto extends Controller {
 		$this->template->assign('contenido', $view->parse());
 	}
 
+	/**
+	 * Votamos una foto.
+	 * @param int $foto ID de la foto.
+	 * @param int $voto 1 para positivo, -1 para negativo.
+	 */
 	public function action_votar($foto, $voto)
 	{
 		// Obtenemos el voto.
@@ -156,6 +167,10 @@ class Base_Controller_Foto extends Controller {
 		Request::redirect('/foto/index/'.$model_foto->foto_id);
 	}
 
+	/**
+	 * Agregamos la foto como favorita.
+	 * @param int $foto ID de la foto.
+	 */
 	public function action_favorito($foto)
 	{
 		// Convertimos el post a ID.
@@ -183,6 +198,10 @@ class Base_Controller_Foto extends Controller {
 		Request::redirect('/foto/index/'.$foto);
 	}
 
+	/**
+	 * Agregamos un comentario en la foto.
+	 * @param int $foto ID de la foto donde comentar.
+	 */
 	public function action_comentar($foto)
 	{
 		// Verificamos el método de envio.
@@ -229,6 +248,9 @@ class Base_Controller_Foto extends Controller {
 		}
 	}
 
+	/**
+	 * Agregamos una nueva foto.
+	 */
 	public function action_nueva()
 	{
 		// Verificamos usuario conectado.

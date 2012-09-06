@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * compresion.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Update
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Alias de Base_Update_Compresion
  *
- * @package    Marifa/Marifa
+ * @package    Marifa\Marifa
  * @subpackage Update
  */
 class Update_Compresion extends Base_Update_Compresion {}

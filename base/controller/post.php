@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * post.php is part of Marifa.
  *
@@ -18,22 +18,23 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Controller
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Controlador de la portada.
  *
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Controller
  */
 class Base_Controller_Post extends Controller {
 
 	/**
 	 * Listado de pestañas del perfil.
-	 * @param int $action Pestaña seleccionada.
+	 * @param int $activo Pestaña seleccionada.
 	 */
 	protected function submenu($activo)
 	{
@@ -43,6 +44,10 @@ class Base_Controller_Post extends Controller {
 		);
 	}
 
+	/**
+	 * Información de un post.
+	 * @param int $post ID del post a visualizar.
+	 */
 	public function action_index($post)
 	{
 		// Convertimos el post a ID.
@@ -182,6 +187,10 @@ class Base_Controller_Post extends Controller {
 		}*/
 	}
 
+	/**
+	 * Agregamos un comentario a un post.
+	 * @param int $post ID del post donde colocar el comentario.
+	 */
 	public function action_comentar($post)
 	{
 		// Verificamos el método de envio.
@@ -228,6 +237,10 @@ class Base_Controller_Post extends Controller {
 		}
 	}
 
+	/**
+	 * Agregamos el post como favorito.
+	 * @param int $post ID del post que se toma como favorito.
+	 */
 	public function action_favorito($post)
 	{
 		// Convertimos el post a ID.
@@ -254,6 +267,11 @@ class Base_Controller_Post extends Controller {
 		Request::redirect('/post/index/'.$post);
 	}
 
+	/**
+	 * Votar un comentario.
+	 * @param int $comentario ID del comentario a votar.
+	 * @param int $voto 1 para positivo, -1 para negativo.
+	 */
 	public function action_voto_comentario($comentario, $voto)
 	{
 		// Obtenemos el voto.
@@ -283,6 +301,10 @@ class Base_Controller_Post extends Controller {
 		Request::redirect('/post/index/'.$model_comentario->post_id);
 	}
 
+	/**
+	 * Nos convertimos en seguidores de un post.
+	 * @param int $post ID del post a seguir.
+	 */
 	public function action_seguir_post($post)
 	{
 		// Convertimos el post a ID.
@@ -312,6 +334,11 @@ class Base_Controller_Post extends Controller {
 		Request::redirect('/post/index/'.$post);
 	}
 
+	/**
+	 * Damos puntos a un post.
+	 * @param int $post ID del post al cual darle puntos.
+	 * @param int $cantidad Cantidad de puntos. Número entre 1 y 10.
+	 */
 	public function action_puntuar($post, $cantidad)
 	{
 		// Convertimos el post a ID.
@@ -354,6 +381,9 @@ class Base_Controller_Post extends Controller {
 		Request::redirect('/post/index/'.$post);
 	}
 
+	/**
+	 * Creamos un nuevo post.
+	 */
 	public function action_nuevo()
 	{
 		// Verificamos usuario logueado.

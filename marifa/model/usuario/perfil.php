@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * perfil.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Model/Usuario
+ * @package		Marifa\Base
+ * @subpackage  Model
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Alias de Base_Model_Usuario_Perfil
  *
- * @package    Marifa/Marifa
- * @subpackage Model/Usuario
+ * @package    Marifa\Marifa
+ * @subpackage Model
  */
 class Model_Usuario_Perfil extends Base_Model_Usuario_Perfil {}

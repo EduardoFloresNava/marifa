@@ -7,5 +7,6 @@ config/database.php
 config/update.php
 router.php
 /plugin/
+/phpdoc/
 EXAMPLE
 TODO

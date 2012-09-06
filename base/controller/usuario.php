@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * usuario.php is part of Marifa.
  *
@@ -18,20 +18,24 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Controller
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Controlador para el manejo de usuarios.
  * Permite el inicio de sessión, registro, validar cuentas y recuperar contraseña.
  *
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Controller
  */
 class Base_Controller_Usuario extends Controller {
 
+	/**
+	 * Verificamos que barra utilizar.
+	 */
 	public function __construct()
 	{
 		parent::__construct();

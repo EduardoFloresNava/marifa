@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * usuario.php is part of Marifa.
  *
@@ -18,16 +18,17 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Model
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Modelo del usuario.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Model
  */
 class Base_Model_Usuario extends Model_Dataset {

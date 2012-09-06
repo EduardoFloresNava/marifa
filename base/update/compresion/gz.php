@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * client.php is part of Marifa.
  *
@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.3
+ * @since		Versión 0.1
  * @filesource
- * @subpackage  Update/Compresion
- * @package		Marifa/Base
+ * @subpackage  Update\Compresion
+ * @package		Marifa\Base
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Compresor Tar.GZ basado en Pear_Archive
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @since      Versión 0.3
- * @subpackage Update/Compresion
- * @package    Marifa/Base
+ * @since      Versión 0.1
+ * @subpackage Update\Compresion
+ * @package    Marifa\Base
  */
 class Base_Update_Compresion_Gz extends Update_Compresion_Compresion {
 
