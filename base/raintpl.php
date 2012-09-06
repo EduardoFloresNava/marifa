@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase alias de Lib_RainTPL. Es para mantener compatibilidad con RainTPL.
@@ -60,7 +60,7 @@ class Base_RainTPL extends Lib_RainTPL {
 	 * @return mixed Template parseado o el resultado.
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function draw($tpl_name = NULL, $return_string = false)
+	public function draw($tpl_name = NULL, $return_string = FALSE)
 	{
 		// Verificamos que tengamos una vista.
 		if ($tpl_name === NULL && $this->view === NULL)
@@ -95,7 +95,7 @@ class Base_RainTPL extends Lib_RainTPL {
 			// Es la vista del nucleo.
 
 			// Generamos el nombre de la vista.
-			$template_name = 'base'.DS.VIEW_PATH.DS.$tpl_name;
+			$template_name = VIEW_PATH.DS.$tpl_name;
 		}
 
 		// Enviamos a rainTPL para que lo procese.

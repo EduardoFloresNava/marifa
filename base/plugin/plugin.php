@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * plugin.php is part of Marifa.
  *
@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Plugin
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Representación de un plugin. Tiene todos los métodos para su manejo.
@@ -101,7 +101,7 @@ class Base_Plugin_Plugin {
 		// Obtenemos el listado de propiedades del objeto.
 		$props = $rc->getDefaultProperties();
 
-		foreach(array('nombre', 'descripcion', 'version', 'autor') as $item)
+		foreach (array('nombre', 'descripcion', 'version', 'autor') as $item)
 		{
 			if ( ! isset($props[$item]) || $props[$item] === NULL)
 			{
@@ -162,7 +162,7 @@ class Base_Plugin_Plugin {
 		$files = scandir($path);
 
 		// Vamos uniendo recursivamente.
-		foreach($files as $file)
+		foreach ($files as $file)
 		{
 			// Omitimos
 			if ($file == '.' || $file == '..')
@@ -181,7 +181,7 @@ class Base_Plugin_Plugin {
 			else
 			{
 				// Armamos el nombre de la clase.
-				$class_name = preg_replace('/([\/])\s*(\w)/e', "strtoupper('\\1\\2')", ucfirst(strtolower($base)));
+				$class_name = preg_replace('/([\/])\s*(\w)/e', 'strtoupper(\'$1$2\')', ucfirst(strtolower($base)));
 				$class_name = str_replace('.'.FILE_EXT, '', $class_name);
 				$class_name = str_replace('/', '_', $class_name);
 
@@ -240,7 +240,7 @@ class Base_Plugin_Plugin {
 		$files = scandir($path);
 
 		// Vamos uniendo recursivamente.
-		foreach($files as $file)
+		foreach ($files as $file)
 		{
 			// Omitimos
 			if ($file == '.' || $file == '..')
@@ -256,7 +256,7 @@ class Base_Plugin_Plugin {
 			else
 			{
 				// Armamos el nombre de la clase.
-				$class_name = preg_replace('/([\/])\s*(\w)/e', "strtoupper('\\1\\2')", ucfirst(strtolower($base)));
+				$class_name = preg_replace('/([\/])\s*(\w)/e', 'strtoupper(\'$1$2\')', ucfirst(strtolower($base)));
 				$class_name = str_replace('.'.FILE_EXT, '', $class_name);
 				$class_name = str_replace('/', '_', $class_name);
 
@@ -313,7 +313,7 @@ class Base_Plugin_Plugin {
 		$files = scandir($path);
 
 		// Vamos uniendo recursivamente.
-		foreach($files as $file)
+		foreach ($files as $file)
 		{
 			// Omitimos
 			if ($file == '.' || $file == '..')
@@ -329,7 +329,7 @@ class Base_Plugin_Plugin {
 			else
 			{
 				// Armamos el nombre de la clase.
-				$class_name = preg_replace('/([\/])\s*(\w)/e', "strtoupper('\\1\\2')", ucfirst(strtolower($base)));
+				$class_name = preg_replace('/([\/])\s*(\w)/e', 'strtoupper(\'$1$2\')', ucfirst(strtolower($base)));
 				$class_name = str_replace('.'.FILE_EXT, '', $class_name);
 				$class_name = str_replace('/', '_', $class_name);
 

@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Cache\Driver
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Driver de cache para archivos en disco.
@@ -51,7 +51,7 @@ class Base_Cache_Driver_File implements Cache_Driver {
 	/**
 	 * Obtenemos un elemento de la cache.
 	 * @param string $id Clave del elemento abtener.
-	 * @param mixed Información si fue correcto o FALSE en caso de error.
+	 * @return mixed Información si fue correcto o FALSE en caso de error.
 	 */
 	public function get($id)
 	{
@@ -125,16 +125,16 @@ class Base_Cache_Driver_File implements Cache_Driver {
 	private function delete_files($path, $del_dir = FALSE, $level = 0)
 	{
 		// Trim the trailing slash
-		$path = preg_replace("|^(.+?)/*$|", "\\1", $path);
+		$path = preg_replace('|^(.+?)/*$|', '$1', $path);
 
 		if ( ! $current_dir = @opendir($path))
 		{
 			return;
 		}
 
-		while(FALSE !== ($filename = @readdir($current_dir)))
+		while (($filename = @readdir($current_dir)) !== FALSE)
 		{
-			if ($filename != "." and $filename != "..")
+			if ($filename != "." && $filename != "..")
 			{
 				if (is_dir($path.'/'.$filename))
 				{
@@ -175,7 +175,7 @@ class Base_Cache_Driver_File implements Cache_Driver {
 	private function is_really_writable($file)
 	{
 		// If we're on a Unix server with safe_mode off we call is_writable
-		if (DIRECTORY_SEPARATOR == '/' AND @ini_get("safe_mode") == FALSE)
+		if (DIRECTORY_SEPARATOR == '/' && @ini_get("safe_mode") == FALSE)
 		{
 			return is_writable($file);
 		}

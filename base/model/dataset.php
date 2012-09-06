@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Model
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Modelo que tiene métodos para un simple mapeo de propiedades.
@@ -84,13 +84,11 @@ class Base_Model_Dataset extends Model {
 
 			// Listado de claves.
 			$k_list = array();
-			foreach($primary_key as $k => $v)
+			foreach ($primary_key as $k => $v)
 			{
 				$k_list[] = "$k = ?";
 			}
 			$k_list = implode('AND ', $k_list);
-
-			//var_dump("SELECT $f_list FROM $this->table WHERE $k_list LIMIT 1", array_values());
 
 			// Obtenemos los campos.
 			$rst = $this->db->query("SELECT $f_list FROM $this->table WHERE $k_list LIMIT 1", array_values($primary_key))
@@ -99,6 +97,11 @@ class Base_Model_Dataset extends Model {
 			if (is_array($rst))
 			{
 				$this->data = $rst;
+				return TRUE;
+			}
+			else
+			{
+				return FALSE;
 			}
 		}
 	}

@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Plugin
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase encargada de unir las clases de los plugins con las del nucleo.
@@ -62,7 +62,7 @@ class Base_Plugin_Merge {
 	 */
 	private function get_header()
 	{
-		return "<?php defined('APP_BASE') or die('No direct access allowed.');\n\n";
+		return "<?php defined('APP_BASE') || die('No direct access allowed.');\n\n";
 	}
 
 	/**
@@ -78,7 +78,7 @@ class Base_Plugin_Merge {
 
 		// Cargamos los archivos.
 		//TODO: puede gastar mucha memoria dependiendo del tamaño de los archivos
-		//puede ser una buena idea usar otro método.
+		// puede ser una buena idea usar otro método.
 		$data_to = file($file_to);
 
 		// Iniciamos la cadena de salida.
@@ -89,7 +89,7 @@ class Base_Plugin_Merge {
 
 		// Agregamos cabecera.
 		$sl = $ref_to->getStartLine() - 1;
-		while(TRUE)
+		while (TRUE)
 		{
 			$aux = $data_to[$sl];
 
@@ -111,7 +111,7 @@ class Base_Plugin_Merge {
 		$const_list = array_diff($this->get_class_constants($this->to), $this->get_class_constants($this->from));
 
 		// Agregamos las constantes
-		foreach($const_list as $p)
+		foreach ($const_list as $p)
 		{
 			$resultado .= "\t".$this->get_constant($ref_to, $p)."\n";
 		}
@@ -122,7 +122,7 @@ class Base_Plugin_Merge {
 		$prop_list = array_diff($this->get_class_properties($this->to), $this->get_class_properties($this->from));
 
 		// Agregamos las propiedades
-		foreach($prop_list as $p)
+		foreach ($prop_list as $p)
 		{
 			$resultado .= "\t".$this->get_property($ref_to, $p)."\n";
 		}
@@ -133,7 +133,7 @@ class Base_Plugin_Merge {
 		$meth_list = array_diff($this->get_class_methods($this->to), $this->get_class_methods($this->from));
 
 		// Agregamos las métodos
-		foreach($meth_list as $p)
+		foreach ($meth_list as $p)
 		{
 			$resultado .= "\t".$this->get_method($ref_to, $p, $data_to)."\n\n";
 		}
@@ -163,7 +163,7 @@ class Base_Plugin_Merge {
 
 		// Cargamos los archivos.
 		//TODO: puede gastar mucha memoria dependiendo del tamaño de los archivos
-		//puede ser una buena idea usar otro método.
+		// puede ser una buena idea usar otro método.
 		$data_from = file($file_from);
 		$data_to = file($file_to);
 
@@ -175,7 +175,7 @@ class Base_Plugin_Merge {
 
 		// Agregamos cabecera.
 		$sl = $ref_to->getStartLine() - 1;
-		while(TRUE)
+		while (TRUE)
 		{
 			$aux = $data_to[$sl];
 
@@ -194,37 +194,37 @@ class Base_Plugin_Merge {
 		}
 
 		// Agregamos las constantes de from.
-		foreach($this->get_class_constants($this->from) as $p)
+		foreach ($this->get_class_constants($this->from) as $p)
 		{
 			$resultado .= "\t".$this->get_constant($ref_from, $p)."\n";
 		}
 
 		// Agregamos las constantes de to.
-		foreach($this->get_class_constants($this->to) as $p)
+		foreach ($this->get_class_constants($this->to) as $p)
 		{
 			$resultado .= "\t".$this->get_constant($ref_to, $p)."\n";
 		}
 
 		// Agregamos las propiedades de from.
-		foreach($this->get_class_properties($this->from) as $p)
+		foreach ($this->get_class_properties($this->from) as $p)
 		{
 			$resultado .= "\t".$this->get_property($ref_from, $p)."\n";
 		}
 
 		// Agregamos las propiedades de to.
-		foreach($this->get_class_properties($this->to) as $p)
+		foreach ($this->get_class_properties($this->to) as $p)
 		{
 			$resultado .= "\t".$this->get_property($ref_to, $p)."\n";
 		}
 
 		// Agregamos los métodos de from.
-		foreach($this->get_class_methods($this->from) as $p)
+		foreach ($this->get_class_methods($this->from) as $p)
 		{
 			$resultado .= "\t".$this->get_method($ref_from, $p, $data_from)."\n\n";
 		}
 
 		// Agregamos los métodos de to.
-		foreach($this->get_class_methods($this->to) as $p)
+		foreach ($this->get_class_methods($this->to) as $p)
 		{
 			$resultado .= "\t".$this->get_method($ref_to, $p, $data_to)."\n\n";
 		}
@@ -243,7 +243,7 @@ class Base_Plugin_Merge {
 	 * @param string $prop Nombre de la constante.
 	 * @return string
 	 */
-	private function get_constant(&$ref, $const)
+	private function get_constant( & $ref, $const)
 	{
 		return 'const '.$const.' = '.$this->value_to_php($ref->getConstant($const)).";\n";
 	}
@@ -254,7 +254,7 @@ class Base_Plugin_Merge {
 	 * @param string $prop Nombre del método.
 	 * @return string
 	 */
-	private function get_property(&$ref, $prop)
+	private function get_property( & $ref, $prop)
 	{
 		// Obtenemos la refleccion de la propiedad.
 		$ref_prop = $ref->getProperty($prop);
@@ -322,7 +322,7 @@ class Base_Plugin_Merge {
 		elseif (is_array($value))
 		{
 			$rst = array();
-			foreach($value as $k => $v)
+			foreach ($value as $k => $v)
 			{
 				if (is_int($k))
 				{
@@ -346,7 +346,7 @@ class Base_Plugin_Merge {
 	 * @param array $file Arreglo con las lineas del archivo de origen.
 	 * @return string
 	 */
-	private function get_method(&$ref, $name, &$file)
+	private function get_method( & $ref, $name, & $file)
 	{
 		// Obtenemos la refleccion del método.
 		$ref_meth = $ref->getMethod($name);
@@ -430,7 +430,7 @@ class Base_Plugin_Merge {
 
 		$rst = array();
 		$lst = $reflection->getMethods();
-		foreach($lst as $m)
+		foreach ($lst as $m)
 		{
 			// Verificamos si para todas las clases.
 			if ($extends)
@@ -460,7 +460,7 @@ class Base_Plugin_Merge {
 
 		$rst = array();
 		$lst = $reflection->getProperties();
-		foreach($lst as $m)
+		foreach ($lst as $m)
 		{
 			// Verificamos si para todas las clases.
 			if ($extends)

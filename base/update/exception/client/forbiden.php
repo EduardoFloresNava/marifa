@@ -21,7 +21,7 @@
  * @subpackage  Update\Exception\Client
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Excepcion del cliente, no hay acceso.

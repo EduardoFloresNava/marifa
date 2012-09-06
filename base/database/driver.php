@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Database
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Driver base para la base de datos.

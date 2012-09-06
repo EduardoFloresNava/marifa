@@ -20,7 +20,7 @@
  * @package		Marifa\Base
  * @subpackage  Update
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Alias de Base_Update_Updater

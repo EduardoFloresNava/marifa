@@ -21,7 +21,7 @@
  * @subpackage  Update\Rest
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase que representa una respuesta enviada por la API REST
@@ -88,15 +88,15 @@ class Base_Update_Rest_Response {
 			// Clasificamos respuesta según código devuelto.
 			switch ($data->code)
 			{
-				case 200: //OK
+				case 200: // OK
 					$this->error = FALSE;
 					$this->code = 200;
 					$this->content = $data->response;
 					break;
-				case 400: //BAD REQUEST
-				case 403: //FORBIDEN
-				case 404: //NOT FOUND
-				case 500: //INTERNAL ERROR
+				case 400: // BAD REQUEST
+				case 403: // FORBIDEN
+				case 404: // NOT FOUND
+				case 500: // INTERNAL ERROR
 					$this->error = TRUE;
 					$this->code = (int) $data->code;
 					$this->content = $data->response;

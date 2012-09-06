@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase encargada de despachar las peticiones.
@@ -37,7 +37,7 @@ class Base_Dispatcher {
 	 */
 	protected static function geturl()
 	{
-		if ( ! isset($_SERVER['REQUEST_URI']) OR ! isset($_SERVER['SCRIPT_NAME']))
+		if ( ! isset($_SERVER['REQUEST_URI']) || ! isset($_SERVER['SCRIPT_NAME']))
 		{
 			return '';
 		}
@@ -98,7 +98,7 @@ class Base_Dispatcher {
 		if (php_sapi_name() == 'cli-server')
 		{
 			$url = $_SERVER['REQUEST_URI'];
-			//$url = dirname();
+			// $url = dirname();
 		}
 		else
 		{
@@ -194,7 +194,7 @@ class Base_Dispatcher {
 				$p_name = strtolower($segmentos[1]);
 
 				// Validamos que tenga el formato requerido.
-				if (preg_match('/^[a-z0-9]+$/', $p_name) < 1)
+				if (preg_match('/^[a-z0-9]+$/D', $p_name) < 1)
 				{
 					if ( ! $throw)
 					{
@@ -217,7 +217,7 @@ class Base_Dispatcher {
 					$controller = empty($segmentos[2]) ? 'home' : strtolower($segmentos[2]);
 
 					// Validamos que tenga el formato requerido.
-					if (preg_match('/^[a-z0-9_]+$/', $controller) < 1)
+					if (preg_match('/^[a-z0-9_]+$/D', $controller) < 1)
 					{
 						if ( ! $throw)
 						{
@@ -231,10 +231,10 @@ class Base_Dispatcher {
 					}
 
 					// Obtenemos la acción.
-					$accion = empty($segmentos[3]) ? 'action_index' : 'action_'.strtolower($segmentos[3]);
+					$accion = empty($segmentos[3]) ? 'index' : strtolower($segmentos[3]);
 
 					// Validamos que tenga el formato requerido.
-					if (preg_match('/^[a-z0-9_]+$/', $accion) < 1)
+					if (preg_match('/^[a-z0-9_]+$/D', $accion) < 1)
 					{
 						if ( ! $throw)
 						{
@@ -276,7 +276,7 @@ class Base_Dispatcher {
 					{
 						// Verificamos exista método.
 						$r_c = new ReflectionClass($controller_name);
-						if ( ! $r_c->hasMethod($accion))
+						if ( ! $r_c->hasMethod('action_'.$accion))
 						{
 							if ( ! $throw)
 							{
@@ -294,22 +294,22 @@ class Base_Dispatcher {
 					}
 
 					// Obtenemos la cantidad de parámetros necesaria.
-					$r_m = new ReflectionMethod($cont, $accion);
+					$r_m = new ReflectionMethod($cont, 'action_'.$accion);
 					$p_n = $r_m->getNumberOfRequiredParameters();
 
 					// Expandemos el arreglo de parámetros con NULL si es necesario.
-					while(count($args) < $p_n)
+					while (count($args) < $p_n)
 					{
 						$args[] = NULL;
 					}
 
-					Request::addStack($url);
+					Request::add_stack(NULL, $controller, $accion, $args, $p_name);
 					// No hubo problemas, llamamos.
 					$rst = call_user_func_array(array(
 							$cont,
-							$accion
+							'action_'.$accion
 					), $args);
-					Request::popStack();
+					Request::pop_stack();
 					return $rst;
 				}
 				else
@@ -331,7 +331,7 @@ class Base_Dispatcher {
 		// Obtenemos el controlador
 		$controller = empty($segmentos[0]) ? 'home' : strtolower($segmentos[0]);
 
-		if (preg_match('/^[a-z0-9_]+$/', $controller) < 1)
+		if (preg_match('/^[a-z0-9_]+$/D', $controller) < 1)
 		{
 			if ( ! $throw)
 			{
@@ -345,9 +345,9 @@ class Base_Dispatcher {
 		}
 
 		// Obtenemos la acción.
-		$accion = empty($segmentos[1]) ? 'action_index' : 'action_'.strtolower($segmentos[1]);
+		$accion = empty($segmentos[1]) ? 'index' : strtolower($segmentos[1]);
 
-		if (preg_match('/^[a-z0-9_]+$/', $accion) < 1)
+		if (preg_match('/^[a-z0-9_]+$/D', $accion) < 1)
 		{
 			if ( ! $throw)
 			{
@@ -389,7 +389,7 @@ class Base_Dispatcher {
 		{
 			// Verificamos exista método.
 			$r_c = new ReflectionClass($controller_name);
-			if ( ! $r_c->hasMethod($accion))
+			if ( ! $r_c->hasMethod('action_'.$accion))
 			{
 				if ( ! $throw)
 				{
@@ -407,22 +407,22 @@ class Base_Dispatcher {
 		}
 
 		// Obtenemos la cantidad de parámetros necesaria.
-		$r_m = new ReflectionMethod($cont, $accion);
+		$r_m = new ReflectionMethod($cont, 'action_'.$accion);
 		$p_n = $r_m->getNumberOfRequiredParameters();
 
 		// Expandemos el arreglo de parámetros con NULL si es necesario.
-		while(count($args) < $p_n)
+		while (count($args) < $p_n)
 		{
 			$args[] = NULL;
 		}
 
-		Request::addStack($url);
+		Request::add_stack(NULL, $controller, $accion, $args, NULL);
 		// No hubo problemas, llamamos.
 		$rst = call_user_func_array(array(
 				$cont,
-				$accion
+				'action_'.$accion
 		), $args);
-		Request::popStack();
+		Request::pop_stack();
 		return $rst;
 	}
 }

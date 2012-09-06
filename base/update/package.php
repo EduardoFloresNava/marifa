@@ -21,7 +21,7 @@
  * @subpackage  Update
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase encargada de la gestion del paquete de actualización.
@@ -60,10 +60,10 @@ class Base_Update_Package {
 		$c_type = Update_Utils::mime2compresor(Update_Utils::get_mime($this->package));
 
 		// Cargamos el compresor.
-		$c = Update_Compresion::getInstance($c_type);
+		$c = Update_Compresion::get_instance($c_type);
 
 		// Seteamos donde descomprimir.
-		$c->setTempPath($tmp_path);
+		$c->set_temp_path($tmp_path);
 
 		return $c->decompress($this->package);
 	}
@@ -161,7 +161,7 @@ class Base_Update_Package {
 			}
 		}
 
-		//Limpiamos archivos de la instalación y salimos.
+		// Limpiamos archivos de la instalación y salimos.
 		return Update_Utils::unlink($temp_dir);
 	}
 

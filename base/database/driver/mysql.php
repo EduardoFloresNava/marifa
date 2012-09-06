@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Database\Driver
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Driver base para mysql.
@@ -106,7 +106,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 				throw new Database_Exception('No se ha podido conectar al servidor de base de datos.', 100, $e);
 			}
 
-			if( ! @mysql_select_db($this->db, $this->conn))
+			if ( ! @mysql_select_db($this->db, $this->conn))
 			{
 				$this->conn = NULL;
 				$e = new Database_Exception(mysql_error(), mysql_errno());
@@ -161,7 +161,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			Profiler_Profiler::getInstance()->logQuery($query);
+			Profiler_Profiler::get_instance()->logQuery($query);
 			return new Database_Driver_Mysql_Query($query, $this->conn);
 		}
 		else
@@ -196,7 +196,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			Profiler_Profiler::getInstance()->logQuery($query);
+			Profiler_Profiler::get_instance()->logQuery($query);
 			$query = mysql_query($query, $this->conn);
 
 			if ($query === TRUE)
@@ -237,7 +237,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			Profiler_Profiler::getInstance()->logQuery($query);
+			Profiler_Profiler::get_instance()->logQuery($query);
 			$query = mysql_query($query, $this->conn);
 
 			if ($query === TRUE)
@@ -275,7 +275,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			Profiler_Profiler::getInstance()->logQuery($query);
+			Profiler_Profiler::get_instance()->logQuery($query);
 			$query = mysql_query($query, $this->conn);
 
 			if ($query === TRUE)

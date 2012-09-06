@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase encargada del manejo de configuraciones.
@@ -135,7 +135,7 @@ class Base_Configuraciones {
 		if (count($segmentos) == 1)
 		{
 			$segmento = $segmentos[0];
-			return isset(self::$data[$segmento]) ? self::$data[$segmento] : $default;
+			return (isset(self::$data[$segmento])) ? (self::$data[$segmento]) : $default;
 		}
 
 		// Cargamos una copia de las configuraciones para ir reduciendo.
@@ -184,7 +184,7 @@ class Base_Configuraciones {
 			$sa = array_reverse($segmentos);
 
 			$data = $valor;
-			foreach($sa as $s)
+			foreach ($sa as $s)
 			{
 				$data = array($s => $data);
 			}

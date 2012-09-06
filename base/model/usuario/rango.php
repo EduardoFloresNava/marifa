@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Model
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Modelo de los rangos que puede tener un usuario.
@@ -181,7 +181,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 			// Agregamos los permisos.
 			if (count($permisos) > 0)
 			{
-				foreach($permisos as $permiso)
+				foreach ($permisos as $permiso)
 				{
 					$this->agregar_permiso($permiso);
 				}

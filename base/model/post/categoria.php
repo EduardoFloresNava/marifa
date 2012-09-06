@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Model
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Modelo de categorias de los posts.
@@ -159,7 +159,7 @@ class Base_Model_Post_Categoria extends Model_Dataset {
 		$rst->set_cast_type(array('id' => Database_Query::FIELD_INT));
 
 		$lst = array();
-		foreach($rst as $v)
+		foreach ($rst as $v)
 		{
 			$lst[] = new Model_Post($v['id']);
 		}

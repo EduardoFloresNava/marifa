@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Raintpl
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Exception thrown when syntax error occurs.
@@ -41,14 +41,14 @@ class Base_RainTpl_SyntaxException extends RainTpl_Exception {
 	 *
 	 * @var int | null
 	 */
-	protected $templateLine = null;
+	protected $templateLine = NULL;
 
 	/**
 	 * Tag which caused an error.
 	 *
 	 * @var string | null
 	 */
-	protected $tag = null;
+	protected $tag = NULL;
 
 	/**
 	 * Returns line in template file where error has occured
@@ -69,7 +69,7 @@ class Base_RainTpl_SyntaxException extends RainTpl_Exception {
 	 */
 	public function setTemplateLine($templateLine)
 	{
-		$this->templateLine = ( int ) $templateLine;
+		$this->templateLine = (int) $templateLine;
 		return $this;
 	}
 
@@ -91,7 +91,7 @@ class Base_RainTpl_SyntaxException extends RainTpl_Exception {
 	 */
 	public function setTag($tag)
 	{
-		$this->tag = ( string ) $tag;
+		$this->tag = (string) $tag;
 		return $this;
 	}
 

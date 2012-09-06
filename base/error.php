@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Función para el manejo de errores.
@@ -43,7 +43,7 @@ class Base_Error {
 	/**
 	 * Modo depuración.
 	 */
-	protected static $debug = false;
+	protected static $debug = FALSE;
 
 	/**
 	 * Clases de log de errores.
@@ -56,13 +56,13 @@ class Base_Error {
 	private function __construct()
 	{
 		self::$loggers = array();
-		self::$debug = false;
+		self::$debug = FALSE;
 	}
 
 	/**
 	 * Obtener una instancia para singleton.
 	 */
-	public static function getInstance()
+	public static function get_instance()
 	{
 		if ( ! isset(self::$instance))
 		{
@@ -75,18 +75,22 @@ class Base_Error {
 	/**
 	 * No se puede clonar por singleton.
 	 */
-	public function __clone() {}
+	public function __clone()
+	{
+	}
 
 	/**
 	 * No se puede deserializar por singleton.
 	 */
-	public function __wake() {}
+	public function __wakeup()
+	{
+	}
 
 	/**
 	 * Inciamos el gestor de errores y excepciones.
 	 * @param boolean $debug Habilitada la depuración?
 	 */
-	public function start($debug = false)
+	public function start($debug = FALSE)
 	{
 		self::$debug = $debug;
 
@@ -132,24 +136,24 @@ class Base_Error {
 	 */
 	public static function error_handler($errno, $errstr, $errfile, $errline, $errcontext = array())
 	{
-		//OBTENEMOS EL STACK.
-		$ec = is_array($errcontext) ? (count($errcontext) > 0 ? $errcontext : debug_backtrace()) : debug_backtrace();
-		//CADENA QUE REPRESENTA EL NUMERO DE ERROR
-		$error_type_string = self::getErrorType($errno);
-		//CADENA DESCRIPCION DEL ERROR
-		$error_string = self::getErrorString($errstr, $errfile, $errline);
-		//REPRESENTACION DEL STACK
-		$error_backtrace = self::parseBackTrace($ec);
-		//MOSTRAMOS ERROR SEGUN ES DEBUG O NO.
+		// OBTENEMOS EL STACK.
+		$ec = (is_array($errcontext)) ? ((count($errcontext) > 0) ? $errcontext : debug_backtrace()) : debug_backtrace();
+		// CADENA QUE REPRESENTA EL NUMERO DE ERROR
+		$error_type_string = self::get_error_type($errno);
+		// CADENA DESCRIPCION DEL ERROR
+		$error_string = self::get_error_string($errstr, $errfile, $errline);
+		// REPRESENTACION DEL STACK
+		$error_backtrace = self::parse_back_trace($ec);
+		// MOSTRAMOS ERROR SEGUN ES DEBUG O NO.
 		if ( ! self::$debug)
 		{
-			self::show_error(self::getUserMessage($errno), 500);
+			self::show_error(self::get_user_message($errno), 500);
 		}
 		else
 		{
 			self::show_error($error_type_string.$error_string, 500, array('reflection' => self::last_call($ec), 'backtrace' => $error_backtrace, 'file' => $errfile, 'line' => $errline));
 		}
-		//LOG DEL ERROR PARA TENER SUFICIENTE INFORMACION.
+		// LOG DEL ERROR PARA TENER SUFICIENTE INFORMACION.
 		foreach (self::$loggers as $logger)
 		{
 			$logger->write($errno, $error_type_string.$error_string.$error_backtrace);
@@ -205,17 +209,17 @@ class Base_Error {
 	public static function exception_handler($exception)
 	{
 		$error_type_string = get_class($exception);
-		$error_string = self::getErrorString($exception->getMessage(), $exception->getFile(), $exception->getLine());
+		$error_string = self::get_error_string($exception->getMessage(), $exception->getFile(), $exception->getLine());
 		$error_backtrace = $exception->getTraceAsString();
 		if ( ! self::$debug)
 		{
-			self::show_error(self::getUserMessage('exception'), 500);
+			self::show_error(self::get_user_message('exception'), 500);
 		}
 		else
 		{
 			self::show_error($error_type_string.$error_string, 500, array('backtrace' => $error_backtrace, 'file' => $exception->getFile(), 'line' => $exception->getLine()));
 		}
-		//LOG del error completo.
+		// LOG del error completo.
 		foreach (self::$loggers as $logger)
 		{
 			$logger->write($errno, $error_type_string.$error_string.$error_backtrace);
@@ -301,7 +305,7 @@ class Base_Error {
 	 * la linea del error
 	 * @param int $line Linea del error.
 	 * @param string $path Path del archivo donde se produjo el error.
-	 * @param array|null Información de la clase o funcion para aplicar reflection
+	 * @param array|null $reflection Información de la clase o funcion para aplicar reflection
 	 * para mejorar la salida.
 	 * @return string
 	 */
@@ -322,9 +326,13 @@ class Base_Error {
 
 		// Validamos el rango.
 		if ($start < 0)
+		{
 			$start = 1;
+		}
 		if ($end > count($source))
+		{
 			$end = count($source);
+		}
 
 		// Verificamos si tenemos reflection
 		if ($reflection !== NULL)
@@ -393,12 +401,12 @@ class Base_Error {
 
 	/**
 	 * Obtenemos una cadena de caracteres del número de error.
-	 * @param int $errorNumber Number Número de error a procesar.
+	 * @param int $error_number Number Número de error a procesar.
 	 * @return string Cadena representativa del error.
 	 */
-	private static function getErrorType($errorNumber)
+	private static function get_error_type($error_number)
 	{
-		switch ( $errorNumber )
+		switch ($error_number)
 		{
 			case E_NOTICE:
 			case E_USER_NOTICE:
@@ -421,14 +429,14 @@ class Base_Error {
 
 	/**
 	 * Obtenemos una cadena de caracteres representación del error.
-	 * @param string $errorString Descripción del error.
-	 * @param string $errorFile Archivo del error.
-	 * @param int $errorLine Linea del error
+	 * @param string $error_string Descripción del error.
+	 * @param string $error_file Archivo del error.
+	 * @param int $error_line Linea del error
 	 * @return string Cadena representativa del error.
 	 */
-	private static function getErrorString($errorString, $errorFile, $errorLine)
+	private static function get_error_string($error_string, $error_file, $error_line)
 	{
-		$string = ': "'.$errorString.'" in '.$errorFile.' on line '.$errorLine.'.';
+		$string = ': "'.$error_string.'" in '.$error_file.' on line '.$error_line.'.';
 		return $string;
 	}
 
@@ -437,7 +445,7 @@ class Base_Error {
 	 * @param array $tb Arreglo con el stack de llamadas.
 	 * @return string Cadena representativa del Stack de llamadas.
 	 */
-	private static function parseBackTrace($tb)
+	private static function parse_back_trace($tb)
 	{
 		$backtrace = array();
 		foreach ($tb as $k => $v)
@@ -472,12 +480,12 @@ class Base_Error {
 
 	/**
 	 * Error que se le muestra al usuario segun el tipo de error.
-	 * @param int $errorNumber Numero de error.
+	 * @param int $error_number Numero de error.
 	 * @return string Cadena representativa para mostrar al usuario.
 	 */
-	private static function getUserMessage($errorNumber)
+	private static function get_user_message($error_number)
 	{
-		switch($errorNumber)
+		switch ($error_number)
 		{
 			case E_USER_ERROR:
 				return 'FATAL ERROR: A fatal error has occurred. Please notify the '.'Administrator if it continues.';

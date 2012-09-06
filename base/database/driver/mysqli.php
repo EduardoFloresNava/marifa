@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Database\Driver
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Driver base para PDO.
@@ -43,7 +43,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 	public function __construct($data)
 	{
 		// Obtenemos los parametros de conección.
-		foreach(array('host', 'username', 'password', 'db_name') as $t)
+		foreach (array('host', 'username', 'password', 'db_name') as $t)
 		{
 			$this->$t = isset($data[$t]) ? $data[$t] : NULL;
 		}
@@ -116,7 +116,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
-		Profiler_Profiler::getInstance()->logQuery($query);
+		Profiler_Profiler::get_instance()->logQuery($query);
 
 		// Verificamos sea arreglo.
 		if ( ! is_array($params) && $params !== NULL)
@@ -128,24 +128,24 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		{
 			// Agregamos la lista de parámetros.
 			$type = '';
-			foreach($params as $param)
+			foreach ($params as $param)
 			{
 				// Obtenemos el tipo.
-				if(is_int($param))
+				if (is_int($param))
 				{
-					$type .= 'i'; //integer
+					$type .= 'i'; // integer
 				}
 				elseif (is_float($param))
 				{
-					$type .= 'd'; //double
+					$type .= 'd'; // double
 				}
 				elseif (is_string($param))
 				{
-					$type .= 's'; //string
+					$type .= 's'; // string
 				}
 				else
 				{
-					$type .= 'b'; //blob and unknown
+					$type .= 'b'; // blob and unknown
 				}
 			}
 
@@ -189,7 +189,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
-		Profiler_Profiler::getInstance()->logQuery($query);
+		Profiler_Profiler::get_instance()->logQuery($query);
 
 		// Verificamos sea arreglo.
 		if ( ! is_array($params) && $params !== NULL)
@@ -201,24 +201,24 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		{
 			// Agregamos la lista de parámetros.
 			$type = '';
-			foreach($params as $param)
+			foreach ($params as $param)
 			{
 				// Obtenemos el tipo.
-				if(is_int($param))
+				if (is_int($param))
 				{
-					$type .= 'i'; //integer
+					$type .= 'i'; // integer
 				}
 				elseif (is_float($param))
 				{
-					$type .= 'd'; //double
+					$type .= 'd'; // double
 				}
 				elseif (is_string($param))
 				{
-					$type .= 's'; //string
+					$type .= 's'; // string
 				}
 				else
 				{
-					$type .= 'b'; //blob and unknown
+					$type .= 'b'; // blob and unknown
 				}
 			}
 

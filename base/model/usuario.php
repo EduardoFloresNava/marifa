@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Model
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Modelo del usuario.
@@ -97,6 +97,24 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * Cargamos un usuario con su nick actual.
+	 * @param string $nick Nick del usuario a cargar.
+	 * @return bool
+	 */
+	public function load_by_nick($nick)
+	{
+		if ($this->load(array('nick' => $nick)))
+		{
+			$this->primary_key['id'] = $this->get('id');
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+	/**
 	 * Iniciamos sessión con un usuario.
 	 * @param string $mail E-Mail
 	 * @param string $password Contraseña
@@ -107,14 +125,14 @@ class Base_Model_Usuario extends Model_Dataset {
 		$rst = $this->db->query('SELECT id, nick, password, email, estado FROM usuario WHERE email = ? OR nick = ? LIMIT 1', array($mail, $mail));
 
 		// Verificamos que exista el usuario.
-		if ( $rst->num_rows() > 0)
+		if ($rst->num_rows() > 0)
 		{
 			// Obtenemos la información.
 			$data = $rst->get_record(Database_Query::FETCH_ASSOC, array('id' => Database_Query::FIELD_INT, 'estado' => Database_Query::FIELD_INT));
 
 			// Verificamos la contraseña.
 			$enc = new Phpass(8, FALSE);
-			if ( ! $enc->CheckPassword($password, $data['password']) == TRUE)
+			if ( ! $enc->check_password($password, $data['password']) == TRUE)
 			{
 				return -1;
 			}
@@ -130,7 +148,7 @@ class Base_Model_Usuario extends Model_Dataset {
 					$this->primary_key['id'] = $data['id'];
 
 					// Actualizamos el inicio de session.
-					$this->db->update('UPDATE usuario SET lastlogin = ?, lastactive = ?, lastip = ? WHERE id = ?', array(date('Y/m/d H:i:s'), date('Y/m/d H:i:s'), ip2long(IP::getIpAddr()), $this->primary_key['id']));
+					$this->db->update('UPDATE usuario SET lastlogin = ?, lastactive = ?, lastip = ? WHERE id = ?', array(date('Y/m/d H:i:s'), date('Y/m/d H:i:s'), ip2long(IP::get_ip_addr()), $this->primary_key['id']));
 
 					break;
 				case self::ESTADO_PENDIENTE:  // Cuenta por activar.
@@ -192,7 +210,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	{
 		// Generamos el hash.
 		$enc = new Phpass(8, FALSE);
-		$enc_password = $enc->HashPassword($password);
+		$enc_password = $enc->hash_password($password);
 		unset($enc);
 
 		// Actualizamos la base de datos.
@@ -270,7 +288,7 @@ class Base_Model_Usuario extends Model_Dataset {
 
 		// Codificamos la contraseña.
 		$enc = new Phpass(8, FALSE);
-		$enc_password = $enc->HashPassword($password);
+		$enc_password = $enc->hash_password($password);
 		unset($enc);
 
 		// Creamos arreglo con los datos.
@@ -280,7 +298,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		// Creamos la cuenta.
 		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, puntos_disponibles, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', array_values($info));
 
-		return $cant > 0 ? $id : FALSE;
+		return ($cant > 0) ? $id : FALSE;
 	}
 
 	/**

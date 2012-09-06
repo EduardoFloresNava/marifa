@@ -21,7 +21,7 @@
  * @subpackage  Update
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase base de la actualización.
@@ -67,11 +67,11 @@ class Base_Update_Updater {
     public function find_updates()
     {
 		// Obtenemos el manejador de paquetes.
-		$pkg_manager = Plugin_Manager::getInstance();
+		$pkg_manager = Plugin_Manager::get_instance();
 
 		// Generamos el listado de paquetes.
 		$pkg_list = array();
-		foreach(array_keys($pkg_manager->load()) as $nombre)
+		foreach (array_keys($pkg_manager->load()) as $nombre)
 		{
 			// TODO: ver si es lógico omitir los desactivados.
 
@@ -118,7 +118,7 @@ class Base_Update_Updater {
 		$o_client = new Update_Client($this->server, $this->token);
 
 		// Verificamos si hay versión especificada.
-		if($version === NULL)
+		if ($version === NULL)
 		{
 			// Obtenemos la última versión.
 			$version = $o_client->get_last_version($hash);

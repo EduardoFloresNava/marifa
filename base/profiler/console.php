@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Profiler
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase del perfilador.
@@ -81,9 +81,9 @@ class Base_Profiler_Console {
      *
      * @return void
      */
-    public function logMemory($name = 'Memory usage at this point', $variable = null)
+    public function logMemory($name = 'Memory usage at this point', $variable = NULL)
     {
-        if (!is_null($variable)) {
+        if (!is_NULL($variable)) {
             $this->logVarMemory($name, $variable);
         }
 
@@ -100,7 +100,7 @@ class Base_Profiler_Console {
      * @param string $name Log message
      * @param        $variable
      */
-    public function logVarMemory($name = 'Variable memory usage at this point', $variable = null)
+    public function logVarMemory($name = 'Variable memory usage at this point', $variable = NULL)
     {
         $logItem = array(
             'data'     => strlen(serialize($variable)),
@@ -156,7 +156,7 @@ class Base_Profiler_Console {
     public function logSpeed($name = 'Point in Time')
     {
         $logItem = array(
-            'data' => microtime(true),
+            'data' => microtime(TRUE),
             'name' => $name
         );
 
@@ -167,11 +167,11 @@ class Base_Profiler_Console {
      * Records how long a query took to run when the same query is passed in twice.
      *
      * @param      $sql
-     * @param null $explain
+     * @param NULL $explain
      *
      * @return mixed
      */
-    public function logQuery($sql, $explain = null)
+    public function logQuery($sql, $explain = NULL)
     {
         // We use a hash of the query for two reasons. One is because for large queries the
         // hash will be considerably smaller in memory. The second is to make a dump of the
@@ -183,7 +183,7 @@ class Base_Profiler_Console {
         if (isset($this->_logs['queries']['messages'][$hash])) {
             $query = array_pop($this->_logs['queries']['messages'][$hash]);
             if (!$query['end_time']) {
-                $query['end_time'] = microtime(true);
+                $query['end_time'] = microtime(TRUE);
                 $query['explain'] = $explain;
 
                 $this->_logs['queries']['messages'][$hash][] = $query;
@@ -196,9 +196,9 @@ class Base_Profiler_Console {
         }
 
         $logItem = array(
-            'start_time' => microtime(true),
-            'end_time'   => false,
-            'explain'    => false,
+            'start_time' => microtime(TRUE),
+            'end_time'   => FALSE,
+            'explain'    => FALSE,
             'sql'        => $sql
         );
 
@@ -218,10 +218,10 @@ class Base_Profiler_Console {
         $key = 'benchmark_ ' . $name;
 
         if (isset($this->_logs['benchmarks']['messages'][$key])) {
-            $benchKey = md5(microtime(true));
+            $benchKey = md5(microtime(TRUE));
 
             $this->_logs['benchmarks']['messages'][$benchKey] = $this->_logs['benchmarks']['messages'][$key];
-            $this->_logs['benchmarks']['messages'][$benchKey]['end_time'] = microtime(true);
+            $this->_logs['benchmarks']['messages'][$benchKey]['end_time'] = microtime(TRUE);
             $this->_logs['benchmarks']['count'] += 1;
 
             unset($this->_logs['benchmarks']['messages'][$key]);
@@ -229,8 +229,8 @@ class Base_Profiler_Console {
         }
 
         $logItem = array(
-            'start_time' => microtime(true),
-            'end_time'   => false,
+            'start_time' => microtime(TRUE),
+            'end_time'   => FALSE,
             'name'       => $name
         );
 

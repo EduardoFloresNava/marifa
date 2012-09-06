@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Database\Driver
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Driver base para PDO.
@@ -43,7 +43,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	public function __construct($data)
 	{
 		// Obtenemos los parametros de conección.
-		foreach(array('dsn', 'username', 'password', 'options') as $t)
+		foreach (array('dsn', 'username', 'password', 'options') as $t)
 		{
 			$this->$t = isset($data[$t]) ? $data[$t] : NULL;
 		}
@@ -108,7 +108,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		// Cargamos la consulta.
 		$sth = $this->make_query($query, $params);
 
-		Profiler_Profiler::getInstance()->logQuery($sth->queryString);
+		Profiler_Profiler::get_instance()->logQuery($sth->queryString);
 
 		// Ejecutamos la consulta.
 		if ($sth->execute())
@@ -147,9 +147,9 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		}
 
 		// Asignamos todos los campos.
-		foreach($fields as $f)
+		foreach ($fields as $f)
 		{
-			$sth->bindValue(is_int($f[0]) ? $f[0] + 1 : $f[0], $f[1], $f[2]);
+			$sth->bindValue((is_int($f[0])) ? ($f[0] + 1) : ($f[0]), $f[1], $f[2]);
 		}
 
 		return $sth;
@@ -165,18 +165,19 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	 */
 	protected function expand_field($query, $field, $cantidad)
 	{
-		if (is_int($field)) // Procesamos como ENTERO.
+		// Procesamos como ENTERO.
+		if (is_int($field))
 		{
 			// Generamos arreglo de datos.
 			$expand = array();
-			for($i = 0; $i < $cantidad; $i++)
+			for ($i = 0; $i < $cantidad; $i++)
 			{
 				$expand[] = '?';
 			}
 
 			// Reemplazamos.
 			$offset = 0;
-			for($i = 0; $i < $field; $i++)
+			for ($i = 0; $i < $field; $i++)
 			{
 				$offset = strpos($query, '?', $offset) + 1;
 			}
@@ -187,7 +188,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		{
 			// Generamos arreglo de datos.
 			$expand = array();
-			for($i = 0; $i < $cantidad; $i++)
+			for ($i = 0; $i < $cantidad; $i++)
 			{
 				$expand[] = $field.'_'.($i + 1);
 			}
@@ -218,10 +219,10 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		$param_rst = array();
 
 		$add = 0; // Desplazamiento por arreglos.
-		foreach($params as $k => $v)
+		foreach ($params as $k => $v)
 		{
 			// Calculamos claves aplicando desplazamiento.
-			$ku = is_int($k) ? $k + $add : $k;
+			$ku = (is_int($k)) ? ($k + $add) : $k;
 
 			// Obtenemos los datos.
 			list($query, $pa, $p) = $this->get_query_field($query, $ku, $v);
@@ -229,7 +230,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 			// Vemos de insertar los valores generados.
 			if ($p > 0 || $p == -1)
 			{
-				foreach($pa as $vv)
+				foreach ($pa as $vv)
 				{
 					$param_rst[] = $vv;
 				}
@@ -280,7 +281,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 			}
 
 			// Verificamos si puede tratarse como un entero.
-			if ((( int ) $object) == $object)
+			if (( ( int ) $object) == $object)
 			{
 				return array($query, array($field, (int) $object, PDO::PARAM_INT), 0);
 			}
@@ -304,7 +305,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 
 				// Generamos lista de campos.
 				$fs = array();
-				for($i = 0; $i < $c; $i++)
+				for ($i = 0; $i < $c; $i++)
 				{
 					$aux = $this->get_query_field($query, $field + $i, $object[$i]);
 					$fs[] = $aux[1];
@@ -323,7 +324,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 
 				// Generamos lista de campos.
 				$fs = array();
-				for($i = 0; $i < $c; $i++)
+				for ($i = 0; $i < $c; $i++)
 				{
 					$aux = $this->get_query_field($query, $field.'_'.($i+1), $object[$i]);
 					$fs[] = $aux[1];
@@ -338,7 +339,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		}
 		else
 		{
-			//Suponemos una cadena.
+			// Suponemos una cadena.
 			return array($query, array($field, $object, PDO::PARAM_STR), 0);
 		}
 	}
@@ -359,7 +360,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		// Cargamos la consulta.
 		$sth = $this->make_query($query, $params);
 
-		Profiler_Profiler::getInstance()->logQuery($sth->queryString);
+		Profiler_Profiler::get_instance()->logQuery($sth->queryString);
 
 		// Realizamos la consulta
 		$rst = $sth->execute();

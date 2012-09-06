@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Model
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Modelo de los posts.
@@ -197,7 +197,7 @@ class Base_Model_Post extends Model_Dataset {
 		}
 
 		// Agregamos las etiquetas.
-		foreach($etiqueta as $e)
+		foreach ($etiqueta as $e)
 		{
 			$this->db->insert('INSERT INTO post_tag (post_id, nombre) VALUES (?, ?)', array($this->primary_key['id'], $e));
 		}
@@ -290,7 +290,7 @@ class Base_Model_Post extends Model_Dataset {
 		$rst->set_cast_type(Database_Query::FIELD_INT);
 
 		$lst = array();
-		foreach($rst as $v)
+		foreach ($rst as $v)
 		{
 			$lst[] = new Model_Post_Comentario($v[0]);
 		}
@@ -413,7 +413,7 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $comunidad = NULL)
 	{
-		list($id, ) = $this->db->insert(
+		list($id,) = $this->db->insert(
 			'INSERT INTO post ( usuario_id, post_categoria_id, comunidad_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 			array(
 				$usuario_id,

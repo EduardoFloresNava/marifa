@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Raintpl
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Exception thrown when template file does not exists.

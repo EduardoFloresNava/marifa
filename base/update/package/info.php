@@ -21,7 +21,7 @@
  * @subpackage  Update\Package
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Representación de la información de un paquete.

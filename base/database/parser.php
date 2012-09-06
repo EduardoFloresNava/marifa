@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Database
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase para la creación de consultas SQL seguras.
@@ -286,9 +286,9 @@ class Base_Database_Parser {
 			}
 
 			// Verificamos si puede tratarse como un entero.
-			if ((( int ) $object) == $object)
+			if (( (int) $object) == $object)
 			{
-				return ( int ) $object;
+				return (int) $object;
 			}
 
 			// Lo tratamos como un real.
@@ -307,8 +307,8 @@ class Base_Database_Parser {
 		}
 		else
 		{
-			//Suponemos una cadena, la limpiamos.
-			return "\"".Database::getInstance()->escape_string($object)."\"";
+			// Suponemos una cadena, la limpiamos.
+			return "\"".Database::get_instance()->escape_string($object)."\"";
 		}
 	}
 
@@ -330,7 +330,7 @@ class Base_Database_Parser {
 
 		foreach ($params as $key => $value)
 		{
-			$q = preg_replace("/:$key/", $this->parse_input($value), $q);
+			$q = preg_replace('/:'.$key.'/', $this->parse_input($value), $q);
 		}
 		return $q;
 	}
@@ -345,22 +345,22 @@ class Base_Database_Parser {
 	 */
 	protected function parse_vars($q, $params)
 	{
-		//Validamos que los parametros sea un arreglo.
+		// Validamos que los parametros sea un arreglo.
 		if ( ! is_array($params))
 		{
 			throw new InvalidArgumentException("El parametro debe ser un arreglo válido");
 			return $q;
 		}
-		//Validamos que tengamos igual numero de parametros que de los necesarios.
+		// Validamos que tengamos igual numero de parametros que de los necesarios.
 		$aux = array(); // Garantiza compatibilidad en algunos casos.
-		if (count($params) != preg_match_all("/\?/", $q, $aux))
+		if (count($params) != preg_match_all('/\?/', $q, $aux))
 		{
 			throw new InvalidArgumentException("No coinciden la cantidad de parametros necesarios con los provistos");
 			return $q;
 		}
 		foreach ($params as $param)
 		{
-			$q = preg_replace("/\?/", $this->parse_input($param), $q, 1);
+			$q = preg_replace('/\?/', $this->parse_input($param), $q, 1);
 		}
 		return $q;
 	}
@@ -385,7 +385,7 @@ class Base_Database_Parser {
 	 */
 	public function __toString()
 	{
-		return ( string ) $this->build();
+		return (string) $this->build();
 	}
 
 }

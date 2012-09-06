@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * manager.php is part of Marifa.
  *
@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Plugin
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase encargada del manejo de plugins.
@@ -54,14 +54,18 @@ class Base_Plugin_Manager {
 	 * No permitimos su llamada externa para evitar una instanciación para
 	 * para seguir con el patrón singleton.
 	 */
-	private function __construct() {}
+	private function __construct()
+	{
+	}
 
 	/**
 	 * Función de clonación de la clase.
 	 *
 	 * Como forma parte de un patrón singleton no se permite clonar el objeto.
 	 */
-	public function __clone() {}
+	public function __clone()
+	{
+	}
 
 	/**
 	 * Función de deserealización de la clase.
@@ -69,7 +73,9 @@ class Base_Plugin_Manager {
 	 * Como forma parte de un patrón singleton no se permite deserealizar el
 	 * objeto para obtener una instancia desde una guardada.
 	 */
-	public function __wakeup() {}
+	public function __wakeup()
+	{
+	}
 
 	/**
 	 * Obtener una instancia de la clase.
@@ -78,7 +84,7 @@ class Base_Plugin_Manager {
 	 * la misma como parte del patrón singleton.
 	 * @return Lib_Plugin
 	 */
-	public static function getInstance()
+	public static function get_instance()
 	{
 		if ( ! isset(self::$instance))
 		{
@@ -149,8 +155,6 @@ class Base_Plugin_Manager {
 				continue;
 			}
 
-			//
-
 			// Es un plugin válido. Verificamos si tenemos el estado antiguo.
 			if (isset($old_data[$dir]))
 			{
@@ -194,7 +198,7 @@ class Base_Plugin_Manager {
 		}
 
 		// Escribimos la cabecera.
-		fwrite($fp, "<?php defined('APP_BASE') or die('No direct access allowed.');\nreturn array(");
+		fwrite($fp, "<?php defined('APP_BASE') || die('No direct access allowed.');\nreturn array(");
 
 		// Escribimos el lista de plugins.
 		foreach ($listado as $key => $value)
