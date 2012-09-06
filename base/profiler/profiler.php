@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * profiler.php is part of Marifa.
  *
@@ -18,15 +18,16 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since       Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Profiler
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Clase del perfilador.
  *
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Profiler
  */
 class Base_Profiler_Profiler
@@ -60,20 +61,27 @@ class Base_Profiler_Profiler
         );
 
     /**
+	 * Object console.
      * @var Profiler_Console
      */
     protected $_console;
 
     /**
+	 * Execution start time.
      * @var int|mixed|null
      */
     protected $_startTime;
 
     /**
+	 * Profiler enabled.
      * @var bool
      */
     protected $_enabled = true;
 
+	/**
+	 * Singleton pattern instance
+	 * @var Profiler_Profiler
+	 */
 	protected static $instance;
 
 
@@ -111,8 +119,14 @@ class Base_Profiler_Profiler
 		return static::$instance;
 	}
 
+	/**
+	 * No se puede clonar.
+	 */
 	public function __clone() {}
 
+	/**
+	 * No se puede serealizar.
+	 */
 	public function __wakeup() {}
 
     /**
@@ -132,6 +146,7 @@ class Base_Profiler_Profiler
     }
 
     /**
+	 * Is disabled.
      * @return mixed
      */
     public function isEnabled()
@@ -493,8 +508,9 @@ class Base_Profiler_Profiler
     }
 
     /**
-     * @param mixed $variable
-     * @param string $name
+	 * Show var memory usage or variable usage.
+	 * @param string $name  Log mesage
+     * @param mixed $variable Variable
      */
     public function logVarMemory($name = 'Variable memory usage at this point', $variable = null)
     {
@@ -506,7 +522,8 @@ class Base_Profiler_Profiler
     }
 
     /**
-     * @param string $name
+	 * Log peak memory usar.
+     * @param string $name Log mesage
      */
     public function logPeakMemory($name = 'Peak memory usage at this point')
     {

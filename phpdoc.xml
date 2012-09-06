@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor>
+  <title><![CDATA[Marifa]]></title>
+  <parser>
+      <default-package-name>Marifa</default-package-name>
+      <target>phpdoc</target>
+      <markers>
+          <item>TODO</item>
+          <item>FIXME</item>
+      </markers>
+  </parser>
+  <transformer>
+    <target>phpdoc</target>
+  </transformer>
+  <files>
+    <directory>.</directory>
+    <ignore>assets/*</ignore>
+    <ignore>cache/*</ignore>
+    <ignore>config/*</ignore>
+    <ignore>plugin/*</ignore>
+    <ignore>theme/*</ignore>
+    <ignore>base/view/*</ignore>
+    <ignore>router.php</ignore>
+  </files>
+</phpdocumentor>

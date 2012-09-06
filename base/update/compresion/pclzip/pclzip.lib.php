@@ -23,6 +23,7 @@
  * $Id: pclzip.lib.php,v 1.60 2009/09/30 21:01:04 vblavet Exp $
  *
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
   // ----- Constants
   if (!defined('PCLZIP_READ_BLOCK_SIZE')) {

@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * display.php is part of Marifa.
  *
@@ -18,15 +18,16 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since       Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Profiler
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Clase del perfilador.
  *
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Profiler
  */
 class Base_Profiler_Display {
@@ -67,6 +68,7 @@ class Base_Profiler_Display {
     }
 
     /**
+	 * Main tabs HTML
      * @static
      *
      * @param $data
@@ -103,6 +105,7 @@ class Base_Profiler_Display {
     }
 
     /**
+	 * Console tab HTML
      * @static
      *
      * @param $data
@@ -178,6 +181,7 @@ class Base_Profiler_Display {
     }
 
     /**
+	 * Load Time tab HTML
      * @static
      *
      * @param $data
@@ -216,6 +220,7 @@ class Base_Profiler_Display {
     }
 
     /**
+	 * Database tab HTML
      * @static
      *
      * @param $data
@@ -325,6 +330,7 @@ class Base_Profiler_Display {
     }
 
     /**
+	 * Memory tab HTML
      * @static
      *
      * @param $data
@@ -366,6 +372,7 @@ class Base_Profiler_Display {
     }
 
     /**
+	 * Files tab HTML
      * @static
      *
      * @param $data
@@ -403,6 +410,7 @@ class Base_Profiler_Display {
     }
 
     /**
+	 * Footer HTML
      * @static
      * @return string
      */

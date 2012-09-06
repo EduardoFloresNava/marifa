@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * plugin.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Plugin
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Alias de Base_Plugin_Plugin
  *
- * @package    Marifa/Marifa
+ * @package    Marifa\Marifa
  * @subpackage Plugin
  */
 class Plugin_Plugin extends Base_Plugin_Plugin {}

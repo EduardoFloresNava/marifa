@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * dataset.php is part of Marifa.
  *
@@ -18,16 +18,17 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Model
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Modelo que tiene métodos para un simple mapeo de propiedades.
  * Permite acceder a los campos de una fila del modelo de forma fácil.
  *
  * @since      0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Model
  */
 class Base_Model_Dataset extends Model {
@@ -69,6 +70,11 @@ class Base_Model_Dataset extends Model {
 		return isset($this->data[$field]) ? $this->data[$field] : NULL;
 	}
 
+	/**
+	 * Cargamos la información de un campo.
+	 * @param array $primary_key Arreglo asociativo con los campos que componen
+	 * la clave primaria.
+	 */
 	protected function load($primary_key)
 	{
 		if ($this->data === NULL)
@@ -107,6 +113,12 @@ class Base_Model_Dataset extends Model {
 		return $this->get($field);
 	}
 
+	/**
+	 * Actualizamos el valor de un campo. Es una actualización de la cache interna
+	 * del objeto.
+	 * @param string $field Campo a actualizar.
+	 * @param mixed $value Nuevo valor.
+	 */
 	protected function update_value($field, $value)
 	{
 		if (isset($this->data) && isset($this->data[$field]))

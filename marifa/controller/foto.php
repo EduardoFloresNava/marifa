@@ -1,6 +1,6 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
- * perfil.php is part of Marifa.
+ * foto.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Usuario
+ * @package		Marifa\Base
+ * @subpackage  Controller
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
- * Alias de Base_Usuario_Perfil
+ * Alias de Base_Controller_Foto
  *
- * @package    Marifa/Marifa
- * @subpackage Usuario
+ * @package    Marifa\Marifa
+ * @subpackage Controller
  */
-class Usuario_Perfil extends Base_Usuario_Perfil {}
+class Controller_Foto extends Base_Controller_Foto {}

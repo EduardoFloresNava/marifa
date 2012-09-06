@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * dispatcher.php is part of Marifa.
  *
@@ -15,20 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Clase encargada de despachar las peticiones.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  */
 class Base_Dispatcher {
 
@@ -125,10 +124,11 @@ class Base_Dispatcher {
 	 *
 	 * En caso de ser incorrecta la petición, se emite una excepción informando dicho error.
 	 * @param string $url URL de la petición.
+	 * @param bool $finish Utiliza un buffer limpio y finaliza la ejecución.
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 * @throws Exception
 	 */
-	public static function call($url)
+	public static function call($url, $finish = FALSE)
 	{
 		// Reemplazamos // y \ por / para normalizar.
 		$str = preg_replace('/\/+/', '/', $url);
@@ -144,23 +144,34 @@ class Base_Dispatcher {
 			$url = substr($url, 1);
 		}
 
-		// Iniciamos el buffer, esa para no mostrar nada por pantalla de esta
-		// peticion.
-		ob_start();
-
-		// Realizamos la llamada.
-		$rst = self::route($url, TRUE);
-
-		// Si no hubo respuesta probamos con lo que tenemos el en buffer.
-		if ($rst === NULL)
+		if ($finish)
 		{
-			$rst = ob_get_contents();
+			// Limpiamos el buffer.
+			ob_clean();
+
+			// Procesamos la consulta y terminamos.
+			die(self::route($url, TRUE));
 		}
+		else
+		{
+			// Iniciamos el buffer, esa para no mostrar nada por pantalla de esta
+			// peticion.
+			ob_start();
 
-		// Borramos el buffer y devolvemos el resultado.
-		ob_end_clean();
+			// Realizamos la llamada.
+			$rst = self::route($url, TRUE);
 
-		return $rst;
+			// Si no hubo respuesta probamos con lo que tenemos el en buffer.
+			if ($rst === NULL)
+			{
+				$rst = ob_get_contents();
+			}
+
+			// Borramos el buffer y devolvemos el resultado.
+			ob_end_clean();
+
+			return $rst;
+		}
 	}
 
 	/**

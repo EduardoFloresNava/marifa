@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * console.php is part of Marifa.
  *
@@ -18,15 +18,16 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since       Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Profiler
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Clase del perfilador.
  *
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Profiler
  */
 class Base_Profiler_Console {
@@ -45,8 +46,9 @@ class Base_Profiler_Console {
         );
 
     /**
-     * @param $category
-     * @param $item
+	 * Add item to a category
+     * @param string $category Category name
+     * @param mixed $item Item data.
      */
     protected function _write($category, $item)
     {
@@ -94,7 +96,8 @@ class Base_Profiler_Console {
     }
 
     /**
-     * @param string $name
+	 * Variable memory usage at this point
+     * @param string $name Log message
      * @param        $variable
      */
     public function logVarMemory($name = 'Variable memory usage at this point', $variable = null)
@@ -109,7 +112,8 @@ class Base_Profiler_Console {
     }
 
     /**
-     * @param string $name
+	 * Peak memory usage at this point
+     * @param string $name Log message
      */
     public function logPeakMemory($name = 'Peak memory usage at this point')
     {

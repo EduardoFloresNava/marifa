@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * cuenta.php is part of Marifa.
  *
@@ -18,15 +18,16 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Controller
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Controlador para las opciones del perfil del usuario.
  *
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Controller
  */
 class Base_Controller_Cuenta extends Controller {
@@ -48,7 +49,7 @@ class Base_Controller_Cuenta extends Controller {
 
 	/**
 	 * Listado de pestañas del perfil.
-	 * @param int $action Pestaña seleccionada.
+	 * @param int $activo Pestaña seleccionada.
 	 */
 	protected function submenu($activo)
 	{
@@ -61,6 +62,9 @@ class Base_Controller_Cuenta extends Controller {
 		);
 	}
 
+	/**
+	 * Datos principales de la cuenta.
+	 */
 	public function action_index()
 	{
 		// Asignamos el título.
@@ -257,6 +261,9 @@ class Base_Controller_Cuenta extends Controller {
 		$this->template->assign('contenido', $view->parse());
 	}
 
+	/**
+	 * Información sobre el usuario.
+	 */
 	public function action_perfil()
 	{
 		// Asignamos el título.
@@ -694,6 +701,9 @@ class Base_Controller_Cuenta extends Controller {
 		$this->template->assign('contenido', $view->parse());
 	}
 
+	/**
+	 * Bloqueos a los usuarios.
+	 */
 	public function action_bloqueados()
 	{
 		// Asignamos el título.
@@ -710,6 +720,9 @@ class Base_Controller_Cuenta extends Controller {
 		$this->template->assign('contenido', $view->parse());
 	}
 
+	/**
+	 * Administración de la contraseña de acceso a la cuenta.
+	 */
 	public function action_password()
 	{
 		// Asignamos el título.
@@ -799,6 +812,9 @@ class Base_Controller_Cuenta extends Controller {
 		$this->template->assign('contenido', $view->parse());
 	}
 
+	/**
+	 * Administración de los nicks del usuario.
+	 */
 	public function action_nick()
 	{
 		// Asignamos el título.
@@ -819,6 +835,8 @@ class Base_Controller_Cuenta extends Controller {
 		$view->assign('error_password', NULL);
 
 		//TODO: Listado de nicks para elegir uno anterior.
+		//TODO: Limitar la cantidad de nicks reservados.
+		//TODO: Mantener nicks por un tiempo limitado.
 
 		if (Request::method() == 'POST')
 		{

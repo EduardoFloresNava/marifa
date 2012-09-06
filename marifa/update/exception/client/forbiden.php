@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * forbiden.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Update/Exception/Client
+ * @package		Marifa\Base
+ * @subpackage  Update\Exception\Client
  */
+defined('APP_BASE') or die('No direct access allowed.');
 
 /**
  * Alias de Base_Update_Exception_Client_Forbiden
  *
- * @package    Marifa/Marifa
- * @subpackage Update/Exception/Client
+ * @package    Marifa\Marifa
+ * @subpackage Update\Exception\Client
  */
 class Update_Exception_Client_Forbiden extends Base_Update_Exception_Client_Forbiden {}
