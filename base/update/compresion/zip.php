@@ -21,7 +21,7 @@
  * @subpackage  Update\Compresion
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Incluimos archivos estáticos.
@@ -46,7 +46,7 @@ class Base_Update_Compresion_Zip extends Update_Compresion_Compresion {
     public function decompress($file)
     {
         $archive = new PclZip($file);
-        if ($archive->extract(PCLZIP_OPT_PATH, $this->tempPath) == 0)
+        if ($archive->extract(PCLZIP_OPT_PATH, $this->temp_path) == 0)
         {
             return FALSE;
         }
@@ -59,15 +59,15 @@ class Base_Update_Compresion_Zip extends Update_Compresion_Compresion {
 	/**
 	 * Creamos un archivo zip con la lista de archivo enviados.
 	 * @param string $file Archivo donde colocar la compresión.
-	 * @param string $basePath Path base a utilizar en la compresión zip.
+	 * @param string $base_path Path base a utilizar en la compresión zip.
 	 * @param array|string $files Arreglo de archivos o directorio donde se
 	 * encuentran los archivos a comprimir.
 	 * @return bool
 	 */
-    public function compress($file, $basePath, $files)
+    public function compress($file, $base_path, $files)
     {
         $archive = new PclZip($file);
-        if ($archive->create($files, PCLZIP_OPT_REMOVE_PATH, $basePath))
+        if ($archive->create($files, PCLZIP_OPT_REMOVE_PATH, $base_path))
         {
             return TRUE;
         }

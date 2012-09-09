@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or exit('No tienes permisos.');
+defined('APP_BASE') || exit('No tienes permisos.');
 
 /**
  * Clase de encriptación de contraseñas.
@@ -275,7 +275,7 @@ class Base_Phpass {
 	 * @param string $password Contraseña a encriptar.
 	 * @return string
 	 */
-	public function HashPassword($password)
+	public function hash_password($password)
 	{
 		$random = '';
 
@@ -320,7 +320,7 @@ class Base_Phpass {
 	 * @param string $stored_hash Contraseña almacenada.
 	 * @return bool
 	 */
-	public function CheckPassword($password, $stored_hash)
+	public function check_password($password, $stored_hash)
 	{
 		$hash = $this->crypt_private($password, $stored_hash);
 		if ($hash[0] == '*')

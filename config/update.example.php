@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php defined('APP_BASE') || die('No direct access allowed.');
 /**
  * Configuración del servidor de actualizaciones.
  */

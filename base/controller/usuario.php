@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Controller
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Controlador para el manejo de usuarios.
@@ -90,7 +90,7 @@ class Base_Controller_Usuario extends Controller {
 				$password = $_POST['password'];
 
 				// Realizamos el login.
-				$model_usuario = new Model_Usuario();
+				$model_usuario = new Model_Usuario;
 
 				$rst = $model_usuario->login($nick, $password);
 
@@ -144,7 +144,7 @@ class Base_Controller_Usuario extends Controller {
 		$view_usuario = View::factory('usuario/register');
 
 		// Pasamos toda la información a la vista.
-		foreach(array('nick', 'email', 'password', 'c_password') as $field)
+		foreach (array('nick', 'email', 'password', 'c_password') as $field)
 		{
 			$view_usuario->assign($field, in_array($field, array('nick', 'email')) ? (isset($_POST[$field]) ? $_POST[$field] : ''): '');
 			$view_usuario->assign('error_'.$field, FALSE);
@@ -155,7 +155,7 @@ class Base_Controller_Usuario extends Controller {
 		{
 			// Verificamos los datos enviados.
 			$error = FALSE;
-			foreach(array('nick', 'email', 'password', 'c_password') as $field)
+			foreach (array('nick', 'email', 'password', 'c_password') as $field)
 			{
 				if ( ! isset($_POST[$field]) || empty($_POST[$field]))
 				{
@@ -171,7 +171,7 @@ class Base_Controller_Usuario extends Controller {
 			else
 			{
 				// Pasamos toda la información a la vista.
-				foreach(array('nick', 'email') as $field)
+				foreach (array('nick', 'email') as $field)
 				{
 					$view_usuario->assign($field, $_POST[$field]);
 				}
@@ -180,21 +180,21 @@ class Base_Controller_Usuario extends Controller {
 				$error = FALSE;
 
 				// Verificamos el nick.
-				if ( ! preg_match('/^[a-zA-Z0-9áéíóúAÉÍÓÚÑñ ]{4,16}$/', $_POST['nick']))
+				if ( ! preg_match('/^[a-zA-Z0-9áéíóúAÉÍÓÚÑñ ]{4,16}$/D', $_POST['nick']))
 				{
 					$view_usuario->assign('error_nombre', TRUE);
 					$error = TRUE;
 				}
 
 				// Verificamos e-mail.
-				if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $_POST['email']))
+				if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $_POST['email']))
 				{
 					$view_usuario->assign('error_email', TRUE);
 					$error = TRUE;
 				}
 
 				// Verificamos contraseña.
-				if ( ! preg_match('/^[a-zA-Z0-9\-_@\*\+\/#$%]{6,20}$/', $_POST['password']))
+				if ( ! preg_match('/^[a-zA-Z0-9\-_@\*\+\/#$%]{6,20}$/D', $_POST['password']))
 				{
 					$view_usuario->assign('error_password', TRUE);
 					$error = TRUE;
@@ -216,7 +216,7 @@ class Base_Controller_Usuario extends Controller {
 				else
 				{
 					// Cargamos modelo del usuario.
-					$model_usuario = new Model_Usuario();
+					$model_usuario = new Model_Usuario;
 
 					// Formateamos las entradas.
 					$nick = trim(preg_replace('/\s+/', ' ', $_POST['nick']));
@@ -260,7 +260,7 @@ class Base_Controller_Usuario extends Controller {
 						);
 
 						// Agregamos el trabajo.
-						Api_Job::sCreate(Api_Job::TIPO_EMAIL, $data, LittleDB::getInstance());*/
+						Api_Job::sCreate(Api_Job::TIPO_EMAIL, $data, LittleDB::get_instance());*/
 					}
 					else
 					{

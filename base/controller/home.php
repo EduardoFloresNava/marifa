@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Controller
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Controlador de la portada.
@@ -98,13 +98,13 @@ class Base_Controller_Home extends Controller {
 		$p_nombre = "Test Plugin";
 
 		// Borramos el plugin.
-		//if (file_exists(Plugin_Manager::nombre_as_path($p_nombre)))
-		//{
-		//	Update_Utils::unlink(Plugin_Manager::nombre_as_path($p_nombre));
-		//}
+		// if (file_exists(Plugin_Manager::nombre_as_path($p_nombre)))
+		// {
+		// Update_Utils::unlink(Plugin_Manager::nombre_as_path($p_nombre));
+		// }
 
 		// Objeto manejador de plugins.
-		$pkg_manager = Plugin_Manager::getInstance();
+		$pkg_manager = Plugin_Manager::get_instance();
 
 		// Verificamos su existencia
 		$o_plugin = $pkg_manager->get(Plugin_Manager::make_name($p_nombre));

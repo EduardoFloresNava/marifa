@@ -21,7 +21,7 @@
  * @subpackage  Update\Compresion
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Compresor Tar.GZ basado en Pear_Archive
@@ -36,15 +36,15 @@ class Base_Update_Compresion_Gz extends Update_Compresion_Compresion {
 	/**
 	 * Creamos un archivo zip con la lista de archivo enviados.
 	 * @param string $file Archivo donde colocar la compresión.
-	 * @param string $basePath Path base a utilizar en la compresión zip.
+	 * @param string $base_path Path base a utilizar en la compresión zip.
 	 * @param array|string $files Arreglo de archivos o directorio donde se
 	 * encuentran los archivos a comprimir.
 	 * @return bool
 	 */
-	public function compress($file, $basePath, $files)
+	public function compress($file, $base_path, $files)
 	{
 		$pt = new Update_Compresion_Pear_Tar($file, 'gz');
-		return $pt->createModify($files, '', $basePath);
+		return $pt->createModify($files, '', $base_path);
 	}
 
 	/**
@@ -55,6 +55,6 @@ class Base_Update_Compresion_Gz extends Update_Compresion_Compresion {
 	public function decompress($path)
 	{
 		$pt = new Update_Compresion_Pear_Tar($path, 'gz');
-		return $pt->extractModify($this->tempPath, '', FALSE);
+		return $pt->extractModify($this->temp_path, '', FALSE);
 	}
 }

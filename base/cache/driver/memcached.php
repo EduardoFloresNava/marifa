@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Cache\Driver
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Driver de cache para Memcached.
@@ -48,7 +48,7 @@ class Base_Cache_Driver_Memcached implements Cache_Driver {
 	public function __construct($hostname = '127.0.0.1', $port = 11211, $weight = 1)
 	{
 		// Instanciamos memcached.
-		$this->_memcached = new Memcached();
+		$this->_memcached = new Memcached;
 
 		// Configuramos el servidor.
 		$this->_memcached->addServer($hostname, $port, $weight);
@@ -57,7 +57,7 @@ class Base_Cache_Driver_Memcached implements Cache_Driver {
 	/**
 	 * Obtenemos un elemento de la cache.
 	 * @param string $id Clave del elemento abtener.
-	 * @param mixed Información si fue correcto o FALSE en caso de error.
+	 * @return mixed Información si fue correcto o FALSE en caso de error.
 	 */
 	public function get($id)
 	{

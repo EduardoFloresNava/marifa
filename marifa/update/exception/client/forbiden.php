@@ -20,7 +20,7 @@
  * @package		Marifa\Base
  * @subpackage  Update\Exception\Client
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Alias de Base_Update_Exception_Client_Forbiden

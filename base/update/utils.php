@@ -21,7 +21,7 @@
  * @subpackage  Update
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Utileria varia.
@@ -49,7 +49,7 @@ class Base_Update_Utils {
 	 * @param int $precision Presición de la conversión.
 	 * @return string
 	 */
-	public static function formatBytes($bytes, $precision = 2)
+	public static function format_bytes($bytes, $precision = 2)
 	{
 		$units = array('B', 'KB', 'MB', 'GB', 'TB');
 
@@ -71,7 +71,7 @@ class Base_Update_Utils {
      */
     public static function sys_get_temp_dir()
     {
-		foreach(array('TMP', 'TEMP', 'TMPDIR') as $t)
+		foreach (array('TMP', 'TEMP', 'TMPDIR') as $t)
 		{
 			$temp = getenv($t);
 			if ($temp !== FALSE)
@@ -108,7 +108,7 @@ class Base_Update_Utils {
         }
 
         // Agregamo la barra final.
-        $path = substr($path, -1) == '/' ? $path : $path.'/';
+        $path = (substr($path, -1) == '/') ? $path : ($path.'/');
         return $path;
     }
 
@@ -137,14 +137,14 @@ class Base_Update_Utils {
         }
 
         // Make destination directory
-        if (!is_dir($dest))
+        if ( ! is_dir($dest))
 		{
             mkdir($dest);
         }
 
         // Loop through the folder
         $dir = dir($source);
-        while (FALSE !== $entry = $dir->read())
+        while ($entry = $dir->read() !== FALSE)
 		{
             // Skip pointers
             if ($entry == '.' || $entry == '..')
@@ -174,7 +174,7 @@ class Base_Update_Utils {
 
 			$rst = TRUE;
 
-			foreach($lst as $file)
+			foreach ($lst as $file)
 			{
 				if ($file === '.' || $file === '..')
 				{

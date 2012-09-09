@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Controlador base, sirve para exponer un método a todos los controladores.
@@ -69,7 +69,7 @@ class Base_Controller {
 		$vista = View::factory('header/login');
 
 		// Cargamos el usuario y sus datos.
-		$usuario = new Model_Usuario((int) Session::get('usuario_id'));
+		$usuario = new Model_Usuario( (int) Session::get('usuario_id'));
 		$vista->assign('usuario', $usuario->as_array());
 
 		return $vista;

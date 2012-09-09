@@ -20,7 +20,7 @@
  * @package		Marifa\Base
  * @subpackage  Update\Compresion\Pear
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Alias de Base_Update_Compresion_Pear_Tar

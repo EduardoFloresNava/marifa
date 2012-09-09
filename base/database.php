@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase encargada cargar el driver correspondiente de la base de datos.
@@ -39,24 +39,30 @@ class Base_Database {
 	/**
 	 * Por el patrón singleton se evita tener instancias de esta clase.
 	 */
-	private function __construct() {}
+	private function __construct()
+	{
+	}
 
 	/**
 	 * No se permite clonar esta clase.
 	 */
-	public function __clone() {}
+	public function __clone()
+	{
+	}
 
 	/**
 	 * No se permite deserealizar esta clase.
 	 */
-	public function __wakeup() {}
+	public function __wakeup()
+	{
+	}
 
 	/**
 	 * Obtenemos el driver de la base de datos.
 	 * El driver es el que nos permite interactuar con la base de datos.
 	 * @return Database_Driver Driver de la base de datos.
 	 */
-	public static function getInstance()
+	public static function get_instance()
 	{
 		if ( ! isset(self::$instance))
 		{

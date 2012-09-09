@@ -68,16 +68,13 @@ class Base_Update_Rest_Request {
 			if ($callback !== NULL)
 			{
 				curl_setopt($petition, CURLOPT_NOPROGRESS, FALSE);
-				//curl_setopt($petition, CURLOPT_BUFFERSIZE, 24);
 				curl_setopt($petition, CURLOPT_PROGRESSFUNCTION, $callback);
 			}
 
 			// Agregamos los parametros post.
 			if ($post !== NULL)
 			{
-				//curl_setopt($petition, CURLOPT_HTTPHEADER, array("Content-type: multipart/form-data"));
 				curl_setopt($petition, CURLOPT_POST, 1);
-				//curl_setopt($petition, CURLOPT_POST, count($post));
 				curl_setopt($petition, CURLOPT_POSTFIELDS, $post);
 			}
 
@@ -109,14 +106,7 @@ class Base_Update_Rest_Request {
 	 */
 	private function parse_response($data)
 	{
-		$decoded_data = json_decode($data);
-
-		//if ($decoded_data === NULL)
-		//{
-		//	return FALSE;
-		//}
-
-		return new Update_Rest_Response($decoded_data);
+		return new Update_Rest_Response(json_decode($data));
 	}
 
 	/**
@@ -165,7 +155,7 @@ class Base_Update_Rest_Request {
 			curl_setopt($petition, CURLOPT_URL, $this->server.$url);
 			curl_setopt($petition, CURLOPT_TIMEOUT, 50);
 			curl_setopt($petition, CURLOPT_FILE, $fp);
-			//curl_setopt($petition, CURLOPT_FOLLOWLOCATION, true);
+			// curl_setopt($petition, CURLOPT_FOLLOWLOCATION, true);
 
 			// Realizamos la peticion.
 			curl_exec($petition);
@@ -209,7 +199,7 @@ class Base_Update_Rest_Request {
 			}
 
 			// Comenzamos a mover los bytes.
-			while( ! feof($r_fp))
+			while ( ! feof($r_fp))
 			{
 				fwrite($l_fp, fread($r_fp, 1024));
 			}

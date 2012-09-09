@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Controller
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Controlador de la portada.
@@ -41,7 +41,7 @@ class Base_Controller_Foto extends Controller {
 	{
 		$lst = array();
 		$lst['index'] = array('link' => '/foto/', 'caption' => 'Fotos', 'active' => $activo == 'index');
-		if($login)
+		if ($login)
 		{
 			$lst['nuevo'] = array('link' => '/foto/nueva', 'caption' => 'Agregar Foto', 'active' => $activo == 'nuevo');
 			$lst['mis_fotos'] = array('link' => '/foto/mis_fotos', 'caption' => 'Mis Fotos', 'active' => $activo == 'mis_fotos');
@@ -102,14 +102,14 @@ class Base_Controller_Foto extends Controller {
 			// Computamos la visita.
 			$model_foto->agregar_visita();
 
-			$view->assign('es_favorito', $model_foto->es_favorito( (int)Session::get('usuario_id')));
-			$view->assign('ya_vote', $model_foto->ya_voto( (int)Session::get('usuario_id')));
+			$view->assign('es_favorito', $model_foto->es_favorito( (int) Session::get('usuario_id')));
+			$view->assign('ya_vote', $model_foto->ya_voto( (int) Session::get('usuario_id')));
 		}
 
 		// Comentarios del post.
 		$cmts = $model_foto->comentarios();
 		$l_cmt = array();
-		foreach($cmts as $cmt)
+		foreach ($cmts as $cmt)
 		{
 			$cl_cmt = $cmt->as_array();
 			$cl_cmt['usuario'] = $cmt->usuario()->as_array();
@@ -140,10 +140,10 @@ class Base_Controller_Foto extends Controller {
 	public function action_votar($foto, $voto)
 	{
 		// Obtenemos el voto.
-		$voto = $voto == 1 ? TRUE : FALSE;
+		$voto = $voto == 1;
 
 		// Cargamos el comentario.
-		$model_foto = new Model_Foto((int) $foto);
+		$model_foto = new Model_Foto( (int) $foto);
 
 		// Verificamos existencia.
 		if ( ! is_array($model_foto->as_array()))
@@ -160,7 +160,7 @@ class Base_Controller_Foto extends Controller {
 			// Verificamos puntuación.
 			if ( ! $model_foto->ya_voto($usuario_id))
 			{
-				Session::set('success', 'El voto fue guardado correctamente.').
+				Session::set('success', 'El voto fue guardado correctamente.');
 				$model_foto->votar($usuario_id, $voto);
 			}
 		}
@@ -189,10 +189,10 @@ class Base_Controller_Foto extends Controller {
 		if ($model_foto->usuario_id != Session::get('usuario_id'))
 		{
 			// Verificamos el voto.
-			if ( ! $model_foto->es_favorito((int) Session::get('usuario_id')))
+			if ( ! $model_foto->es_favorito( (int) Session::get('usuario_id')))
 			{
-				Session::set('success', 'Foto agregada a favoritos correctamente.').
-				$model_foto->agregar_favorito((int) Session::get('usuario_id'));
+				Session::set('success', 'Foto agregada a favoritos correctamente.');
+				$model_foto->agregar_favorito( (int) Session::get('usuario_id'));
 			}
 		}
 		Request::redirect('/foto/index/'.$foto);
@@ -240,7 +240,7 @@ class Base_Controller_Foto extends Controller {
 			//TODO: verificar XSS y transformar.
 
 			// Insertamos el comentario.
-			$model_foto->comentar((int) Session::get('usuario_id'), $comentario);
+			$model_foto->comentar( (int) Session::get('usuario_id'), $comentario);
 
 			Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
 
@@ -266,7 +266,7 @@ class Base_Controller_Foto extends Controller {
 		$view = View::factory('foto/nueva');
 
 		// Elementos por defecto.
-		foreach(array('titulo', 'url', 'descripcion', 'comentarios', 'visitantes', 'error_titulo', 'error_url', 'error_descripcion') as $k)
+		foreach (array('titulo', 'url', 'descripcion', 'comentarios', 'visitantes', 'error_titulo', 'error_url', 'error_descripcion') as $k)
 		{
 			$view->assign($k, '');
 		}
@@ -280,21 +280,21 @@ class Base_Controller_Foto extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los datos y seteamos valores.
-			foreach(array('titulo', 'url', 'descripcion') as $k)
+			foreach (array('titulo', 'url', 'descripcion') as $k)
 			{
 				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
 				$view->assign($k, $$k);
 			}
 
 			// Obtenemos los checkbox.
-			foreach(array('comentarios', 'visitantes') as $k)
+			foreach (array('comentarios', 'visitantes') as $k)
 			{
-				$$k = isset($_POST[$k]) ? $_POST[$k] == 1 : FALSE;
+				$$k = isset($_POST[$k]) ? ($_POST[$k] == 1) : FALSE;
 				$view->assign($k, $$k);
 			}
 
 			// Verificamos el titulo.
-			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/', $titulo))
+			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/D', $titulo))
 			{
 				$view->assign('error_titulo', 'El formato del título no es correcto.');
 				$error = TRUE;
@@ -308,7 +308,7 @@ class Base_Controller_Foto extends Controller {
 			}
 
 			// Verificamos la URL.
-			if ( ! preg_match("/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i", $url))
+			if ( ! preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/Di', $url))
 			{
 				$view->assign('error_url', 'La dirección de la URL no es válida.');
 				$error = TRUE;
@@ -320,10 +320,10 @@ class Base_Controller_Foto extends Controller {
 				// Formateamos los campos.
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
 
-				$model_foto = new Model_Foto();
-				$foto_id = $model_foto->crear((int) Session::get('usuario_id'), $titulo, $descripcion, $url);
+				$model_foto = new Model_Foto;
+				$foto_id = $model_foto->crear( (int) Session::get('usuario_id'), $titulo, $descripcion, $url);
 
-				if($foto_id > 0)
+				if ($foto_id > 0)
 				{
 					Request::redirect('/foto/index/'.$foto_id);
 				}

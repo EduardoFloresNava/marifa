@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Controller
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Controlador para las opciones del perfil del usuario.
@@ -74,7 +74,9 @@ class Base_Controller_Cuenta extends Controller {
 		$view = View::factory('cuenta/index');
 
 		// Cargamos el usuario.
-		$model_usuario = new Model_Usuario((int) Session::get('usuario_id'));
+		$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
+
+		$model_usuario->perfil()->load_list(array('origen', 'sexo', 'nacimiento'));
 
 		// Seteamos los datos actuales.
 		$view->assign('error', array());
@@ -101,7 +103,7 @@ class Base_Controller_Cuenta extends Controller {
 				$view->assign('email', trim($_POST['email']));
 
 				// Verificamos el formato de e-mail.
-				if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $_POST['email']))
+				if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $_POST['email']))
 				{
 					$errors[] = 'La direcci&oacute;n de email es inv&oacute;lida.';
 					$view->assign('estado_email', -1);
@@ -161,7 +163,7 @@ class Base_Controller_Cuenta extends Controller {
 			}
 
 			// Verificamos la fecha de nacimiento.
-			if ((isset($_POST['dia']) && ! empty($_POST['dia']) ) && ( isset($_POST['mes']) && ! empty($_POST['mes']) ) && ( isset($_POST['ano']) && ! empty($_POST['ano']) ))
+			if ((isset($_POST['dia']) && ! empty($_POST['dia'])) && (isset($_POST['mes']) && ! empty($_POST['mes'])) && (isset($_POST['ano']) && ! empty($_POST['ano'])))
 			{
 				// Obtenemos los parámetros.
 				$ano = (int) $_POST['ano'];
@@ -273,7 +275,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view = View::factory('cuenta/perfil');
 
 		// Cargamos el usuario.
-		$model_usuario = new Model_Usuario((int) Session::get('usuario_id'));
+		$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
 
 		$view->assign('email', $model_usuario->email);
 
@@ -340,7 +342,9 @@ class Base_Controller_Cuenta extends Controller {
 			'mis_heroes',
 		);
 
-		foreach($fields as $value)
+		$model_usuario->perfil()->load_list($fields);
+
+		foreach ($fields as $value)
 		{
 			$view->assign($value, Utils::prop($model_usuario->perfil(), $value));
 			$view->assign('estado_'.$value, 0);
@@ -356,7 +360,7 @@ class Base_Controller_Cuenta extends Controller {
 				$view->assign('nombre', trim($_POST['nombre']));
 				// Verificamos el formato.
 				//TODO: Caracteres extra.
-				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/', $_POST['nombre']))
+				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/D', $_POST['nombre']))
 				{
 					$errors[] = 'El nombre seleccionado no es correcto.';
 					$view->assign('estado_nombre', -1);
@@ -381,7 +385,7 @@ class Base_Controller_Cuenta extends Controller {
 				$view->assign('mensaje_personal', trim($_POST['mensaje_personal']));
 				// Verificamos el formato.
 				//TODO: Caracteres extra.
-				if ( ! preg_match('/^[a-zA-Z0-9\.,:\'"\s]{6,400}$/', $_POST['mensaje_personal']))
+				if ( ! preg_match('/^[a-zA-Z0-9\.,:\'"\s]{6,400}$/D', $_POST['mensaje_personal']))
 				{
 					$errors[] = 'El mensaje personal seleccionado no es correcto.';
 					$view->assign('estado_mensaje_personal', -1);
@@ -405,7 +409,7 @@ class Base_Controller_Cuenta extends Controller {
 			{
 				$view->assign('web', trim($_POST['web']));
 				// Verificamos el formato.
-				if ( ! preg_match("/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i", $_POST['web']))
+				if ( ! preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i', $_POST['web']))
 				{
 					$errors[] = 'El sitio personal seleccionado no es correcto.';
 					$view->assign('estado_web', -1);
@@ -429,7 +433,7 @@ class Base_Controller_Cuenta extends Controller {
 			{
 				$view->assign('facebook', trim($_POST['facebook']));
 				// Verificamos el formato.
-				if ( ! preg_match('/^[a-z\d.]{5,}$/i', $_POST['facebook']))
+				if ( ! preg_match('/^[a-z\d.]{5,}$/Di', $_POST['facebook']))
 				{
 					$errors[] = 'La URL de facebook no es correcta.';
 					$view->assign('estado_facebook', -1);
@@ -453,7 +457,7 @@ class Base_Controller_Cuenta extends Controller {
 			{
 				$view->assign('twitter', trim($_POST['twitter']));
 				// Verificamos el formato.
-				if ( ! preg_match('/^[a-z\d.]{5,}$/i', $_POST['twitter']))
+				if ( ! preg_match('/^[a-z\d.]{5,}$/Di', $_POST['twitter']))
 				{
 					$errors[] = 'La URL de twitter no es correcta.';
 					$view->assign('estado_twitter', -1);
@@ -482,7 +486,7 @@ class Base_Controller_Cuenta extends Controller {
 				'tatuajes',
 				'piercings',
 			);
-			foreach($me_gustaria_listado as $key)
+			foreach ($me_gustaria_listado as $key)
 			{
 				$checked = isset($_POST[$key]);
 
@@ -573,7 +577,7 @@ class Base_Controller_Cuenta extends Controller {
 
 				'nivel_ingresos' => array('El nivel de ingresos seleccionado no es correcto.', array('sin_ingresos', 'bajos', 'intermedios', 'altos')),
 			);
-			foreach($select_list as $key => $datos)
+			foreach ($select_list as $key => $datos)
 			{
 				if (isset($_POST[$key]) && ! empty($_POST[$key]))
 				{
@@ -605,7 +609,7 @@ class Base_Controller_Cuenta extends Controller {
 				$view->assign('profesion', trim($_POST['profesion']));
 				// Verificamos el formato.
 				//TODO: Caracteres extra.
-				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/', $_POST['profesion']))
+				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/D', $_POST['profesion']))
 				{
 					$errors[] = 'La profesión seleccionada no es correcta.';
 					$view->assign('estado_profesion', -1);
@@ -630,7 +634,7 @@ class Base_Controller_Cuenta extends Controller {
 				$view->assign('empresa', trim($_POST['empresa']));
 				// Verificamos el formato.
 				//TODO: Caracteres extra.
-				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/', $_POST['empresa']))
+				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/D', $_POST['empresa']))
 				{
 					$errors[] = 'La empresa seleccionada no es correcta.';
 					$view->assign('estado_empresa', -1);
@@ -669,7 +673,7 @@ class Base_Controller_Cuenta extends Controller {
 				{
 					$view->assign($key, trim($_POST[$key]));
 					// Verificamos el formato.
-					if ( ! preg_match('/^[a-z0-9\.,:\'"\s]{6,400}$/i', $_POST[$key]))
+					if ( ! preg_match('/^[a-z0-9\.,:\'"\s]{6,400}$/Di', $_POST[$key]))
 					{
 						$errors[] = $value;
 						$view->assign('estado_'.$key, -1);
@@ -732,7 +736,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view = View::factory('cuenta/password');
 
 		// Cargamos el usuario actual.
-		$model_usuario = new Model_Usuario((int) Session::get('usuario_id'));
+		$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
 		$view->assign('email', $model_usuario->email);
 
 		// Valores por defecto.
@@ -744,11 +748,9 @@ class Base_Controller_Cuenta extends Controller {
 		if (Request::method() == 'POST')
 		{
 			// Verificamos que estén los datos.
-			if (
-				( ! isset($_POST['current']) || empty($_POST['current'])) ||
+			if (( ! isset($_POST['current']) || empty($_POST['current'])) ||
 				( ! isset($_POST['password']) || empty($_POST['password'])) ||
-				( ! isset($_POST['cpassword']) || empty($_POST['cpassword']))
-			   )
+				( ! isset($_POST['cpassword']) || empty($_POST['cpassword'])))
 			{
 				if ( ! isset($_POST['current']) || empty($_POST['current']))
 				{
@@ -771,7 +773,7 @@ class Base_Controller_Cuenta extends Controller {
 			else
 			{
 				// Comprobamos el formato
-				if ( ! preg_match('/^[a-zA-Z0-9]{6,20}$/', $_POST['password']) || $_POST['password'] != $_POST['cpassword'])
+				if ( ! preg_match('/^[a-zA-Z0-9]{6,20}$/D', $_POST['password']) || $_POST['password'] != $_POST['cpassword'])
 				{
 					if ($_POST['password'] != $_POST['cpassword'])
 					{
@@ -789,7 +791,7 @@ class Base_Controller_Cuenta extends Controller {
 					// Verificamos la contraseña.
 					$enc = new Phpass(8, FALSE);
 
-					if ( ! $enc->CheckPassword($_POST['current'], $model_usuario->password))
+					if ( ! $enc->check_password($_POST['current'], $model_usuario->password))
 					{
 						$view->assign('error', 'La contrase&ntilde;a es incorrecta.');
 						$view->assign('error_current', TRUE);
@@ -824,7 +826,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view = View::factory('cuenta/nick');
 
 		// Cargamos el usuario actual.
-		$model_usuario = new Model_Usuario((int) Session::get('usuario_id'));
+		$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
 
 		$view->assign('email', $model_usuario->email);
 
@@ -840,7 +842,7 @@ class Base_Controller_Cuenta extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			if ( ( ! isset($_POST['nick']) || empty($_POST['nick']) ) || ( ! isset($_POST['password']) || empty($_POST['password'])))
+			if (( ! isset($_POST['nick']) || empty($_POST['nick'])) || ( ! isset($_POST['password']) || empty($_POST['password'])))
 			{
 				// Verificamos los datos
 				if ( ! isset($_POST['nick']) || empty($_POST['nick']))
@@ -865,7 +867,7 @@ class Base_Controller_Cuenta extends Controller {
 				$view->assign('nick', $nick);
 
 				// Verifico longitud Nick.
-				if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/', $nick))
+				if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/D', $nick))
 				{
 					$view->assign('error_nick', 'El nick debe tener entre 4 y 20 caracteres alphanum&eacute;ricos.');
 				}
@@ -874,7 +876,7 @@ class Base_Controller_Cuenta extends Controller {
 					// Verifico la contraseña.
 					$enc = new Phpass(8, FALSE);
 
-					if ( ! $enc->CheckPassword($password, $model_usuario->password))
+					if ( ! $enc->check_password($password, $model_usuario->password))
 					{
 						$view->assign('error_password', 'La contrase&ntilde;a es incorrecta.');
 					}

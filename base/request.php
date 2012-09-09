@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase con metodos genericos sobre las peticiones como si es la inicial,
@@ -43,22 +43,25 @@ class Base_Request {
 	 * @param string $call Url llamada.
 	 * @param string $method
 	 */
-	public static function addStack($call, $method = 'GET')
+	public static function add_stack($method = NULL, $controller, $action, $params, $plugin)
 	{
-		// Verificamos que sea un arreglo.
-		if ( ! is_array(self::$request))
-		{
-			self::$request = array();
-		}
+		// Obtenemos metodo.
+		$method = ($method === NULL) ? (self::method()) : $method;
 
 		// Agregamos la petición al stack.
-		self::$request[] = array($call, $method);
+		self::$request[] = array(
+			'method' => $method,
+			'controller' => $controller,
+			'action' => $action,
+			'args' => $params,
+			'plugin' => $plugin
+		);
 	}
 
 	/**
 	 * Damos por terminada la última petición del stack de llamadas.
 	 */
-	public static function popStack()
+	public static function pop_stack()
 	{
 		if (is_array(self::$request) && count(self::$request) > 0)
 		{

@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Controller
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Controlador de la portada.
@@ -111,20 +111,20 @@ class Base_Controller_Post extends Controller {
 			}
 			else
 			{
-				$view->assign('es_favorito', $model_post->es_favorito( (int)Session::get('usuario_id')));
-				$view->assign('sigo_post', $model_post->es_seguidor( (int)Session::get('usuario_id')));
-				if ($model_post->dio_puntos((int)Session::get('usuario_id')))
+				$view->assign('es_favorito', $model_post->es_favorito( (int) Session::get('usuario_id')));
+				$view->assign('sigo_post', $model_post->es_seguidor( (int) Session::get('usuario_id')));
+				if ($model_post->dio_puntos( (int) Session::get('usuario_id')))
 				{
 					$view->assign('puntuacion', FALSE);
 				}
 				else
 				{
 					// Obtenemos puntos disponibles.
-					$m_user = new Model_Usuario((int)Session::get('usuario_id'));
+					$m_user = new Model_Usuario( (int) Session::get('usuario_id'));
 					$p_d = $m_user->puntos_disponibles;
 
 					$p_arr = array();
-					for($i = 1; $i <= $p_d; $i++)
+					for ($i = 1; $i <= $p_d; $i++)
 					{
 						$p_arr[] = $i;
 					}
@@ -143,7 +143,7 @@ class Base_Controller_Post extends Controller {
 			// Comentarios del post.
 			$cmts = $model_post->comentarios();
 			$l_cmt = array();
-			foreach($cmts as $cmt)
+			foreach ($cmts as $cmt)
 			{
 				$cl_cmt = $cmt->as_array();
 				if ($cl_cmt['usuario_id'] == Session::get('usuario_id'))
@@ -152,7 +152,7 @@ class Base_Controller_Post extends Controller {
 				}
 				else
 				{
-					$cl_cmt['vote'] = $cmt->ya_voto( (int)Session::get('usuario_id'));
+					$cl_cmt['vote'] = $cmt->ya_voto( (int) Session::get('usuario_id'));
 				}
 				$cl_cmt['votos'] = $cmt->cantidad_votos();
 				$cl_cmt['usuario'] = $cmt->usuario()->as_array();
@@ -229,7 +229,7 @@ class Base_Controller_Post extends Controller {
 			//TODO: verificar XSS y transformar.
 
 			// Insertamos el comentario.
-			$model_post->comentar((int) Session::get('usuario_id'), $comentario);
+			$model_post->comentar( (int) Session::get('usuario_id'), $comentario);
 
 			Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
 
@@ -259,9 +259,9 @@ class Base_Controller_Post extends Controller {
 		if ($model_post->usuario_id != Session::get('usuario_id'))
 		{
 			// Verificamos el voto.
-			if ( ! $model_post->es_favorito((int) Session::get('usuario_id')))
+			if ( ! $model_post->es_favorito( (int) Session::get('usuario_id')))
 			{
-				$model_post->favorito((int) Session::get('usuario_id'));
+				$model_post->favorito( (int) Session::get('usuario_id'));
 			}
 		}
 		Request::redirect('/post/index/'.$post);
@@ -275,10 +275,10 @@ class Base_Controller_Post extends Controller {
 	public function action_voto_comentario($comentario, $voto)
 	{
 		// Obtenemos el voto.
-		$voto = $voto == 1 ? TRUE : FALSE;
+		$voto = $voto == 1;
 
 		// Cargamos el comentario.
-		$model_comentario = new Model_Post_Comentario((int) $comentario);
+		$model_comentario = new Model_Post_Comentario( (int) $comentario);
 
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
@@ -399,13 +399,13 @@ class Base_Controller_Post extends Controller {
 		$view = View::factory('post/nuevo');
 
 		// Elementos por defecto.
-		foreach(array('titulo', 'contenido', 'categoria', 'privado', 'sponsored', 'sticky', 'error_titulo', 'error_contenido', 'error_categoria') as $k)
+		foreach (array('titulo', 'contenido', 'categoria', 'privado', 'sponsored', 'sticky', 'error_titulo', 'error_contenido', 'error_categoria') as $k)
 		{
 			$view->assign($k, '');
 		}
 
 		// Listado de categorias.
-		$model_categoria = new Model_Post_Categoria();
+		$model_categoria = new Model_Post_Categoria;
 		$view->assign('categorias', $model_categoria->lista());
 
 		// Menu.
@@ -420,21 +420,21 @@ class Base_Controller_Post extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los datos y seteamos valores.
-			foreach(array('titulo', 'contenido', 'categoria') as $k)
+			foreach (array('titulo', 'contenido', 'categoria') as $k)
 			{
 				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
 				$view->assign($k, $$k);
 			}
 
 			// Obtenemos los checkbox.
-			foreach(array('privado', 'sponsored', 'sticky') as $k)
+			foreach (array('privado', 'sponsored', 'sticky') as $k)
 			{
-				$$k = isset($_POST[$k]) ? $_POST[$k] == 1 : FALSE;
+				$$k = isset($_POST[$k]) ? ($_POST[$k] == 1) : FALSE;
 				$view->assign($k, $$k);
 			}
 
 			// Verificamos el titulo.
-			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/', $titulo))
+			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/D', $titulo))
 			{
 				$view->assign('error_titulo', 'El formato del título no es correcto.');
 				$error = TRUE;
@@ -448,7 +448,7 @@ class Base_Controller_Post extends Controller {
 			}
 
 			// Verificamos la categoria.
-			$model_categoria = new Model_Post_Categoria();
+			$model_categoria = new Model_Post_Categoria;
 			if ( ! $model_categoria->existe_seo($categoria))
 			{
 				$view->assign('error_categoria', 'La categoría seleccionada es incorrecta.');
@@ -467,10 +467,10 @@ class Base_Controller_Post extends Controller {
 				// Formateamos los campos.
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
 
-				$model_post = new Model_Post();
-				$post_id = $model_post->crear((int) Session::get('usuario_id'), $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky);
+				$model_post = new Model_Post;
+				$post_id = $model_post->crear( (int) Session::get('usuario_id'), $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky);
 
-				if($post_id > 0)
+				if ($post_id > 0)
 				{
 					Request::redirect('/post/index/'.$post_id);
 				}

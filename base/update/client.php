@@ -21,7 +21,7 @@
  * @subpackage  Update
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase para realizar las peticiones al servidor.
@@ -87,7 +87,7 @@ class Base_Update_Client {
     {
 		// Armamos la petición.
 		$post = array();
-		foreach($pkg_list as $hash => $version)
+		foreach ($pkg_list as $hash => $version)
 		{
 			$post[] = "pkg_list[]=$hash,$version";
 		}
@@ -146,7 +146,7 @@ class Base_Update_Client {
 	 */
 	public function get_last_version($hash)
 	{
-		//try {
+		// try {
 			$rst = $this->request->call("/paquete/lastVersion/{$this->token}/$hash");
 			if ($rst->is_valid())
 			{
@@ -156,12 +156,12 @@ class Base_Update_Client {
 			{
 				return FALSE;
 			}
-		//}
-		//catch (Exception $e)
-		//{
-		//	var_dump($e->getMessage(), $e->getCode());
-		//	return FALSE;
-		//}
+		// }
+		// catch (Exception $e)
+		// {
+		// var_dump($e->getMessage(), $e->getCode());
+		// return FALSE;
+		// }
 	}
 
 }

@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase para el manejo del modo mantenimiento. Se encarga de administrar
@@ -71,7 +71,7 @@ class Base_Mantenimiento {
 		$range_list = file($this->lock_file);
 
 		// Verificamos.
-		foreach($range_list as $range)
+		foreach ($range_list as $range)
 		{
 			if (IP::ip_in_range($ip, $range))
 			{

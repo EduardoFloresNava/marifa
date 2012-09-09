@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase base de la cache. Configura y devuelve un driver para su uso.
@@ -40,13 +40,15 @@ class Base_Cache {
 	/**
 	 * No se deben generar instancias de Cache.
 	 */
-	private function __construct() {}
+	private function __construct()
+	{
+	}
 
 	/**
 	 * Obtenemos un driver
 	 * @return Cache_Driver
 	 */
-	public static function getInstance()
+	public static function get_instance()
 	{
 		if ( ! isset(self::$instance))
 		{
@@ -73,7 +75,7 @@ class Base_Cache {
 				// Not dummy.
 
 				// Verificamos el tipo.
-				if ( !in_array($data['type'], array('dummy', 'apc', 'file', 'memcached')))
+				if ( ! in_array($data['type'], array('dummy', 'apc', 'file', 'memcached')))
 				{
 					throw new Exception("Invalid cache type '{$data['type']}'.");
 				}
@@ -110,7 +112,7 @@ class Base_Cache {
 						break;
 					case 'file':
 						// Obtenemos el path.
-						$p = isset($data['path']) ? $data['path'] : APP_BASE.DS.'cache'.DS.'file'.DS;
+						$p = isset($data['path']) ? $data['path'] : (APP_BASE.DS.'cache'.DS.'file'.DS);
 
 						// Verificamos que tenga barra final.
 						if (substr($p, -1) !== DS)
@@ -125,7 +127,7 @@ class Base_Cache {
 						}
 
 						// Verificamos los permisos.
-						if ( !is_writable($p))
+						if ( ! is_writable($p))
 						{
 							throw new Exception('El directorio para la cache no tiene permisos de escritura.');
 						}
@@ -147,11 +149,15 @@ class Base_Cache {
 	 * Patrón singleton, no se permite clonar
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function __clone() {}
+	public function __clone()
+	{
+	}
 
 	/**
 	 * Patrón singleton, no se permite deserealizar.
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function __wakeup() {}
+	public function __wakeup()
+	{
+	}
 }

@@ -20,7 +20,7 @@
  * @filesource
  * @package		Marifa\Base
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase para el manejo de las sessiones.
@@ -75,7 +75,7 @@ class Base_Session {
 	 */
 	public static function get($var)
 	{
-		return self::is_set($var) ? base64_decode($_SESSION[md5($var.self::$key)]) : NULL;
+		return (self::is_set($var)) ? (base64_decode($_SESSION[md5($var.self::$key)])) : NULL;
 	}
 
 	/**

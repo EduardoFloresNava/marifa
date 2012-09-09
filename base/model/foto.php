@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Model
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Modelo de las fotos.
@@ -162,7 +162,7 @@ class Base_Model_Foto extends Model_Dataset {
 		$rst->set_cast_type(Database_Query::FIELD_INT);
 
 		$lst = array();
-		foreach($rst as $r)
+		foreach ($rst as $r)
 		{
 			$lst[] = new Model_Foto_Comentario($r[0]);
 		}

@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Database\Driver
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase que representa una consulta SQL realizada desde MySQL.
@@ -94,7 +94,7 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 
 	/**
 	 * Obtenemos un elemento del resultado.
-	 * @param $type Tipo de retorno de los valores.
+	 * @param int $type Tipo de retorno de los valores.
 	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return mixed
 	 */
@@ -144,7 +144,7 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 					$cast = $this->expand_cast_list($cast, array_keys(get_object_vars($object)));
 
 					// Realizamos el cast.
-					foreach($cast as $k => $v)
+					foreach ($cast as $k => $v)
 					{
 						$object->$k = $this->cast_field($object->$k, $v);
 					}
@@ -169,7 +169,7 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 					$cast = $this->expand_cast_list($cast, array_keys($resultado));
 
 					// Realizamos el cast.
-					foreach($cast as $k => $v)
+					foreach ($cast as $k => $v)
 					{
 						$resultado[$k] = $this->cast_field($resultado[$k], $v);
 					}
@@ -181,7 +181,7 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 
 	/**
 	 * Obtenemos un arreglo de elementos.
-	 * @param $type Tipo de retorno de los valores.
+	 * @param int $type Tipo de retorno de los valores.
 	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return array
 	 */

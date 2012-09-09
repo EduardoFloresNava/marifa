@@ -72,7 +72,7 @@ define('PLUGINS_PATH', 'plugin');
 /**
  * Directorio de las vistas.
  */
-define('VIEW_PATH', 'view');
+define('VIEW_PATH', 'theme'.DS);
 
 /**
  * Directorio de la cache.
@@ -87,13 +87,13 @@ require_once (APP_BASE.DS.'marifa'.DS.'loader.php');
 spl_autoload_register('Loader::load');
 
 // Iniciamos el manejo de errores.
-Error::getInstance()->start(DEBUG);
+Error::get_instance()->start(DEBUG);
 
 // Verificamos bloqueos.
 $lock = new Mantenimiento();
 if ($lock->is_locked())
 {
-	if ($lock->is_locked_for(IP::getIpAddr()))
+	if ($lock->is_locked_for(IP::get_ip_addr()))
 	{
 		die("Modo mantenimiento activado.");
 	}
@@ -118,7 +118,7 @@ else
 Configuraciones::set('cache.type', NULL);
 
 // Cargamos la cache.
-Cache::getInstance();
+Cache::get_instance();
 
 // Cargamos las configuraciones del gestor de actualizaciones.
 if ( file_exists(CONFIG_PATH.DS.'update.php'))
@@ -130,18 +130,29 @@ if ( file_exists(CONFIG_PATH.DS.'update.php'))
 if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 {
 	// Generamos la lista de plugins.
-	Plugin_Manager::getInstance()->regenerar_lista();
+	Plugin_Manager::get_instance()->regenerar_lista();
 }
 
 // Iniciamos la session.
 Session::start('random_value');
+
+
+function __($str, $echo = TRUE)
+{
+	if ($echo)
+	{
+		echo $str;
+	}
+	else
+	{
+		return $str;
+	}
+}
 
 // Cargamos el despachador y damos el control al controlador correspondiente.
 Dispatcher::dispatch();
 
 if (DEBUG)
 {
-	Profiler_Profiler::getInstance()->display();
-	// Mostramos rendimiento.
-	//echo(Update_Utils::formatBytes(memory_get_peak_usage(), 1).' - '.round(microtime(true) - $timestart, 1).'s');
+	Profiler_Profiler::get_instance()->display();
 }

@@ -21,7 +21,7 @@
  * @package		Marifa\Base
  * @subpackage  Database
  */
-defined('APP_BASE') or die('No direct access allowed.');
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Interface para los objetos devueltos por las consultas de selección.
@@ -163,7 +163,7 @@ abstract class Base_Database_Query implements Iterator {
 	{
 		$dt = $this->get_record(self::FETCH_NUM);
 
-		$v = is_array($dt) && isset($dt[0]) ? $dt[0] : NULL;
+		$v = (is_array($dt) && isset($dt[0])) ? $dt[0] : NULL;
 
 		if ($cast !== NULL)
 		{
@@ -187,12 +187,12 @@ abstract class Base_Database_Query implements Iterator {
 		// Armamos arreglo inicial.
 		if ( ! is_array($list))
 		{
-			$list = $list == NULL ? array() : array($list);
+			$list = ($list == NULL) ? array() : array($list);
 		}
 
 		if (is_array($cant))
 		{
-			foreach($cant as $k)
+			foreach ($cant as $k)
 			{
 				if ( ! isset($list[$k]))
 				{
@@ -203,7 +203,7 @@ abstract class Base_Database_Query implements Iterator {
 		else
 		{
 			// Expandimos hasta completar.
-			for($i = 0; $i < $cant; $i++)
+			for ($i = 0; $i < $cant; $i++)
 			{
 				if ( ! isset($list[$i]))
 				{
@@ -229,7 +229,7 @@ abstract class Base_Database_Query implements Iterator {
 
 		$dt = $this->get_records(self::FETCH_NUM);
 		$rst = array();
-		foreach($dt as $data)
+		foreach ($dt as $data)
 		{
 			// Verificamos si hay cast o no. Se valida a fines de rendimiento.
 			if ($cast !== NULL)
