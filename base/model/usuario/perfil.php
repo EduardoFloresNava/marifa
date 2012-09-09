@@ -39,6 +39,13 @@ class Base_Model_Usuario_Perfil extends Model {
 	protected $usuario_id;
 
 	/**
+	 * Cache con el listado de elementos.
+	 * Permite minimizar el número de consultas.
+	 * @var null|array
+	 */
+	protected $fields;
+
+	/**
 	 * Instanciamos las configuraciones del usuario.
 	 * @param int $usuario_id ID del usuario.
 	 */
@@ -47,6 +54,19 @@ class Base_Model_Usuario_Perfil extends Model {
 		parent::__construct();
 
 		$this->usuario_id = $usuario_id;
+	}
+
+	/**
+	 * Cargamos el listado de campos espeficados.
+	 * @param array $fields
+	 */
+	public function load_list($fields)
+	{
+		if ( ! is_array($this->fields))
+		{
+			$this->fields = array();
+		}
+		$this->fields = array_merge($this->fields, $this->db->query('SELECT campo, valor FROM usuario_perfil WHERE usuario_id = ? AND campo IN (?)', array($this->usuario_id, $fields))->get_pairs());
 	}
 
 	/**
@@ -65,6 +85,14 @@ class Base_Model_Usuario_Perfil extends Model {
 	 */
 	public function __get($name)
 	{
+		if (is_array($this->fields))
+		{
+			if (isset($this->fields[$name]))
+			{
+				return $this->fields[$name];
+			}
+		}
+
 		if (isset($this->$name))
 		{
 			return $this->db->query('SELECT valor FROM usuario_perfil WHERE campo = ? AND usuario_id = ?', array($name, $this->usuario_id))->get_var();
@@ -83,6 +111,11 @@ class Base_Model_Usuario_Perfil extends Model {
 	 */
 	public function __set($name, $value)
 	{
+		if (is_array($this->fields))
+		{
+			$this->fields[$name] = $value;
+		}
+
 		if (isset($this->$name))
 		{
 			$this->db->update('UPDATE usuario_perfil SET valor = ? WHERE campo = ? AND usuario_id = ?', array($value, $name, $this->usuario_id));
@@ -100,6 +133,13 @@ class Base_Model_Usuario_Perfil extends Model {
 	 */
 	public function __isset($name)
 	{
+		if (is_array($this->fields))
+		{
+			if (isset($this->fields[$name]))
+			{
+				return TRUE;
+			}
+		}
 		return $this->db->query('SELECT campo FROM usuario_perfil WHERE campo = ? AND usuario_id = ? LIMIT 1', array($name, $this->usuario_id))->num_rows() > 0;
 	}
 
@@ -109,6 +149,10 @@ class Base_Model_Usuario_Perfil extends Model {
 	 */
 	public function __unset($name)
 	{
+		if (is_array($this->fields))
+		{
+			unset($this->fields[$name]);
+		}
 		$this->db->delete('DELETE FROM usuario_perfil WHERE campo = ? AND usuario_id', array($name, $this->usuario_id));
 	}
 

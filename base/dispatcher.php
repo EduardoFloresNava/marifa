@@ -113,6 +113,13 @@ class Base_Dispatcher {
 			$url = '';
 		}
 
+		// Verificamos theme.
+		if (preg_match('/^(\/){0,1}(theme)\/([a-z0-9_]+)\/(assets)\/(css|js)\/([a-z0-9_\.]+)(\.css|\.js)$/D', $url)
+			|| preg_match('/^(\/){0,1}(plugin)\/([a-z0-9]+)\/(theme)\/([a-z0-9_]+)\/(assets)\/(css|js)\/([a-z0-9_\.]+)(\.css|\.js)$/D', $url))
+		{
+			Assets::reverse_compile(APP_BASE.DS.$url, ! DEBUG);
+		}
+
 		return self::route($url);
 	}
 

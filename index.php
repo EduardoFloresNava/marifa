@@ -72,7 +72,7 @@ define('PLUGINS_PATH', 'plugin');
 /**
  * Directorio de las vistas.
  */
-define('VIEW_PATH', 'theme'.DS.'default');
+define('VIEW_PATH', 'theme'.DS);
 
 /**
  * Directorio de la cache.
@@ -135,6 +135,19 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 
 // Iniciamos la session.
 Session::start('random_value');
+
+
+function __($str, $echo = TRUE)
+{
+	if ($echo)
+	{
+		echo $str;
+	}
+	else
+	{
+		return $str;
+	}
+}
 
 // Cargamos el despachador y damos el control al controlador correspondiente.
 Dispatcher::dispatch();

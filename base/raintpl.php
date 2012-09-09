@@ -88,14 +88,14 @@ class Base_RainTPL extends Lib_RainTPL {
 			$plugin = strtolower($s_list[1]);
 
 			// Generamos la ruta de la vista.
-			$template_name = PLUGINS_PATH.DS.$plugin.DS.VIEW_PATH.DS.$tpl_name;
+			$template_name = PLUGINS_PATH.DS.$plugin.DS.VIEW_PATH.DS.'views'.DS.$tpl_name;
 		}
 		else
 		{
 			// Es la vista del nucleo.
 
 			// Generamos el nombre de la vista.
-			$template_name = VIEW_PATH.DS.$tpl_name;
+			$template_name = VIEW_PATH.View::$theme.DS.'views'.DS.$tpl_name;
 		}
 
 		// Enviamos a rainTPL para que lo procese.
@@ -117,6 +117,16 @@ class Base_RainTPL extends Lib_RainTPL {
 	public function show()
 	{
 		$this->draw(NULL, FALSE);
+	}
+
+	protected function reduce_path($path)
+	{
+		return self::$base_url;
+		/**
+		var_dump($path);
+		$r = parent::reduce_path($path);
+		var_dump($r);
+		return $r;*/
 	}
 
 }
