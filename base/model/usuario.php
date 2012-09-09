@@ -325,7 +325,11 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function perfil()
 	{
-		return new Model_Usuario_Perfil($this->primary_key['id']);
+		if ( ! isset($this->_perfil))
+		{
+			$this->_perfil = new Model_Usuario_Perfil($this->primary_key['id']);
+		}
+		return $this->_perfil;
 	}
 
 	/**
@@ -338,12 +342,53 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * Obtenemos los seguidores del usuario.
+	 * @return array
+	 */
+	public function seguidores()
+	{
+		$lista = $this->db->query('SELECT seguidor_id FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach($lista as $l)
+		{
+			$lst[] = new Model_Usuario($l);
+		}
+		return $lst;
+	}
+
+	/**
+	 * Obtenemos la lista de usuarios que sigue.
+	 * @return array
+	 */
+	public function sigue()
+	{
+		$lista = $this->db->query('SELECT usuario_id FROM usuario_seguidor WHERE seguidor_id = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach($lista as $l)
+		{
+			$lst[] = new Model_Usuario($l);
+		}
+		return $lst;
+	}
+
+	/**
 	 * Cantidad de posts que realizó el usuario.
 	 * @return int
 	 */
 	public function cantidad_posts()
 	{
 		return $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Cantidad de fotos que tiene el usuario.
+	 * @return int
+	 */
+	public function cantidad_fotos()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -366,5 +411,23 @@ class Base_Model_Usuario extends Model_Dataset {
 	public function cantidad_puntos()
 	{
 		return (int) $this->db->query('SELECT SUM(cantidad) FROM post_punto, post WHERE post.id = post_punto.post_id AND post.usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Obtenemos el listado de posts del usuario ordenados por fecha.
+	 * @param int $cantidad Cantidad de posts a devolver por página.
+	 * @param int $pagina Número de página empezando por 0.
+	 * @return array
+	 */
+	public function posts_perfil_by_fecha($cantidad, $pagina = 0)
+	{
+		$posts = $this->db->query('SELECT id FROM post WHERE usuario_id = ? ORDER BY fecha DESC LIMIT '.$pagina*$cantidad.','.$cantidad, $this->primary_key['id'])->get_pairs();
+
+		$lst = array();
+		foreach($posts as $p)
+		{
+			$lst[] = new Model_Post($p);
+		}
+		return $lst;
 	}
 }

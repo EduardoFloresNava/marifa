@@ -76,6 +76,8 @@ class Base_Controller_Cuenta extends Controller {
 		// Cargamos el usuario.
 		$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
 
+		$model_usuario->perfil()->load_list(array('origen', 'sexo', 'nacimiento'));
+
 		// Seteamos los datos actuales.
 		$view->assign('error', array());
 		$view->assign('email', $model_usuario->email);
@@ -339,6 +341,8 @@ class Base_Controller_Cuenta extends Controller {
 			'comida_favorita',
 			'mis_heroes',
 		);
+
+		$model_usuario->perfil()->load_list($fields);
 
 		foreach ($fields as $value)
 		{
