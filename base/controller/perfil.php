@@ -77,7 +77,7 @@ class Base_Controller_Perfil extends Controller {
 			'informacion' => array('link' => '/perfil/index/'.$usuario, 'caption' => __('Información', FALSE), 'active' =>  $activo == 'informacion' || $activo == 'index'),
 			'posts' => array('link' => '/perfil/posts/'.$usuario, 'caption' => __('Posts', FALSE), 'active' =>  $activo == 'posts'),
 			'seguidores' => array('link' => '/perfil/seguidores/'.$usuario, 'caption' => __('Seguidores', FALSE), 'active' =>  $activo == 'seguidores'),
-			'medallas' => array('link' => '/perfil/medallas/'.$usuario, 'caption' => __('Medallas', FALSE), 'active' =>  $activo == 'medallas'),
+			// 'medallas' => array('link' => '/perfil/medallas/'.$usuario, 'caption' => __('Medallas', FALSE), 'active' =>  $activo == 'medallas'),
 		);
 	}
 
@@ -246,7 +246,7 @@ class Base_Controller_Perfil extends Controller {
 		}
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$usuario);
+		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
 	}
 
 	/**
@@ -295,7 +295,7 @@ class Base_Controller_Perfil extends Controller {
 		}
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$usuario);
+		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
 	}
 
 	/**
@@ -354,7 +354,48 @@ class Base_Controller_Perfil extends Controller {
 		}
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$usuario);
+		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+	}
+
+	/**
+	 * Muro del usuario.
+	 * @param int $usuario ID del usuario.
+	 */
+	public function action_muro($usuario)
+	{
+		// Cargamos el usuario.
+		$usuario = $this->cargar_usuario($usuario);
+
+		// Cargamos la vista de información.
+		$information_view = View::factory('perfil/muro');
+
+		// Información del usuario actual.
+		$information_view->assign('usuario', $this->usuario->as_array());
+
+		// Listado de eventos.
+		//TODO: agregar listado de eventos.
+		$information_view->assign('eventos', array());
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $this->header_block($information_view->parse()));
+		unset($information_view);
+
+		// Acciones para menu offline.
+		if ( ! Session::is_set('usuario_id'))
+		{
+			// Seteamos menu offline.
+			$this->template->assign('master_bar', parent::base_menu_logout('posts'));
+			// $this->template->assign('top_bar', $this->submenu_logout('inicio'));
+		}
+		else
+		{
+			// Seteamos menu offline.
+			$this->template->assign('master_bar', parent::base_menu_login('posts'));
+			// $this->template->assign('top_bar', $this->submenu_login('inicio'));
+		}
+
+		// Seteamos el titulo.
+		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
 	}
 
 }
