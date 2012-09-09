@@ -635,7 +635,8 @@ class Base_Lib_RainTPL {
 			// all html code
 			else
 			{
-
+				// translate substitution (es. {@string@})
+				$html = $this->translate_replace($html, $left_delimiter = '\{', $right_delimiter = '\}', $php_left_delimiter = '<?php ', $php_right_delimiter = ';?>', $loop_level, $echo = TRUE);
 				// variables substitution (es. {$title})
 				$html = $this->var_replace($html, $left_delimiter = '\{', $right_delimiter = '\}', $php_left_delimiter = '<?php ', $php_right_delimiter = ';?>', $loop_level, $echo = TRUE);
 				// const substitution (es. {#CONST#})
@@ -740,6 +741,23 @@ class Base_Lib_RainTPL {
 	{
 		// const
 		return preg_replace('/\{\#(\w+)\#{0,1}\}/', $php_left_delimiter.($echo ? " echo " : NULL).'$1'.$php_right_delimiter, $html);
+	}
+
+	/**
+	 * replace translate
+	 * @param string $html
+	 * @param string $tag_left_delimiter
+	 * @param string $tag_right_delimiter
+	 * @param mixed $php_left_delimiter
+	 * @param mixed $php_right_delimiter
+	 * @param mixed $loop_level
+	 * @param mixed $echo
+	 * @return string
+	 */
+	function translate_replace($html, $tag_left_delimiter, $tag_right_delimiter, $php_left_delimiter = NULL, $php_right_delimiter = NULL, $loop_level = NULL, $echo = NULL)
+	{
+		// const
+		return preg_replace_callback('/\{\@([^\@\}]+)\@{0,1}\}/', create_function('$m', "return '{$php_left_delimiter}__(\''.preg_replace('/\'/', '\\\\\'', ".'$m[1]'.").'\'){$php_right_delimiter}';"), $html);
 	}
 
 	/**
