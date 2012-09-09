@@ -44,7 +44,7 @@ class Base_Update_Compresion_Tar extends Update_Compresion_Compresion {
 	public function compress($file, $base_path, $files)
 	{
 		$pt = new Update_Compresion_Pear_Tar($file, NULL);
-		return $pt->createModify($files, '', $base_path);
+		return $pt->create_modify($files, '', $base_path);
 	}
 
 	/**
@@ -55,6 +55,6 @@ class Base_Update_Compresion_Tar extends Update_Compresion_Compresion {
 	public function decompress($path)
 	{
 		$pt = new Update_Compresion_Pear_Tar($path, NULL);
-		return $pt->extractModify($this->temp_path, '', FALSE);
+		return $pt->extract_modify($this->temp_path, '', FALSE);
 	}
 }
