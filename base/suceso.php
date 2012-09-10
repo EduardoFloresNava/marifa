@@ -36,7 +36,7 @@ class Base_Suceso {
 	/**
 	 * Procesamos el suceso y devolvemos toda la información necesaria.
 	 * @param array $informacion Arreglo con la información del suceso.
-	 * @return array
+	 * @return array|null Null si no debe ser mostrado o no existe.
 	 */
 	public static function procesar($informacion)
 	{
@@ -51,11 +51,19 @@ class Base_Suceso {
 		// Verificamos si existe.
 		if ($data === FALSE)
 		{
-			// Procesamos el suceso.
-			$data = call_user_func('self::suceso_'.$informacion['tipo'], $informacion);
+			// Verificamos si existe.
+			if (function_exists('self::suceso_'.$informacion['tipo']))
+			{
+				// Procesamos el suceso.
+				$data = call_user_func('self::suceso_'.$informacion['tipo'], $informacion);
 
-			// Guardamos en la cache.
-			Cache::get_instance()->save($cache_id, $data);
+				// Guardamos en la cache.
+				Cache::get_instance()->save($cache_id, $data);
+			}
+			else
+			{
+				return NULL;
+			}
 		}
 
 		return $data;

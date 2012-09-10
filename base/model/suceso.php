@@ -98,7 +98,7 @@ class Base_Model_Suceso extends Model_Dataset {
 		$sucesos = $this->db->query('SELECT id FROM suceso WHERE usuario_id = ? ORDER BY fecha DESC LIMIT '.$primero.','.$cantidad, $usuario_id)->get_pairs(Database_Query::FIELD_INT);
 
 		$listado = array();
-		foreach($sucesos as $s)
+		foreach ($sucesos as $s)
 		{
 			$listado[] = new Model_Suceso($s);
 		}

@@ -350,7 +350,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		$lista = $this->db->query('SELECT seguidor_id FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
-		foreach($lista as $l)
+		foreach ($lista as $l)
 		{
 			$lst[] = new Model_Usuario($l);
 		}
@@ -366,7 +366,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		$lista = $this->db->query('SELECT usuario_id FROM usuario_seguidor WHERE seguidor_id = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
-		foreach($lista as $l)
+		foreach ($lista as $l)
 		{
 			$lst[] = new Model_Usuario($l);
 		}
@@ -424,7 +424,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		$posts = $this->db->query('SELECT id FROM post WHERE usuario_id = ? ORDER BY fecha DESC LIMIT '.$pagina*$cantidad.','.$cantidad, $this->primary_key['id'])->get_pairs();
 
 		$lst = array();
-		foreach($posts as $p)
+		foreach ($posts as $p)
 		{
 			$lst[] = new Model_Post($p);
 		}

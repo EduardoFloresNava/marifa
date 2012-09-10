@@ -378,8 +378,17 @@ class Base_Controller_Perfil extends Controller {
 		$lst = $model_sucesos->obtener_by_usuario($this->usuario->as_object()->id);
 
 		$eventos = array();
-		foreach($lst as $v)
+		foreach ($lst as $v)
 		{
+			// Obtengo información del suceso.
+			$s_data = $v->get_data();
+
+			// Verifico su existencia.
+			if ($s_data === NULL)
+			{
+				continue;
+			}
+
 			// Obtenemos el tipo de suceso.
 			$tipo = $v->as_object()->tipo;
 
@@ -390,7 +399,7 @@ class Base_Controller_Perfil extends Controller {
 			$suceso_vista->assign('actual', $this->usuario->as_array());
 
 			// Asigno información del suceso.
-			$suceso_vista->assign('suceso', $v->get_data());
+			$suceso_vista->assign('suceso', $s_data);
 
 			// Agregamos el evento.
 			$eventos[] = $suceso_vista->parse();
