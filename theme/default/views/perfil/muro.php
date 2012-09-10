@@ -6,3 +6,4 @@
 		</form>
 	</div>
 </div>
+{loop="$eventos"}<div class="well">{$value}</div>{/loop}

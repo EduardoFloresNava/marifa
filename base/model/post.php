@@ -301,10 +301,11 @@ class Base_Model_Post extends Model_Dataset {
 	 * Agregamos un comentario al post.
 	 * @param int $usuario_id Quien realiza el comentario.
 	 * @param string $contenido Contenido del comentario.
+	 * @return int
 	 */
 	public function comentar($usuario_id, $contenido)
 	{
-		$this->db->insert('INSERT INTO post_comentario (post_id, usuario_id, fecha, contenido, estado) VALUES (?, ?, ?, ?, ?)',
+		list($id, $c) = $this->db->insert('INSERT INTO post_comentario (post_id, usuario_id, fecha, contenido, estado) VALUES (?, ?, ?, ?, ?)',
 			array(
 				$this->primary_key['id'],
 				$usuario_id,
@@ -312,6 +313,7 @@ class Base_Model_Post extends Model_Dataset {
 				$contenido,
 				0, //TODO: Ver los estados.
 			));
+		return ($c > 0) ? $id : FALSE;
 	}
 
 	/**

@@ -75,7 +75,7 @@
 					<div class="span11">
 						<div class="clearfix">
 							<span>
-								<a href="#">{$value.usuario.nick}</a>
+								<a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a>
 								<small>{function="$value.fecha->format('d/m/Y H:i:s')"}</small>
 								{if="$value.votos != 0"}<span class="badge badge-{if="$value.votos > 0"}success{else}important{/if}">{$value.votos|abs}</span>{/if}
 							</span>

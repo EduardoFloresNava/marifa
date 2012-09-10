@@ -229,11 +229,28 @@ class Base_Controller_Post extends Controller {
 			//TODO: verificar XSS y transformar.
 
 			// Insertamos el comentario.
-			$model_post->comentar( (int) Session::get('usuario_id'), $comentario);
+			$id = $model_post->comentar( (int) Session::get('usuario_id'), $comentario);
 
-			Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
+			if ($id)
+			{
+				// Agregamos los sucesos.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear( (int) Session::get('usuario_id'), 'comentario_post', $id);
+				$model_suceso->crear($model_post->usuario_id, 'comentario_post', $id);
 
-			Request::redirect('/post/index/'.$post);
+				Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
+
+				Request::redirect('/post/index/'.$post);
+			}
+			else
+			{
+				Session::set('post_comentario_error', 'Se produjo un error al colocar el comentario. Reintente.');
+
+				// Evitamos la salida de la vista actual.
+				$this->template = NULL;
+
+				Dispatcher::call('/post/index/'.$post, TRUE);
+			}
 		}
 	}
 

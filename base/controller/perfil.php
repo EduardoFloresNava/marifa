@@ -373,8 +373,30 @@ class Base_Controller_Perfil extends Controller {
 		$information_view->assign('usuario', $this->usuario->as_array());
 
 		// Listado de eventos.
+		$model_sucesos = new Model_Suceso;
+
+		$lst = $model_sucesos->obtener_by_usuario($this->usuario->as_object()->id);
+
+		$eventos = array();
+		foreach($lst as $v)
+		{
+			// Obtenemos el tipo de suceso.
+			$tipo = $v->as_object()->tipo;
+
+			// Cargamos la vista.
+			$suceso_vista = View::factory('suceso/'.$tipo);
+
+			// Asigno los datos del usuario actual.
+			$suceso_vista->assign('actual', $this->usuario->as_array());
+
+			// Asigno información del suceso.
+			$suceso_vista->assign('suceso', $v->get_data());
+
+			// Agregamos el evento.
+			$eventos[] = $suceso_vista->parse();
+		}
 		//TODO: agregar listado de eventos.
-		$information_view->assign('eventos', array());
+		$information_view->assign('eventos', $eventos);
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $this->header_block($information_view->parse()));
