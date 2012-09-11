@@ -338,7 +338,21 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_seguidores()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		// Clave de la cache.
+		$cache_key = 'usuario_'.$this->primary_key['id'].'_seguidores';
+
+		// Obtenemos el objeto de cache.
+		$cantidad = Cache::get_instance()->get($cache_key);
+
+		if ( ! $cantidad)
+		{
+			$cantidad = $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+			// Guardo cache.
+			Cache::get_instance()->save($cache_key, $cantidad);
+		}
+
+		return $cantidad;
 	}
 
 	/**
@@ -350,7 +364,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		$lista = $this->db->query('SELECT seguidor_id FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
-		foreach($lista as $l)
+		foreach ($lista as $l)
 		{
 			$lst[] = new Model_Usuario($l);
 		}
@@ -366,7 +380,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		$lista = $this->db->query('SELECT usuario_id FROM usuario_seguidor WHERE seguidor_id = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
-		foreach($lista as $l)
+		foreach ($lista as $l)
 		{
 			$lst[] = new Model_Usuario($l);
 		}
@@ -379,7 +393,21 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_posts()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		// Clave de la cache.
+		$cache_key = 'usuario_'.$this->primary_key['id'].'_posts';
+
+		// Obtenemos el objeto de cache.
+		$cantidad = Cache::get_instance()->get($cache_key);
+
+		if ($cantidad === FALSE)
+		{
+			$cantidad = $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+			// Guardo cache.
+			Cache::get_instance()->save($cache_key, $cantidad);
+		}
+
+		return $cantidad;
 	}
 
 	/**
@@ -388,7 +416,21 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_fotos()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		// Clave de la cache.
+		$cache_key = 'usuario_'.$this->primary_key['id'].'_fotos';
+
+		// Obtenemos el objeto de cache.
+		$cantidad = Cache::get_instance()->get($cache_key);
+
+		if ($cantidad === FALSE)
+		{
+			$cantidad = $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+			// Guardo cache.
+			Cache::get_instance()->save($cache_key, $cantidad);
+		}
+
+		return $cantidad;
 	}
 
 	/**
@@ -397,11 +439,23 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_comentarios()
 	{
-		$c = 0;
-		$c += $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-		$c += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-		$c += $this->db->query('SELECT COUNT(*) FROM comunidad_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-		return $c;
+		// Clave de la cache.
+		$cache_key = 'usuario_'.$this->primary_key['id'].'_comentarios';
+
+		// Obtenemos el objeto de cache.
+		$cantidad = Cache::get_instance()->get($cache_key);
+
+		if ($cantidad === FALSE)
+		{
+			$cantidad = $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+			$cantidad += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+			$cantidad += $this->db->query('SELECT COUNT(*) FROM comunidad_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+			// Guardo cache.
+			Cache::get_instance()->save($cache_key, $cantidad);
+		}
+
+		return $cantidad;
 	}
 
 	/**
@@ -410,7 +464,21 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_puntos()
 	{
-		return (int) $this->db->query('SELECT SUM(cantidad) FROM post_punto, post WHERE post.id = post_punto.post_id AND post.usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		// Clave de la cache.
+		$cache_key = 'usuario_'.$this->primary_key['id'].'_puntos';
+
+		// Obtenemos el objeto de cache.
+		$cantidad = Cache::get_instance()->get($cache_key);
+
+		if ($cantidad === FALSE)
+		{
+			$cantidad = (int) $this->db->query('SELECT SUM(cantidad) FROM post_punto, post WHERE post.id = post_punto.post_id AND post.usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+			// Guardo cache.
+			Cache::get_instance()->save($cache_key, $cantidad);
+		}
+
+		return $cantidad;
 	}
 
 	/**
@@ -424,7 +492,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		$posts = $this->db->query('SELECT id FROM post WHERE usuario_id = ? ORDER BY fecha DESC LIMIT '.$pagina*$cantidad.','.$cantidad, $this->primary_key['id'])->get_pairs();
 
 		$lst = array();
-		foreach($posts as $p)
+		foreach ($posts as $p)
 		{
 			$lst[] = new Model_Post($p);
 		}

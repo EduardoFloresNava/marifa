@@ -46,7 +46,7 @@ class Base_Profiler_Display {
 	{
 		$output = '';
 
-		$output .= '<div id="profiler-container" class="hideDetails">';
+		$output .= '<div id="profiler-container" class="hideDetails visible-desktop">';
 		$output .= '<div id="profiler" class="console">';
 
 		$output .= self::getMainTabs($data);

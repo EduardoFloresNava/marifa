@@ -66,6 +66,20 @@ class Base_Model_Usuario_Perfil extends Model {
 		{
 			$this->fields = array();
 		}
+
+		// Campos inexistentes quedan vacios.
+		foreach($fields as $k => $f)
+		{
+			// Evitamos recargar existentes.
+			if (in_array($f, array_keys($this->fields)))
+			{
+				unset($fields[$k]);
+			}
+			else
+			{
+				$this->fields[$f] = NULL;
+			}
+		}
 		$this->fields = array_merge($this->fields, $this->db->query('SELECT campo, valor FROM usuario_perfil WHERE usuario_id = ? AND campo IN (?)', array($this->usuario_id, $fields))->get_pairs());
 	}
 
@@ -87,7 +101,7 @@ class Base_Model_Usuario_Perfil extends Model {
 	{
 		if (is_array($this->fields))
 		{
-			if (isset($this->fields[$name]))
+			if (in_array($name, array_keys($this->fields)))
 			{
 				return $this->fields[$name];
 			}
@@ -138,6 +152,13 @@ class Base_Model_Usuario_Perfil extends Model {
 			if (isset($this->fields[$name]))
 			{
 				return TRUE;
+			}
+			else
+			{
+				if (in_array($name, array_keys($this->fields)))
+				{
+					return FALSE;
+				}
 			}
 		}
 		return $this->db->query('SELECT campo FROM usuario_perfil WHERE campo = ? AND usuario_id = ? LIMIT 1', array($name, $this->usuario_id))->num_rows() > 0;

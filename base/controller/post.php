@@ -229,11 +229,27 @@ class Base_Controller_Post extends Controller {
 			//TODO: verificar XSS y transformar.
 
 			// Insertamos el comentario.
-			$model_post->comentar( (int) Session::get('usuario_id'), $comentario);
+			$id = $model_post->comentar( (int) Session::get('usuario_id'), $comentario);
 
-			Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
+			if ($id)
+			{
+				// Agregamos los sucesos.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array( (int) Session::get('usuario_id'), $model_post->usuario_id), 'comentario_post', $id);
 
-			Request::redirect('/post/index/'.$post);
+				Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
+
+				Request::redirect('/post/index/'.$post);
+			}
+			else
+			{
+				Session::set('post_comentario_error', 'Se produjo un error al colocar el comentario. Reintente.');
+
+				// Evitamos la salida de la vista actual.
+				$this->template = NULL;
+
+				Dispatcher::call('/post/index/'.$post, TRUE);
+			}
 		}
 	}
 
@@ -262,6 +278,16 @@ class Base_Controller_Post extends Controller {
 			if ( ! $model_post->es_favorito( (int) Session::get('usuario_id')))
 			{
 				$model_post->favorito( (int) Session::get('usuario_id'));
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(
+						array(
+							(int) Session::get('usuario_id'),
+							$model_post->usuario_id
+						),
+						'favorito_post',
+						(int) Session::get('usuario_id'),
+						$post
+					);
 			}
 		}
 		Request::redirect('/post/index/'.$post);
@@ -296,6 +322,17 @@ class Base_Controller_Post extends Controller {
 			if ( ! $model_comentario->ya_voto($usuario_id))
 			{
 				$model_comentario->votar($usuario_id, $voto);
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(
+						array(
+							(int) Session::get('usuario_id'),
+							$model_comentario->usuario_id,
+							$model_comentario->post()->usuario_id
+						),
+						'voto_comentario_post',
+						(int) Session::get('usuario_id'),
+						(int) $comentario
+					);
 			}
 		}
 		Request::redirect('/post/index/'.$model_comentario->post_id);
@@ -329,6 +366,16 @@ class Base_Controller_Post extends Controller {
 			if ( ! $model_post->es_seguidor($usuario_id))
 			{
 				$model_post->seguir($usuario_id);
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(
+						array(
+							(int) Session::get('usuario_id'),
+							$model_post->usuario_id
+						),
+						'seguir_post',
+						(int) Session::get('usuario_id'),
+						$post
+					);
 			}
 		}
 		Request::redirect('/post/index/'.$post);
@@ -375,6 +422,16 @@ class Base_Controller_Post extends Controller {
 				if ($model_usuario->puntos_disponibles >= $cantidad)
 				{
 					$model_post->dar_puntos($usuario_id, $cantidad);
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(
+							array(
+								(int) Session::get('usuario_id'),
+								$model_post->usuario_id
+							),
+							'punto_post',
+							(int) Session::get('usuario_id'),
+							$post
+						);
 				}
 			}
 		}
@@ -473,6 +530,9 @@ class Base_Controller_Post extends Controller {
 				if ($post_id > 0)
 				{
 					Request::redirect('/post/index/'.$post_id);
+
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear( (int) Session::get('usuario_id'), 'nuevo_post', $post_id);
 				}
 				else
 				{
