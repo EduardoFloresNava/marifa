@@ -70,7 +70,9 @@ class Base_Model_Suceso extends Model_Dataset {
 
 	/**
 	 * Agregamos un nuevo suceso para un usuario.
-	 * @param int $usuario_id ID del usuario dueño del suceso.
+	 * @param int|array $usuario_id ID del usuario dueño del suceso o arreglo
+	 * de dueños. De esta forma todos los usuarios involucrados tiene el mismo
+	 * suceso.
 	 * @param string $tipo Tipo de suceso.
 	 * @param int $objeto_id ID del objeto del suceso.
 	 * @param int $objeto_id2 ID secundario del objeto del suceso.
@@ -78,8 +80,25 @@ class Base_Model_Suceso extends Model_Dataset {
 	 */
 	public function crear($usuario_id, $tipo, $objeto_id, $objeto_id2 = NULL, $objeto_id3 = NULL)
 	{
-		return $this->db->insert('INSERT INTO suceso (usuario_id, objeto_id, objeto_id1, objeto_id2, tipo, fecha) VALUES (?, ?, ?, ?, ?, ?)',
-			array($usuario_id, $objeto_id, $objeto_id2, $objeto_id3, $tipo, date('Y/m/d H:i:s')));
+		if (is_array($usuario_id))
+		{
+			// Eliminamos repetidos.
+			$usuario_id = array_unique($usuario_id, SORT_NUMERIC);
+
+			// Ejecutamos las consultas.
+			$rst = array();
+			foreach ($usuario_id as $id)
+			{
+				list($rst[], ) = $this->db->insert('INSERT INTO suceso (usuario_id, objeto_id, objeto_id1, objeto_id2, tipo, fecha) VALUES (?, ?, ?, ?, ?, ?)',
+					array($id, $objeto_id, $objeto_id2, $objeto_id3, $tipo, date('Y/m/d H:i:s')));
+			}
+			return $rst;
+		}
+		else
+		{
+			return $this->db->insert('INSERT INTO suceso (usuario_id, objeto_id, objeto_id1, objeto_id2, tipo, fecha) VALUES (?, ?, ?, ?, ?, ?)',
+				array($usuario_id, $objeto_id, $objeto_id2, $objeto_id3, $tipo, date('Y/m/d H:i:s')));
+		}
 	}
 
 	/**

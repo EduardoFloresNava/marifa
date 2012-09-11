@@ -99,6 +99,9 @@ class Base_Controller_Perfil extends Controller {
 		$usuario['fotos'] = $this->usuario->cantidad_fotos();
 		$usuario['comentarios'] = $this->usuario->cantidad_comentarios();
 
+		// Cargamos campos del usuario.
+		$this->usuario->perfil()->load_list(array('nombre', 'mensaje_personal'));
+
 		// Nombre completo.
 		$usuario['nombre'] = Utils::prop($this->usuario->perfil(), 'nombre');
 		$base_view->assign('usuario', $usuario);
@@ -196,10 +199,13 @@ class Base_Controller_Perfil extends Controller {
 		);
 
 		// Cargamos todos los datos del perfil.
+		$load_array = array();
 		foreach ($fields as $ff)
 		{
-			$this->usuario->perfil()->load_list($ff);
+			$load_array = array_merge($load_array, $ff);
 		}
+		$this->usuario->perfil()->load_list($load_array);
+		unset($load_array);
 
 		// Obtenemos el valor de los campos.
 		foreach ($fields as $k => $field)
@@ -400,6 +406,9 @@ class Base_Controller_Perfil extends Controller {
 
 			// Asigno información del suceso.
 			$suceso_vista->assign('suceso', $s_data);
+
+			// Datos del suceso.
+			$suceso_vista->assign('fecha', $v->fecha);
 
 			// Agregamos el evento.
 			$eventos[] = $suceso_vista->parse();

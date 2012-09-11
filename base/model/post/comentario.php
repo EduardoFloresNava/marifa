@@ -107,6 +107,18 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 	}
 
 	/**
+	 * Tipo de voto realizado por el usuario.
+	 * @param int $usuario_id ID del usuario del que obtener el tipo de voto.
+	 * @return bool|NULL Positivo (true), Negativo (false) o Sin voto (NULL)
+	 */
+	public function tipo_voto($usuario_id)
+	{
+		$t = $this->db->query('SELECT cantidad FROM post_comentario_voto WHERE usuario_id = ? AND post_comentario_id = ? LIMIT 1', array($usuario_id, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT);
+
+		return ($t === 1) ? TRUE : (($t === -1) ? FALSE : NULL );
+	}
+
+	/**
 	 * Agregamos el voto del usuario.
 	 * @param int $usuario_id ID del usuario.
 	 * @param bool $positivo TRUE para positivo, FALSE para negativo.
