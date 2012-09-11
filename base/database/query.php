@@ -136,7 +136,7 @@ abstract class Base_Database_Query implements Iterator {
 		}
 		elseif ($cast === self::FIELD_DATE || $cast === self::FIELD_DATETIME)
 		{
-			return new DateTime($field);
+			return new Fechahora($field);
 		}
 		elseif ($cast === self::FIELD_BOOL)
 		{
