@@ -143,4 +143,46 @@ class Base_Suceso {
 		return $rst;
 	}
 
+	protected static function suceso_seguir_post($suceso)
+	{
+		// Arreglo con los datos del resultado.
+		$rst = array();
+
+		// Cargamos el post.
+		$model_post = new Model_Post($suceso['objeto_id1']);
+		$rst['post'] = $model_post->as_array();
+
+		// Datos del dueño del post.
+		$rst['post']['usuario'] = $model_post->usuario()->as_array();
+		unset($model_post);
+
+		// Datos de quien es el seguidor.
+		$model_usuario = new Model_Usuario($suceso['objeto_id']);
+		$rst['usuario'] = $model_usuario->as_array();
+
+		return $rst;
+	}
+
+	protected static function suceso_punto_post($suceso)
+	{
+		// Arreglo con los datos del resultado.
+		$rst = array();
+
+		// Cargamos el post.
+		$model_post = new Model_Post($suceso['objeto_id1']);
+		$rst['post'] = $model_post->as_array();
+
+		// Datos del dueño del post.
+		$rst['post']['usuario'] = $model_post->usuario()->as_array();
+
+		// Cantidad de puntos.
+		$rst['puntos'] = $model_post->puntos_dados($suceso['objeto_id']);
+		unset($model_post);
+
+		// Datos de quien es el que da los puntos.
+		$model_usuario = new Model_Usuario($suceso['objeto_id']);
+		$rst['usuario'] = $model_usuario->as_array();
+		return $rst;
+	}
+
 }

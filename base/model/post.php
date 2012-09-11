@@ -251,6 +251,16 @@ class Base_Model_Post extends Model_Dataset {
 	}
 
 	/**
+	 * Obtenemos la cantidad de puntos que dio el usuario.
+	 * @param int $usuario_id ID del usuario a verificar.
+	 * @return int
+	 */
+	public function puntos_dados($usuario_id)
+	{
+		return $this->db->query('SELECT cantidad FROM post_punto WHERE post_id = ? AND usuario_id = ?', array($this->primary_key['id'], $usuario_id))->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
 	 * Obtenemos la comunidad a la que pertenece el post.
 	 * @return Model_Comunidad|null
 	 */
