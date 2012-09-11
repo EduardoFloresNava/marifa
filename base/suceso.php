@@ -70,6 +70,21 @@ class Base_Suceso {
 		return $data;
 	}
 
+	protected static function suceso_nuevo_post($suceso)
+	{
+		// Arreglo con los datos del resultado.
+		$rst = array();
+
+		// Cargamos el post.
+		$model_post = new Model_Post($suceso['objeto_id']);
+		$rst['post'] = $model_post->as_array();
+
+		// Datos del creador.
+		$rst['usuario'] = $model_post->usuario()->as_array();
+
+		return $rst;
+	}
+
 	protected static function suceso_comentario_post($suceso)
 	{
 		// Arreglo con los datos del resultado.
