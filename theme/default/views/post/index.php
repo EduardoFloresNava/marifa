@@ -1,8 +1,8 @@
-<div class="row">
-	<div class="span2">
-		<h3>Posteado por:</h3>
+<div class="row post">
+	<div class="span2 usuario">
+		<h3 class="title">Posteado por:</h3>
 		<img class="thumbnail" src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
-		<h4>{$usuario.nick}</h4>
+		<h4 class="nick">{$usuario.nick}</h4>
 		{if="$me != NULL && $me != $usuario.id"}<div class="row-fluid">
 			<a href="#" class="btn span12" style="min-height: 0;">Seguir usuario</a>
 		</div>{/if}
@@ -11,17 +11,17 @@
 		<p><strong>Posts:</strong> {$usuario.posts}</p>
 		<p><strong>Comentarios:</strong> {$usuario.comentarios}</p>
 	</div>
-	<div class="span10">
-		<div class="row-fluid">
-			<div class="span1">
-				<a href="#"><i class="icon icon-chevron-left"></i></a>
-				<a href="#"><i class="icon icon-chevron-right"></i></a>
+	<div class="span10 contenido">
+		<div class="row-fluid cabecera">
+			<div class="span1 lineal btn-group">
+				<a href="#" class="btn btn-mini"><i class="icon icon-chevron-left"></i></a>
+				<a href="#" class="btn btn-mini"><i class="icon icon-chevron-right"></i></a>
 			</div>
 			<div class="span10">
-				<h2>{$post.titulo}</h2>
+				<h2 class="title">{$post.titulo}</h2>
 			</div>
-			<div class="span1">
-				<a href="#"><i class="icon icon-random"></i></a>
+			<div class="span1 aleatorio">
+				<a href="#" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
 			</div>
 		</div>
 		<pre>{$post.contenido}</pre>
@@ -58,28 +58,28 @@
 					</ul>
 				</div>
 				<div class="pull-right">
-					Creado: {function="$post.fecha->format('d/m/Y H:i:s')"}
+					Creado: {function="$post.fecha->fuzzy()"}
 				</div>
 				<div class="pull-right">
 					Categoria: {$categoria.nombre}
 				</div>
 			</div>
 		</div>
-		<div class="row-fluid">
+		<div class="row-fluid comentarios">
 			<div class="span12">
 				{loop="$comentarios"}
-				<div class="row-fluid">
+				<div class="row-fluid comentario">
 					<div class="span1">
 						<img class="thumbnail" src="{function="Utils::get_gravatar($value.usuario.email, 48, 48)"}" />
 					</div>
 					<div class="span11">
-						<div class="clearfix">
-							<span>
+						<div class="clearfix head">
+							<span class="informacion">
 								<a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a>
-								<small>{function="$value.fecha->format('d/m/Y H:i:s')"}</small>
+								<small>{function="$value.fecha->fuzzy()"}</small>
 								{if="$value.votos != 0"}<span class="badge badge-{if="$value.votos > 0"}success{else}important{/if}">{$value.votos|abs}</span>{/if}
 							</span>
-							<div class="btn-group pull-right">
+							<div class="btn-group pull-right acciones">
 								{if="$me != NULL && !$value.vote"}
 								<a href="/post/voto_comentario/{$value.id}/1" class="btn btn-mini btn-success"><i class="icon-white icon-thumbs-up"></i></a>
 								<a href="/post/voto_comentario/{$value.id}/-1" class="btn btn-mini btn-danger"><i class="icon-white icon-thumbs-down"></i></a>
