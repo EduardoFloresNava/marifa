@@ -79,13 +79,13 @@ class Base_Cache_Driver_File implements Cache_Driver {
 	 * @param int $ttl Tiempo en segundo a mantener la información.
 	 * @return bool Resultado de la operación.
 	 */
-	public function save($id, $data, $ttl = 60)
+	public function save($id, $data, $ttl = 3600)
 	{
 		// Generamos el contenido.
 		$contents = array('time' => time(), 'ttl' => $ttl, 'data' => $data);
 
 		// Abrimos el archivo.
-		if ( ! $fp = @fopen($this->_cache_path.$id, FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		if ( ! $fp = @fopen($this->_cache_path.$id, 'wb'))
 		{
 			return FALSE;
 		}
@@ -136,17 +136,17 @@ class Base_Cache_Driver_File implements Cache_Driver {
 		{
 			if ($filename != "." && $filename != "..")
 			{
-				if (is_dir($path.'/'.$filename))
+				if (is_dir($path.DS.$filename))
 				{
 					// Ignore empty folders
 					if (substr($filename, 0, 1) != '.')
 					{
-						$this->delete_files($path.'/'.$filename, $del_dir, $level + 1);
+						$this->delete_files($path.DS.$filename, $del_dir, $level + 1);
 					}
 				}
 				else
 				{
-					unlink($path.'/'.$filename);
+					unlink($path.DS.$filename);
 				}
 			}
 		}
@@ -186,7 +186,7 @@ class Base_Cache_Driver_File implements Cache_Driver {
 		{
 			$file = rtrim($file, '/').'/'.md5(rand(1,100));
 
-			if (($fp = @fopen($file, FOPEN_WRITE_CREATE)) === FALSE)
+			if (($fp = @fopen($file, 'ab')) === FALSE)
 			{
 				return FALSE;
 			}
@@ -196,7 +196,7 @@ class Base_Cache_Driver_File implements Cache_Driver {
 			@unlink($file);
 			return TRUE;
 		}
-		elseif (($fp = @fopen($file, FOPEN_WRITE_CREATE)) === FALSE)
+		elseif (($fp = @fopen($file, 'ab')) === FALSE)
 		{
 			return FALSE;
 		}

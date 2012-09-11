@@ -8,5 +8,6 @@ config/update.php
 router.php
 /plugin/
 /phpdoc/
+/cache/file/
 EXAMPLE
 TODO

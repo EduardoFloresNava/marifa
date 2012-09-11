@@ -123,7 +123,14 @@ class Base_Cache {
 						// Verificamos existencia.
 						if ( ! file_exists($p) || ! is_dir($p))
 						{
-							throw new Exception('El directorio para la cache no existe.');
+							// Tratamos de crearlo.
+							@mkdir($p, 0777, TRUE);
+
+							// Reintentamos creacion.
+							if ( ! file_exists($p) || ! is_dir($p))
+							{
+								throw new Exception('El directorio para la cache no existe.');
+							}
 						}
 
 						// Verificamos los permisos.
