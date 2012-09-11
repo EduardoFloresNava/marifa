@@ -97,6 +97,8 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function compartir($usuario_id)
 	{
+		// Invalidamos la cache.
+		Cache::get_instance()->delete('post_'.$this->primary_key['id'].'_compartido');
 		$this->db->insert('INSERT INTO post_compartido (post_id, usuario_id) VALUES (?, ?)', array($this->primary_key['id'], $usuario_id));
 	}
 
@@ -116,7 +118,18 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function veces_compartido()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post_compartido WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		// Obtenemos la cache.
+		$cantidad = Cache::get_instance()->get('post_'.$this->primary_key['id'].'_compartido');
+
+		// Validamos estado.
+		if ($cantidad === FALSE)
+		{
+			$cantidad = $this->db->query('SELECT COUNT(*) FROM post_compartido WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+			// Actualizamos la cache.
+			Cache::get_instance()->save('post_'.$this->primary_key['id'].'_compartido', $cantidad);
+		}
+		return $cantidad;
 	}
 
 	/**
@@ -125,6 +138,8 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function seguir($usuario_id)
 	{
+		// Invalidamos la cache.
+		Cache::get_instance()->delete('post_'.$this->primary_key['id'].'_seguido');
 		$this->db->insert('INSERT INTO post_seguidor (post_id, usuario_id) VALUES (?, ?)', array($this->primary_key['id'], $usuario_id));
 	}
 
@@ -144,7 +159,18 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function cantidad_seguidores()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post_seguidor WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		// Obtenemos la cache.
+		$cantidad = Cache::get_instance()->get('post_'.$this->primary_key['id'].'_seguido');
+
+		// Validamos estado.
+		if ($cantidad === FALSE)
+		{
+			$cantidad = $this->db->query('SELECT COUNT(*) FROM post_seguidor WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+			// Actualizamos la cache.
+			Cache::get_instance()->save('post_'.$this->primary_key['id'].'_seguido', $cantidad);
+		}
+		return $cantidad;
 	}
 
 	/**
@@ -153,6 +179,8 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function favorito($usuario_id)
 	{
+		// Invalidamos la cache.
+		Cache::get_instance()->delete('post_'.$this->primary_key['id'].'_favorito');
 		$this->db->insert('INSERT INTO post_favorito (post_id, usuario_id) VALUES (?, ?)', array($this->primary_key['id'], $usuario_id));
 	}
 
@@ -172,7 +200,18 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function cantidad_favoritos()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post_favorito WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		// Obtenemos la cache.
+		$cantidad = Cache::get_instance()->get('post_'.$this->primary_key['id'].'_favorito');
+
+		// Validamos estado.
+		if ($cantidad === FALSE)
+		{
+			$cantidad = $this->db->query('SELECT COUNT(*) FROM post_favorito WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+			// Actualizamos la cache.
+			Cache::get_instance()->save('post_'.$this->primary_key['id'].'_favorito', $cantidad);
+		}
+		return $cantidad;
 	}
 
 	/**
@@ -226,7 +265,18 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function puntos()
 	{
-		return $this->db->query('SELECT SUM(cantidad) FROM post_punto WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		// Obtenemos la cache.
+		$cantidad = Cache::get_instance()->get('post_'.$this->primary_key['id'].'_puntos');
+
+		// Validamos estado.
+		if ($cantidad === FALSE)
+		{
+			$cantidad = $this->db->query('SELECT SUM(cantidad) FROM post_punto WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+			// Actualizamos la cache.
+			Cache::get_instance()->save('post_'.$this->primary_key['id'].'_puntos', $cantidad);
+		}
+		return $cantidad;
 	}
 
 	/**
@@ -246,6 +296,9 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function dar_puntos($usuario_id, $cantidad)
 	{
+		// Invalidamos la cache.
+		Cache::get_instance()->delete('post_'.$this->primary_key['id'].'_puntos');
+
 		$this->db->insert('INSERT INTO post_punto (post_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->primary_key['id'], $usuario_id, $cantidad));
 		$this->db->update('UPDATE usuario SET puntos_disponibles = puntos_disponibles - ? WHERE id = ?', array($cantidad, $usuario_id));
 	}
