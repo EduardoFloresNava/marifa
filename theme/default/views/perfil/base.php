@@ -9,7 +9,7 @@
 	<div class="span4 profile-statistics">
 		<div class="row-fluid">
 			<div class="span6 well"><i class="icon icon-certificate"></i><span class="pull-right">rango</span></div>
-			<div class="span6 well"><i class="icon icon-thumbs-up"></i><span class="pull-right">{if="$usuario.puntos > 1"}{$usuario.puntos} {@puntos@}{elseif="$usuario.puntos == 1"}1 {@puntos@}{else}{@sin@} {@puntos@}{/if}</span></div>
+			<div class="span6 well"><i class="icon icon-plus"></i><span class="pull-right">{if="$usuario.puntos > 1"}{$usuario.puntos} {@puntos@}{elseif="$usuario.puntos == 1"}1 {@puntos@}{else}{@sin@} {@puntos@}{/if}</span></div>
 		</div>
 		<div class="row-fluid">
 			<div class="span6 well"><i class="icon icon-book"></i><span class="pull-right">{if="$usuario.posts > 1"}{$usuario.posts} {@posts@}{elseif="$usuario.posts == 1"}1 {@post@}{else}{@sin@} {@posts@}{/if}</span></div>
