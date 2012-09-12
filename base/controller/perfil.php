@@ -44,13 +44,20 @@ class Base_Controller_Perfil extends Controller {
 	 */
 	protected function cargar_usuario($usuario)
 	{
-		// Cargamos el modelo del usuario
-		$model_usuario = new Model_Usuario;
-
-		// Tratamos de cargar el usuario por su nick
-		if ( ! $model_usuario->load_by_nick($usuario))
+		if ($usuario == NULL)
 		{
-			Request::redirect('/');
+			$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
+		}
+		else
+		{
+			// Cargamos el modelo del usuario
+			$model_usuario = new Model_Usuario;
+
+			// Tratamos de cargar el usuario por su nick
+			if ( ! $model_usuario->load_by_nick($usuario))
+			{
+				Request::redirect('/');
+			}
 		}
 
 		// Hacemos global para trabajar.
@@ -71,10 +78,10 @@ class Base_Controller_Perfil extends Controller {
 			unset($call);
 		}
 
-		$usuario = $this->usuario->get('nick');
+		$usuario = (Session::get('usuario_id') == $this->usuario->id) ? '' : $this->usuario->get('nick');
 		return array(
-			'muro' => array('link' => '/perfil/muro/'.$usuario, 'caption' => __('Muro', FALSE), 'active' => $activo == 'muro'),
-			'informacion' => array('link' => '/perfil/index/'.$usuario, 'caption' => __('Información', FALSE), 'active' =>  $activo == 'informacion' || $activo == 'index'),
+			'muro' => array('link' => '/perfil/index/'.$usuario, 'caption' => __('Muro', FALSE), 'active' => $activo == 'muro' || $activo == 'index'),
+			'informacion' => array('link' => '/perfil/informacion/'.$usuario, 'caption' => __('Información', FALSE), 'active' =>  $activo == 'informacion'),
 			'posts' => array('link' => '/perfil/posts/'.$usuario, 'caption' => __('Posts', FALSE), 'active' =>  $activo == 'posts'),
 			'seguidores' => array('link' => '/perfil/seguidores/'.$usuario, 'caption' => __('Seguidores', FALSE), 'active' =>  $activo == 'seguidores'),
 			// 'medallas' => array('link' => '/perfil/medallas/'.$usuario, 'caption' => __('Medallas', FALSE), 'active' =>  $activo == 'medallas'),
@@ -124,6 +131,15 @@ class Base_Controller_Perfil extends Controller {
 	 * @param string $usuario ID o nick del usuario.
 	 */
 	public function action_index($usuario)
+	{
+		return $this->action_muro($usuario);
+	}
+
+	/**
+	 * Informacion del perfil del usuario.
+	 * @param string $usuario ID o nick del usuario.
+	 */
+	public function action_informacion($usuario)
 	{
 		// Cargamos el usuario.
 		$usuario = $this->cargar_usuario($usuario);
