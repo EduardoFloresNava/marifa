@@ -141,9 +141,36 @@
         margin: 0;
     }
 
-    .fecha {
-        line-height: 28px;
-        display: inline-block;
-        color: #999;
+    .sumario
+    {
+        margin: 8px 0 0;
+        span {
+            display: inline-block;
+            color: #999;
+        }
+
+        .fecha {
+            float: right;
+        }
+
+        .positivo {
+            color: #468847;
+        }
+
+        .negativo {
+            color: #B94A48;
+        }
     }
+
+    .thumbnail-size {
+        display: table-cell;
+        width: 360px;
+        height: 236px;
+        text-align: center;
+        vertical-align: middle;
+    }
+}
+
+.footer {
+    text-align: center;
 }

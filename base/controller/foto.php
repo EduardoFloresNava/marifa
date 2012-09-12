@@ -68,12 +68,14 @@ class Base_Controller_Foto extends Controller {
 		foreach($fotos as $key => $value)
 		{
 			$d = $value->as_array();
+			$d['votos'] = $value->votos();
+			$d['favoritos'] = $value->favoritos();
 			$d['usuario'] = $value->usuario()->as_array();
 
 			// Acciones.
 			if (Session::is_set('usuario_id'))
 			{
-				if (Session::is_set('usuario_id') == $value->usuario_id)
+				if ( (int)Session::get('usuario_id') == $value->usuario_id)
 				{
 					$d['favorito'] = TRUE;
 					$d['voto'] = TRUE;
