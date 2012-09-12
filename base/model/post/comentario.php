@@ -152,4 +152,28 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 		}
 		return $cantidad;
 	}
+
+	/**
+	 * Obtenemos el listado de los últimos comentarios.
+	 * @param int $pagina Número de página empezando en 1.
+	 * @param int $cantidad Cantidad de post por página.
+	 * @return array
+	 */
+	public static function obtener_ultimos($pagina = 1, $cantidad = 10)
+	{
+		// Primer elemento a devolver.
+		$inicio = $cantidad * ($pagina - 1);
+
+		// Obtenemos el listado.
+		$rst = Database::get_instance()->query('SELECT id FROM post_comentario ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+
+		// Armamos la lista.
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Post_Comentario($v);
+		}
+
+		return $lst;
+	}
 }

@@ -1,48 +1,15 @@
 <div class="row">
 	<div class="span7">
 		<h3>&Uacute;ltimos posts</h3>
+		{loop="$ultimos_posts"}
 		<div>
 			<img style="float: left;" src="http://placehold.it/24" />
 			<div style="margin-left: 30px;">
-				<p>Titulo del post</p>
-				<p>Hace ?? días - @Usuario - Puntos ?? - Comentarios ??<span class="pull-right">Categoria</span></p>
+				<p><a href="/post/index/{$value.id}/">{$value.titulo}</a></p>
+				<p>{$value.fecha->fuzzy()} - <a href="/perfil/informacion/{$value.usuario.nick}">@{$value.usuario.nick}</a> - {@Puntos@} {$value.puntos} - {@Comentarios@} {$value.comentarios}<span class="pull-right">{$value.categoria.nombre}</span></p>
 			</div>
 		</div>
-		<div>
-			<img style="float: left;" src="http://placehold.it/24" />
-			<div style="margin-left: 30px;">
-				<p>Titulo del post</p>
-				<p>Hace ?? días - @Usuario - Puntos ?? - Comentarios ??<span class="pull-right">Categoria</span></p>
-			</div>
-		</div>
-		<div>
-			<img style="float: left;" src="http://placehold.it/24" />
-			<div style="margin-left: 30px;">
-				<p>Titulo del post</p>
-				<p>Hace ?? días - @Usuario - Puntos ?? - Comentarios ??<span class="pull-right">Categoria</span></p>
-			</div>
-		</div>
-		<div>
-			<img style="float: left;" src="http://placehold.it/24" />
-			<div style="margin-left: 30px;">
-				<p>Titulo del post</p>
-				<p>Hace ?? días - @Usuario - Puntos ?? - Comentarios ??<span class="pull-right">Categoria</span></p>
-			</div>
-		</div>
-		<div>
-			<img style="float: left;" src="http://placehold.it/24" />
-			<div style="margin-left: 30px;">
-				<p>Titulo del post</p>
-				<p>Hace ?? días - @Usuario - Puntos ?? - Comentarios ??<span class="pull-right">Categoria</span></p>
-			</div>
-		</div>
-		<div>
-			<img style="float: left;" src="http://placehold.it/24" />
-			<div style="margin-left: 30px;">
-				<p>Titulo del post</p>
-				<p>Hace ?? días - @Usuario - Puntos ?? - Comentarios ??<span class="pull-right">Categoria</span></p>
-			</div>
-		</div>
+		{/loop}
 	</div>
 	<div class="span3">
 		<div>
@@ -81,12 +48,13 @@
 		</div>
 		<div>
 			<h3>&Uacute;ltimos comentarios</h3>
-			<p><b>Usuario</b> post</p>
-			<p><b>Usuario</b> post</p>
-			<p><b>Usuario</b> post</p>
-			<p><b>Usuario</b> post</p>
-			<p><b>Usuario</b> post</p>
-			<p><b>Usuario</b> post</p>
+			<ol>
+			{loop="$ultimos_comentarios"}
+				<li>
+					<b><a href="/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="/post/index/{$value.post.id}">{$value.post.titulo}</a>
+				</li>
+			{/loop}
+			</ol>
 		</div>
 		<div>
 			<h3>TOPs posts</h3>
