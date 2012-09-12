@@ -14,8 +14,17 @@
     </div>
     <div class="btn-group pull-right">
         <button class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-bullhorn"></i>&nbsp;</button><!--SUCESOS GENERALES-->
-        <ul class="dropdown-menu" id="message-dropdown">
-        </ul>
+        <div class="dropdown-menu" id="message-dropdown">
+			<ul>
+				{loop="$sucesos"}
+				<li>{$value}</li>
+				{/loop}
+			</ul>
+			<div class="actions">
+				<a href="/notificaciones/">Ver todos</a>
+				<a href="/notificaciones/">Marcar como le&iacute;dos</a>
+			</div>
+        </div>
     </div>
     <div class="btn-group pull-right">
         <a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-inbox"></i>&nbsp;</a><!--MENSAJES-->

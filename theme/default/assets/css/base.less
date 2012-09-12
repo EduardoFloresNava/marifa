@@ -174,3 +174,73 @@
 .footer {
     text-align: center;
 }
+
+#message-dropdown {
+    padding: 0;
+    min-width: 300px;
+    overflow: hidden;
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    li {
+        .suceso * {
+            display: inline-block;
+        }
+
+        .suceso a {
+            padding: 0;
+            font-weight: bold;
+        }
+
+        .fecha {
+            display: none;
+        }
+
+        .suceso {
+            line-height: 30px;
+            border-top: 1px solid rgba(0, 0, 0, 0.2);
+            position: relative;
+
+            .contenido {
+                position: absolute;
+                white-space: nowrap;
+            }
+
+            &:first-child {
+                border: none;
+            }
+
+            &:hover {
+                background: #0088CC;
+                color: #FFF;
+
+                a {
+                    color: #FFF;
+                }
+
+                .icon {
+                    background-image: url("../img/glyphicons-halflings-white.png");
+                }
+            }
+
+            .icono {
+                min-width: 30px;
+                text-align: center;
+            }
+        }
+    }
+
+    .actions a {
+            background: rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.2);
+            clear: none;
+            display: inline-block;
+            float: left;
+            text-align: center;
+            width: 120px;
+    }
+}
