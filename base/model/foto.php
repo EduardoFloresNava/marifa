@@ -224,4 +224,27 @@ class Base_Model_Foto extends Model_Dataset {
 		$this->db->delete('DELETE FROM foto_favorito WHERE foto_id = ?', $this->primary_key['id']);
 		$this->db->delete('DELETE FROM foto WHERE id = ?', $this->primary_key['id']);
 	}
+
+	/**
+	 * Obtenemos un listado de las ultimas fotos.
+	 * @param int $pagina Número de paginas a obtener. La primera es 1.
+	 * @param int $cantidad Cantidad de elementos por página.
+	 * @return array
+	 */
+	public function obtener_ultimas($pagina = 1, $cantidad = 20)
+	{
+		// Calculamos primer elemento.
+		$primero = $cantidad * ($pagina - 1);
+
+		// Obtenemos la lista de sucesos.
+		$sucesos = $this->db->query('SELECT id FROM foto ORDER BY creacion DESC LIMIT '.$primero.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+
+		$listado = array();
+		foreach ($sucesos as $s)
+		{
+			$listado[] = new Model_Foto($s);
+		}
+
+		return $listado;
+	}
 }

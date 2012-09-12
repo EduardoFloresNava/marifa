@@ -50,10 +50,64 @@ class Base_Controller_Foto extends Controller {
 	}
 
 	/**
+	 * Mostramos listado de fotos.
+	 */
+	public function action_index()
+	{
+		// Asignamos el título.
+		$this->template->assign('title', 'Fotos');
+
+		// Cargamos la vista.
+		$view = View::factory('foto/index');
+
+		// Cargamos el listado de fotos.
+		$model_fotos = new Model_Foto;
+		$fotos = $model_fotos->obtener_ultimas();
+
+		// Procesamos información relevante.
+		foreach($fotos as $key => $value)
+		{
+			$d = $value->as_array();
+			$d['usuario'] = $value->usuario()->as_array();
+
+			// Acciones.
+			if (Session::is_set('usuario_id'))
+			{
+				if (Session::is_set('usuario_id') == $value->usuario_id)
+				{
+					$d['favorito'] = TRUE;
+					$d['voto'] = TRUE;
+				}
+				else
+				{
+					$d['favorito'] = $value->es_favorito( (int)Session::is_set('usuario_id'));
+					$d['voto'] = $value->ya_voto( (int)Session::is_set('usuario_id'));
+				}
+			}
+			else
+			{
+				$d['favorito'] = TRUE;
+				$d['voto'] = TRUE;
+			}
+			$fotos[$key] = $d;
+		}
+
+		$view->assign('fotos', $fotos);
+		unset($fotos);
+
+		// Menu.
+		$this->template->assign('master_bar', parent::base_menu_login('foto'));
+		$this->template->assign('top_bar', $this->submenu('index', Session::is_set('usuario_id')));
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
 	 * Mostramos una foto.
 	 * @param int $foto ID de la foto.
 	 */
-	public function action_index($foto)
+	public function action_ver($foto)
 	{
 		// Convertimos la foto a ID.
 		$foto = (int) $foto;
@@ -164,7 +218,7 @@ class Base_Controller_Foto extends Controller {
 				$model_foto->votar($usuario_id, $voto);
 			}
 		}
-		Request::redirect('/foto/index/'.$model_foto->foto_id);
+		Request::redirect('/foto/ver/'.$model_foto->foto_id);
 	}
 
 	/**
@@ -195,7 +249,7 @@ class Base_Controller_Foto extends Controller {
 				$model_foto->agregar_favorito( (int) Session::get('usuario_id'));
 			}
 		}
-		Request::redirect('/foto/index/'.$foto);
+		Request::redirect('/foto/ver/'.$foto);
 	}
 
 	/**
@@ -207,7 +261,7 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos el método de envio.
 		if (Request::method() != 'POST')
 		{
-			Request::redirect('/foto/index/'.$foto);
+			Request::redirect('/foto/ver/'.$foto);
 		}
 
 		// Convertimos el foto a ID.
@@ -233,7 +287,7 @@ class Base_Controller_Foto extends Controller {
 			// Evitamos la visualización de la plantilla.
 			$this->template = NULL;
 
-			Dispatcher::call('/foto/index/'.$foto, TRUE);
+			Dispatcher::call('/foto/ver/'.$foto, TRUE);
 		}
 		else
 		{
@@ -244,7 +298,7 @@ class Base_Controller_Foto extends Controller {
 
 			Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
 
-			Request::redirect('/foto/index/'.$foto);
+			Request::redirect('/foto/ver/'.$foto);
 		}
 	}
 
@@ -325,7 +379,7 @@ class Base_Controller_Foto extends Controller {
 
 				if ($foto_id > 0)
 				{
-					Request::redirect('/foto/index/'.$foto_id);
+					Request::redirect('/foto/ver/'.$foto_id);
 				}
 				else
 				{
