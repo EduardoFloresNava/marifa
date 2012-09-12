@@ -3,7 +3,7 @@
 		<h3>&Uacute;ltimos posts</h3>
 		{loop="$ultimos_posts"}
 		<div>
-			<img style="float: left;" src="http://placehold.it/24" />
+			<img style="float: left;" src="/assets/img/categoria/{$value.categoria.imagen}" />
 			<div style="margin-left: 30px;">
 				<p><a href="/post/index/{$value.id}/">{$value.titulo}</a></p>
 				<p>{$value.fecha->fuzzy()} - <a href="/perfil/informacion/{$value.usuario.nick}">@{$value.usuario.nick}</a> - {@Puntos@} {$value.puntos} - {@Comentarios@} {$value.comentarios}<span class="pull-right">{$value.categoria.nombre}</span></p>
