@@ -46,6 +46,11 @@ class Base_Controller_Perfil extends Controller {
 	{
 		if ($usuario == NULL)
 		{
+			// Verificamos si estamos logueados.
+			if ( ! Session::is_set('usuario_id'))
+			{
+				Request::redirect('/');
+			}
 			$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
 		}
 		else
