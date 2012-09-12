@@ -96,7 +96,7 @@ class Base_Controller {
 		return array(
 			'posts' => array('link' => '/', 'caption' => 'Posts', 'active' => $activo == 'posts'),
 			'comunidades' => array('link' => '/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
-			'fotos' => array('link' => '/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
+			'fotos' => array('link' => '/foto/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
 			'tops' => array('link' => '/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
 		);
 	}
@@ -113,7 +113,7 @@ class Base_Controller {
 			'inicio' => array('link' => '/mi', 'caption' => 'Inicio', 'active' => $activo == 'inicio'),
 			'posts' => array('link' => '/', 'caption' => 'Posts', 'active' => $activo == 'posts'),
 			'comunidades' => array('link' => '/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
-			'fotos' => array('link' => '/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
+			'fotos' => array('link' => '/foto/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
 			'tops' => array('link' => '/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
 		);
 	}

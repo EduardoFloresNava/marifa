@@ -98,7 +98,7 @@ class Base_Controller_Foto extends Controller {
 		unset($fotos);
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('foto'));
+		$this->template->assign('master_bar', parent::base_menu_login('fotos'));
 		$this->template->assign('top_bar', $this->submenu('index', Session::is_set('usuario_id')));
 
 		// Asignamos la vista.
@@ -181,7 +181,7 @@ class Base_Controller_Foto extends Controller {
 
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('foto'));
+		$this->template->assign('master_bar', parent::base_menu_login('fotos'));
 		$this->template->assign('top_bar', $this->submenu('index', Session::is_set('usuario_id')));
 
 		// Asignamos la vista.
@@ -328,7 +328,7 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('foto'));
+		$this->template->assign('master_bar', parent::base_menu_login('fotos'));
 		$this->template->assign('top_bar', $this->submenu('nuevo', TRUE));
 
 		if (Request::method() == 'POST')
