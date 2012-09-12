@@ -21,7 +21,7 @@
 			LISTADO DE FOTOS DEL USUARIO.
 		</div>-->
 		<div>
-			<h3>{$foto.titulo}<small class="pull-right">{function="$foto.creacion->format('d/m/Y H:i:s')"}</small></h3>
+			<h3>{$foto.titulo}<small class="pull-right">{$foto.creacion->fuzzy()}</small></h3>
 			<div class="thumbnail" style="margin: 0 auto; min-height: 200px">
 				<img src="{$foto.url}" />
 			</div>
