@@ -247,4 +247,28 @@ class Base_Model_Foto extends Model_Dataset {
 
 		return $listado;
 	}
+
+	/**
+	 * Obtenemos un listado de las ultimas fotos de un usuario.
+	 * @param int $usuario_id ID del usuario.
+	 * @param int $pagina Número de paginas a obtener. La primera es 1.
+	 * @param int $cantidad Cantidad de elementos por página.
+	 * @return array
+	 */
+	public function obtener_ultimas_usuario($usuario_id, $pagina = 1, $cantidad = 20)
+	{
+		// Calculamos primer elemento.
+		$primero = $cantidad * ($pagina - 1);
+
+		// Obtenemos la lista de sucesos.
+		$sucesos = $this->db->query('SELECT id FROM foto WHERE usuario_id = ? ORDER BY creacion DESC LIMIT '.$primero.','.$cantidad, $usuario_id)->get_pairs(Database_Query::FIELD_INT);
+
+		$listado = array();
+		foreach ($sucesos as $s)
+		{
+			$listado[] = new Model_Foto($s);
+		}
+
+		return $listado;
+	}
 }

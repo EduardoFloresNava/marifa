@@ -106,6 +106,53 @@ class Base_Controller_Foto extends Controller {
 	}
 
 	/**
+	 * Mostramos listado de fotos del usuario conectado
+	 */
+	public function action_mis_fotos()
+	{
+		// Verificamos si esta conectado.
+		if ( ! Session::is_set('usuario_id'))
+		{
+			Request::redirect('/foto/');
+		}
+
+		// Asignamos el título.
+		$this->template->assign('title', 'Mis Fotos');
+
+		// Cargamos la vista.
+		$view = View::factory('foto/index');
+
+		// Cargamos el listado de fotos.
+		$model_fotos = new Model_Foto;
+		$fotos = $model_fotos->obtener_ultimas_usuario( (int)Session::get('usuario_id'));
+
+		// Procesamos información relevante.
+		foreach($fotos as $key => $value)
+		{
+			$d = $value->as_array();
+			$d['votos'] = $value->votos();
+			$d['favoritos'] = $value->favoritos();
+			$d['usuario'] = $value->usuario()->as_array();
+
+			// Acciones. Como son nuestras fotos no hacen falta acciones.
+			$d['favorito'] = TRUE;
+			$d['voto'] = TRUE;
+
+			$fotos[$key] = $d;
+		}
+
+		$view->assign('fotos', $fotos);
+		unset($fotos);
+
+		// Menu.
+		$this->template->assign('master_bar', parent::base_menu_login('fotos'));
+		$this->template->assign('top_bar', $this->submenu('mis_fotos', Session::is_set('usuario_id')));
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
 	 * Mostramos una foto.
 	 * @param int $foto ID de la foto.
 	 */
