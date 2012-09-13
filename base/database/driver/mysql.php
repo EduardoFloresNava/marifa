@@ -76,6 +76,88 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		$this->connect();
 	}
 
+	public function explain_query($sql)
+	{
+		// Realizamos la ejecución.
+		if ($this->is_connected())
+		{
+			// Consulta.
+			$rst = new Database_Driver_Mysql_Query($sql, $this->conn);
+			$rst->set_fetch_type(Database_Query::FETCH_OBJ);
+
+			// Armamos el resultado.
+			$lst = array();
+			foreach($rst as $v)
+			{
+				// Posibles keys
+				if (isset($v->possible_keys) && $v->possible_keys != NULL)
+				{
+					if ( ! isset($lst['posibles_keys']))
+					{
+						$lst['posibles_keys'] = array();
+					}
+
+					$lst['posibles_keys'][] = $v->possible_keys;
+				}
+
+				// Key
+				if (isset($v->key) && $v->key != NULL)
+				{
+					if ( ! isset($lst['key']))
+					{
+						$lst['key'] = array();
+					}
+					$ks = $v->key;
+
+					if (isset($v->key_len ) && $v->key_len  != NULL)
+					{
+						$ks = $ks.'('.$v->key_len.')';
+					}
+					$lst['key'][] = $ks;
+				}
+
+				// Type
+				if (isset($v->type) && $v->type != NULL)
+				{
+					if ( ! isset($lst['type']))
+					{
+						$lst['type'] = array();
+					}
+					$lst['type'][] = $v->type;
+				}
+
+				// Rows
+				if (isset($v->rows) && $v->rows != NULL)
+				{
+					if ( ! isset($lst['rows']))
+					{
+						$lst['rows'] = (int) $v->rows;
+					}
+					else
+					{
+						$lst['rows'] += (int) $v->rows;
+					}
+				}
+			}
+
+			// Tranformamos elemento a string.
+			foreach($lst as $k => $v)
+			{
+				if (is_array($v))
+				{
+					$lst[$k] = implode(', ', $v);
+				}
+			}
+
+			// Devolvemos el resultado.
+			return $lst;
+		}
+		else
+		{
+			return array();
+		}
+	}
+
 	/**
 	 * Destructor de la clase.
 	 * @author Cody Roodaka <roodakazo@hotmail.com>
@@ -195,9 +277,9 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			Profiler_Profiler::get_instance()->logQuery($query);
+			Profiler_Profiler::get_instance()->log_query($query);
 			$query = mysql_query($query, $this->conn);
-			Profiler_Profiler::get_instance()->logQuery($query);
+			Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($query === TRUE)
 			{
@@ -237,9 +319,9 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			Profiler_Profiler::get_instance()->logQuery($query);
+			Profiler_Profiler::get_instance()->log_query($query);
 			$query = mysql_query($query, $this->conn);
-			Profiler_Profiler::get_instance()->logQuery($query);
+			Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($query === TRUE)
 			{
@@ -276,9 +358,9 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			Profiler_Profiler::get_instance()->logQuery($query);
+			Profiler_Profiler::get_instance()->log_query($query);
 			$query = mysql_query($query, $this->conn);
-			Profiler_Profiler::get_instance()->logQuery($query);
+			Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($query === TRUE)
 			{

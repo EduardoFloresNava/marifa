@@ -115,7 +115,7 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 	{
 		$t = $this->db->query('SELECT cantidad FROM post_comentario_voto WHERE usuario_id = ? AND post_comentario_id = ? LIMIT 1', array($usuario_id, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT);
 
-		return ($t === 1) ? TRUE : (($t === -1) ? FALSE : NULL );
+		return ($t === 1) ? TRUE : (($t === -1) ? FALSE : NULL);
 	}
 
 	/**

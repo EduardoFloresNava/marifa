@@ -89,7 +89,7 @@ class Base_Model_Suceso extends Model_Dataset {
 			$rst = array();
 			foreach ($usuario_id as $id)
 			{
-				list($rst[], ) = $this->db->insert('INSERT INTO suceso (usuario_id, objeto_id, objeto_id1, objeto_id2, tipo, fecha) VALUES (?, ?, ?, ?, ?, ?)',
+				list($rst[],) = $this->db->insert('INSERT INTO suceso (usuario_id, objeto_id, objeto_id1, objeto_id2, tipo, fecha) VALUES (?, ?, ?, ?, ?, ?)',
 					array($id, $objeto_id, $objeto_id2, $objeto_id3, $tipo, date('Y/m/d H:i:s')));
 			}
 			return $rst;

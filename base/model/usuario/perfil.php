@@ -68,7 +68,7 @@ class Base_Model_Usuario_Perfil extends Model {
 		}
 
 		// Campos inexistentes quedan vacios.
-		foreach($fields as $k => $f)
+		foreach ($fields as $k => $f)
 		{
 			// Evitamos recargar existentes.
 			if (in_array($f, array_keys($this->fields)))

@@ -108,16 +108,18 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		// Cargamos la consulta.
 		$sth = $this->make_query($query, $params);
 
-		Profiler_Profiler::get_instance()->logQuery($sth->queryString);
+		Profiler_Profiler::get_instance()->log_query($sth->queryString);
 
 		// Ejecutamos la consulta.
 		if ($sth->execute())
 		{
+			Profiler_Profiler::get_instance()->log_query($sth->queryString);
 			// Generamos un objeto para dar compatibilidad al resto de motores.
 			return new Database_Driver_Pdo_Query($sth);
 		}
 		else
 		{
+			Profiler_Profiler::get_instance()->log_query($sth->queryString);
 			// Error ejecutando la consulta.
 			$err_data = $sth->errorInfo();
 			throw new Database_Exception("Error ejecutando la consulta: '{$err_data[2]}'", $err_data[0]);
@@ -360,10 +362,12 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		// Cargamos la consulta.
 		$sth = $this->make_query($query, $params);
 
-		Profiler_Profiler::get_instance()->logQuery($sth->queryString);
+		Profiler_Profiler::get_instance()->log_query($sth->queryString);
 
 		// Realizamos la consulta
 		$rst = $sth->execute();
+
+		Profiler_Profiler::get_instance()->log_query($sth->queryString);
 
 		if ($rst)
 		{
