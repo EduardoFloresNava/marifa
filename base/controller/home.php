@@ -147,6 +147,18 @@ class Base_Controller_Home extends Controller {
 		$portada->assign('usuario_top', $usuario_top_list);
 		unset($usuario_top_list, $model_usuario);
 
+		// Cargamos ultimas fotos.
+		$model_foto = new Model_Foto;
+		$foto_list = $model_foto->obtener_ultimas(1, 1);
+
+		// Extendemos la información de las fotos.
+		foreach ($foto_list as $k => $v)
+		{
+			$foto_list[$k] = $v->as_array();
+		}
+		$portada->assign('ultimas_fotos', $foto_list);
+		unset($foto_list, $model_foto);
+
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());

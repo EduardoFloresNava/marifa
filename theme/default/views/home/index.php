@@ -76,18 +76,25 @@
 	<div class="span2 hidden-phone">
 		<div>
 			<h3>&Uacute;ltimas fotos</h3>
-			<img class="img-polaroid" src="http://placehold.it/170x150" />
+			{if="isset($ultimas_fotos[0])"}
+			<!--170x150-->
+			<a href="/foto/ver/{$ultimas_fotos.0.id}">
+				<div class="thumbnail" style="min-height: 50px;">
+					<img src="{$ultimas_fotos.0.url}" />
+				</div>
+			</a>
+			{/if}
 		</div>
 		<div>
 			<h3>Afiliados</h3>
 			<div class="thumbnail">
-				<img class="img-polaroid" src="http://placehold.it/170x50" />
+				<img src="http://placehold.it/170x50" />
 			</div>
 			<div class="thumbnail">
-				<img class="img-polaroid" src="http://placehold.it/170x50" />
+				<img src="http://placehold.it/170x50" />
 			</div>
 			<div class="thumbnail">
-				<img class="img-polaroid" src="http://placehold.it/170x50" />
+				<img src="http://placehold.it/170x50" />
 			</div>
 			<a href="#">Afiliate a Marifa</a>
 		</div>
