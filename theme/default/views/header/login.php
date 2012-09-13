@@ -21,7 +21,7 @@
 				{/loop}
 			</ul>
 			<div class="actions">
-				<a href="/notificaciones/">Ver todos</a>
+				<a href="/perfil/">Ver todos</a>
 				<a href="/notificaciones/">Marcar como le&iacute;dos</a>
 			</div>
         </div>
