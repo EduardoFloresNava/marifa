@@ -58,24 +58,19 @@
 		</div>
 		<div>
 			<h3>TOPs posts</h3>
-			<p>01. Nombre post<span class="badge pull-right">10</span></p>
-			<p>01. Nombre post<span class="badge pull-right">10</span></p>
-			<p>01. Nombre post<span class="badge pull-right">10</span></p>
-			<p>01. Nombre post<span class="badge pull-right">10</span></p>
-			<p>01. Nombre post<span class="badge pull-right">10</span></p>
-			<p>01. Nombre post<span class="badge pull-right">10</span></p>
-			<p>01. Nombre post<span class="badge pull-right">10</span></p>
+			<ol>
+			{loop="$top_posts"}
+				<li><a href="/post/index/{$value.id}">{$value.titulo}<span class="badge pull-right">{$value.puntos}</a></li>
+			{/loop}
+			</ol>
 		</div>
 		<div>
 			<h3>TOPs usuarios</h3>
-			<p>01. Usuario<span class="badge pull-right">10</span></p>
-			<p>01. Usuario<span class="badge pull-right">10</span></p>
-			<p>01. Usuario<span class="badge pull-right">10</span></p>
-			<p>01. Usuario<span class="badge pull-right">10</span></p>
-			<p>01. Usuario<span class="badge pull-right">10</span></p>
-			<p>01. Usuario<span class="badge pull-right">10</span></p>
-			<p>01. Usuario<span class="badge pull-right">10</span></p>
-			<p>01. Usuario<span class="badge pull-right">10</span></p>
+			<ol>
+			{loop="$usuario_top"}
+				<li><a href="/perfil/index/{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.puntos}</a></li>
+			{/loop}
+			</ol>
 		</div>
 	</div>
 	<div class="span2 hidden-phone">

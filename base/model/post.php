@@ -531,4 +531,28 @@ class Base_Model_Post extends Model_Dataset {
 		return $lst;
 	}
 
+	/**
+	 * Obtenemos el listado de los posts más puntuados.
+	 * @param int $pagina Número de página empezando en 1.
+	 * @param int $cantidad Cantidad de post por página.
+	 * @return array
+	 */
+	public function obtener_tops($pagina = 1, $cantidad = 10)
+	{
+		// Primer elemento a devolver.
+		$inicio = $cantidad * ($pagina - 1);
+
+		// Obtenemos el listado.
+		$rst = $this->db->query('SELECT post.id, SUM(post_punto.cantidad) as puntos FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id GROUP BY post.id ORDER BY puntos DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+
+		// Armamos la lista.
+		$lst = array();
+		foreach ($rst as $k => $v)
+		{
+			$lst[] = new Model_Post($k);
+		}
+
+		return $lst;
+	}
+
 }

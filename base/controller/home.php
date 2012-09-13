@@ -102,8 +102,21 @@ class Base_Controller_Home extends Controller {
 		$portada->assign('ultimos_posts', $post_list);
 		unset($post_list);
 
+		// Cargamos TOP posts.
+		$post_top_list = $model_post->obtener_tops();
+
+		// Extendemos la información de los posts.
+		foreach ($post_top_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['puntos'] = $v->puntos();
+			$post_top_list[$k] = $a;
+		}
+
+		$portada->assign('top_posts', $post_top_list);
+		unset($post_top_list, $model_post);
+
 		// Cargamos últimos comentarios.
-		// Cargamos datos de posts.
 		$comentario_list = Model_Post_Comentario::obtener_ultimos();
 
 		// Extendemos la información de los comentarios.
@@ -118,6 +131,21 @@ class Base_Controller_Home extends Controller {
 
 		$portada->assign('ultimos_comentarios', $comentario_list);
 		unset($comentario_list);
+
+		// Cargamos top usuarios.
+		$model_usuario = new Model_Usuario;
+		$usuario_top_list = $model_usuario->obtener_tops();
+
+		// Extendemos la información de los usuarios.
+		foreach ($usuario_top_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['puntos'] = $v->cantidad_puntos();
+
+			$usuario_top_list[$k] = $a;
+		}
+		$portada->assign('usuario_top', $usuario_top_list);
+		unset($usuario_top_list, $model_usuario);
 
 
 		// Asignamos la vista a la plantilla base.
