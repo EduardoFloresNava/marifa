@@ -69,7 +69,7 @@ class Base_Profiler_Profiler {
 	 * Execution start time.
 	 * @var int|mixed|NULL
 	 */
-	protected $_startTime;
+	protected $_start_time;
 
 	/**
 	 * Profiler enabled.
@@ -99,7 +99,7 @@ class Base_Profiler_Profiler {
 			$start_time = microtime(TRUE);
 		}
 
-		$this->_startTime = $start_time;
+		$this->_start_time = $start_time;
 		$this->_config = $config;
 
 		$this->_console = new Profiler_Console;
@@ -152,7 +152,7 @@ class Base_Profiler_Profiler {
 	 * Is disabled.
 	 * @return mixed
 	 */
-	public function isEnabled()
+	public function is_enabled()
 	{
 		return $this->_enabled;
 	}
@@ -162,7 +162,7 @@ class Base_Profiler_Profiler {
 	 *
 	 * @param string|array $callback
 	 */
-	public function setQueryExplainCallback($callback)
+	public function set_query_explain_callback($callback)
 	{
 		$this->_config['query_explain_callback'] = $callback;
 	}
@@ -173,7 +173,7 @@ class Base_Profiler_Profiler {
 	 *
 	 * @param string|array $callback
 	 */
-	public function setQueryProfilerCallback($callback)
+	public function set_query_profiler_callback($callback)
 	{
 		$this->_config['query_profiler_callback'] = $callback;
 	}
@@ -181,9 +181,9 @@ class Base_Profiler_Profiler {
 	/**
 	 * Collects and aggregates data recorded by Profiler_Console.
 	 */
-	protected function _gatherConsoleData()
+	protected function _gather_console_data()
 	{
-		$logs = $this->_console->getLogs();
+		$logs = $this->_console->get_logs();
 		$result = $logs;
 
 		foreach ($logs as $type => $item)
@@ -208,15 +208,15 @@ class Base_Profiler_Profiler {
 				{
 					case 'memory':
 						$data['type'] = 'memory';
-						$data['data'] = $this->_getReadableFileSize($data['data']);
+						$data['data'] = $this->_get_readable_file_size($data['data']);
 						break;
 					case 'speed':
 						$data['type'] = 'speed';
-						$data['data'] = $this->_getReadableTime($message['data'] - $this->_startTime);
+						$data['data'] = $this->_get_readable_time($message['data'] - $this->_startTime);
 						break;
 					case 'benchmarks':
 						$data['type'] = 'benchmark';
-						$data['data'] = $this->_getReadableTime($message['end_time'] - $message['start_time']);
+						$data['data'] = $this->_get_readable_time($message['end_time'] - $message['start_time']);
 						break;
 				}
 
@@ -233,11 +233,11 @@ class Base_Profiler_Profiler {
 	/**
 	 * Gathers and aggregates data on included files such as size
 	 */
-	protected function _gatherFileData()
+	protected function _gather_file_data()
 	{
 		$files = get_included_files();
-		$fileList = array();
-		$fileTotals = array(
+		$file_list = array();
+		$file_totals = array(
 			'count' => count($files),
 			'size' => 0,
 			'largest' => 0
@@ -246,60 +246,60 @@ class Base_Profiler_Profiler {
 		foreach ($files as $file)
 		{
 			$size = filesize($file);
-			$fileList[] = array(
+			$file_list[] = array(
 				'name' => $file,
-				'size' => $this->_getReadableFileSize($size)
+				'size' => $this->_get_readable_file_size($size)
 			);
-			$fileTotals['size'] += $size;
+			$file_totals['size'] += $size;
 
-			if ($size > $fileTotals['largest'])
+			if ($size > $file_totals['largest'])
 			{
-				$fileTotals['largest'] = $size;
+				$file_totals['largest'] = $size;
 			}
 		}
 
-		$fileTotals['size'] = $this->_getReadableFileSize($fileTotals['size']);
-		$fileTotals['largest'] = $this->_getReadableFileSize($fileTotals['largest']);
+		$file_totals['size'] = $this->_get_readable_file_size($file_totals['size']);
+		$file_totals['largest'] = $this->_get_readable_file_size($file_totals['largest']);
 
-		$this->_output['files'] = $fileList;
-		$this->_output['fileTotals'] = $fileTotals;
+		$this->_output['files'] = $file_list;
+		$this->_output['fileTotals'] = $file_totals;
 	}
 
 	/**
 	 * Gets the peak memory usage the configured memory limit
 	 */
-	protected function _gatherMemoryData()
+	protected function _gather_memory_data()
 	{
-		$memoryTotals = array();
-		$memoryTotals['used'] = $this->_getReadableFileSize(memory_get_peak_usage());
-		$memoryTotals['total'] = ini_get('memory_limit');
+		$memory_totals = array();
+		$memory_totals['used'] = $this->_get_readable_file_size(memory_get_peak_usage());
+		$memory_totals['total'] = ini_get('memory_limit');
 
-		$this->_output['memoryTotals'] = $memoryTotals;
+		$this->_output['memoryTotals'] = $memory_totals;
 	}
 
 	/**
 	 * Gathers and aggregates data regarding executed queries
 	 */
-	protected function _gatherQueryData()
+	protected function _gather_query_data()
 	{
 		$queries = array();
-		$typeDefault = array('total' => 0, 'time' => 0, 'percentage' => 0, 'time_percentage' => 0);
+		$type_default = array('total' => 0, 'time' => 0, 'percentage' => 0, 'time_percentage' => 0);
 		$types = array(
-			'select' => $typeDefault,
-			'update' => $typeDefault,
-			'insert' => $typeDefault,
-			'delete' => $typeDefault
+			'select' => $type_default,
+			'update' => $type_default,
+			'insert' => $type_default,
+			'delete' => $type_default
 		);
-		$queryTotals = array('all' => 0, 'count' => 0, 'time' => 0, 'duplicates' => 0, 'types' => $types);
+		$query_totals = array('all' => 0, 'count' => 0, 'time' => 0, 'duplicates' => 0, 'types' => $types);
 
 		foreach ($this->_output['logs']['queries']['messages'] as $entries)
 		{
 			if (count($entries) > 1)
 			{
-				$queryTotals['duplicates'] += 1;
+				$query_totals['duplicates'] += 1;
 			}
 
-			$queryTotals['count'] += 1;
+			$query_totals['count'] += 1;
 			foreach ($entries as $i => $log)
 			{
 				if (isset($log['end_time']))
@@ -308,38 +308,36 @@ class Base_Profiler_Profiler {
 						'sql' => $log['sql'],
 						'explain' => $log['explain'],
 						'time' => ($log['end_time'] - $log['start_time']),
-						'duplicate' => $i > 0 ? TRUE : FALSE
+						'duplicate' => ($i > 0) ? TRUE : FALSE
 					);
 
 					// Lets figure out the type of query for our counts
 					$trimmed = trim($log['sql']);
 					$type = strtolower(substr($trimmed, 0, strpos($trimmed, ' ')));
 
-					if (in_array($type, $this->_query_types) && isset($queryTotals['types'][$type]))
+					if (in_array($type, $this->_query_types) && isset($query_totals['types'][$type]))
 					{
-						$queryTotals['types'][$type]['total'] += 1;
-						$queryTotals['types'][$type]['time'] += $query['time'];
+						$query_totals['types'][$type]['total'] += 1;
+						$query_totals['types'][$type]['time'] += $query['time'];
 					}
 
 					// Need to get total times and a readable format of our query time
-					$queryTotals['time'] += $query['time'];
-					$queryTotals['all'] += 1;
-					$query['time'] = $this->_getReadableTime($query['time']);
+					$query_totals['time'] += $query['time'];
+					$query_totals['all'] += 1;
+					$query['time'] = $this->_get_readable_time($query['time']);
 
 					// If an explain callback is setup try to get the explain data
-					if (isset($this->_query_types[$type]) && isset($this->_config['query_explain_callback'])
-							&& ! empty($this->_config['query_explain_callback'])
-					)
+					if ($type == 'select' && in_array($type, $this->_query_types) && isset($this->_config['query_explain_callback'])
+							&& ! empty($this->_config['query_explain_callback']))
 					{
-						$query['explain'] = $this->_attemptToExplainQuery($query['sql']);
+						$query['explain'] = $this->_attempt_to_explain_query($query['sql']);
 					}
 
 					// If a query profiler callback is setup get the profiler data
 					if (isset($this->_config['query_profiler_callback'])
-							&& ! empty($this->_config['query_profiler_callback'])
-					)
+							&& ! empty($this->_config['query_profiler_callback']))
 					{
-						$query['profile'] = $this->_attemptToProfileQuery($query['sql']);
+						$query['profile'] = $this->_attempt_to_profile_query($query['sql']);
 					}
 
 					$queries[] = $query;
@@ -348,71 +346,71 @@ class Base_Profiler_Profiler {
 		}
 
 		// Go through the type totals and calculate percentages
-		foreach ($queryTotals['types'] as $type => $stats)
+		foreach ($query_totals['types'] as $type => $stats)
 		{
-			$totalPerc = ! $stats['total'] ? 0 : round(($stats['total'] / $queryTotals['count']) * 100, 2);
-			$timePerc = ! $stats['time'] ? 0 : round(($stats['time'] / $queryTotals['time']) * 100, 2);
+			$total_perc = ( ! $stats['total']) ? 0 : round(($stats['total'] / $query_totals['count']) * 100, 2);
+			$time_perc = ( ! $stats['time']) ? 0 : round(($stats['time'] / $query_totals['time']) * 100, 2);
 
-			$queryTotals['types'][$type]['percentage'] = $totalPerc;
-			$queryTotals['types'][$type]['time_percentage'] = $timePerc;
-			$queryTotals['types'][$type]['time'] = $this->_getReadableTime($queryTotals['types'][$type]['time']);
+			$query_totals['types'][$type]['percentage'] = $total_perc;
+			$query_totals['types'][$type]['time_percentage'] = $time_perc;
+			$query_totals['types'][$type]['time'] = $this->_get_readable_time($query_totals['types'][$type]['time']);
 		}
 
-		$queryTotals['time'] = $this->_getReadableTime($queryTotals['time']);
+		$query_totals['time'] = $this->_get_readable_time($query_totals['time']);
 		$this->_output['queries'] = $queries;
-		$this->_output['queryTotals'] = $queryTotals;
+		$this->_output['queryTotals'] = $query_totals;
 	}
 
 	/**
 	 * Calculates the execution time from the start of profiling to *now* and
 	 * collects the congirued maximum execution time.
 	 */
-	protected function _gatherSpeedData()
+	protected function _gather_speed_data()
 	{
-		$speedTotals = array();
-		$speedTotals['total'] = $this->_getReadableTime(microtime(TRUE) - $this->_startTime);
-		$speedTotals['allowed'] = ini_get('max_execution_time');
-		$this->_output['speedTotals'] = $speedTotals;
+		$speed_totals = array();
+		$speed_totals['total'] = $this->_get_readable_time(microtime(TRUE) - $this->_start_time);
+		$speed_totals['allowed'] = ini_get('max_execution_time');
+		$this->_output['speedTotals'] = $speed_totals;
 	}
 
 	/**
 	 * Converts a number of bytes to a more readable format
 	 *
 	 * @param int   $size      The number of bytes
-	 * @param string $formatString The format of the return string
+	 * @param string $format_string The format of the return string
 	 *
 	 * @return string
 	 */
-	protected function _getReadableFileSize($size, $formatString = '')
+	protected function _get_readable_file_size($size, $format_string = '')
 	{
 		$sizes = array('bytes', 'kB', 'MB', 'GB', 'TB');
 
-		if ( ! $formatString)
+		if ( ! $format_string)
 		{
-			$formatString = '%01.2f %s';
+			$format_string = '%01.2f %s';
 		}
 
-		$lastSizeString = end($sizes);
+		$last_size_string = end($sizes);
 
-		foreach ($sizes as $sizeString)
+		foreach ($sizes as $size_string)
 		{
 			if ($size < 1024)
 			{
 				break;
 			}
 
-			if ($sizeString != $lastSizeString)
+			if ($size_string != $last_size_string)
 			{
 				$size /= 1024;
 			}
 		}
 
-		if ($sizeString == $sizes[0])
+		if ($size_string == $sizes[0])
 		{
-			$formatString = '%01d %s';
+			$format_string = '%01d %s';
 		}
 
-		return sprintf($formatString, $size, $sizeString);
+		return sprintf($format_string, $size, $size_string);
 	}
 
 	/**
@@ -422,29 +420,29 @@ class Base_Profiler_Profiler {
 	 *
 	 * @return int
 	 */
-	protected function _getReadableTime($time)
+	protected function _get_readable_time($time)
 	{
 		if ($time < 0.001)
 		{
-			//microseconds
+			// microseconds
 			$units = 'µs';
 			$value = $time * 1000000;
 		}
 		elseif ($time < 1)
 		{
-			//milliseconds
+			// milliseconds
 			$units = 'ms';
 			$value = $time * 1000;
 		}
 		elseif ($time >= 1 && $time < 60)
 		{
-			//seconds
+			// seconds
 			$units = 's';
 			$value = $time;
 		}
 		else
 		{
-			//minutes
+			// minutes
 			$units = 'm';
 			$value = $time / 60;
 		}
@@ -457,19 +455,19 @@ class Base_Profiler_Profiler {
 	 * Collects data from the console and performs various calculations on it before
 	 * displaying the console on screen.
 	 *
-	 * @param bool $returnAsString
+	 * @param bool $return_as_string
 	 *
 	 * @return mixed
 	 */
-	public function display($returnAsString = FALSE)
+	public function display($return_as_string = FALSE)
 	{
-		$this->_gatherConsoleData();
-		$this->_gatherFileData();
-		$this->_gatherMemoryData();
-		$this->_gatherQueryData();
-		$this->_gatherSpeedData();
+		$this->_gather_console_data();
+		$this->_gather_file_data();
+		$this->_gather_memory_data();
+		$this->_gather_query_data();
+		$this->_gather_speed_data();
 
-		return Profiler_Display::display($this->_output, $returnAsString);
+		return Profiler_Display::display($this->_output, $return_as_string);
 	}
 
 	/**
@@ -479,12 +477,12 @@ class Base_Profiler_Profiler {
 	 *
 	 * @return array
 	 */
-	protected function _attemptToExplainQuery($sql)
+	protected function _attempt_to_explain_query($sql)
 	{
 		try
 		{
 			$sql = 'EXPLAIN '.$sql;
-			return call_user_func_array($this->_config['query_explain_callback'], $sql);
+			return call_user_func($this->_config['query_explain_callback'], $sql);
 		}
 		catch (Exception $e)
 		{
@@ -499,7 +497,7 @@ class Base_Profiler_Profiler {
 	 *
 	 * @return array
 	 */
-	protected function _attemptToProfileQuery($sql)
+	protected function _attempt_to_profile_query($sql)
 	{
 		try
 		{
@@ -520,7 +518,7 @@ class Base_Profiler_Profiler {
 	 */
 	public function log($data)
 	{
-		if ( ! $this->isEnabled())
+		if ( ! $this->is_enabled())
 		{
 			return;
 		}
@@ -536,14 +534,14 @@ class Base_Profiler_Profiler {
 	 *
 	 * @return void
 	 */
-	public function logMemory($name = 'Memory usage at this point', $variable = NULL)
+	public function log_memory($name = 'Memory usage at this point', $variable = NULL)
 	{
-		if ( ! $this->isEnabled())
+		if ( ! $this->is_enabled())
 		{
 			return;
 		}
 
-		$this->_console->logMemory($name, $variable);
+		$this->_console->log_memory($name, $variable);
 	}
 
 	/**
@@ -551,28 +549,28 @@ class Base_Profiler_Profiler {
 	 * @param string $name  Log mesage
 	 * @param mixed $variable Variable
 	 */
-	public function logVarMemory($name = 'Variable memory usage at this point', $variable = NULL)
+	public function log_var_memory($name = 'Variable memory usage at this point', $variable = NULL)
 	{
-		if ( ! $this->isEnabled())
+		if ( ! $this->is_enabled())
 		{
 			return;
 		}
 
-		$this->_console->logVarMemory($name, $variable);
+		$this->_console->log_var_memory($name, $variable);
 	}
 
 	/**
 	 * Log peak memory usar.
 	 * @param string $name Log mesage
 	 */
-	public function logPeakMemory($name = 'Peak memory usage at this point')
+	public function log_peak_memory($name = 'Peak memory usage at this point')
 	{
-		if ( ! $this->isEnabled())
+		if ( ! $this->is_enabled())
 		{
 			return;
 		}
 
-		$this->_console->logPeakMemory($name);
+		$this->_console->log_peak_memory($name);
 	}
 
 	/**
@@ -583,14 +581,14 @@ class Base_Profiler_Profiler {
 	 *
 	 * @return void
 	 */
-	public function logError($exception, $message = '')
+	public function log_error($exception, $message = '')
 	{
-		if ( ! $this->isEnabled())
+		if ( ! $this->is_enabled())
 		{
 			return;
 		}
 
-		$this->_console->logError($exception, $message);
+		$this->_console->log_error($exception, $message);
 	}
 
 	/**
@@ -601,32 +599,32 @@ class Base_Profiler_Profiler {
 	 *
 	 * @return void
 	 */
-	public function logSpeed($name = 'Point in time')
+	public function log_speed($name = 'Point in time')
 	{
-		if ( ! $this->isEnabled())
+		if ( ! $this->is_enabled())
 		{
 			return;
 		}
 
-		$this->_console->logSpeed($name);
+		$this->_console->log_speed($name);
 	}
 
 	/**
 	 * Records how long a query took to run when the same query is passed in twice.
 	 *
-	 * @param      $sql
+	 * @param string $sql
 	 * @param NULL $explain
 	 *
 	 * @return mixed
 	 */
-	public function logQuery($sql, $explain = NULL)
+	public function log_query($sql, $explain = NULL)
 	{
-		if ( ! $this->isEnabled())
+		if ( ! $this->is_enabled())
 		{
 			return;
 		}
 
-		$this->_console->logQuery($sql, $explain);
+		$this->_console->log_query($sql, $explain);
 	}
 
 	/**
@@ -637,14 +635,14 @@ class Base_Profiler_Profiler {
 	 * @return void
 	 *
 	 */
-	public function logBenchmark($name)
+	public function log_benchmark($name)
 	{
-		if ( ! $this->isEnabled())
+		if ( ! $this->is_enabled())
 		{
 			return;
 		}
 
-		$this->_console->logBenchmark($name);
+		$this->_console->log_benchmark($name);
 	}
 
 }

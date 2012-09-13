@@ -115,7 +115,7 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 	{
 		$t = $this->db->query('SELECT cantidad FROM post_comentario_voto WHERE usuario_id = ? AND post_comentario_id = ? LIMIT 1', array($usuario_id, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT);
 
-		return ($t === 1) ? TRUE : (($t === -1) ? FALSE : NULL );
+		return ($t === 1) ? TRUE : (($t === -1) ? FALSE : NULL);
 	}
 
 	/**
@@ -151,5 +151,29 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 			Cache::get_instance()->save('post_comentario_'.$this->primary_key['id'].'_votos', $cantidad);
 		}
 		return $cantidad;
+	}
+
+	/**
+	 * Obtenemos el listado de los últimos comentarios.
+	 * @param int $pagina Número de página empezando en 1.
+	 * @param int $cantidad Cantidad de post por página.
+	 * @return array
+	 */
+	public static function obtener_ultimos($pagina = 1, $cantidad = 10)
+	{
+		// Primer elemento a devolver.
+		$inicio = $cantidad * ($pagina - 1);
+
+		// Obtenemos el listado.
+		$rst = Database::get_instance()->query('SELECT id FROM post_comentario ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+
+		// Armamos la lista.
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Post_Comentario($v);
+		}
+
+		return $lst;
 	}
 }

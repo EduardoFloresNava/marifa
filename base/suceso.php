@@ -45,8 +45,6 @@ class Base_Suceso {
 
 		// Obtenemos elemento a partir de la cache.
 		$data = Cache::get_instance()->get($cache_id);
-		//TODO: Quitar borrado de cache.
-		//$data = FALSE;
 
 		// Verificamos si existe.
 		if ($data === FALSE)

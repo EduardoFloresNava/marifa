@@ -37,30 +37,30 @@ class Base_Profiler_Display {
 	 *
 	 * @static
 	 *
-	 * @param      $data
-	 * @param bool $returnAsString
+	 * @param mixed $data
+	 * @param bool $return_as_string
 	 *
 	 * @return mixed
 	 */
-	public static function display($data, $returnAsString = FALSE)
+	public static function display($data, $return_as_string = FALSE)
 	{
 		$output = '';
 
 		$output .= '<div id="profiler-container" class="hideDetails visible-desktop">';
 		$output .= '<div id="profiler" class="console">';
 
-		$output .= self::getMainTabs($data);
+		$output .= self::get_main_tabs($data);
 
-		$output .= self::getConsoleTab($data);
-		$output .= self::getLoadTimeTab($data);
-		$output .= self::getDatabaseTab($data);
-		$output .= self::getMemoryTab($data);
-		$output .= self::getFilesTab($data);
-		$output .= self::getFooter();
+		$output .= self::get_console_tab($data);
+		$output .= self::get_load_time_tab($data);
+		$output .= self::get_database_tab($data);
+		$output .= self::get_memory_tab($data);
+		$output .= self::get_files_tab($data);
+		$output .= self::get_footer();
 
 		$output .= '</div></div>';
 
-		if ($returnAsString)
+		if ($return_as_string)
 		{
 			return $output;
 		}
@@ -75,32 +75,32 @@ class Base_Profiler_Display {
 	 * Main tabs HTML
 	 * @static
 	 *
-	 * @param $data
+	 * @param mixed $data
 	 *
 	 * @return string
 	 */
-	public static function getMainTabs($data)
+	public static function get_main_tabs($data)
 	{
-		$logCount = count($data['logs']['console']['messages']);
-		$fileCount = count($data['files']);
-		$memoryUsed = $data['memoryTotals']['used'];
-		$queryCount = $data['queryTotals']['all'];
-		$speedTotal = $data['speedTotals']['total'];
+		$log_count = count($data['logs']['console']['messages']);
+		$file_count = count($data['files']);
+		$memory_used = $data['memoryTotals']['used'];
+		$query_count = $data['queryTotals']['all'];
+		$speed_total = $data['speedTotals']['total'];
 
 		$tabs = array(
-			'console' => array('title' => 'Console', 'value' => $logCount),
-			'speed' => array('title' => 'Time', 'value' => $speedTotal),
-			'queries' => array('title' => 'Database', 'value' => $queryCount),
-			'memory' => array('title' => 'Memory', 'value' => $memoryUsed),
-			'files' => array('title' => 'Files', 'value' => $fileCount),
+			'console' => array('title' => 'Console', 'value' => $log_count),
+			'speed' => array('title' => 'Time', 'value' => $speed_total),
+			'queries' => array('title' => 'Database', 'value' => $query_count),
+			'memory' => array('title' => 'Memory', 'value' => $memory_used),
+			'files' => array('title' => 'Files', 'value' => $file_count),
 		);
 
 		$output = '<div id="profiler-metrics">';
-		foreach ($tabs as $tabId => $tabData)
+		foreach ($tabs as $tab_id => $tab_data)
 		{
-			$output .= '<div id="'.$tabId.'" class="tab">';
-			$output .= '<var>'.$tabData['value'].'</var>';
-			$output .= '<h4>'.$tabData['title'].'</h4>';
+			$output .= '<div id="'.$tab_id.'" class="tab">';
+			$output .= '<var>'.$tab_data['value'].'</var>';
+			$output .= '<h4>'.$tab_data['title'].'</h4>';
 			$output .= '</div>';
 		}
 		$output .= '<div style="clear: both;"></div>';
@@ -113,11 +113,11 @@ class Base_Profiler_Display {
 	 * Console tab HTML
 	 * @static
 	 *
-	 * @param $data
+	 * @param mixed $data
 	 *
 	 * @return string
 	 */
-	public static function getConsoleTab($data)
+	public static function get_console_tab($data)
 	{
 		$output = '<div id="profiler-console" class="profiler-box">';
 
@@ -195,11 +195,11 @@ class Base_Profiler_Display {
 	 * Load Time tab HTML
 	 * @static
 	 *
-	 * @param $data
+	 * @param mixed $data
 	 *
 	 * @return string
 	 */
-	public static function getLoadTimeTab($data)
+	public static function get_load_time_tab($data)
 	{
 		$output = '<div id="profiler-speed" class="profiler-box">';
 		if ($data['logs']['speed']['count'] == 0)
@@ -239,11 +239,11 @@ class Base_Profiler_Display {
 	 * Database tab HTML
 	 * @static
 	 *
-	 * @param $data
+	 * @param mixed $data
 	 *
 	 * @return string
 	 */
-	public static function getDatabaseTab($data)
+	public static function get_database_tab($data)
 	{
 		$output = '<div id="profiler-queries" class="profiler-box">';
 		if ($data['queryTotals']['count'] == 0)
@@ -305,22 +305,22 @@ class Base_Profiler_Display {
 
 					if (isset($explain['possible_keys']))
 					{
-						$output .= 'Possible keys: <b>'.$explain['possible_keys'].'</b> &middot;';
+						$output .= 'Possible keys: <b>'.$explain['possible_keys'].'</b> - ';
 					}
 
 					if (isset($explain['key']))
 					{
-						$output .= 'Key Used: <b>'.$explain['key'].'</b> &middot;';
+						$output .= 'Key Used: <b>'.$explain['key'].'</b> - ';
 					}
 
 					if (isset($explain['type']))
 					{
-						$output .= 'Type: <b>'.$explain['type'].'</b> &middot;';
+						$output .= 'Type: <b>'.$explain['type'].'</b> - ';
 					}
 
 					if (isset($explain['rows']))
 					{
-						$output .= 'Rows: <b>'.$explain['rows'].'</b> &middot;';
+						$output .= 'Rows: <b>'.$explain['rows'].'</b> - ';
 					}
 
 					$output .= 'Speed: <b>'.$query['time'].'</b>';
@@ -341,8 +341,7 @@ class Base_Profiler_Display {
 
 					foreach ($query['profile'] as $line)
 					{
-						$output
-								.= '<tr><td><em>'.$line['Status'].'</em></td><td>'.$line['Duration'].'</td></tr>';
+						$output .= '<tr><td><em>'.$line['Status'].'</em></td><td>'.$line['Duration'].'</td></tr>';
 					}
 
 					$output .= '</table>';
@@ -364,11 +363,11 @@ class Base_Profiler_Display {
 	 * Memory tab HTML
 	 * @static
 	 *
-	 * @param $data
+	 * @param mixed $data
 	 *
 	 * @return string
 	 */
-	public static function getMemoryTab($data)
+	public static function get_memory_tab($data)
 	{
 		$output = '<div id="profiler-memory" class="profiler-box">';
 		if ($data['logs']['memory']['count'] == 0)
@@ -412,11 +411,11 @@ class Base_Profiler_Display {
 	 * Files tab HTML
 	 * @static
 	 *
-	 * @param $data
+	 * @param mixed $data
 	 *
 	 * @return string
 	 */
-	public static function getFilesTab($data)
+	public static function get_files_tab($data)
 	{
 		$output = '<div id="profiler-files" class="profiler-box">';
 		if ($data['fileTotals']['count'] == 0)
@@ -455,7 +454,7 @@ class Base_Profiler_Display {
 	 * @static
 	 * @return string
 	 */
-	public static function getFooter()
+	public static function get_footer()
 	{
 		$output = '<div id="profiler-footer">';
 		$output .= '<div class="credit"><a href="https://github.com/MAXakaWIZARD/PHP-Profiler" target="_blank"><strong>PHP</strong>&nbsp;Profiler</a></div>';

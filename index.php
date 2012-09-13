@@ -136,6 +136,9 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 // Iniciamos la session.
 Session::start('random_value');
 
+// Database profiler.
+Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
+
 
 function __($str, $echo = TRUE)
 {

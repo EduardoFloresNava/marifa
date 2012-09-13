@@ -152,4 +152,13 @@ class Base_Request {
 		header("Location: $url");
 	}
 
+	/**
+	 * Obtenemos la URL de donde refiere.
+	 * @return string
+	 */
+	public static function referer()
+	{
+		return isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : NULL;
+	}
+
 }

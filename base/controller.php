@@ -131,9 +131,9 @@ class Base_Controller {
 	{
 		return array(
 			'posts' => array('link' => '/', 'caption' => 'Posts', 'active' => $activo == 'posts'),
-			'comunidades' => array('link' => '/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
+			'comunidades' => array('link' => '/comunidad/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
 			'fotos' => array('link' => '/foto/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
-			'tops' => array('link' => '/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
+			'tops' => array('link' => '/tops/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
 		);
 	}
 
@@ -146,11 +146,11 @@ class Base_Controller {
 	{
 		//TODO: administración y moderación.
 		return array(
-			'inicio' => array('link' => '/mi', 'caption' => 'Inicio', 'active' => $activo == 'inicio'),
+			'inicio' => array('link' => '/perfil/', 'caption' => 'Inicio', 'active' => $activo == 'inicio'),
 			'posts' => array('link' => '/', 'caption' => 'Posts', 'active' => $activo == 'posts'),
-			'comunidades' => array('link' => '/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
+			'comunidades' => array('link' => '/comunidad/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
 			'fotos' => array('link' => '/foto/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
-			'tops' => array('link' => '/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
+			'tops' => array('link' => '/tops/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
 		);
 	}
 }

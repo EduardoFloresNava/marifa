@@ -65,7 +65,7 @@ class Base_Controller_Foto extends Controller {
 		$fotos = $model_fotos->obtener_ultimas();
 
 		// Procesamos información relevante.
-		foreach($fotos as $key => $value)
+		foreach ($fotos as $key => $value)
 		{
 			$d = $value->as_array();
 			$d['votos'] = $value->votos();
@@ -75,15 +75,15 @@ class Base_Controller_Foto extends Controller {
 			// Acciones.
 			if (Session::is_set('usuario_id'))
 			{
-				if ( (int)Session::get('usuario_id') == $value->usuario_id)
+				if ( (int) Session::get('usuario_id') == $value->usuario_id)
 				{
 					$d['favorito'] = TRUE;
 					$d['voto'] = TRUE;
 				}
 				else
 				{
-					$d['favorito'] = $value->es_favorito( (int)Session::is_set('usuario_id'));
-					$d['voto'] = $value->ya_voto( (int)Session::is_set('usuario_id'));
+					$d['favorito'] = $value->es_favorito( (int) Session::is_set('usuario_id'));
+					$d['voto'] = $value->ya_voto( (int) Session::is_set('usuario_id'));
 				}
 			}
 			else
@@ -124,10 +124,10 @@ class Base_Controller_Foto extends Controller {
 
 		// Cargamos el listado de fotos.
 		$model_fotos = new Model_Foto;
-		$fotos = $model_fotos->obtener_ultimas_usuario( (int)Session::get('usuario_id'));
+		$fotos = $model_fotos->obtener_ultimas_usuario( (int) Session::get('usuario_id'));
 
 		// Procesamos información relevante.
-		foreach($fotos as $key => $value)
+		foreach ($fotos as $key => $value)
 		{
 			$d = $value->as_array();
 			$d['votos'] = $value->votos();

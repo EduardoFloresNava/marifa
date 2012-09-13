@@ -41,7 +41,7 @@ class Base_Controller_Home extends Controller {
 	{
 		return array(
 		   'inicio' => array('link' => '/', 'caption' => 'Inicio', 'active' => $selected == 'inicio'),
-		   'buscador' => array('link' => '/paquetes', 'caption' => 'Paquetes', 'active' => $selected == 'buscador'),
+		   'buscador' => array('link' => '/buscador', 'caption' => 'Buscador', 'active' => $selected == 'buscador'),
 	   );
 	}
 
@@ -54,7 +54,7 @@ class Base_Controller_Home extends Controller {
 	{
 		return array(
 			'inicio' => array('link' => '/', 'caption' => 'Inicio', 'active' => $selected == 'inicio'),
-			'buscador' => array('link' => '/paquetes', 'caption' => 'Paquetes', 'active' => $selected == 'buscador'),
+			'buscador' => array('link' => '/buscador', 'caption' => 'Buscador', 'active' => $selected == 'buscador'),
 			'nuevo' => array('link' => '/post/nuevo', 'caption' => 'Agregar Post', 'active' => $selected == 'nuevo'),
 	   );
 	}
@@ -82,6 +82,83 @@ class Base_Controller_Home extends Controller {
 
 			$this->template->assign('top_bar', $this->submenu_login('inicio'));
 		}
+
+		// Cargamos datos de posts.
+		$model_post = new Model_Post;
+		$post_list = $model_post->obtener_ultimos();
+
+		// Extendemos la información de los posts.
+		foreach ($post_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['usuario'] = $v->usuario()->as_array();
+			$a['puntos'] = $v->puntos();
+			$a['comentarios'] = $v->cantidad_comentarios();
+			$a['categoria'] = $v->categoria()->as_array();
+
+			$post_list[$k] = $a;
+		}
+
+		$portada->assign('ultimos_posts', $post_list);
+		unset($post_list);
+
+		// Cargamos TOP posts.
+		$post_top_list = $model_post->obtener_tops();
+
+		// Extendemos la información de los posts.
+		foreach ($post_top_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['puntos'] = $v->puntos();
+			$post_top_list[$k] = $a;
+		}
+
+		$portada->assign('top_posts', $post_top_list);
+		unset($post_top_list, $model_post);
+
+		// Cargamos últimos comentarios.
+		$comentario_list = Model_Post_Comentario::obtener_ultimos();
+
+		// Extendemos la información de los comentarios.
+		foreach ($comentario_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['usuario'] = $v->usuario()->as_array();
+			$a['post'] = $v->post()->as_array();
+
+			$comentario_list[$k] = $a;
+		}
+
+		$portada->assign('ultimos_comentarios', $comentario_list);
+		unset($comentario_list);
+
+		// Cargamos top usuarios.
+		$model_usuario = new Model_Usuario;
+		$usuario_top_list = $model_usuario->obtener_tops();
+
+		// Extendemos la información de los usuarios.
+		foreach ($usuario_top_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['puntos'] = $v->cantidad_puntos();
+
+			$usuario_top_list[$k] = $a;
+		}
+		$portada->assign('usuario_top', $usuario_top_list);
+		unset($usuario_top_list, $model_usuario);
+
+		// Cargamos ultimas fotos.
+		$model_foto = new Model_Foto;
+		$foto_list = $model_foto->obtener_ultimas(1, 1);
+
+		// Extendemos la información de las fotos.
+		foreach ($foto_list as $k => $v)
+		{
+			$foto_list[$k] = $v->as_array();
+		}
+		$portada->assign('ultimas_fotos', $foto_list);
+		unset($foto_list, $model_foto);
+
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());

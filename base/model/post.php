@@ -361,6 +361,15 @@ class Base_Model_Post extends Model_Dataset {
 	}
 
 	/**
+	 * Obtenemos la cantidad de comentarios.
+	 * @return int
+	 */
+	public function cantidad_comentarios()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
 	 * Agregamos un comentario al post.
 	 * @param int $usuario_id Quien realiza el comentario.
 	 * @param string $contenido Contenido del comentario.
@@ -496,6 +505,54 @@ class Base_Model_Post extends Model_Dataset {
 		);
 
 		return $id;
+	}
+
+	/**
+	 * Obtenemos el listado de los últimos posts.
+	 * @param int $pagina Número de página empezando en 1.
+	 * @param int $cantidad Cantidad de post por página.
+	 * @return array
+	 */
+	public function obtener_ultimos($pagina = 1, $cantidad = 10)
+	{
+		// Primer elemento a devolver.
+		$inicio = $cantidad * ($pagina - 1);
+
+		// Obtenemos el listado.
+		$rst = $this->db->query('SELECT id FROM post ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+
+		// Armamos la lista.
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Post($v);
+		}
+
+		return $lst;
+	}
+
+	/**
+	 * Obtenemos el listado de los posts más puntuados.
+	 * @param int $pagina Número de página empezando en 1.
+	 * @param int $cantidad Cantidad de post por página.
+	 * @return array
+	 */
+	public function obtener_tops($pagina = 1, $cantidad = 10)
+	{
+		// Primer elemento a devolver.
+		$inicio = $cantidad * ($pagina - 1);
+
+		// Obtenemos el listado.
+		$rst = $this->db->query('SELECT post.id, SUM(post_punto.cantidad) as puntos FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id GROUP BY post.id ORDER BY puntos DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+
+		// Armamos la lista.
+		$lst = array();
+		foreach ($rst as $k => $v)
+		{
+			$lst[] = new Model_Post($k);
+		}
+
+		return $lst;
 	}
 
 }

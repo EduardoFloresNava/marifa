@@ -34,6 +34,12 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Database_Driver_Mysqli extends Database_Driver {
 
 	/**
+	 * Instancia de la base de datos.
+	 * @var mysqli
+	 */
+	protected $dbh;
+
+	/**
 	 * Constructor de la clase.
 	 *
 	 * Acá se debe presentar toda la lógica de conección a la base de datos
@@ -99,6 +105,20 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 	}
 
 	/**
+	 * Verifica si es una cadena de caracteres o un objeto a parsear en una
+	 * consulta SQL. Realizando el pertinente parseo para obtener el SQL a
+	 * ejecutar.
+	 * @param mixed $query Objeto a parsear.
+	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @return string Consulta SQL
+	 */
+	private function parse_query($query, $params = array())
+	{
+		$o = new Base_Database_Parser($query, $params);
+		return $o->build();
+	}
+
+	/**
 	 * Función para realizar consultas.
 	 *
 	 * Estás son las consultas que devuelven un objeto con
@@ -110,60 +130,28 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 	 */
 	public function query($query, $params = array())
 	{
+		// Armamos la consulta.
+		$query = $this->parse_query($query, $params);
+
 		// Creamos la consulta.
 		if ( ! $sth = $this->dbh->prepare($query))
 		{
 			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
-		Profiler_Profiler::get_instance()->logQuery($query);
-
-		// Verificamos sea arreglo.
-		if ( ! is_array($params) && $params !== NULL)
-		{
-			$params = array($params);
-		}
-
-		if (count($params) > 0)
-		{
-			// Agregamos la lista de parámetros.
-			$type = '';
-			foreach ($params as $param)
-			{
-				// Obtenemos el tipo.
-				if (is_int($param))
-				{
-					$type .= 'i'; // integer
-				}
-				elseif (is_float($param))
-				{
-					$type .= 'd'; // double
-				}
-				elseif (is_string($param))
-				{
-					$type .= 's'; // string
-				}
-				else
-				{
-					$type .= 'b'; // blob and unknown
-				}
-			}
-
-			// Lo asociamos.
-			if ( ! call_user_func_array(array($sth, 'bind_param'), array_merge($type, $params)))
-			{
-				throw new Database_Exception("Error asociando los parametros a la consulta: '{$sth->error}'", $sth->errno);
-			}
-		}
+		Profiler_Profiler::get_instance()->log_query($query);
 
 		// Ejecutamos la consulta.
 		if ($sth->execute())
 		{
+			$rst = $sth->get_result();
+			Profiler_Profiler::get_instance()->log_query($query);
 			// Generamos un objeto para dar compatibilidad al resto de motores.
-			return new Database_Driver_Mysqli_Query($sth->get_result());
+			return new Database_Driver_Mysqli_Query($rst);
 		}
 		else
 		{
+			Profiler_Profiler::get_instance()->log_query($query);
 			// Error ejecutando la consulta.
 			throw new Database_Exception("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
 			return FALSE;
@@ -183,59 +171,26 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 	 */
 	private function write_query($query, $params = array())
 	{
+		// Armamos la consulta.
+		$query = $this->parse_query($query, $params);
+
 		// Creamos la consulta.
 		if ( ! $sth = $this->dbh->prepare($query))
 		{
 			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
-		Profiler_Profiler::get_instance()->logQuery($query);
-
-		// Verificamos sea arreglo.
-		if ( ! is_array($params) && $params !== NULL)
-		{
-			$params = array($params);
-		}
-
-		if (count($params) > 0)
-		{
-			// Agregamos la lista de parámetros.
-			$type = '';
-			foreach ($params as $param)
-			{
-				// Obtenemos el tipo.
-				if (is_int($param))
-				{
-					$type .= 'i'; // integer
-				}
-				elseif (is_float($param))
-				{
-					$type .= 'd'; // double
-				}
-				elseif (is_string($param))
-				{
-					$type .= 's'; // string
-				}
-				else
-				{
-					$type .= 'b'; // blob and unknown
-				}
-			}
-
-			// Lo asociamos.
-			if ( ! call_user_func_array(array($sth, 'bind_param'), array_merge($type, $params)))
-			{
-				throw new Database_Exception("Error asociando los parametros a la consulta: '{$sth->error}'", $sth->errno);
-			}
-		}
+		Profiler_Profiler::get_instance()->log_query($query);
 
 		// Ejecutamos la consulta.
 		if ($sth->execute())
 		{
+			Profiler_Profiler::get_instance()->log_query($query);
 			return array($sth->insert_id, $sth->affected_rows);
 		}
 		else
 		{
+			Profiler_Profiler::get_instance()->log_query($query);
 			// Error ejecutando la consulta.
 			throw new Database_Exception("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
 			return FALSE;
@@ -302,5 +257,17 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		{
 			return $rst;
 		}
+	}
+
+	/**
+	 * Validamos que una cadena no tenga caracteres no permitidos y la convertimos
+	 * en una cadena segura.
+	 * @param string $data Cadena a limpiar.
+	 * @return string Cadena limpia
+	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
+	 */
+	public function escape_string($data)
+	{
+		return mysqli_real_escape_string($this->dbh, $data);
 	}
 }

@@ -32,218 +32,225 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Profiler_Console {
 
-    /**
-     * Holds the logs used when the console is displayed.
-     * @var array
-     */
-    private $_logs = array(
-            'console'    => array('messages' => array(), 'count' => 0),
-            'memory'     => array('messages' => array(), 'count' => 0),
-            'errors'     => array('messages' => array(), 'count' => 0),
-            'speed'      => array('messages' => array(), 'count' => 0),
-            'benchmarks' => array('messages' => array(), 'count' => 0),
-            'queries'    => array('messages' => array(), 'count' => 0),
-        );
+	/**
+	 * Holds the logs used when the console is displayed.
+	 * @var array
+	 */
+	private $_logs = array(
+		'console' => array('messages' => array(), 'count' => 0),
+		'memory' => array('messages' => array(), 'count' => 0),
+		'errors' => array('messages' => array(), 'count' => 0),
+		'speed' => array('messages' => array(), 'count' => 0),
+		'benchmarks' => array('messages' => array(), 'count' => 0),
+		'queries' => array('messages' => array(), 'count' => 0),
+	);
 
-    /**
+	/**
 	 * Add item to a category
-     * @param string $category Category name
-     * @param mixed $item Item data.
-     */
-    protected function _write($category, $item)
-    {
-        $this->_logs[$category]['messages'][] = $item;
-        $this->_logs[$category]['count'] += 1;
-    }
+	 * @param string $category Category name
+	 * @param mixed $item Item data.
+	 */
+	protected function _write($category, $item)
+	{
+		$this->_logs[$category]['messages'][] = $item;
+		$this->_logs[$category]['count'] += 1;
+	}
 
-    /**
-     * Logs a variable to the console
-     *
-     * @param mixed $data The data to log to the console
-     *
-     * @return void
-     */
-    public function log($data)
-    {
-        $logItem = array(
-            'data'     => $data,
-            'type'     => 'log',
-        );
+	/**
+	 * Logs a variable to the console
+	 *
+	 * @param mixed $data The data to log to the console
+	 *
+	 * @return void
+	 */
+	public function log($data)
+	{
+		$log_item = array(
+			'data' => $data,
+			'type' => 'log',
+		);
 
-        $this->_write('console', $logItem);
-    }
+		$this->_write('console', $log_item);
+	}
 
-    /**
-     * Logs the memory usage of the provided variable, or entire script
-     *
-     * @param string $name   Optional name used to group variables and scripts together
-     * @param mixed $variable Optional variable to log the memory usage of
-     *
-     * @return void
-     */
-    public function logMemory($name = 'Memory usage at this point', $variable = NULL)
-    {
-        if (!is_NULL($variable)) {
-            $this->logVarMemory($name, $variable);
-        }
+	/**
+	 * Logs the memory usage of the provided variable, or entire script
+	 *
+	 * @param string $name   Optional name used to group variables and scripts together
+	 * @param mixed $variable Optional variable to log the memory usage of
+	 *
+	 * @return void
+	 */
+	public function log_memory($name = 'Memory usage at this point', $variable = NULL)
+	{
+		if ( ! is_NULL($variable))
+		{
+			$this->log_var_memory($name, $variable);
+		}
 
-        $logItem = array(
-            'data' => memory_get_usage(),
-            'name' => $name
-        );
+		$log_item = array(
+			'data' => memory_get_usage(),
+			'name' => $name
+		);
 
-        $this->_write('memory', $logItem);
-    }
+		$this->_write('memory', $log_item);
+	}
 
-    /**
+	/**
 	 * Variable memory usage at this point
-     * @param string $name Log message
-     * @param        $variable
-     */
-    public function logVarMemory($name = 'Variable memory usage at this point', $variable = NULL)
-    {
-        $logItem = array(
-            'data'     => strlen(serialize($variable)),
-            'name'     => $name,
-            'dataType' => gettype($variable)
-        );
+	 * @param string $name Log message
+	 * @param mixed $variable
+	 */
+	public function log_var_memory($name = 'Variable memory usage at this point', $variable = NULL)
+	{
+		$log_item = array(
+			'data' => strlen(serialize($variable)),
+			'name' => $name,
+			'dataType' => gettype($variable)
+		);
 
-        $this->_write('memory', $logItem);
-    }
+		$this->_write('memory', $log_item);
+	}
 
-    /**
+	/**
 	 * Peak memory usage at this point
-     * @param string $name Log message
-     */
-    public function logPeakMemory($name = 'Peak memory usage at this point')
-    {
-        $logItem = array(
-            'data' => memory_get_peak_usage(),
-            'name' => $name
-        );
+	 * @param string $name Log message
+	 */
+	public function log_peak_memory($name = 'Peak memory usage at this point')
+	{
+		$log_item = array(
+			'data' => memory_get_peak_usage(),
+			'name' => $name
+		);
 
-        $this->_write('memory', $logItem);
-    }
+		$this->_write('memory', $log_item);
+	}
 
-    /**
-     * Logs an exception or error
-     *
-     * @param Exception $exception
-     * @param string    $message
-     *
-     * @return void
-     */
-    public function logError($exception, $message = '')
-    {
-        $logItem = array(
-            'data' => ($message) ? $message : $exception->getMessage(),
-            'type' => 'error',
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine()
-        );
+	/**
+	 * Logs an exception or error
+	 *
+	 * @param Exception $exception
+	 * @param string    $message
+	 *
+	 * @return void
+	 */
+	public function log_error($exception, $message = '')
+	{
+		$log_item = array(
+			'data' => $message ? $message : $exception->getMessage(),
+			'type' => 'error',
+			'file' => $exception->getFile(),
+			'line' => $exception->getLine()
+		);
 
-        $this->_write('errors', $logItem);
-    }
+		$this->_write('errors', $log_item);
+	}
 
-    /**
-     * Starts a timer, a second call to this method will end the timer and cause the
-     * time to be recorded and displayed in the console.
-     *
-     * @param string $name
-     *
-     * @return void
-     */
-    public function logSpeed($name = 'Point in Time')
-    {
-        $logItem = array(
-            'data' => microtime(TRUE),
-            'name' => $name
-        );
+	/**
+	 * Starts a timer, a second call to this method will end the timer and cause the
+	 * time to be recorded and displayed in the console.
+	 *
+	 * @param string $name
+	 *
+	 * @return void
+	 */
+	public function log_speed($name = 'Point in Time')
+	{
+		$log_item = array(
+			'data' => microtime(TRUE),
+			'name' => $name
+		);
 
-        $this->_write('speed', $logItem);
-    }
+		$this->_write('speed', $log_item);
+	}
 
-    /**
-     * Records how long a query took to run when the same query is passed in twice.
-     *
-     * @param      $sql
-     * @param NULL $explain
-     *
-     * @return mixed
-     */
-    public function logQuery($sql, $explain = NULL)
-    {
-        // We use a hash of the query for two reasons. One is because for large queries the
-        // hash will be considerably smaller in memory. The second is to make a dump of the
-        // logs more easily readable.
-        $hash = md5($sql);
+	/**
+	 * Records how long a query took to run when the same query is passed in twice.
+	 *
+	 * @param string $sql
+	 * @param NULL $explain
+	 *
+	 * @return mixed
+	 */
+	public function log_query($sql, $explain = NULL)
+	{
+		// We use a hash of the query for two reasons. One is because for large queries the
+		// hash will be considerably smaller in memory. The second is to make a dump of the
+		// logs more easily readable.
+		$hash = md5($sql);
 
-        // If this query is in the log we need to see if an end time has been set. If no
-        // end time has been set then we assume this call is closing a previous one.
-        if (isset($this->_logs['queries']['messages'][$hash])) {
-            $query = array_pop($this->_logs['queries']['messages'][$hash]);
-            if (!$query['end_time']) {
-                $query['end_time'] = microtime(TRUE);
-                $query['explain'] = $explain;
+		// If this query is in the log we need to see if an end time has been set. If no
+		// end time has been set then we assume this call is closing a previous one.
+		if (isset($this->_logs['queries']['messages'][$hash]))
+		{
+			$query = array_pop($this->_logs['queries']['messages'][$hash]);
+			if ( ! $query['end_time'])
+			{
+				$query['end_time'] = microtime(TRUE);
+				$query['explain'] = $explain;
 
-                $this->_logs['queries']['messages'][$hash][] = $query;
-            } else {
-                $this->_logs['queries']['messages'][$hash][] = $query;
-            }
+				$this->_logs['queries']['messages'][$hash][] = $query;
+			}
+			else
+			{
+				$this->_logs['queries']['messages'][$hash][] = $query;
+			}
 
-            $this->_logs['queries']['count'] += 1;
-            return;
-        }
+			$this->_logs['queries']['count'] += 1;
+			return;
+		}
 
-        $logItem = array(
-            'start_time' => microtime(TRUE),
-            'end_time'   => FALSE,
-            'explain'    => FALSE,
-            'sql'        => $sql
-        );
+		$log_item = array(
+			'start_time' => microtime(TRUE),
+			'end_time' => FALSE,
+			'explain' => FALSE,
+			'sql' => $sql
+		);
 
-        $this->_logs['queries']['messages'][$hash][] = $logItem;
-    }
+		$this->_logs['queries']['messages'][$hash][] = $log_item;
+	}
 
-    /**
-     * Records the time it takes for an action to occur
-     *
-     * @param string $name The name of the benchmark
-     *
-     * @return void
-     *
-     */
-    public function logBenchmark($name)
-    {
-        $key = 'benchmark_ ' . $name;
+	/**
+	 * Records the time it takes for an action to occur
+	 *
+	 * @param string $name The name of the benchmark
+	 *
+	 * @return void
+	 *
+	 */
+	public function log_benchmark($name)
+	{
+		$key = 'benchmark_ '.$name;
 
-        if (isset($this->_logs['benchmarks']['messages'][$key])) {
-            $benchKey = md5(microtime(TRUE));
+		if (isset($this->_logs['benchmarks']['messages'][$key]))
+		{
+			$bench_key = md5(microtime(TRUE));
 
-            $this->_logs['benchmarks']['messages'][$benchKey] = $this->_logs['benchmarks']['messages'][$key];
-            $this->_logs['benchmarks']['messages'][$benchKey]['end_time'] = microtime(TRUE);
-            $this->_logs['benchmarks']['count'] += 1;
+			$this->_logs['benchmarks']['messages'][$bench_key] = $this->_logs['benchmarks']['messages'][$key];
+			$this->_logs['benchmarks']['messages'][$bench_key]['end_time'] = microtime(TRUE);
+			$this->_logs['benchmarks']['count'] += 1;
 
-            unset($this->_logs['benchmarks']['messages'][$key]);
-            return;
-        }
+			unset($this->_logs['benchmarks']['messages'][$key]);
+			return;
+		}
 
-        $logItem = array(
-            'start_time' => microtime(TRUE),
-            'end_time'   => FALSE,
-            'name'       => $name
-        );
+		$log_item = array(
+			'start_time' => microtime(TRUE),
+			'end_time' => FALSE,
+			'name' => $name
+		);
 
-        $this->_logs['benchmarks']['messages'][$key] = $logItem;
-    }
+		$this->_logs['benchmarks']['messages'][$key] = $log_item;
+	}
 
-    /**
-     * Returns all log data
-     *
-     * @return array
-     */
-    public function getLogs()
-    {
-        return $this->_logs;
-    }
+	/**
+	 * Returns all log data
+	 *
+	 * @return array
+	 */
+	public function get_logs()
+	{
+		return $this->_logs;
+	}
+
 }

@@ -92,4 +92,19 @@ class Base_Database {
 		return self::$instance;
 	}
 
+	public static function explain_profiler($query)
+	{
+		// Obtenemos la base de datos.
+		$db = self::get_instance();
+
+		if (method_exists($db, 'explain_query'))
+		{
+			return $db->explain_query($query);
+		}
+		else
+		{
+			return array();
+		}
+	}
+
 }
