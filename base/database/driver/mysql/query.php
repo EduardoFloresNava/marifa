@@ -62,7 +62,9 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 	 */
 	public function __construct($query, $conn)
 	{
+		Profiler_Profiler::get_instance()->logQuery($query);
 		$this->query = mysql_query($query, $conn);
+		Profiler_Profiler::get_instance()->logQuery($query);
 	}
 
 	/**
