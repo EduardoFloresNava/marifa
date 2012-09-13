@@ -1,4 +1,4 @@
-<fiv class="row fotos">
+<fiv class="row fotos media-grid">
 	<ul class="thumbnails">
 		{loop="$fotos"}<li class="span4">
 			<div class="thumbnail">
