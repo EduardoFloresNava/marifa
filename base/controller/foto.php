@@ -265,6 +265,9 @@ class Base_Controller_Foto extends Controller {
 			{
 				Session::set('success', 'El voto fue guardado correctamente.');
 				$model_foto->votar($usuario_id, $voto);
+
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array($usuario_id, $model_foto->usuario_id), 'voto_foto', $usuario_id, $foto);
 			}
 		}
 		Request::redirect('/foto/ver/'.$model_foto->foto_id);
@@ -296,6 +299,9 @@ class Base_Controller_Foto extends Controller {
 			{
 				Session::set('success', 'Foto agregada a favoritos correctamente.');
 				$model_foto->agregar_favorito( (int) Session::get('usuario_id'));
+
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array( (int) Session::get('usuario_id'), $model_foto->usuario_id), 'favorito_foto', (int) Session::get('usuario_id'), $foto);
 			}
 		}
 		Request::redirect('/foto/ver/'.$foto);
@@ -343,7 +349,10 @@ class Base_Controller_Foto extends Controller {
 			//TODO: verificar XSS y transformar.
 
 			// Insertamos el comentario.
-			$model_foto->comentar( (int) Session::get('usuario_id'), $comentario);
+			$id = $model_foto->comentar( (int) Session::get('usuario_id'), $comentario);
+
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(array( (int) Session::get('usuario_id'), $model_foto->usuario_id), 'comentario_foto', $id);
 
 			Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
 
@@ -428,7 +437,10 @@ class Base_Controller_Foto extends Controller {
 
 				if ($foto_id > 0)
 				{
-					Request::redirect('/foto/ver/'.$foto_id);
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear( (int) Session::get('usuario_id'), 'nueva_foto', $model_foto->id);
+
+					Request::redirect('/foto/ver/'.$model_foto->id);
 				}
 				else
 				{

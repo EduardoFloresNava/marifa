@@ -60,12 +60,17 @@ class Base_Model_Suceso extends Model_Dataset {
 	/**
 	 * Constructor del suceso.
 	 * @param int $id ID del suceso a cargar.
+	 * @param array Listado de información para carga automática.
 	 */
-	public function __construct($id = NULL)
+	public function __construct($id = NULL, $data = NULL)
 	{
 		parent::__construct();
 
 		$this->primary_key['id'] = $id;
+		if (is_array($data))
+		{
+			$this->data = $data;
+		}
 	}
 
 	/**
@@ -114,12 +119,15 @@ class Base_Model_Suceso extends Model_Dataset {
 		$primero = $cantidad * ($pagina - 1);
 
 		// Obtenemos la lista de sucesos.
-		$sucesos = $this->db->query('SELECT id FROM suceso WHERE usuario_id = ? ORDER BY fecha DESC LIMIT '.$primero.','.$cantidad, $usuario_id)->get_pairs(Database_Query::FIELD_INT);
+		$sucesos = $this->db->query('SELECT * FROM suceso WHERE usuario_id = ? ORDER BY fecha DESC LIMIT '.$primero.','.$cantidad, $usuario_id);
+
+		$sucesos->set_cast_type($this->fields);
+		$sucesos->set_fetch_type(Database_Query::FETCH_ASSOC);
 
 		$listado = array();
 		foreach ($sucesos as $s)
 		{
-			$listado[] = new Model_Suceso($s);
+			$listado[] = new Model_Suceso($s['id'], $s);
 		}
 
 		return $listado;

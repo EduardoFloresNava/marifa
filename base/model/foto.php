@@ -103,6 +103,15 @@ class Base_Model_Foto extends Model_Dataset {
 	}
 
 	/**
+	 * Tipo de voto dado.
+	 * @return int
+	 */
+	public function votos_dados($usuario_id)
+	{
+		return $this->db->query('SELECT cantidad FROM foto_voto WHERE foto_id = ? AND usuario_id = ?', array($this->primary_key['id'], $usuario_id))->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
 	 * Verificamos si el usuario ha votado o no.
 	 * @param int $usuario_id ID del usuario a verificar.
 	 * @return bool
@@ -174,10 +183,12 @@ class Base_Model_Foto extends Model_Dataset {
 	 * Comentamos en una foto.
 	 * @param int $usuario_id ID del usuario que comenta la foto.
 	 * @param string $comentario Comentario a insertar.
+	 * @return int
 	 */
 	public function comentar($usuario_id, $comentario)
 	{
-		$this->db->insert('INSERT INTO foto_comentario (foto_id, usuario_id, comentario, fecha) VALUES (?, ?, ?, ?)', array($this->primary_key['id'], $usuario_id, $comentario, date('Y/m/d H:i:s')));
+		list ($id, ) = $this->db->insert('INSERT INTO foto_comentario (foto_id, usuario_id, comentario, fecha) VALUES (?, ?, ?, ?)', array($this->primary_key['id'], $usuario_id, $comentario, date('Y/m/d H:i:s')));
+		return $id;
 	}
 
 	/**
