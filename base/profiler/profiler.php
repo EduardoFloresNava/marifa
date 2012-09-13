@@ -327,7 +327,7 @@ class Base_Profiler_Profiler {
 					$query['time'] = $this->_get_readable_time($query['time']);
 
 					// If an explain callback is setup try to get the explain data
-					if (in_array($type, $this->_query_types) && isset($this->_config['query_explain_callback'])
+					if ($type == 'select' && in_array($type, $this->_query_types) && isset($this->_config['query_explain_callback'])
 							&& ! empty($this->_config['query_explain_callback']))
 					{
 						$query['explain'] = $this->_attempt_to_explain_query($query['sql']);

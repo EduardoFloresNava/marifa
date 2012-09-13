@@ -278,10 +278,10 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		{
 			$query = $this->parse_query($query, $params);
 			Profiler_Profiler::get_instance()->log_query($query);
-			$query = mysql_query($query, $this->conn);
+			$rst = mysql_query($query, $this->conn);
 			Profiler_Profiler::get_instance()->log_query($query);
 
-			if ($query === TRUE)
+			if ($rst === TRUE)
 			{
 				// Si fue correcto devolvemos el ID y las filas afectadas.
 				return array(
@@ -320,10 +320,10 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		{
 			$query = $this->parse_query($query, $params);
 			Profiler_Profiler::get_instance()->log_query($query);
-			$query = mysql_query($query, $this->conn);
+			$rst = mysql_query($query, $this->conn);
 			Profiler_Profiler::get_instance()->log_query($query);
 
-			if ($query === TRUE)
+			if ($rst === TRUE)
 			{
 				// Si fue correcto devolvemos las filas afectadas.
 				return mysql_affected_rows();
@@ -359,10 +359,10 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		{
 			$query = $this->parse_query($query, $params);
 			Profiler_Profiler::get_instance()->log_query($query);
-			$query = mysql_query($query, $this->conn);
+			$rst = mysql_query($query, $this->conn);
 			Profiler_Profiler::get_instance()->log_query($query);
 
-			if ($query === TRUE)
+			if ($rst === TRUE)
 			{
 				// Si fue correcto devolvemos las filas afectadas.
 				return mysql_affected_rows();
