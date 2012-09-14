@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="span12">
-		<form method="POST" class="form-horizontal" action="">
+		<form method="POST" class="form-horizontal" action="" enctype="multipart/form-data">
 			<fieldset>
 				<legend>Nueva foto</legend>
 
@@ -22,7 +22,9 @@
 			<div class="control-group{if="$error_url"} error{/if}">
 				<label class="control-label" for="url">URL</label>
 				<div class="controls">
-					<input type="text" id="url" name="url" value="{$url}" class="span10" />
+					<input type="text" id="url" name="url" value="{$url}" class="span4" />
+					o
+					<input type="file" id="img" name="img" class="span5" />
 					<span class="help-block">{if="$error_url"}{$error_url}{/if}</span>
 				</div>
 			</div>

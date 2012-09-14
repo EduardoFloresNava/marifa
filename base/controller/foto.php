@@ -422,8 +422,36 @@ class Base_Controller_Foto extends Controller {
 			// Verificamos la URL.
 			if ( ! preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/Di', $url))
 			{
-				$view->assign('error_url', 'La dirección de la URL no es válida.');
-				$error = TRUE;
+				// Verifico IMG.
+				if ( ! isset($_FILES['img']))
+				{
+					$view->assign('error_url', 'La dirección de la URL no es válida.');
+					$error = TRUE;
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Verifico la imagen.
+				$upload = new Upload_Imagen;
+				try {
+					$rst = $upload->procesar_imagen('img');
+
+					if ($rst)
+					{
+						$url = $rst;
+					}
+					else
+					{
+						$view->assign('error_url', 'Se produjo un error al cargar la imagen.');
+						$error = TRUE;
+					}
+				}
+				catch (Exception $e)
+				{
+					$view->assign('error_url', $e->getMessage());
+					$error = TRUE;
+				}
 			}
 
 			// Procedemos a crear la imagen.

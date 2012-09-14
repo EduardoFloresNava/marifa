@@ -7,7 +7,7 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="/assets/css/bootstrap.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/bootstrap.css" rel="stylesheet">
         <style type="text/css">
             body {
                 padding-top: 60px;
@@ -17,9 +17,9 @@
                 padding: 9px 0;
             }
         </style>
-        <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">
-        <link href="/assets/css/base.css" rel="stylesheet">
-        <link href="/assets/css/profiler.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/bootstrap-responsive.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/base.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/profiler.css" rel="stylesheet">
 
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -27,11 +27,11 @@
         <![endif]-->
 
         <!-- Le fav and touch icons -->
-        <link rel="shortcut icon" href="/assets/ico/favicon.ico">
-        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/ico/apple-touch-icon-144-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/ico/apple-touch-icon-114-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/ico/apple-touch-icon-72-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" href="/assets/ico/apple-touch-icon-57-precomposed.png">
+        <link rel="shortcut icon" href="{#THEME_URL#}/assets/ico/favicon.ico">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{#THEME_URL#}/assets/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{#THEME_URL#}/assets/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{#THEME_URL#}/assets/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="{#THEME_URL#}/assets/ico/apple-touch-icon-57-precomposed.png">
     </head>
 
     <body>
@@ -77,19 +77,19 @@
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-        <script src="/assets/js/jquery.js"></script>
-        <script src="/assets/js/bootstrap-transition.js"></script>
-        <script src="/assets/js/bootstrap-alert.js"></script>
-        <script src="/assets/js/bootstrap-modal.js"></script>
-        <script src="/assets/js/bootstrap-dropdown.js"></script>
-        <script src="/assets/js/bootstrap-scrollspy.js"></script>
-        <script src="/assets/js/bootstrap-tab.js"></script>
-        <script src="/assets/js/bootstrap-tooltip.js"></script>
-        <script src="/assets/js/bootstrap-popover.js"></script>
-        <script src="/assets/js/bootstrap-button.js"></script>
-        <script src="/assets/js/bootstrap-collapse.js"></script>
-        <script src="/assets/js/bootstrap-carousel.js"></script>
-        <script src="/assets/js/bootstrap-typeahead.js"></script>
-        {if="DEBUG"}<script src="/assets/js/jquery.php-profiler.js"></script>{/if}
+        <script src="{#THEME_URL#}/assets/js/jquery.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-transition.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-alert.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-modal.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-dropdown.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-scrollspy.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-tab.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-tooltip.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-popover.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-button.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-collapse.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-carousel.js"></script>
+        <script src="{#THEME_URL#}/assets/js/bootstrap-typeahead.js"></script>
+        {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}
     </body>
 </html>

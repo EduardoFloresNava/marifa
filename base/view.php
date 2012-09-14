@@ -48,10 +48,15 @@ class Base_View {
 	 */
 	private static function configure()
 	{
+		// Defino constantes para URL's relativas.
+		if ( ! defined('THEME_URL'))
+		{
+			define('THEME_URL', 'http://'.$_SERVER['HTTP_HOST'].'/theme/default');
+		}
+
 		// No usarmos las URL's de RainTPL.
-		RainTPL::configure('base_url', 'http://'.$_SERVER['HTTP_HOST'].'/theme/default');
-		RainTPL::configure('path_replace', TRUE);
-		RainTPL::configure('path_replace_list', array('link', 'script', 'img'));
+		RainTPL::configure('base_url', '');
+		RainTPL::configure('path_replace', FALSE);
 
 		// Configuramos directorio de los template's. Seteamos base para que nuestra
 		// extensión se encarge.
