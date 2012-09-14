@@ -418,6 +418,18 @@ class Base_Controller_Foto extends Controller {
 				$view->assign('error_descripcion', 'La descripción debe tener entre 20 y 600 caractéres.');
 				$error = TRUE;
 			}
+			else
+			{
+				// Verificamos quitando BBCODE.
+				$contenido_clean = preg_replace('/\[.*\]/', '', $descripcion);
+
+				if ( ! isset($contenido_clean{20}))
+				{
+					$view->assign('error_descripcion', 'La descripción debe tener entre 20 y 600 caractéres.');
+					$error = TRUE;
+				}
+				unset($contenido_clean);
+			}
 
 			// Verificamos la URL.
 			if ( ! preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/Di', $url))
@@ -482,6 +494,14 @@ class Base_Controller_Foto extends Controller {
 			// Procedemos a crear la imagen.
 			if ( ! $error)
 			{
+				// Evitamos XSS.
+				$descripcion = htmlentities($descripcion, ENT_NOQUOTES, 'UTF-8');
+
+				// Procesamos BBCode.
+				$decoda = new Decoda($descripcion);
+				$descripcion = $decoda->parse(FALSE);
+
+
 				// Formateamos los campos.
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
 

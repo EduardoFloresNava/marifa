@@ -508,6 +508,18 @@ class Base_Controller_Post extends Controller {
 				$view->assign('error_contenido', 'El contenido debe tener entre 20 y 600 caractéres.');
 				$error = TRUE;
 			}
+			else
+			{
+				// Verificamos quitando BBCODE.
+				$contenido_clean = preg_replace('/\[.*\]/', '', $contenido);
+
+				if ( ! isset($contenido_clean{20}))
+				{
+					$view->assign('error_contenido', 'El contenido debe tener entre 20 y 600 caractéres.');
+					$error = TRUE;
+				}
+				unset($contenido_clean);
+			}
 
 			// Verificamos la categoria.
 			$model_categoria = new Model_Post_Categoria;
@@ -526,6 +538,13 @@ class Base_Controller_Post extends Controller {
 			// Procedemos a crear el post.
 			if ( ! $error)
 			{
+				// Evitamos XSS.
+				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
+
+				// Procesamos BBCode.
+				$decoda = new Decoda($contenido);
+				$contenido = $decoda->parse(FALSE);
+
 				// Formateamos los campos.
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
 
