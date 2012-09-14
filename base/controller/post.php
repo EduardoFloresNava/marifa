@@ -226,7 +226,12 @@ class Base_Controller_Post extends Controller {
 		}
 		else
 		{
-			//TODO: verificar XSS y transformar.
+			// Transformamos entidades HTML.
+			$comentario = htmlentities($comentario, ENT_NOQUOTES, 'UTF-8');
+
+			// Procesamos BBCode.
+			$decoda = new Decoda($comentario);
+			$comentario = $decoda->parse(FALSE);
 
 			// Insertamos el comentario.
 			$id = $model_post->comentar( (int) Session::get('usuario_id'), $comentario);
