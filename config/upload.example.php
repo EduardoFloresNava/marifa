@@ -82,4 +82,19 @@ return array(
 		 */
 		'use_hash' => TRUE,
 	),
+
+	/**
+	 * Configuración del driver de Imgur.
+	 */
+	'image_imgur' => array(
+		/**
+		 * Clave para realizar peticiones al API de imgur.
+		 */
+		'api_key' => '',
+
+		/**
+		 * Tiempo máximo en segundos permitidos para guardar la imagen.
+		 */
+		'timeout' => 10,
+	),
 );
