@@ -361,15 +361,6 @@ class Base_Model_Post extends Model_Dataset {
 	}
 
 	/**
-	 * Obtenemos la cantidad de comentarios.
-	 * @return int
-	 */
-	public function cantidad_comentarios()
-	{
-		return $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-	}
-
-	/**
 	 * Agregamos un comentario al post.
 	 * @param int $usuario_id Quien realiza el comentario.
 	 * @param string $contenido Contenido del comentario.
@@ -553,6 +544,44 @@ class Base_Model_Post extends Model_Dataset {
 		}
 
 		return $lst;
+	}
+
+	/**
+	 * Cantidad total de posts.
+	 * @return int
+	 */
+	public function cantidad()
+	{
+		$key = 'post_total';
+
+		$rst = Cache::get_instance()->get($key);
+		if ( ! $rst)
+		{
+			$rst = $this->db->query('SELECT COUNT(*) FROM post')->get_var(Database_Query::FIELD_INT);
+
+			Cache::get_instance()->save($key, $rst);
+		}
+
+		return $rst;
+	}
+
+	/**
+	 * Cantidad de comentarios en posts que hay.
+	 * @return int
+	 */
+	public function cantidad_comentarios()
+	{
+		$key = 'post_comentarios_total';
+
+		$rst = Cache::get_instance()->get($key);
+		if ( ! $rst)
+		{
+			$rst = $this->db->query('SELECT COUNT(*) FROM post_comentario')->get_var(Database_Query::FIELD_INT);
+
+			Cache::get_instance()->save($key, $rst);
+		}
+
+		return $rst;
 	}
 
 }

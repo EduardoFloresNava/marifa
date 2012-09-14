@@ -522,4 +522,32 @@ class Base_Model_Usuario extends Model_Dataset {
 
 		return $lst;
 	}
+
+	/**
+	 * Cantidad total de usuarios.
+	 * @return int
+	 */
+	public function cantidad()
+	{
+		$key = 'usuario_total';
+
+		$rst = Cache::get_instance()->get($key);
+		if ( ! $rst)
+		{
+			$rst = $this->db->query('SELECT COUNT(*) FROM usuario')->get_var(Database_Query::FIELD_INT);
+
+			Cache::get_instance()->save($key, $rst);
+		}
+
+		return $rst;
+	}
+
+	/**
+	 * Cantidad de usuarios activos en el último minuto..
+	 * @return type
+	 */
+	public function cantidad_activos()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM usuario WHERE UNIX_TIMESTAMP(lastactive) > ?', (time() - 60))->get_var(Database_Query::FIELD_INT);
+	}
 }

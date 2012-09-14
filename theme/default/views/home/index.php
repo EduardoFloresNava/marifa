@@ -30,20 +30,20 @@
 		</div>
 		<div>
 			<div class="row-fluid">
-				<div class="span6">?? Usuarios Online</div>
-				<div class="span6">???? Miembros</div>
+				<div class="span6">{$cantidad_usuarios_online} {@Usuarios Online@}</div>
+				<div class="span6">{$cantidad_usuarios} {@Miembros@}</div>
 			</div>
 			<div class="row-fluid">
-				<div class="span6">???? Posts</div>
-				<div class="span6">???? Comentarios</div>
+				<div class="span6">{$cantidad_posts} {@Posts@}</div>
+				<div class="span6">{$cantidad_comentarios_posts} {@Comentarios@}</div>
 			</div>
 			<div class="row-fluid">
-				<div class="span6">???? Fotos</div>
-				<div class="span6">???? Comentarios Fotos</div>
+				<div class="span6">{$cantidad_fotos} {@Fotos@}</div>
+				<div class="span6">{$cantidad_comentarios_fotos} {@Comentarios en fotos@}</div>
 			</div>
 			<div class="row-fluid">
-				<div class="span6">???? Comunidades</div>
-				<div class="span6">???? Posts comunidades</div>
+				<div class="span6">???? {@Comunidades@}</div>
+				<div class="span6">???? {@Posts comunidades@}</div>
 			</div>
 		</div>
 		<div>

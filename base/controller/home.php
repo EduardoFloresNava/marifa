@@ -85,6 +85,12 @@ class Base_Controller_Home extends Controller {
 
 		// Cargamos datos de posts.
 		$model_post = new Model_Post;
+
+		// Cantidad posts y comentarios en posts.
+		$portada->assign('cantidad_posts', $model_post->cantidad());
+		$portada->assign('cantidad_comentarios_posts', $model_post->cantidad_comentarios());
+
+		// Ultimos posts
 		$post_list = $model_post->obtener_ultimos();
 
 		// Extendemos la información de los posts.
@@ -134,6 +140,12 @@ class Base_Controller_Home extends Controller {
 
 		// Cargamos top usuarios.
 		$model_usuario = new Model_Usuario;
+
+		// Cantidad de usuarios
+		$portada->assign('cantidad_usuarios', $model_usuario->cantidad());
+		$portada->assign('cantidad_usuarios_online', $model_usuario->cantidad_activos());
+
+		// Top de usuarios.
 		$usuario_top_list = $model_usuario->obtener_tops();
 
 		// Extendemos la información de los usuarios.
@@ -157,7 +169,13 @@ class Base_Controller_Home extends Controller {
 			$foto_list[$k] = $v->as_array();
 		}
 		$portada->assign('ultimas_fotos', $foto_list);
-		unset($foto_list, $model_foto);
+		unset($foto_list);
+
+		// Cantidad fotos y comentarios en fotos.
+		$portada->assign('cantidad_fotos', $model_foto->cantidad());
+		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios());
+		unset($model_foto);
+
 
 
 		// Asignamos la vista a la plantilla base.

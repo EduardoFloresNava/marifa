@@ -282,4 +282,42 @@ class Base_Model_Foto extends Model_Dataset {
 
 		return $listado;
 	}
+
+	/**
+	 * Cantidad total de fotos.
+	 * @return int
+	 */
+	public function cantidad()
+	{
+		$key = 'foto_total';
+
+		$rst = Cache::get_instance()->get($key);
+		if ( ! $rst)
+		{
+			$rst = $this->db->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
+
+			Cache::get_instance()->save($key, $rst);
+		}
+
+		return $rst;
+	}
+
+	/**
+	 * Cantidad de comentarios en fotos que hay.
+	 * @return int
+	 */
+	public function cantidad_comentarios()
+	{
+		$key = 'foto_comentarios_total';
+
+		$rst = Cache::get_instance()->get($key);
+		if ( ! $rst)
+		{
+			$rst = $this->db->query('SELECT COUNT(*) FROM foto_comentario')->get_var(Database_Query::FIELD_INT);
+
+			Cache::get_instance()->save($key, $rst);
+		}
+
+		return $rst;
+	}
 }
