@@ -46,6 +46,89 @@ class Base_Upload_Imagen {
 	}
 
 	/**
+	 * Procesamos utilizando una url para la imagen.
+	 * @param string $url URL de donde sacar la imagen.
+	 */
+	public function from_url($url)
+	{
+		// Donde guardar los descargado.
+		$target = CACHE_PATH.DS.md5($url);
+
+		// Tratamos de descargar.
+		$this->save_image($url, $target);
+
+		if (file_exists($target))
+		{
+			// Verificamos tamaño.
+			if (filesize($target) > $this->config['image_data']['max_size'])
+			{
+				throw new Exception('El tamaño de la imagen debe ser menor a '.$this->config['image_data']['max_size'].' bytes.');
+			}
+
+			// Obtenemos datos de la imagen.
+			//TODO: verificar alternativas a GD. Verificar en la instalacion.
+			$img_data = getimagesize($target);
+			$w = $img_data[0];
+			$h = $img_data[1];
+			$mime = $img_data['mime'];
+
+			// Verificamos el MIME de la imagen.
+			if ( ! in_array($mime, array_values($this->config['image_data']['extension'])))
+			{
+				throw new Exception('El tipo de imagen no está permitido');
+			}
+
+			// Verificamos el tamaño de la imagen.
+			if ($w > $this->config['image_data']['resolucion_maxima'][0] || $h > $this->config['image_data']['resolucion_maxima'][1])
+			{
+				throw new Exception('La imagen es más grande que el permitido');
+			}
+
+			// Verificamos el tamaño de la imagen.
+			if ($w < $this->config['image_data']['resolucion_minima'][0] || $h < $this->config['image_data']['resolucion_minima'][1])
+			{
+				throw new Exception('La imagen es más pequeña de lo que se permite');
+			}
+
+			// Cargamos el driver encargado.
+			$driver_name = 'Upload_Imagen_Driver_'.ucfirst(strtolower($this->config['image']));
+
+			// Configuracion para el driver.
+			$driver_config = isset($this->config['image_'.strtolower($this->config['image'])]) ? $this->config['image_'.strtolower($this->config['image'])] : NULL;
+
+			// Delegamos al driver.
+			$driver = new $driver_name($driver_config);
+			$rst = $driver->save($target);
+			unlink($target);
+
+			var_dump($rst);
+			return $rst;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+	private function save_image($img, $fullpath)
+	{
+		$ch = curl_init ($img);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+		$rawdata = curl_exec($ch);
+		curl_close ($ch);
+		if (file_exists($fullpath))
+		{
+			unlink($fullpath);
+		}
+
+		$fp = fopen($fullpath,'x');
+		fwrite($fp, $rawdata);
+		fclose($fp);
+	}
+
+	/**
 	 * Procesamos la carga de un archivo.
 	 * El comportamiento depende de las configuraciones de config/upload.php
 	 * @param string $clave Elemento donde sacar los datos (clave del arreglo $_FILES)

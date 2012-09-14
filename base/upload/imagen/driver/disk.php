@@ -79,7 +79,7 @@ class Base_Upload_Imagen_Driver_Disk implements Upload_Imagen_Driver {
 		}
 
 		// Movemos el archivo.
-		if ( @move_uploaded_file($path, $target))
+		if (@copy($path, $target))
 		{
 			return $this->config['base_url'].$t_name;
 		}

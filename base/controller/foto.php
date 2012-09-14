@@ -423,7 +423,7 @@ class Base_Controller_Foto extends Controller {
 			if ( ! preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/Di', $url))
 			{
 				// Verifico IMG.
-				if ( ! isset($_FILES['img']))
+				if ( ! isset($_FILES['img']) || $_FILES['img']['error'] == UPLOAD_ERR_NO_FILE)
 				{
 					$view->assign('error_url', 'La dirección de la URL no es válida.');
 					$error = TRUE;
@@ -432,25 +432,50 @@ class Base_Controller_Foto extends Controller {
 
 			if ( ! $error)
 			{
-				// Verifico la imagen.
-				$upload = new Upload_Imagen;
-				try {
-					$rst = $upload->procesar_imagen('img');
+				if ( ! isset($_FILES['img']) || $_FILES['img']['error'] == UPLOAD_ERR_NO_FILE)
+				{
+					$upload = new Upload_Imagen;
+					try {
+						$rst = $upload->from_url($url);
 
-					if ($rst)
-					{
-						$url = $rst;
+						if ($rst)
+						{
+							$url = $rst;
+						}
+						else
+						{
+							$view->assign('error_url', 'Se produjo un error al cargar la imagen.');
+							$error = TRUE;
+						}
 					}
-					else
+					catch (Exception $e)
 					{
-						$view->assign('error_url', 'Se produjo un error al cargar la imagen.');
+						$view->assign('error_url', $e->getMessage());
 						$error = TRUE;
 					}
 				}
-				catch (Exception $e)
+				else
 				{
-					$view->assign('error_url', $e->getMessage());
-					$error = TRUE;
+					// Verifico la imagen.
+					$upload = new Upload_Imagen;
+					try {
+						$rst = $upload->procesar_imagen('img');
+
+						if ($rst)
+						{
+							$url = $rst;
+						}
+						else
+						{
+							$view->assign('error_url', 'Se produjo un error al cargar la imagen.');
+							$error = TRUE;
+						}
+					}
+					catch (Exception $e)
+					{
+						$view->assign('error_url', $e->getMessage());
+						$error = TRUE;
+					}
 				}
 			}
 
