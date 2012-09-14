@@ -5,6 +5,7 @@ plugin/plugin.php
 /nbproject/
 config/database.php
 config/update.php
+config/upload.php
 config/cache.php
 router.php
 /plugin/
