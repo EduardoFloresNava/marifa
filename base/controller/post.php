@@ -226,6 +226,17 @@ class Base_Controller_Post extends Controller {
 		}
 		else
 		{
+			// Verifico mínimo con BBCode.
+			if (str_len(preg_replace('/\[.*\]/', '', $contenido) < 20))
+			{
+				Session::set('post_comentario_error', 'El comentario debe tener entre 20 y 400 caracteres.');
+
+				// Evitamos la salida de la vista actual.
+				$this->template = NULL;
+
+				Dispatcher::call('/post/index/'.$post, TRUE);
+			}
+
 			// Transformamos entidades HTML.
 			$comentario = htmlentities($comentario, ENT_NOQUOTES, 'UTF-8');
 

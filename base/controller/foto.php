@@ -346,7 +346,23 @@ class Base_Controller_Foto extends Controller {
 		}
 		else
 		{
-			//TODO: verificar XSS y transformar.
+			// Verifico mínimo con BBCode.
+			if (str_len(preg_replace('/\[.*\]/', '', $contenido) < 20))
+			{
+				Session::set('post_comentario_error', 'El comentario debe tener entre 20 y 400 caracteres.');
+
+				// Evitamos la salida de la vista actual.
+				$this->template = NULL;
+
+				Dispatcher::call('/post/index/'.$post, TRUE);
+			}
+			
+			// Transformamos entidades HTML.
+			$comentario = htmlentities($comentario, ENT_NOQUOTES, 'UTF-8');
+
+			// Procesamos BBCode.
+			$decoda = new Decoda($comentario);
+			$comentario = $decoda->parse(FALSE);
 
 			// Insertamos el comentario.
 			$id = $model_foto->comentar( (int) Session::get('usuario_id'), $comentario);
