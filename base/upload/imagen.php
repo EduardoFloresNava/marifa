@@ -101,7 +101,6 @@ class Base_Upload_Imagen {
 			$rst = $driver->save($target);
 			unlink($target);
 
-			var_dump($rst);
 			return $rst;
 		}
 		else
