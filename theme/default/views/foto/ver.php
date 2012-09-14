@@ -25,6 +25,7 @@
 			<div class="thumbnail" style="margin: 0 auto; min-height: 200px">
 				<img src="{$foto.url}" />
 			</div>
+			<div class="contenido-foto">{$foto.descripcion}</div>
 		</div>
 		<div class="btn-toolbar">
 			<div class="btn-group">
