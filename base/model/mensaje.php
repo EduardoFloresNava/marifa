@@ -42,6 +42,26 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Model_Mensaje extends Model_Dataset {
 
 	/**
+	 * El mensaje es nuevo y no se ha visto.
+	 */
+	const ESTADO_NUEVO = 0;
+
+	/**
+	 * El mensaje se ha leido.
+	 */
+	const ESTADO_LEIDO = 1;
+
+	/**
+	 * En envio una respuesta al mensaje.
+	 */
+	const ESTADO_RESPONDIDO = 2;
+
+	/**
+	 * Se ha reenviado el mensaje.
+	 */
+	const ESTADO_REENVIADO = 3;
+
+	/**
 	 * Nombre de la tabla para el dataset
 	 * @var string
 	 */
@@ -187,6 +207,16 @@ class Base_Model_Mensaje extends Model_Dataset {
 				array($emisor_id, $receptor_id, 0, $asunto, $mensaje, date('Y/m/d H:i:s'), $padre_id));
 
 		return $id;
+	}
+
+	/**
+	 * Actualizamos el estado de un mensaje.
+	 * @param int $estado Estado a setear.
+	 * @return mixed
+	 */
+	public function actualizar_estado($estado)
+	{
+		return $this->db->update('UPDATE mensaje SET estado = ? WHERE id = ?', array($estado, $this->primary_key['id']));
 	}
 
 }

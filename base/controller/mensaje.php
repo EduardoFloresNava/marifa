@@ -276,10 +276,15 @@ class Base_Controller_Mensaje extends Controller {
 
 					if (isset($padre) && $tipo == 1)
 					{
+						$padre->actualizar_estado(Model_Mensaje::ESTADO_RESPONDIDO);
 						$mensaje_id = $model_mensaje->enviar( (int) Session::get('usuario_id'), $u->id, $asunto, $contenido, $padre->id);
 					}
 					else
 					{
+						if (isset($padre) && $tipo == 2)
+						{
+							$padre->actualizar_estado(Model_Mensaje::ESTADO_REENVIADO);
+						}
 						$mensaje_id = $model_mensaje->enviar( (int) Session::get('usuario_id'), $u->id, $asunto, $contenido);
 					}
 
@@ -330,6 +335,12 @@ class Base_Controller_Mensaje extends Controller {
 		if (Session::get('usuario_id') != $model_mensaje->receptor_id)
 		{
 			Request::redirect('/mensaje/');
+		}
+
+		// Seteamos como leido.
+		if ($model_mensaje->estado == Model_Mensaje::ESTADO_NUEVO)
+		{
+			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_LEIDO);
 		}
 
 		// Asignamos el título.
