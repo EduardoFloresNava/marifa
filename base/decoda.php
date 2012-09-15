@@ -86,4 +86,16 @@ class Base_Decoda extends Decoda_Decoda {
 				'h6'
 		);
 	}
+
+	/**
+	 * Procesado rápido de BBCode
+	 * @param type $string
+	 * @return type
+	 */
+	public static function procesar($string)
+	{
+		// Procesamos BBCode.
+		$decoda = new Decoda($string);
+		return $decoda->parse(FALSE);
+	}
 }
