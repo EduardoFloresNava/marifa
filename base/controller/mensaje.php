@@ -286,7 +286,7 @@ class Base_Controller_Mensaje extends Controller {
 					if ($mensaje_id > 0)
 					{
 						$model_suceso = new Model_Suceso;
-						$model_suceso->crear( (int) Session::get('usuario_id'), 'nuevo_mensaje', $mensaje_id);
+						$model_suceso->crear(array( (int) Session::get('usuario_id'), $u->id), 'nuevo_mensaje', $mensaje_id);
 					}
 					else
 					{
@@ -343,7 +343,7 @@ class Base_Controller_Mensaje extends Controller {
 
 		// Proceso el contenido.
 		$aux['contenido'] = Decoda::procesar($aux['contenido']);
-		
+
 		$aux['emisor'] = $model_mensaje->emisor()->as_array();
 		$aux['receptor'] = $model_mensaje->receptor()->as_array();
 		$view->assign('mensaje', $aux);
