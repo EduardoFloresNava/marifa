@@ -371,6 +371,34 @@ class Base_Controller_Mensaje extends Controller {
 		$this->template->assign('contenido', $view->parse());
 	}
 
+	public function action_noleido($mensaje)
+	{
+		// Forzamos entero.
+		$mensaje = (int) $mensaje;
+
+		// Verificamos exista el mensaje.
+		$model_mensaje = new Model_Mensaje($mensaje);
+
+		if ( ! is_array($model_mensaje->as_array()))
+		{
+			Request::redirect('/mensaje/');
+		}
+
+		// Verificamos sea el receptor.
+		if (Session::get('usuario_id') != $model_mensaje->receptor_id)
+		{
+			Request::redirect('/mensaje/');
+		}
+
+		// Seteamos como leido.
+		if ($model_mensaje->estado == Model_Mensaje::ESTADO_LEIDO)
+		{
+			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_NUEVO);
+		}
+
+		Request::redirect('/mensaje/');
+	}
+
 	/**
 	 * Vemos un mensaje enviado.
 	 * @param int $mensaje ID del mensaje a ver

@@ -14,7 +14,7 @@
     </div>
     <div class="btn-group pull-right">
         <button class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-bullhorn"></i>&nbsp;</button><!--SUCESOS GENERALES-->
-        <div class="dropdown-menu" id="message-dropdown">
+        <div class="dropdown-menu" id="suceso-dropdown">
 			<ul>
 				{loop="$sucesos"}
 				<li>{$value}</li>
@@ -28,7 +28,25 @@
     </div>
     <div class="btn-group pull-right">
         <a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-inbox"></i>&nbsp;</a><!--MENSAJES-->
-        <ul class="dropdown-menu">
-        </ul>
+        <div class="dropdown-menu" id="message-dropdown">
+			<ul>
+				{loop="$mensajes"}
+				<li class="estado-{$value.estado_string}">
+					{if="$value.estado == 0"}
+					<i class="icon icon-envelope"></i>
+					{elseif="$value.estado == 1"}
+					<i class="icon icon-inbox"></i>
+					{elseif="$value.estado == 2"}
+					<i class="icon icon-share-alt"></i>
+					{elseif="$value.estado == 3"}
+					<i class="icon icon-repeat"></i>
+					{/if}
+					<a class="usuario" href="/perfil/index/{$value.emisor.nick}/">{$value.emisor.nick}</a> <a href="/mensaje/ver/{$value.id}">{$value.asunto}</a> <span class="fecha">{$value.fecha->fuzzy()}</span></li>
+				{/loop}
+			</ul>
+			<div class="actions">
+				<a href="/mensaje/">Bandeja de entrada</a>
+			</div>
+        </div>
     </div>
 </div>

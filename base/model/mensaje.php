@@ -216,6 +216,7 @@ class Base_Model_Mensaje extends Model_Dataset {
 	 */
 	public function actualizar_estado($estado)
 	{
+		$this->update_value('estado', $estado);
 		return $this->db->update('UPDATE mensaje SET estado = ? WHERE id = ?', array($estado, $this->primary_key['id']));
 	}
 

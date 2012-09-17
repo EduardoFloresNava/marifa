@@ -175,7 +175,7 @@
     text-align: center;
 }
 
-#message-dropdown {
+#suceso-dropdown, #message-dropdown {
     padding: 0;
     min-width: 300px;
     overflow: hidden;
@@ -245,6 +245,47 @@
     }
 }
 
+#message-dropdown {
+    max-width: 170px;
+    li {
+        position: relative;
+        line-height: 25px;
+        border-top: 1px solid rgba(0, 0, 0, 0.2);
+        padding: 0 5px;
+        white-space: nowarp;
+
+        &:first-child {
+            border: none;
+        }
+
+        a {
+            padding: 0;
+            display: inline;
+            &:hover {
+                background: transparent;
+                color: #000;
+            }
+
+            &.usuario {
+                font-weight: bold;
+            }
+        }
+
+        span.fecha {
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: block;
+            padding: 0 5px;
+            background: #FFF;
+        }
+    }
+    .actions a {
+        padding: 3px 0;
+        width: 100%;
+    }
+}
+
 .comentario {
     .head {
         border-bottom: 1px solid rgba(0, 0, 0, 0.2);
@@ -267,4 +308,17 @@
 
 .contenido-foto, .contenido-post {
     padding: 10px 0;
+}
+
+.mensajes {
+    .mensaje {
+        margin-bottom: 15px;
+        .head {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            line-height: 25px;
+        }
+        .mensaje-body {
+            padding: 10px 0;
+        }
+    }
 }
