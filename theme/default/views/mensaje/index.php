@@ -22,7 +22,7 @@
 				<i class="icon icon-repeat"></i>
 				{/if}</td>
 			<td><a href="/perfil/index/{$value.emisor.nick}">{$value.emisor.nick}</a></td>
-			<td><a href="/mensaje/ver/{$value.id}">{$value.asunto}</a></td>
+			<td><a href="/mensaje/ver/{$value.id}">{$value.asunto}</a>{if="$value.padre_id !== NULL"}<a class="pull-right" alt="Padre" href="/mensaje/enviado/{$value.padre_id}"><i class="icon icon-upload"></i></a>{/if}</td>
 			<td>{$value.fecha->fuzzy()}</td>
 		</tr>
 		{/loop}
