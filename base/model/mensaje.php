@@ -145,7 +145,7 @@ class Base_Model_Mensaje extends Model_Dataset {
 		$rst = $this->db->query('SELECT id FROM mensaje WHERE receptor_id = ? LIMIT '.$start.','.$cantidad, $usuario_id)->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
-		foreach($rst as $v)
+		foreach ($rst as $v)
 		{
 			$lst[] = new Model_Mensaje($v);
 		}
@@ -175,7 +175,7 @@ class Base_Model_Mensaje extends Model_Dataset {
 		$rst = $this->db->query('SELECT id FROM mensaje WHERE emisor_id = ? LIMIT '.$start.','.$cantidad, $usuario_id)->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
-		foreach($rst as $v)
+		foreach ($rst as $v)
 		{
 			$lst[] = new Model_Mensaje($v);
 		}

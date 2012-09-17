@@ -126,7 +126,7 @@ class Base_Controller_Mensaje extends Controller {
 		if ($tipo == 1 || $tipo == 2)
 		{
 			// Cargamos el mensaje padre.
-			$model_padre = new Model_Mensaje( (int)$mensaje_id);
+			$model_padre = new Model_Mensaje( (int) $mensaje_id);
 
 			if (is_array($model_padre->as_array()))
 			{
@@ -211,7 +211,7 @@ class Base_Controller_Mensaje extends Controller {
 					$model_usuario = new Model_Usuario;
 
 					$usuarios = array();
-					foreach($u_list as $u)
+					foreach ($u_list as $u)
 					{
 						$u = trim($u);
 						if ($model_usuario->exists_nick($u))
@@ -260,10 +260,6 @@ class Base_Controller_Mensaje extends Controller {
 			{
 				// Evitamos XSS.
 				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
-
-				// Procesamos BBCode.
-				//$decoda = new Decoda($contenido);
-				//$contenido = $decoda->parse(FALSE);
 
 				// Formateamos los campos.
 				$asunto = trim(preg_replace('/\s+/', ' ', $asunto));
@@ -361,7 +357,7 @@ class Base_Controller_Mensaje extends Controller {
 		unset($aux);
 
 		// Listado de mensajes hijos.
-		//$view->assign('hijos', $this->listado_conversacion($model_mensaje->padre_id));
+		// $view->assign('hijos', $this->listado_conversacion($model_mensaje->padre_id));
 
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu_login('inicio'));
@@ -441,7 +437,7 @@ class Base_Controller_Mensaje extends Controller {
 		unset($aux);
 
 		// Listado de mensajes hijos.
-		//$view->assign('hijos', $this->listado_conversacion($model_mensaje->padre_id));
+		// $view->assign('hijos', $this->listado_conversacion($model_mensaje->padre_id));
 
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu_login('inicio'));
@@ -469,7 +465,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Buscamos todos los mensajes.
-		while(count($rst) < $cantidad)
+		while (count($rst) < $cantidad)
 		{
 			if ( ! is_object($modelo_padre))
 			{

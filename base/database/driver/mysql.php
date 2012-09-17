@@ -87,7 +87,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 
 			// Armamos el resultado.
 			$lst = array();
-			foreach($rst as $v)
+			foreach ($rst as $v)
 			{
 				// Posibles keys
 				if (isset($v->possible_keys) && $v->possible_keys != NULL)
@@ -109,7 +109,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 					}
 					$ks = $v->key;
 
-					if (isset($v->key_len ) && $v->key_len  != NULL)
+					if (isset($v->key_len) && $v->key_len != NULL)
 					{
 						$ks = $ks.'('.$v->key_len.')';
 					}
@@ -141,7 +141,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 			}
 
 			// Tranformamos elemento a string.
-			foreach($lst as $k => $v)
+			foreach ($lst as $k => $v)
 			{
 				if (is_array($v))
 				{

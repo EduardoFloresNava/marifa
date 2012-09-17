@@ -60,7 +60,7 @@ class Base_Model_Suceso extends Model_Dataset {
 	/**
 	 * Constructor del suceso.
 	 * @param int $id ID del suceso a cargar.
-	 * @param array Listado de información para carga automática.
+	 * @param array $data Listado de información para carga automática.
 	 */
 	public function __construct($id = NULL, $data = NULL)
 	{
