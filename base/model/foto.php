@@ -187,7 +187,7 @@ class Base_Model_Foto extends Model_Dataset {
 	 */
 	public function comentar($usuario_id, $comentario)
 	{
-		list ($id, ) = $this->db->insert('INSERT INTO foto_comentario (foto_id, usuario_id, comentario, fecha) VALUES (?, ?, ?, ?)', array($this->primary_key['id'], $usuario_id, $comentario, date('Y/m/d H:i:s')));
+		list ($id,) = $this->db->insert('INSERT INTO foto_comentario (foto_id, usuario_id, comentario, fecha) VALUES (?, ?, ?, ?)', array($this->primary_key['id'], $usuario_id, $comentario, date('Y/m/d H:i:s')));
 		return $id;
 	}
 

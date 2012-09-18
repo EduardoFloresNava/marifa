@@ -40,14 +40,14 @@ class Base_Decoda extends Decoda_Decoda {
 
 		// Cargamos los Filtros y las configuraciones por defecto.
 		$this->setXhtml(TRUE);
-		$this->addFilter(new BlockFilter());
-		$this->addFilter(new CodeFilter());
-		$this->addFilter(new TextFilter());
-		$this->addFilter(new DefaultFilter());
-		$this->addFilter(new ImageFilter());
-		$this->addFilter(new ListFilter());
-		$this->addFilter(new QuoteFilter());
-		$this->addFilter(new UrlFilter());
+		$this->addFilter(new BlockFilter);
+		$this->addFilter(new CodeFilter);
+		$this->addFilter(new TextFilter);
+		$this->addFilter(new DefaultFilter);
+		$this->addFilter(new ImageFilter);
+		$this->addFilter(new ListFilter);
+		$this->addFilter(new QuoteFilter);
+		$this->addFilter(new UrlFilter);
 		$this->whitelist(
 				'b',
 				'i',
@@ -85,5 +85,17 @@ class Base_Decoda extends Decoda_Decoda {
 				'h5',
 				'h6'
 		);
+	}
+
+	/**
+	 * Procesado rápido de BBCode
+	 * @param type $string
+	 * @return type
+	 */
+	public static function procesar($string)
+	{
+		// Procesamos BBCode.
+		$decoda = new Decoda($string);
+		return $decoda->parse(FALSE);
 	}
 }

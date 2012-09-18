@@ -61,7 +61,7 @@ class Base_Upload_Imagen_Driver_Disk implements Upload_Imagen_Driver {
 			// Datos de la URL.
 			$p_segs = pathinfo($path);
 
-			$t_name = md5($path).(isset($p_segs['extension']) ? '.'.$p_segs['extension'] : '');
+			$t_name = md5($path).(isset($p_segs['extension']) ? ('.'.$p_segs['extension']) : '');
 			unset($p_segs);
 		}
 		else

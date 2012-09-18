@@ -75,6 +75,7 @@ class Base_Controller {
 		// Sucesos.
 		$model_sucesos = new Model_Suceso;
 		$lst = $model_sucesos->obtener_by_usuario( (int) Session::get('usuario_id'));
+		unset($model_sucesos);
 
 		$eventos = array();
 		foreach ($lst as $v)
@@ -107,6 +108,39 @@ class Base_Controller {
 			$eventos[] = $suceso_vista->parse();
 		}
 		$vista->assign('sucesos', $eventos);
+		unset($lst, $eventos);
+
+		// Listado de mensajes.
+		$model_mensajes = new Model_Mensaje;
+		$msg_rst = $model_mensajes->recibidos( (int) Session::get('usuario_id'));
+
+		$msg_event = array();
+		foreach ($msg_rst as $v)
+		{
+			// Datos del post.
+			$aux = $v->as_array();
+			$aux['emisor'] = $v->emisor()->as_array();
+
+			switch ($aux['estado'])
+			{
+				case 0:
+					$aux['estado_string'] = 'nuevo';
+					break;
+				case 1:
+					$aux['estado_string'] = 'leido';
+					break;
+				case 2:
+					$aux['estado_string'] = 'respondido';
+					break;
+				case 3:
+					$aux['estado_string'] = 'reenviado';
+					break;
+			}
+
+			$msg_event[] = $aux;
+		}
+		$vista->assign('mensajes', $msg_event);
+		unset($msg_event, $msg_rst);
 
 		return $vista;
 	}
