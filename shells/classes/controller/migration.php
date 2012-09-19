@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Description of migration
+ * Controlador encargado de realizar las migraciones.
  *
  * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  */
