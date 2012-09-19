@@ -611,8 +611,6 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function buscar($query, $pagina = 1, $cantidad = 10)
 	{
-		//TODO: verificar casos de pocas palabras para utilizar LIKE para mejorar respuesta.
-
 		// Cantidad de elementos.
 		$total = $this->db->query('SELECT COUNT(*) FROM post WHERE MATCH (`titulo`, `contenido`, `tags`) AGAINST(? IN BOOLEAN MODE)', $query)->get_var(Database_Query::FIELD_INT);
 
