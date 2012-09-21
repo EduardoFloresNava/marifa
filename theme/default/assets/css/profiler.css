@@ -367,6 +367,10 @@
     border-left: 1px solid #865900;
 }
 
+#profiler-memory .main b {
+    float: right;
+}
+
 /* ----- Files ----- */
 #profiler-files .side {
     background-color: #B72F09;
@@ -374,6 +378,10 @@
 
 #profiler-files .side td.alt {
     background-color: #9B2700;
+}
+
+#profiler-files .main b {
+    float: right;
 }
 
 /* ----- Footer ----- */
