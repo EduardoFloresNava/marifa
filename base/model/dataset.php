@@ -149,4 +149,26 @@ class Base_Model_Dataset extends Model {
 		$this->load($this->primary_key);
 		return isset($this->data) ? (object) $this->data : NULL;
 	}
+
+	/**
+	 * Verificamos la existencia de un elemento.
+	 * @param array $primary_key Clave primaria o NULL para la seteada en el constructor.
+	 * @return bool
+	 */
+	public function existe($primary_key = NULL)
+	{
+		if ($primary_key === NULL)
+		{
+			$primary_key = $this->primary_key;
+		}
+
+		// Listado de claves.
+		$k_list = array();
+		foreach ($primary_key as $k => $v)
+		{
+			$k_list[] = "$k = ?";
+		}
+
+		return $this->db->query("SELECT COUNT(*) FROM {$this->table} WHERE ".implode('AND ', $k_list), $primary_key)->get_var(Database_Query::FIELD_INT) > 0;
+	}
 }
