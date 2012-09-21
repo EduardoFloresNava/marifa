@@ -49,6 +49,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	 */
 	protected $fields = array(
 		'id' => Database_Query::FIELD_INT,
+		'orden' => Database_Query::FIELD_INT,
 		'nombre' => Database_Query::FIELD_STRING,
 		'color' => Database_Query::FIELD_INT,
 		'imagen' => Database_Query::FIELD_STRING
@@ -104,6 +105,17 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	public function tiene_permiso($permiso)
 	{
 		return $this->db->query('SELECT permiso FROM usuario_rango_permiso WHERE rango_id = ? AND permiso = ? LIMIT 1', array($this->primary_key['id'], $permiso))->num_rows() > 0;
+	}
+
+	/**
+	 * Verificamos si tiene un orden superior o no. Sirve para tareas que requieren
+	 * mantener una gerarquía.
+	 * @param int $usuario_rango ID del rango a comparar.
+	 * @return bool Si es de nivel superior o no.
+	 */
+	public function es_superior($usuario_rango)
+	{
+		return $this->db->query('SELECT orden FROM usuario_rango WHERE id = ? LIMIT 1', $usuario_rango)->get_var(Database_Query::FIELD_INT) > $this->orden;
 	}
 
 	/**
