@@ -51,7 +51,7 @@ class Base_Paginator {
 	 */
 	public function __construct($total, $nodes_x_page, $show = 10)
 	{
-		$this->pages = floor($total / $nodes_x_page);
+		$this->pages = ceil($total / $nodes_x_page);
 		$this->show = $show;
 	}
 
