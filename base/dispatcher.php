@@ -335,6 +335,65 @@ class Base_Dispatcher {
 			}
 		}
 
+		// Verificamos subdirectorio.
+		if ( ! empty($segmentos[0]))
+		{
+			// Directorio
+			$directorio = strtolower($segmentos[0]);
+
+			// Obtenemos el controlador
+			$controller = empty($segmentos[1]) ? 'home' : strtolower($segmentos[1]);
+
+			// Obtenemos la acción.
+			$accion = empty($segmentos[2]) ? 'index' : strtolower($segmentos[2]);
+
+			if (preg_match('/^[a-z0-9_]+$/D', $controller) && preg_match('/^[a-z0-9_]+$/D', $accion))
+			{
+				// Obtenemos los argumentos.
+				if (is_array($segmentos) && count($segmentos) > 3)
+				{
+					$args = array_slice($segmentos, 3);
+				}
+				else
+				{
+					$args = array();
+				}
+
+				// Normalizamos el nombre del controlador para usar en las clases.
+				$controller_name = 'Controller_'.ucfirst($directorio).'_'.ucfirst($controller);
+
+				//Instanciamos el controllador
+				if (class_exists($controller_name))
+				{
+					// Verificamos exista método.
+					$r_c = new ReflectionClass($controller_name);
+					if ($r_c->hasMethod('action_'.$accion))
+					{
+						$cont = new $controller_name;
+
+						// Obtenemos la cantidad de parámetros necesaria.
+						$r_m = new ReflectionMethod($cont, 'action_'.$accion);
+						$p_n = $r_m->getNumberOfRequiredParameters();
+
+						// Expandemos el arreglo de parámetros con NULL si es necesario.
+						while (count($args) < $p_n)
+						{
+							$args[] = NULL;
+						}
+
+						Request::add_stack(NULL, $controller, $accion, $args, NULL);
+						// No hubo problemas, llamamos.
+						$rst = call_user_func_array(array(
+								$cont,
+								'action_'.$accion
+						), $args);
+						Request::pop_stack();
+						return $rst;
+					}
+				}
+			}
+		}
+
 		// Obtenemos el controlador
 		$controller = empty($segmentos[0]) ? 'home' : strtolower($segmentos[0]);
 
