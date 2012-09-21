@@ -3,7 +3,9 @@
     <li><a href="/admin/configuracion/noticias">Noticias</a> <span class="divider">/</span></li>
     <li class="active">Nueva</li>
 </ul>
-<h2 class="title">Nueva noticia</h2>
+<div class="header">
+	<h2 class="title">Nueva noticia</h2>
+</div>
 <form method="POST" class="form-horizontal" action="">
 
 	<div class="control-group{if="$error_contenido"} error{/if}">

@@ -2,7 +2,7 @@
     <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
     <li class="active">Noticias</li>
 </ul>
-<div class="clearfix">
+<div class="clearfix header">
 	<h2 class="pull-left">Noticias</h2>
 	<div class="btn-group pull-right">
 		<a href="/admin/configuracion/nueva_noticia/" class="btn btn-success">Nueva</a>
