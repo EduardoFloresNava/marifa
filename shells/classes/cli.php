@@ -161,17 +161,17 @@ class Shell_Cli {
 
 	public static function option($options, $title = 'Seleccione una opción:', $option_text = 'Opción')
 	{
-	    CLI::write_line($title);
+	    self::write_line($title);
 
 	    $opts = array_map(create_function('$str', 'return chr(ord("a")+$str);'), array_keys($options));
 
         foreach($options as $k => $m)
         {
             $l = chr(ord('a')+$k);
-            CLI::write("\t$l - $m\n");
+            self::write("\t$l - $m\n");
         }
 
-        $v = CLI::read_value($option_text, NULL, $opts);
+        $v = self::read_value($option_text, NULL, $opts);
         return $options[ord($v) - ord('a')];
 	}
 

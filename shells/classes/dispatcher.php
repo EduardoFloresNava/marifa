@@ -26,7 +26,7 @@ class Shell_Dispatcher {
 
 			if ( ! class_exists('Shell_Controller_'.$c_name))
 			{
-				Shell_Cli::write_line(CLI::getColoredString("Parámetros incorrectos, intente llamando a la ayuda con --help", 'red'));
+				Shell_Cli::write_line(Shell_Cli::getColoredString("Parámetros incorrectos, intente llamando a la ayuda con --help", 'red'));
 				exit;
 			}
 			else
