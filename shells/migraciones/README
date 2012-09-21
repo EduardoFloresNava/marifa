@@ -1,0 +1,3 @@
+Las migraciones están formadas por código PHP que será ejecutado.
+En caso de producirse un error se deberá notificar mediante una excepción que va a interrumpir el proceso.
+En caso de producirse correctamente se debe retornar TRUE o nada que son equivalentes.

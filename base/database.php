@@ -72,7 +72,7 @@ class Base_Database {
 			// Comprobamos que exista un driver asignado.
 			if ( ! isset($config['type']))
 			{
-				Error::show_error('Los parametros de la base de datos son incorrectos. Verifique el driver.');
+				throw new Database_Exception('Los parametros de la base de datos son incorrectos. Verifique el driver.');
 			}
 
 			// Generamos el nombre de la clase Driver.
@@ -81,7 +81,7 @@ class Base_Database {
 			// Comprobamos la existencia de ese Driver para manejar la BD.
 			if ( ! class_exists($driver))
 			{
-				Error::show_error('No se ha encontrado un controlador válido para manejar las base de datos '.$config['type']);
+				throw new Database_Exception('No se ha encontrado un controlador válido para manejar las base de datos '.$config['type']);
 			}
 			else
 			{

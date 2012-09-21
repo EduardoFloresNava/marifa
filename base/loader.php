@@ -46,7 +46,7 @@ class Base_Loader {
 		if (file_exists(APP_BASE.DS.'marifa'.DS.$fclass.'.'.FILE_EXT))
 		{
 			// Incluimos el archivo.
-			require_once(APP_BASE.DS.'marifa'.DS.$fclass.'.'.FILE_EXT);
+			require(APP_BASE.DS.'marifa'.DS.$fclass.'.'.FILE_EXT);
 		}
 		else
 		{
@@ -54,7 +54,7 @@ class Base_Loader {
 			if (file_exists(APP_BASE.DS.$fclass.'.'.FILE_EXT))
 			{
 				// Incluimos el archivo.
-				require_once(APP_BASE.DS.$fclass.'.'.FILE_EXT);
+				require(APP_BASE.DS.$fclass.'.'.FILE_EXT);
 			}
 		}
 	}

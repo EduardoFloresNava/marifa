@@ -20,29 +20,13 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa
+ * @package		Shell
  */
 
 /**
- * Cargamos el modo de depuración desde una variable de entorno.
- * Se puede setear esta variable desde htaccess.
+ * Version de la shell.
  */
-if (isset($_SERVER['MARIFA_DEBUG']))
-{
-	define('DEBUG', (bool) $_SERVER['MARIFA_DEBUG']);
-}
-else
-{
-	// Lo seteamos manualmente.
-	define('DEBUG', TRUE);
-	// PARA PRODUCCION DEBE SER FALSE.
-}
-
-if (DEBUG)
-{
-	// Información de rendimiento para depuración.
-	define('START_MEMORY', memory_get_peak_usage());
-}
+define('VERSION', 0.1);
 
 /**
  * Separador de directorios
@@ -52,7 +36,12 @@ define('DS', DIRECTORY_SEPARATOR);
 /**
  * Directorio base de la aplicación.
  */
-define('APP_BASE', __DIR__);
+define('APP_BASE', dirname(__DIR__));
+
+/**
+ * Directorio de shells.
+ */
+define('SHELL_PATH', APP_BASE.DS.'shells');
 
 /**
  * Directorio de configuraciones.
@@ -70,37 +59,20 @@ define('FILE_EXT', 'php');
 define('PLUGINS_PATH', 'plugin');
 
 /**
- * Directorio de las vistas.
- */
-define('VIEW_PATH', 'theme'.DS);
-
-/**
  * Directorio de la cache.
  */
 define('CACHE_PATH', APP_BASE.DS.'cache');
 
-// Cargamos la libreria de carga de clases.
+// Cargador de CLI.
+require_once (SHELL_PATH.DS.'classes'.DS.'loader.php');
+spl_autoload_register('Shell_Loader::load');
+
+// Cargamos la libreria de carga de clases del nucleo.
 require_once (APP_BASE.DS.'base'.DS.'loader.php');
 require_once (APP_BASE.DS.'marifa'.DS.'loader.php');
 
 // Iniciamos el proceso de carga automatica de librerias.
 spl_autoload_register('Loader::load');
-
-// Iniciamos el manejo de errores.
-Error::get_instance()->start(DEBUG);
-
-// Verificamos bloqueos.
-$lock = new Mantenimiento();
-if ($lock->is_locked())
-{
-	if ($lock->is_locked_for(IP::get_ip_addr()))
-	{
-		die("Modo mantenimiento activado.");
-	}
-}
-
-// Definimos el directorio temporal. Puede definir uno manualmente.
-define('TMP_PATH', Update_Utils::sys_get_temp_dir().DS);
 
 // Comprobamos que exista la configuración de la base de datos.
 if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
@@ -120,12 +92,6 @@ Configuraciones::set('cache.type', NULL);
 // Cargamos la cache.
 Cache::get_instance();
 
-// Cargamos las configuraciones del gestor de actualizaciones.
-if ( file_exists(CONFIG_PATH.DS.'update.php'))
-{
-	Configuraciones::load(CONFIG_PATH.DS.'update.php', TRUE);
-}
-
 // Comprobamos que existe la lista de plugins.
 if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 {
@@ -135,10 +101,6 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 
 // Iniciamos la session.
 Session::start('random_value');
-
-// Database profiler.
-Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
-
 
 function __($str, $echo = TRUE)
 {
@@ -152,15 +114,5 @@ function __($str, $echo = TRUE)
 	}
 }
 
-if (DEBUG)
-{
-	Profiler_Profiler::get_instance()->log_memory('Framework memory');
-}
-
 // Cargamos el despachador y damos el control al controlador correspondiente.
-Dispatcher::dispatch();
-
-if (DEBUG)
-{
-	Profiler_Profiler::get_instance()->display();
-}
+Shell_Dispatcher::dispatch();

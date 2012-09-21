@@ -240,6 +240,21 @@ class Base_Model_Post extends Model_Dataset {
 		{
 			$this->db->insert('INSERT INTO post_tag (post_id, nombre) VALUES (?, ?)', array($this->primary_key['id'], $e));
 		}
+
+		// Refrescamos la cache de etiquetas.
+		$this->update_tag_list();
+	}
+
+	/**
+	 * Actualizamos la cache de etiquetas de un post.
+	 */
+	protected function update_tag_list()
+	{
+		$keys = implode(', ', $this->db->query('SELECT nombre FROM post_tag WHERE post_id = ?', $this->primary_key['id'])->get_pairs());
+		if ($keys !== '')
+		{
+			$this->db->update('UPDATE post SET tags = ? WHERE id = ?', array($keys, $this->primary_key['id']));
+		}
 	}
 
 	/**
@@ -257,6 +272,9 @@ class Base_Model_Post extends Model_Dataset {
 		{
 			$this->db->delete('DELETE FROM post_tag WHERE post_id = ? AND nombre = ?', array($this->primary_key['id'], $etiqueta));
 		}
+
+		// Refrescamos la cache de etiquetas.
+		$this->update_tag_list();
 	}
 
 	/**
@@ -534,13 +552,13 @@ class Base_Model_Post extends Model_Dataset {
 		$inicio = $cantidad * ($pagina - 1);
 
 		// Obtenemos el listado.
-		$rst = $this->db->query('SELECT post.id, SUM(post_punto.cantidad) as puntos FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id GROUP BY post.id ORDER BY puntos DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+		$rst = $this->db->query('SELECT SUM(post_punto.cantidad) as puntos, post.id FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id GROUP BY post.id ORDER BY puntos DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
 
 		// Armamos la lista.
 		$lst = array();
-		foreach ($rst as $k => $v)
+		foreach ($rst as $v)
 		{
-			$lst[] = new Model_Post($k);
+			$lst[] = new Model_Post($v);
 		}
 
 		return $lst;
@@ -582,6 +600,98 @@ class Base_Model_Post extends Model_Dataset {
 		}
 
 		return $rst;
+	}
+
+	/**
+	 * Buscamos posts segun un texto.
+	 * @param string $query Palabras a buscar.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de elemento por página.
+	 * @param int $categoria ID de la categoria en donde buscar. Si no se especifica son todas.
+	 * @param int $usuario ID del usuario dueño de los post a buscar.
+	 * @return array Primer elemento son un arreglo con los resultados y el segundo la cantidad total de elementos.
+	 */
+	public function buscar($query, $pagina = 1, $cantidad = 10, $categoria = NULL, $usuario = NULL)
+	{
+		// Condiciones para categoria y usaurio.
+		$where = '';
+		$condiciones = array();
+
+		// Agrego consulta a la lista de parametros.
+		$condiciones[] = $query;
+
+		// Agrego categoria.
+		if ($categoria !== NULL)
+		{
+			$where .= 'AND post.post_categoria_id = ?';
+			$condiciones[] = $categoria;
+		}
+
+		// Agrego usuario.
+		if ($usuario !== NULL)
+		{
+			$where .= ' AND post.usuario_id = ?';
+			$condiciones[] = $usuario;
+		}
+
+		// Cantidad de elementos.
+		$total = $this->db->query('SELECT COUNT(*) FROM post WHERE MATCH (`titulo`, `contenido`, `tags`) AGAINST(? IN BOOLEAN MODE) '.$where, $condiciones)->get_var(Database_Query::FIELD_INT);
+
+		// Verificamos que existan resultados.
+		if ($total == 0)
+		{
+			return array(array(), 0);
+		}
+
+		// Primer elemento.
+		$first = ($pagina - 1) * $cantidad;
+
+		// Obtenemos la lista de elementos.
+		$rst = $this->db->query('SELECT id FROM post WHERE MATCH (`titulo`, `contenido`, `tags`) AGAINST(? IN BOOLEAN MODE) '.$where.' LIMIT '.$first.', '.$cantidad, $condiciones)->get_pairs(Database_Query::FIELD_INT);
+
+		// Listado de elementos.
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Post($v);
+		}
+
+		// Generamos la salida.
+		return array($lst, $total);
+	}
+
+	/**
+	 * Buscamos posts relacionados al post actual.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de elemento por página.
+	 * @return array Primer elemento son un arreglo con los resultados y el segundo la cantidad total de elementos.
+	 */
+	public function buscar_relacionados($pagina = 1, $cantidad = 10)
+	{
+		// Cantidad de elementos.
+		$total = $this->db->query('SELECT COUNT(*) FROM post INNER JOIN post_tag ON post.id = post_tag.post_id WHERE post_tag.nombre IN (SELECT nombre FROM post_tag WHERE post_id = ?) AND post.id != ? GROUP BY post.id', array($this->primary_key['id'], $this->primary_key['id']))->get_var(Database_Query::FIELD_INT);
+
+		// Verificamos que existan resultados.
+		if ($total == 0)
+		{
+			return array(array(), 0);
+		}
+
+		// Primer elemento.
+		$first = ($pagina - 1) * $cantidad;
+
+		// Obtenemos la lista de elementos.
+		$rst = $this->db->query('SELECT post.id, COUNT(post.id) AS cantidad FROM post INNER JOIN post_tag ON post.id = post_tag.post_id WHERE post_tag.nombre IN (SELECT nombre FROM post_tag WHERE post_id = ?) AND post.id != ? GROUP BY post.id ORDER BY cantidad DESC LIMIT '.$first.', '.$cantidad, array($this->primary_key['id'], $this->primary_key['id']))->get_pairs(Database_Query::FIELD_INT);
+
+		// Listado de elementos.
+		$lst = array();
+		foreach ($rst as $k => $v)
+		{
+			$lst[] = new Model_Post($k);
+		}
+
+		// Generamos la salida.
+		return array($lst, $total);
 	}
 
 }
