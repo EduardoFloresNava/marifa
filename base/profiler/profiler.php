@@ -272,6 +272,7 @@ class Base_Profiler_Profiler {
 	{
 		$memory_totals = array();
 		$memory_totals['used'] = $this->_get_readable_file_size(memory_get_peak_usage());
+		$memory_totals['script'] = $this->_get_readable_file_size(memory_get_peak_usage() - START_MEMORY);
 		$memory_totals['total'] = ini_get('memory_limit');
 
 		$this->_output['memoryTotals'] = $memory_totals;

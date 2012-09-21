@@ -41,7 +41,7 @@ else
 if (DEBUG)
 {
 	// Información de rendimiento para depuración.
-	$timestart = microtime(TRUE);
+	define('START_MEMORY', memory_get_peak_usage());
 }
 
 /**
@@ -150,6 +150,11 @@ function __($str, $echo = TRUE)
 	{
 		return $str;
 	}
+}
+
+if (DEBUG)
+{
+	Profiler_Profiler::get_instance()->log_memory('Framework memory');
 }
 
 // Cargamos el despachador y damos el control al controlador correspondiente.

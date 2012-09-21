@@ -83,7 +83,7 @@ class Base_Profiler_Display {
 	{
 		$log_count = count($data['logs']['console']['messages']);
 		$file_count = count($data['files']);
-		$memory_used = $data['memoryTotals']['used'];
+		$memory_used = $data['memoryTotals']['used'].'('.$data['memoryTotals']['script'].')';
 		$query_count = $data['queryTotals']['all'];
 		$speed_total = $data['speedTotals']['total'];
 
