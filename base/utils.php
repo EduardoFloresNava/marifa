@@ -73,6 +73,20 @@ class Base_Utils {
 			$url .= ' />';
 		}
 		return $url;
-   }
+	}
+
+	/**
+	 * Obtenemos el color que contrasta con el argumentado para facilitar la lectura.
+	 * @param string $hexcolor Color exadecimal.
+	 * @return strign
+	 */
+	public static function getContrastYIQ($hexcolor)
+	{
+		$r = hexdec(substr($hexcolor,0,2));
+		$g = hexdec(substr($hexcolor,2,2));
+		$b = hexdec(substr($hexcolor,4,2));
+		$yiq = (($r*299)+($g*587)+($b*114))/1000;
+		return ($yiq >= 128) ? '000000' : 'FFFFFF';
+	}
 
 }

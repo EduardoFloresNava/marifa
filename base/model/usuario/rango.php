@@ -73,24 +73,24 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	 */
 	public function permisos()
 	{
-		return $this->db->query('SELECT permiso FROM usuario_rango_permiso WHERE rango_id = ?', $this->primary_key['id'])->get_pairs();
+		return $this->db->query('SELECT permiso FROM usuario_rango_permiso WHERE rango_id = ?', $this->primary_key['id'])->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
 	}
 
 	/**
 	 * Agregamos un permiso a un rango.
-	 * @param string $permiso Permiso a agregar.
+	 * @param int $permiso Permiso a agregar.
 	 */
 	public function agregar_permiso($permiso)
 	{
 		if ( ! $this->tiene_permiso($permiso))
 		{
-			$this->db->insert('INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (?, ?)', $this->primary_key['id'], $permiso);
+			$this->db->insert('INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (?, ?)', array($this->primary_key['id'], $permiso));
 		}
 	}
 
 	/**
 	 * Quitamos un permiso a un rango.
-	 * @param string $permiso Permiso a borrar.
+	 * @param int $permiso Permiso a borrar.
 	 */
 	public function borrar_permiso($permiso)
 	{
@@ -99,7 +99,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 
 	/**
 	 * Verificamos si el rango tiene el permiso deseado.
-	 * @param string $permiso Permiso a buscar.
+	 * @param int $permiso Permiso a buscar.
 	 * @return bool
 	 */
 	public function tiene_permiso($permiso)
@@ -116,6 +116,37 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	public function es_superior($usuario_rango)
 	{
 		return $this->db->query('SELECT orden FROM usuario_rango WHERE id = ? LIMIT 1', $usuario_rango)->get_var(Database_Query::FIELD_INT) > $this->orden;
+	}
+
+	/**
+	 * Cambiamos la posición del rango actual.
+	 * @param int $posicion Posición 1-based que debe tener.
+	 */
+	public function posicionar($posicion)
+	{
+		$actual = $this->get('orden');
+
+		// Verificamos posición actual.
+		if ($posicion != $actual)
+		{
+			// Movemos todos para abajo.
+			$this->db->update('UPDATE usuario_rango SET orden = orden + 1 WHERE orden >= ?', $posicion);
+
+			// Me coloco en la posicion.
+			$this->db->update('UPDATE usuario_rango SET orden = ? WHERE id = ?', array($posicion, $this->primary_key['id']));
+
+			if ($posicion < $actual)
+			{
+				// Corrijo los siguientes.
+				$this->db->update('UPDATE usuario_rango SET orden = orden - 1 WHERE orden > ?', $actual);
+			}
+			else
+			{
+				// Corrijo los siguientes.
+				$this->db->update('UPDATE usuario_rango SET orden = orden - 1 WHERE orden > ?', $posicion);
+			}
+		}
+		$this->update_value('orden', $posicion);
 	}
 
 	/**
@@ -175,15 +206,16 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 			throw new Exception('Ya existe un rango con ese nombre.');
 		}
 
-		// Fomateamos el color.
-		if ( ! is_int($color))
+		// Obtenemos el máximo orden.
+		$maximo = $this->db->query('SELECT MAX(orden) + 1 FROM usuario_rango')->get_var(Database_Query::FIELD_INT);
+
+		if ($maximo < 0 || $maximo === NULL)
 		{
-			// Lo convertimos a entero.
-			$color = hexdec($color);
+			$maximo = 1;
 		}
 
 		// Insertamos el rango.
-		list($id, $cant) = $this->db->insert('INSERT INTO usuario_rango (nombre, color, imagen) VALUES (?, ?, ?)', array($nombre, $color, $imagen));
+		list($id, $cant) = $this->db->insert('INSERT INTO usuario_rango (nombre, color, imagen, orden) VALUES (?, ?, ?, ?)', array($nombre, $color, $imagen, $maximo));
 
 		if ($cant > 0)
 		{
@@ -269,5 +301,21 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 		{
 			throw new Exception('No ha definido un rango a actualizar.');
 		}
+	}
+
+	/**
+	 * Listado de rangos.
+	 * @return array
+	 */
+	public function listado()
+	{
+		$rst = $this->db->query('SELECT id FROM usuario_rango ORDER BY orden DESC')->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Usuario_Rango($v);
+		}
+		return $lst;
 	}
 }

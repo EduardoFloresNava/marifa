@@ -1,6 +1,6 @@
 <?php
 /**
- * home.php is part of Marifa.
+ * configuracion.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Controlador de la portada de la administración.
+ * Controlador para administrar configuraciones.
  *
  * @since      Versión 0.1
  * @package    Marifa\Base
@@ -243,7 +243,6 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		{
 			Request::redirect('/admin/configuracion/noticias');
 		}
-
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/configuracion/editar_noticia');
