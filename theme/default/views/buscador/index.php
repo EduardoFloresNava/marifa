@@ -1,9 +1,9 @@
 <div class="busqueda">
-	<ul class="nav nav-tabs">
+<!--	<ul class="nav nav-tabs">
 		<li class="active"><a href="#">Posts</a></li>
 		<li><a href="#">Fotos</a></li>
 		<li><a href="#">Comunidades</a></li>
-	</ul>
+	</ul>-->
 	<div class="row">
 		<div class="span12">
 			<form class="form-search" id="search" method="POST" action="/buscador/q/">
