@@ -185,6 +185,7 @@ class Base_Controller {
 			'comunidades' => array('link' => '/comunidad/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
 			'fotos' => array('link' => '/foto/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
 			'tops' => array('link' => '/tops/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
+			'admin' => array('link' => '/admin/', 'caption' => 'Administración', 'active' => $activo == 'admin'),
 		);
 	}
 }
