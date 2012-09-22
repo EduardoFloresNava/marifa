@@ -23,6 +23,8 @@
  */
 defined('APP_BASE') || die('No direct access allowed.');
 
+//TODO: VERIFICAR LAS ACCIONES DEPENDIENDO DEL ESTADO DE LOS USUARIOS.
+
 /**
  * Controlador de administración de usuarios.
  *
@@ -40,6 +42,434 @@ class Base_Controller_Admin_Usuario extends Controller {
 		{
 			Request::redirect('/usuario/login');
 		}
+	}
+
+	/**
+	 * Listado de usuarios.
+	 * @param int $pagina Número de página.
+	 */
+	public function action_index($pagina)
+	{
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = 20;
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/index');
+
+		// Noticia Flash.
+		if (Session::is_set('usuario_correcto'))
+		{
+			$vista->assign('success', Session::get_flash('usuario_correcto'));
+		}
+
+		if (Session::is_set('usuario_error'))
+		{
+			$vista->assign('error', Session::get_flash('usuario_error'));
+		}
+
+		// Modelo de usuarios.
+		$model_usuarios = new Model_Usuario( (int) Session::get('usuario_id'));
+
+		// Cargamos el listado de usuarios.
+		$lst = $model_usuarios->listado($pagina, $cantidad_por_pagina);
+
+		// Paginación.
+		$total = $model_usuarios->cantidad();
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('actual', $pagina);
+		$vista->assign('total', $total);
+		$vista->assign('cpp', $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->paginate($pagina));
+
+		// Obtenemos datos de las noticias.
+		foreach ($lst as $k => $v)
+		{
+			$a = $v->as_array();
+			//$a['rango'] = $v->rango()->nombre;
+			//$a['contenido'] = Decoda::procesar($a['contenido']);
+			//$a['usuario'] = $v->usuario()->as_array();
+
+			$lst[$k] = $a;
+		}
+
+		// Seteamos listado de noticias.
+		$vista->assign('usuarios', $lst);
+		unset($lst);
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Suspendemos a un usuario.
+	 * @param int $id ID del usuario a suspender.
+	 */
+	public function action_suspender_usuario($id)
+	{
+		// Verificamos no sea actual.
+		if ($id == Session::get('usuario_id'))
+		{
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Cargamos el modelo del usuario.
+		$model_usuario = new Model_Usuario( (int) $id);
+		if ( ! $model_usuario->existe())
+		{
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Verifico no esté suspendido.
+		$s = $model_usuario->suspension();
+		if ($s !== NULL)
+		{
+			if ($s->restante() <= 0)
+			{
+				$s->anular();
+			}
+			else
+			{
+				Session::set('usuario_error', 'Usuario con suspensión en efecto.');
+				Request::redirect('/admin/usuario/');
+			}
+		}
+		unset($s);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/suspender_usuario');
+
+		// Información del usuario a suspender.
+		$vista->assign('usuario', $model_usuario->as_array());
+
+		// Valores por defecto y errores.
+		$vista->assign('motivo', '');
+		$vista->assign('error_motivo', FALSE);
+		$vista->assign('fin', '');
+		$vista->assign('error_fin', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$motivo = isset($_POST['motivo']) ? $_POST['motivo'] : NULL;
+			$fin = isset($_POST['fin']) ? $_POST['fin'] : NULL;
+
+			// Valores para cambios.
+			$vista->assign('motivo', $motivo);
+			$vista->assign('fin', $fin);
+
+			// Quitamos BBCode para dimenciones.
+			$motivo_clean = preg_replace('/\[([^\[\]]+)\]/', '', $motivo);
+
+			if ( ! isset($motivo_clean{10}) || isset($motivo_clean{200}))
+			{
+				$error = TRUE;
+				$vista->assign('error_motivo', 'El motivo debe tener entre 10 y 200 caractéres');
+			}
+			unset($motivo_clean);
+
+			// Verificamos la fecha.
+			if (empty($fin))
+			{
+				$error = TRUE;
+				$vista->assign('error_fin', 'La fecha de finalización no es correcta.');
+			}
+			else
+			{
+				$fin = strtotime($fin);
+
+				if ($fin <= time())
+				{
+					$error = TRUE;
+					$vista->assign('error_fin', 'La fecha de finalización no es correcta.');
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Evitamos XSS.
+				$motivo = htmlentities($motivo, ENT_NOQUOTES, 'UTF-8');
+
+				// Cargamos el modelo de suspensiones.
+				$model_suspension = new Model_Usuario_Suspension;
+				$model_suspension->nueva($id, (int) Session::get('usuario_id'), $motivo	, $fin);
+
+				// Seteamos mensaje flash y volvemos.
+				Session::set('usuario_correcto', 'Usuario suspendido correctamente.');
+				Request::redirect('/admin/usuario');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Quitamos la suspensión de un usuario.
+	 * @param int $id ID del usuario a quitar la suspensión.
+	 */
+	public function action_quitar_suspension_usuario($id)
+	{
+		// Verificamos no sea actual.
+		if ($id == Session::get('usuario_id'))
+		{
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Cargamos el modelo del usuario.
+		$model_usuario = new Model_Usuario( (int) $id);
+		if ( ! $model_usuario->existe())
+		{
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Verificamos esté suspendido.
+		$suspension = $model_usuario->suspension();
+
+		if ($suspension === NULL)
+		{
+			// Verifico el estado.
+			if ($model_usuario->estado === Model_Usuario::ESTADO_SUSPENDIDA)
+			{
+				$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
+			}
+		}
+		else
+		{
+			$suspension->anular();
+			$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
+		}
+		// Seteamos mensaje flash y volvemos.
+		Session::set('usuario_correcto', 'Suspensión anulada correctamente.');
+		Request::redirect('/admin/usuario');
+	}
+
+	public function action_advertir_usuario($id)
+	{
+		// Verificamos no sea actual.
+		if ($id == Session::get('usuario_id'))
+		{
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Aseguramos un ID entero.
+		$id = (int) $id;
+
+		// Cargamos el modelo del usuario.
+		$model_usuario = new Model_Usuario($id);
+		if ( ! $model_usuario->existe())
+		{
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/advertir_usuario');
+
+		// Información del usuario a advertir.
+		$vista->assign('usuario', $model_usuario->as_array());
+
+		// Valores por defecto y errores.
+		$vista->assign('asunto', '');
+		$vista->assign('error_asunto', FALSE);
+		$vista->assign('contenido', '');
+		$vista->assign('error_contenido', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$asunto = isset($_POST['asunto']) ? $_POST['asunto'] : NULL;
+			$contenido = isset($_POST['contenido']) ? $_POST['contenido'] : NULL;
+
+			// Limpiamos asunto.
+			$asunto = preg_replace('/\s+/', ' ', trim($asunto));
+
+			// Valores para cambios.
+			$vista->assign('asunto', $asunto);
+			$vista->assign('contenido', $contenido);
+
+			// Verifico el asunto.
+			if ( ! preg_match('/^[a-záéíóúñ ,.:;\-_]{5,100}$/Di', $asunto))
+			{
+				$error = TRUE;
+				$vista->assign('error_asunto', 'El asunto de la advertencia debe tener entre 5 y 100 caractéres alphanuméricos.');
+			}
+
+			// Quitamos BBCode para dimenciones.
+			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
+
+			if ( ! isset($contenido_clean{10}) || isset($contenido_clean{200}))
+			{
+				$error = TRUE;
+				$vista->assign('error_contenido', 'El contenido debe tener entre 10 y 200 caractéres');
+			}
+			unset($contenido_clean);
+
+			if ( ! $error)
+			{
+				// Evitamos XSS.
+				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
+
+				// Cargamos el modelo de advertencias.
+				$model_advertencia = new Model_Usuario_Aviso;
+				$model_advertencia->nueva($id, (int) Session::get('usuario_id'), $asunto, $contenido);
+
+				//TODO: agregar el suceso.
+
+				// Seteamos mensaje flash y volvemos.
+				Session::set('usuario_correcto', 'Advertencia enviada correctamente.');
+				Request::redirect('/admin/usuario');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	public function action_banear_usuario($id)
+	{
+		// Verificamos no sea actual.
+		if ($id == Session::get('usuario_id'))
+		{
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Aseguramos un ID entero.
+		$id = (int) $id;
+
+		// Cargamos el modelo del usuario.
+		$model_usuario = new Model_Usuario($id);
+		if ( ! $model_usuario->existe())
+		{
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/banear_usuario');
+
+		//TODO: implementar tipo.
+
+		// Información del usuario a advertir.
+		$vista->assign('usuario', $model_usuario->as_array());
+
+		// Valores por defecto y errores.
+		$vista->assign('razon', '');
+		$vista->assign('error_razon', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$razon = isset($_POST['razon']) ? $_POST['razon'] : NULL;
+
+			// Valores para cambios.
+			$vista->assign('razon', $razon);
+
+			// Quitamos BBCode para dimenciones.
+			$razon_clean = preg_replace('/\[([^\[\]]+)\]/', '', $razon);
+
+			if ( ! isset($razon_clean{10}) || isset($razon_clean{200}))
+			{
+				$error = TRUE;
+				$vista->assign('error_contenido', 'La razón debe tener entre 10 y 200 caractéres');
+			}
+			unset($razon_clean);
+
+			if ( ! $error)
+			{
+				// Evitamos XSS.
+				$razon = htmlentities($razon, ENT_NOQUOTES, 'UTF-8');
+
+				// Cargamos el modelo de advertencias.
+				$model_baneos = new Model_Usuario_Baneo;
+				$model_baneos->nuevo($id, (int) Session::get('usuario_id'), 0, $razon);
+
+				//TODO: agregar el suceso.
+
+				// Seteamos mensaje flash y volvemos.
+				Session::set('usuario_correcto', 'Baneo realizado correctamente.');
+				Request::redirect('/admin/usuario');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Quitamos lel baneo de un usuario.
+	 * @param int $id ID del usuario a quitar la suspensión.
+	 */
+	public function action_desbanear_usuario($id)
+	{
+		// Verificamos no sea actual.
+		if ($id == Session::get('usuario_id'))
+		{
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Cargamos el modelo del usuario.
+		$model_usuario = new Model_Usuario( (int) $id);
+		if ( ! $model_usuario->existe())
+		{
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Verificamos esté suspendido.
+		$baneo = $model_usuario->baneo();
+
+		if ($baneo !== NULL)
+		{
+			$baneo->borrar();
+		}
+		// Seteamos mensaje flash y volvemos.
+		Session::set('usuario_correcto', 'El baneo fue anulado correctamente.');
+		Request::redirect('/admin/usuario');
 	}
 
 	/**

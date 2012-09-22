@@ -115,6 +115,16 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * Actualizamos el estado del usuario.
+	 * @param int $estado Estado a setear.
+	 */
+	public function actualizar_estado($estado)
+	{
+		$this->db->update('UPDATE usuario SET estado = ? WHERE id = ?', array($estado, $this->primary_key['id']));
+		$this->update_value('estado', $estado);
+	}
+
+	/**
 	 * Iniciamos sessión con un usuario.
 	 * @param string $mail E-Mail
 	 * @param string $password Contraseña
@@ -140,6 +150,41 @@ class Base_Model_Usuario extends Model_Dataset {
 			// Verificamos el estado.
 			switch ($data['estado'])
 			{
+				case self::ESTADO_SUSPENDIDA: // Cuenta suspendida.
+					$this->primary_key['id'] = $data['id'];
+					$suspension = $this->suspension();
+
+					if ($suspension === NULL)
+					{
+						$this->actualizar_estado(self::ESTADO_ACTIVA);
+						$data['estado'] = self::ESTADO_ACTIVA;
+					}
+					else
+					{
+						// Verificamos si terminó.
+						if ($suspension->restante() <= 0)
+						{
+							$suspension->anular();
+							$this->actualizar_estado(self::ESTADO_ACTIVA);
+							$data['estado'] = self::ESTADO_ACTIVA;
+						}
+						else
+						{
+							break;
+						}
+					}
+				case self::ESTADO_BANEADA:    // Cuenta baneada.
+					// Verificamos por paso de suspendida.
+					if ($data['estado'] == self::ESTADO_BANEADA)
+					{
+						$this->primary_key['id'] = $data['id'];
+						if ($this->baneo() === NULL)
+						{
+							$this->actualizar_estado(self::ESTADO_ACTIVA);
+							$data['estado'] = self::ESTADO_ACTIVA;
+						}
+						break;
+					}
 				case self::ESTADO_ACTIVA: // Cuenta activa.
 					// Iniciamos la sessión.
 					Session::set('usuario_id', $data['id']);
@@ -149,12 +194,8 @@ class Base_Model_Usuario extends Model_Dataset {
 
 					// Actualizamos el inicio de session.
 					$this->db->update('UPDATE usuario SET lastlogin = ?, lastactive = ?, lastip = ? WHERE id = ?', array(date('Y/m/d H:i:s'), date('Y/m/d H:i:s'), ip2long(IP::get_ip_addr()), $this->primary_key['id']));
-
 					break;
 				case self::ESTADO_PENDIENTE:  // Cuenta por activar.
-				case self::ESTADO_SUSPENDIDA: // Cuenta suspendida.
-					//TODO: Verificar si no ha terminado.
-				case self::ESTADO_BANEADA:    // Cuenta baneada.
 					break;
 				default:
 					throw new Exception("El estado del usuario {$data['id']} es {$data['estado']} y no se puede manejar.");
@@ -529,12 +570,23 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad()
 	{
+		if ($this->primary_key['id'] !== NULL)
+		{
+			$params = $this->primary_key['id'];
+			$q = ' WHERE id != ?';
+		}
+		else
+		{
+			$params = NULL;
+			$q = '';
+		}
+
 		$key = 'usuario_total';
 
 		$rst = Cache::get_instance()->get($key);
 		if ( ! $rst)
 		{
-			$rst = $this->db->query('SELECT COUNT(*) FROM usuario')->get_var(Database_Query::FIELD_INT);
+			$rst = $this->db->query('SELECT COUNT(*) FROM usuario'.$q, $params)->get_var(Database_Query::FIELD_INT);
 
 			Cache::get_instance()->save($key, $rst);
 		}
@@ -549,5 +601,71 @@ class Base_Model_Usuario extends Model_Dataset {
 	public function cantidad_activos()
 	{
 		return $this->db->query('SELECT COUNT(*) FROM usuario WHERE UNIX_TIMESTAMP(lastactive) > ?', (time() - 60))->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Listado de usuarios existentes.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de noticias por página.
+	 * @return array
+	 */
+	public function listado($pagina, $cantidad = 10)
+	{
+		if ($this->primary_key['id'] !== NULL)
+		{
+			$params = $this->primary_key['id'];
+			$q = ' WHERE id != ?';
+		}
+		else
+		{
+			$params = NULL;
+			$q = '';
+		}
+
+		$start = ($pagina - 1) * $cantidad;
+		$rst = $this->db->query('SELECT id FROM usuario'.$q.' ORDER BY registro DESC LIMIT '.$start.','.$cantidad, $params)->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Usuario($v);
+		}
+		return $lst;
+	}
+
+	/**
+	 * Obtengo el modelo de suspensión si hay una en proceso.
+	 * @return Model_Usuario_Suspension|NULL
+	 */
+	public function suspension()
+	{
+		$id = $this->db->query('SELECT id FROM usuario_suspension WHERE usuario_id = ? LIMIT 1', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+		if ($id !== NULL)
+		{
+			return new Model_Usuario_Suspension($id);
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+
+	/**
+	 * Obtengo el modelo del baneo si hay uno en proceso.
+	 * @return Model_Usuario_Baneo|NULL
+	 */
+	public function baneo()
+	{
+		$id = $this->db->query('SELECT id FROM usuario_baneo WHERE usuario_id = ? LIMIT 1', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+
+		if ($id !== NULL)
+		{
+			return new Model_Usuario_Baneo($id);
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 }
