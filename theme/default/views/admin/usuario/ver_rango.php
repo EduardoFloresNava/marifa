@@ -22,14 +22,16 @@
 		<thead>
 			<tr>
 				<th>Permiso</th>
+				<th>Descripci&oacute;n</th>
 				<td>Estado</td>
 			</tr>
 		</thead>
 		<tbody>
 			{loop="$permisos"}
 			<tr>
-				<th>{$value}</th>
-				<td><input type="checkbox" name="{$key}" id="{$value}"{if="in_array($key, $permisos_rango)"} checked="checked"{/if} /></td>
+				<th>{$value.0}</th>
+				<td>{$value.1}</td>
+				<td><input type="checkbox" name="{$key}" id="{$key}"{if="in_array($key, $permisos_rango)"} checked="checked"{/if} /></td>
 			</tr>
 			{/loop}
 		</tbody>

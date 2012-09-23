@@ -744,10 +744,45 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		// Listado de permisos.
 		$permisos = array();
-		for ($i = 1; $i < 20; $i++)
-		{
-			$permisos[$i] = 'permiso'.$i;
-		}
+		$permisos[0] = array('Administrador', 'Permiso de administrador general del sitio. Engloba todas las acciones posibles.');
+		$permisos[1] = array('Moderador', 'Permiso de moderador del sitio. Engloba las acciones de manejo de los contenido del sitio.');
+		$permisos[2] = array('Puntuar post', 'Puede dar puntos a un post.');
+		$permisos[3] = array('Crear post', 'Puede crear posts.');
+		$permisos[4] = array('Comentar post', 'Puede comentar los posts que se permitan.');
+		$permisos[5] = array('Votar comentario post', 'Puede votar los comentarios de los post.');
+		$permisos[6] = array('Editar comentario propio', 'Puede editar sus comentarios.');
+		$permisos[7] = array('Eliminar comentario propio', 'Puede eliminar sus comentarios.');
+		$permisos[8] = array('Crear fotos', 'Puede cargar fotos.');
+		$permisos[9] = array('Comentar fotos', 'Puede comentar fotos.');
+		$permisos[10] = array('Revistar post', 'Los posts del usuario deberán ser revisados antes de ser mostrados.');
+		$permisos[11] = array('Acceso mantenimiento', 'El usuario puede acceder cuando el sitio está en mantenimiento. Esto expresa que su IP estará en lista de las permitidas.');
+		$permisos[12] = array('Panel moderacion', 'Pueden acceder al panel de moderación.');
+		$permisos[13] = array('Denuncias usuarios', 'Ver y cancelar reportes de usuarios.');
+		$permisos[14] = array('Denuncias fotos', 'Ver y cancelar reportes de fotos.');
+		$permisos[15] = array('Denuncias posts', 'Ver y cancelar reportes de posts.');
+		$permisos[16] = array('Denuncias mensajes', 'Ver y cancelar reportes de mensajes.');
+		$permisos[17] = array('Ver usuarios baneados', 'Ver los usuarios baneados. Es para ver los elementos de los comentarios que han sido baneados.');
+		$permisos[18] = array('Ver papelera posts', 'Ver los posts que hay que en la papelera y los eliminados.');
+		$permisos[19] = array('Ver papelera fotos', 'Ver las fotos que hay en la papelera y eliminados.');
+		$permisos[20] = array('Ver posts desaprobados', 'Ver posts que están desaprobados.');
+		$permisos[21] = array('Ver comentarios desaprobados', 'Ver comentarios que están desaprobados y/o ocultos.');
+		$permisos[22] = array('Fijar posts', 'Pueden fijar o quitar posts.');
+		$permisos[23] = array('Ver cuentas desactivadas', 'Ver listado de usuarios con cuentas suspendidas.');
+		$permisos[24] = array('Ver cuentas baneadas', 'Ver listado de usuarios con cuentas baneadas.');
+		$permisos[25] = array('Suspender usuarios', 'Suspender usuarios.');
+		$permisos[26] = array('Banear usuarios', 'Banear usuarios.');
+		$permisos[27] = array('Eliminar posts', 'Puede eliminar posts de otros usuarios.');
+		$permisos[28] = array('Editar posts', 'Puede editar posts de otros usuarios.');
+		$permisos[29] = array('Ocultar posts', 'Puede ocultar posts de otros usuarios.');
+		$permisos[30] = array('Comentr posts cerrado', 'Puede comentar en posts que tienen los comentarios cerrados.');
+		$permisos[31] = array('Editar comentarios posts', 'Editar comentarios en los posts.');
+		$permisos[32] = array('Revisar comentarios', 'Aprobar/desaprobar comentario en posts y revisión de comentarios.');
+		$permisos[33] = array('Eliminar comentarios posts', 'Eliminar comentarios de los post.');
+		$permisos[34] = array('Eliminar fotos', 'Eliminar fotos.');
+		$permisos[35] = array('Eliminar comentario fotos', 'Eliminar comentario de las fotos.');
+		$permisos[36] = array('Editar fotos', 'Editar fotos.');
+		$permisos[37] = array('Eliminar publicaciones muros', 'Eliminar publicaciones en los muros.');
+		$permisos[38] = array('Eliminar comentarios muros', 'Eliminar comentarios en los muros.');
 
 		$vista->assign('permisos', $permisos);
 
