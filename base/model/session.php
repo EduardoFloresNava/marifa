@@ -85,7 +85,17 @@ class Base_Model_Session extends Model_Dataset {
 
 	public function crear($id, $usuario, $ip, $expira)
 	{
-		return $this->db->insert('INSERT INTO session (id, usuario_id, ip, expira) VALUES (?, ?, ?, ?)', array($id, $usuario, $ip, $expira));
+		// Verifico existencia.
+		if ($this->existe(array('id' => $id)))
+		{
+			$this->update_value('ip', $ip);
+			$this->update_value('expira', $expira);
+			return $this->db->update('UPDATE session SET ip = ?, expira = ? WHERE id = ?', array($ip, $expira, $id));
+		}
+		else
+		{
+			return $this->db->insert('INSERT INTO session (id, usuario_id, ip, expira) VALUES (?, ?, ?, ?)', array($id, $usuario, $ip, $expira));
+		}
 	}
 
 	/**
