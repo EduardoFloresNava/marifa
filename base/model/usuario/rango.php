@@ -26,11 +26,217 @@ defined('APP_BASE') || die('No direct access allowed.');
 /**
  * Modelo de los rangos que puede tener un usuario.
  *
+ * Reglas para permisos:
+ *
+ *   A cada rango se le asignan los permisos que puede tener, en caso de ser
+ *   permisos que tengan trivialidad para la aplicación de la tarea como por
+ *   ejemplo banear (un moderador no puede banear a un administrador) se va
+ *   a utilizar el orden.
+ *
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
  */
 class Base_Model_Usuario_Rango extends Model_Dataset {
+
+	/**
+	 * Permiso de administrador general del sitio.
+	 * Engloba todas las acciones posibles.
+	 */
+	const PERMISO_ADMINISTRADOR = 0;
+
+	/**
+	 * Permiso de moderador del sitio.
+	 * Engloba las acciones de manejo de los contenido del sitio.
+	 */
+	const PERMISO_MODERADOR = 1;
+
+	/**
+	 * Puede dar puntos a un post.
+	 */
+	const PERMISO_PUNTUAR_POST = 2;
+
+	/**
+	 * Puede crear posts.
+	 */
+	const PERMISO_CREAR_POST = 3;
+
+	/**
+	 * Puede comentar los posts que se permitan.
+	 */
+	const PERMISO_COMENTAR_POST = 4;
+
+	/**
+	 * Puede votar los comentarios de los post.
+	 */
+	const PERMISO_VOTAR_COMENTARIO_POST = 5;
+
+	/**
+	 * Puede editar sus comentarios.
+	 */
+	const PERMISO_EDITAR_COMENTARIO_PROPIO = 6;
+
+	/**
+	 * Puede eliminar sus comentarios.
+	 */
+	const PERMISO_ELIMINAR_COMENTARIO_PROPIO = 7;
+
+	/**
+	 * Puede cargar fotos.
+	 */
+	const PERMISO_CREAR_FOTOS = 8;
+
+	/**
+	 * Puede comentar fotos.
+	 */
+	const PERMISO_COMENTAR_FOTOS = 9;
+
+	/**
+	 * Los posts del usuario deberán ser revisados antes de ser mostrados.
+	 */
+	const PERMISO_REVISAR_POST = 10;
+
+	/**
+	 * El usuario puede acceder cuando el sitio está en mantenimiento.
+	 * Esto expresa que su IP estará en lista de las permitidas.
+	 */
+	const PERMISO_ACCESO_MANTENIMIENTO = 11;
+
+	/**
+	 * Pueden acceder al panel de moderación.
+	 */
+	const PERMISO_ACCESO_PANEL_MODERACION = 12;
+
+	/**
+	 * Ver y cancelar reportes de usuarios.
+	 */
+	const PERMISO_DENUNCIAS_USUARIOS = 13;
+
+	/**
+	 * Ver y cancelar reportes de fotos.
+	 */
+	const PERMISO_DENUNCIAS_FOTOS = 14;
+
+	/**
+	 * Ver y cancelar reportes de posts.
+	 */
+	const PERMISO_DENUNCIAS_POSTS = 15;
+
+	/**
+	 * Ver y cancelar reportes de mensajes.
+	 */
+	const PERMISO_DENUNCIAS_MENSAJES = 16;
+
+	/**
+	 * Ver los usuarios baneados.
+	 * Es para ver los elementos de los comentarios que han sido baneados.
+	 */
+	const PERMISO_VER_USUARIOS_BANEADOS = 17;
+
+	/**
+	 * Ver los posts que hay que en la papelera y los eliminados.
+	 */
+	const PERMISO_VER_PAPELERA_POSTS = 18;
+
+	/**
+	 * Ver las fotos que hay en la papelera y eliminados.
+	 */
+	const PERMISO_VER_PAPALERA_FOTOS = 19;
+
+	/**
+	 * Ver posts que están desaprobados.
+	 */
+	const PERMISO_VER_POSTS_DESAPROBADOS = 20;
+
+	/**
+	 * Ver comentarios que están desaprobados y/o ocultos.
+	 */
+	const PERMISO_VER_COMENTARIOS_DESPROBADOS = 21;
+
+	/**
+	 * Pueden fijar o quitar posts.
+	 */
+	const PERMISO_FIJAR_POSTS = 22;
+
+	/**
+	 * Ver listado de usuarios con cuentas suspendidas.
+	 */
+	const PERMISO_VER_CUENTAS_DESACTIVADAS = 23;
+
+	/**
+	 * Ver listado de usuarios con cuentas baneadas.
+	 */
+	const PERMISO_VER_CUENTAS_BANEADAS = 24;
+
+	/**
+	 * Suspender usuarios.
+	 */
+	const PERMISO_SUSPENDER_USUARIOS = 25;
+
+	/**
+	 * Banear usuarios.
+	 */
+	const PERMISO_BANEAR_USUARIOS = 26;
+
+	/**
+	 * Puede eliminar posts de otros usuarios.
+	 */
+	const PERMISO_ELIMINAR_POSTS = 27;
+
+	/**
+	 * Puede editar posts de otros usuarios.
+	 */
+	const PERMISO_EDITAR_POSTS = 28;
+
+	/**
+	 * Puede ocultar posts de otros usuarios.
+	 */
+	const PERMISO_OCULTAR_POSTS = 29;
+
+	/**
+	 * Puede comentar en posts que tienen los comentarios cerrados.
+	 */
+	const PERMISO_COMENTAR_POST_CERRADO = 30;
+
+	/**
+	 * Editar comentarios en los posts.
+	 */
+	const PERMISO_EDITAR_COMENTARIOS_POSTS = 31;
+
+	/**
+	 * Aprobar/desaprobar comentario en posts y revisión de comentarios.
+	 */
+	const PERMISO_REVISAR_COMENTARIOS = 32;
+
+	/**
+	 * Eliminar comentarios de los post.
+	 */
+	const PERMISO_ELIMINAR_COMENTARIOS_POSTS = 33;
+
+	/**
+	 * Eliminar fotos.
+	 */
+	const PERMISO_ELIMINAR_FOTOS = 34;
+
+	/**
+	 * Eliminar comentario de las fotos.
+	 */
+	const PERMISO_ELIMINAR_COMENTARIOS_FOTOS = 35;
+
+	/**
+	 * Editar fotos.
+	 */
+	const PERMISO_EDITAR_FOTOS = 36;
+
+	/**
+	 * Eliminar publicaciones en los muros.
+	 */
+	const PERMISO_ELIMINAR_PUBLICACIONES_MUROS = 37;
+
+	/**
+	 * Eliminar comentarios en los muros.
+	 */
+	const PERMISO_ELIMINAR_COMENTARIOS_MUROS = 38;
 
 	/**
 	 * Nombre de la tabla para el dataset
