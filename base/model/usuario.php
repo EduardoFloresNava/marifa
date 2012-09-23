@@ -186,14 +186,17 @@ class Base_Model_Usuario extends Model_Dataset {
 						break;
 					}
 				case self::ESTADO_ACTIVA: // Cuenta activa.
-					// Iniciamos la sessión.
-					Session::set('usuario_id', $data['id']);
+					// IP del usuario.
+					$ip = ip2long(IP::get_ip_addr());
 
 					// Seteamos el usuario actual.
 					$this->primary_key['id'] = $data['id'];
 
+					// Iniciamos la sessión.
+					Usuario::login($this, $ip);
+
 					// Actualizamos el inicio de session.
-					$this->db->update('UPDATE usuario SET lastlogin = ?, lastactive = ?, lastip = ? WHERE id = ?', array(date('Y/m/d H:i:s'), date('Y/m/d H:i:s'), ip2long(IP::get_ip_addr()), $this->primary_key['id']));
+					$this->db->update('UPDATE usuario SET lastlogin = ?, lastactive = ?, lastip = ? WHERE id = ?', array(date('Y/m/d H:i:s'), date('Y/m/d H:i:s'), $ip, $this->primary_key['id']));
 					break;
 				case self::ESTADO_PENDIENTE:  // Cuenta por activar.
 					break;

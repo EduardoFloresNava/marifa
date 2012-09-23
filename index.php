@@ -133,8 +133,9 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 	Plugin_Manager::get_instance()->regenerar_lista();
 }
 
-// Iniciamos la session.
+// Iniciamos la session y el usuario.
 Session::start('random_value');
+Usuario::start();
 
 // Database profiler.
 Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');

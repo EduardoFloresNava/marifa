@@ -878,4 +878,87 @@ class Base_Controller_Admin_Usuario extends Controller {
 		Request::redirect('/admin/usuario/rangos');
 	}
 
+	public function action_sesiones($pagina)
+	{
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = 20;
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/sesiones');
+
+		// Noticia Flash.
+		if (Session::is_set('session_correcto'))
+		{
+			$vista->assign('success', Session::get_flash('session_correcto'));
+		}
+
+		if (Session::is_set('session_error'))
+		{
+			$vista->assign('error', Session::get_flash('session_error'));
+		}
+
+		// Modelo de sessiones.
+		$model_session = new Model_Session(Session::$id);
+
+		// Cargamos el listado de usuarios.
+		$lst = $model_session->listado($pagina, $cantidad_por_pagina);
+
+		// Paginación.
+		$total = $model_session->cantidad();
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('actual', $pagina);
+		$vista->assign('total', $total);
+		$vista->assign('cpp', $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->paginate($pagina));
+
+		// Obtenemos datos de las noticias.
+		foreach ($lst as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['usuario'] = $v->usuario()->as_array();
+			$a['ip_raw'] = $a['ip'];
+			$a['ip'] = long2ip($a['ip']);
+
+			$lst[$k] = $a;
+		}
+
+		// Seteamos listado de noticias.
+		$vista->assign('sesiones', $lst);
+		unset($lst);
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_sesiones'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Borramos un rango.
+	 * @param string $id ID de la session a borrar.
+	 */
+	public function action_terminar_session($id)
+	{
+		// Cargamos el modelo del session.
+		$model_session = new Model_Session( (int) $id);
+
+		// Verificamos exista.
+		if ($model_session->existe())
+		{
+			// Terminamos la session.
+			$model_session->borrar();
+			Session::set('session_correcto', 'Se terminó correctamente la sessión.');
+		}
+		Request::redirect('/admin/usuario/sesiones');
+	}
+
 }

@@ -296,11 +296,7 @@ class Base_Controller_Usuario extends Controller {
 	 */
 	public function action_logout()
 	{
-		if (Session::is_set('usuario_id'))
-		{
-			Session::un_set('usuario_id');
-			Session::un_set();
-		}
+		Usuario::logout();
 		Request::redirect('/');
 	}
 }
