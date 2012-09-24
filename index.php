@@ -86,6 +86,12 @@ require_once (APP_BASE.DS.'marifa'.DS.'loader.php');
 // Iniciamos el proceso de carga automatica de librerias.
 spl_autoload_register('Loader::load');
 
+// Inicio la session.
+Session::start('random_value');
+
+// Cargo el tema actual.
+define('THEME', Theme::actual());
+
 // Iniciamos el manejo de errores.
 Error::get_instance()->start(DEBUG);
 
@@ -115,7 +121,7 @@ else
 }
 
 // Forzamos una cache inexistente. Comente esta linea para habilitar la cache.
-Configuraciones::set('cache.type', NULL);
+//Configuraciones::set('cache.type', NULL);
 
 // Cargamos la cache.
 Cache::get_instance();
@@ -133,8 +139,7 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 	Plugin_Manager::get_instance()->regenerar_lista();
 }
 
-// Iniciamos la session y el usuario.
-Session::start('random_value');
+// Iniciamos el usuario.
 Usuario::start();
 
 // Database profiler.

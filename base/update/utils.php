@@ -143,8 +143,9 @@ class Base_Update_Utils {
         }
 
         // Loop through the folder
-        $dir = dir($source);
-        while ($entry = $dir->read() !== FALSE)
+        $dir = scandir($source);
+		$rst = TRUE;
+        foreach ($dir as $entry)
 		{
             // Skip pointers
             if ($entry == '.' || $entry == '..')
@@ -153,12 +154,15 @@ class Base_Update_Utils {
             }
 
             // Deep copy directories
-            self::copyr("$source/$entry", "$dest/$entry");
+            $r = self::copyr("$source/$entry", "$dest/$entry");
+			if ( ! $r)
+			{
+				$rst = FALSE;
+			}
         }
 
         // Clean up
-        $dir->close();
-        return FALSE;
+        return $rst;
     }
 
 	/**
@@ -187,7 +191,7 @@ class Base_Update_Utils {
 				}
 			}
 
-			if ( ! rmdir($path))
+			if ( ! @rmdir($path))
 			{
 				$rst = FALSE;
 			}
@@ -196,7 +200,7 @@ class Base_Update_Utils {
 		}
 		else
 		{
-			return unlink($path);
+			return @unlink($path);
 		}
 	}
 

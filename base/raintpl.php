@@ -95,7 +95,7 @@ class Base_RainTPL extends Lib_RainTPL {
 			// Es la vista del nucleo.
 
 			// Generamos el nombre de la vista.
-			$template_name = VIEW_PATH.View::$theme.DS.'views'.DS.$tpl_name;
+			$template_name = VIEW_PATH.THEME.DS.'views'.DS.$tpl_name;
 		}
 
 		// Enviamos a rainTPL para que lo procese.

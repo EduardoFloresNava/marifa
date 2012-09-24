@@ -151,7 +151,7 @@ class Base_Update_Updater {
 		unset($compresiones);
 
 		// Armamos directorio temporal de la descarga.
-		$temp_file = TMP_PATH.uniqid('upd_fule_');
+		$temp_file = TMP_PATH.uniqid('upd_file_');
 
 		// Descargamos el archivo.
 		$rqs = new Update_Rest_Request($this->server);
