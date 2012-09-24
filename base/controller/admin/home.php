@@ -53,6 +53,7 @@ class Base_Controller_Admin_Home extends Controller {
 		$listado['control_censuras'] = array('link' => '/admin/control/censuras', 'caption' => 'Censuras', 'active' => FALSE);
 
 		$listado['p_contenido'] = array('caption' => 'Contenido');
+		$listado['contenido'] = array('link' => '/admin/contenido', 'caption' => 'Informe contenido', 'active' => FALSE);
 		$listado['contenido_comunidades'] = array('link' => '/admin/contenido/comunidades', 'caption' => 'Comunidades', 'active' => FALSE);
 		$listado['contenido_posts'] = array('link' => '/admin/contenido/posts', 'caption' => 'Posts', 'active' => FALSE);
 		$listado['contenido_fotos'] = array('link' => '/admin/contenido/fotos', 'caption' => 'Fotos', 'active' => FALSE);

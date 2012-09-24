@@ -961,4 +961,41 @@ class Base_Controller_Admin_Usuario extends Controller {
 		Request::redirect('/admin/usuario/sesiones');
 	}
 
+	public function action_nicks()
+	{
+		//TODO: implementar manejo de NICKS.
+
+		// Formato de la página.
+		//$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
+		// Cantidad de elementos por pagina.
+		//$cantidad_por_pagina = 20;
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/nicks');
+
+		// Noticia Flash.
+		if (Session::is_set('nick_correcto'))
+		{
+			$vista->assign('success', Session::get_flash('nick_correcto'));
+		}
+
+		if (Session::is_set('nick_error'))
+		{
+			$vista->assign('error', Session::get_flash('nick_error'));
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_nicks'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
 }

@@ -33,6 +33,21 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Model_Post extends Model_Dataset {
 
 	/**
+	 * Post preparado para ser mostrado.
+	 */
+	const ESTADO_ACTIVO = 0;
+
+	/**
+	 * Post guardado como borrador.
+	 */
+	const ESTADO_BORRADOR = 1;
+
+	/**
+	 * Post eliminado.
+	 */
+	const ESTADO_BORRADO = 2;
+
+	/**
 	 * Nombre de la tabla para el dataset
 	 * @var string
 	 */
@@ -692,6 +707,25 @@ class Base_Model_Post extends Model_Dataset {
 
 		// Generamos la salida.
 		return array($lst, $total);
+	}
+
+	/**
+	 * Listado de posts existentes.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de posts por página.
+	 * @return array
+	 */
+	public function listado($pagina, $cantidad = 10)
+	{
+		$start = ($pagina - 1) * $cantidad;
+		$rst = $this->db->query('SELECT id FROM post ORDER BY fecha LIMIT '.$start.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Post($v);
+		}
+		return $lst;
 	}
 
 }

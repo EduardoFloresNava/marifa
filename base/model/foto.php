@@ -320,4 +320,23 @@ class Base_Model_Foto extends Model_Dataset {
 
 		return $rst;
 	}
+
+	/**
+	 * Listado de fotos existentes.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de fotos por página.
+	 * @return array
+	 */
+	public function listado($pagina, $cantidad = 10)
+	{
+		$start = ($pagina - 1) * $cantidad;
+		$rst = $this->db->query('SELECT id FROM foto ORDER BY creacion LIMIT '.$start.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Foto($v);
+		}
+		return $lst;
+	}
 }
