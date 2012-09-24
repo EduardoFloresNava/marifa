@@ -197,7 +197,7 @@ class Base_Dispatcher {
 		{
 			if (strtolower($segmentos[0]) === 'plugin')
 			{
-				// Buscamos el plugin.
+				// Formateo el plugins.
 				$p_name = strtolower($segmentos[1]);
 
 				// Validamos que tenga el formato requerido.
@@ -214,7 +214,24 @@ class Base_Dispatcher {
 					return FALSE;
 				}
 
+				// Verifico su existencia y que este activo.
+				$p_obj = Plugin_Manager::get_instance()->get($p_name);
+
+				if ($p_obj === NULL || ! $p_obj->estado())
+				{
+					if ( ! $throw)
+					{
+						Error::show_error('Plugin inexistente', 404);
+					}
+					else
+					{
+						throw new Exception('Plugin inexistente', 404);
+					}
+					return FALSE;
+				}
+
 				$p_dir = Plugin_Manager::nombre_as_path($p_name);
+
 
 				if (file_exists($p_dir) && is_dir($p_dir))
 				{

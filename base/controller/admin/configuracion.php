@@ -43,6 +43,342 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	}
 
 	/**
+	 * Listado de plugins.
+	 */
+	public function action_plugins()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/configuracion/plugins');
+
+		// Noticia Flash.
+		if (Session::is_set('plugin_correcta'))
+		{
+			$vista->assign('success', Session::get_flash('plugin_correcta'));
+		}
+		if (Session::is_set('plugin_error'))
+		{
+			$vista->assign('error', Session::get_flash('plugin_error'));
+		}
+
+		// Cargo listado de plugins.
+		$pm = Plugin_Manager::get_instance();
+
+		// Regenero el listado de plugins.
+		$pm->regenerar_lista();
+		$plugins = $pm->load();
+
+		foreach ($plugins as $k => $v)
+		{
+			$plugins[$k] = (array) $pm->get($k)->info();
+		}
+		$vista->assign('plugins', $plugins);
+		unset($plugins);
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_plugins'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Activamos un plugin realizando su migración y puesta en funcionamiento.
+	 * @param string $plugin Plugin a activar.
+	 */
+	public function action_activar_plugin($plugin)
+	{
+		// Cargamos el administrado de plugins.
+		$pm = Plugin_Manager::get_instance();
+
+		// Verificamos si el plugin existe.
+		$p = $pm->get($plugin);
+		if ( ! is_object($p))
+		{
+			Session::set('plugin_error', 'El plugin no existe.');
+			Request::redirect('/admin/configuracion/plugins');
+		}
+
+		// Verifico su estado.
+		if ($p->estado())
+		{
+			Session::set('plugin_error', 'El plugin ya se encuentra activo.');
+			Request::redirect('/admin/configuracion/plugins');
+		}
+
+		// Verifico posibilidad de aplicar.
+		if ( ! $p->check_support())
+		{
+			Session::set('plugin_error', 'El plugin no puede ser instalado por la existencia de incompatibilidades.');
+			Request::redirect('/admin/configuracion/plugins');
+		}
+
+		// Realizamos la instalación.
+		$p->install();
+
+		Session::set('plugin_correcta', 'El plugin se ha instalado correctamente.');
+		Request::redirect('/admin/configuracion/plugins');
+	}
+
+	/**
+	 * Desactivamos un plugin.
+	 * @param string $plugin Plugin a desactivar.
+	 */
+	public function action_desactivar_plugin($plugin)
+	{
+		// Cargamos el administrado de plugins.
+		$pm = Plugin_Manager::get_instance();
+
+		// Verificamos si el plugin existe.
+		$p = $pm->get($plugin);
+		if ( ! is_object($p))
+		{
+			Session::set('plugin_error', 'El plugin no existe.');
+			Request::redirect('/admin/configuracion/plugins');
+		}
+
+		// Verifico su estado.
+		if ( ! $p->estado())
+		{
+			Session::set('plugin_error', 'El plugin ya se encuentra desactivado.');
+			Request::redirect('/admin/configuracion/plugins');
+		}
+
+		// Realizamos la desinstalación.
+		$p->remove();
+
+		Session::set('plugin_correcta', 'El plugin se ha desinstalado correctamente.');
+		Request::redirect('/admin/configuracion/plugins');
+	}
+
+	/**
+	 * Borramos el plugin.
+	 * @param string $plugin Plugin a borrar.
+	 */
+	public function action_borrar_plugin($plugin)
+	{
+		// Cargamos el administrado de plugins.
+		$pm = Plugin_Manager::get_instance();
+
+		// Verificamos si el plugin existe.
+		$p = $pm->get($plugin);
+		if ( ! is_object($p))
+		{
+			Session::set('plugin_error', 'El plugin no existe.');
+			Request::redirect('/admin/configuracion/plugins');
+		}
+
+		// Verifico su estado.
+		if ($p->estado())
+		{
+			Session::set('plugin_error', 'El plugin se encuentra activado, no se puede borrar.');
+			Request::redirect('/admin/configuracion/plugins');
+		}
+
+		// Eliminamos.
+		Update_Utils::unlink(Plugin_Manager::nombre_as_path($plugin));
+		Plugin_Manager::get_instance()->regenerar_lista();
+
+		Session::set('plugin_correcta', 'El plugin se ha borrado correctamente.');
+		Request::redirect('/admin/configuracion/plugins');
+	}
+
+	/**
+	 * Agregamos un nuevo plugins al sistema.
+	 * NO REALIZA LA INSTALACIÓN. Por motivos de recursos hacer ambas cosas
+	 * puede provocar que la instalación no termine.
+	 *
+	 */
+	public function action_agregar_plugin()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/configuracion/agregar_plugin');
+
+		// Valores por defecto.
+		$vista->assign('error_carga', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			$error = FALSE;
+
+			// Verifico el envio correcto de datos.
+			if (isset($_FILES['plugin']))
+			{
+				// Cargo los datos del archivo.
+				$file = $_FILES['plugin'];
+
+				// Verifico el estado.
+				if($file['error'] !== UPLOAD_ERR_OK)
+				{
+					$error = TRUE;
+					switch ($file['error'])
+					{
+						case UPLOAD_ERR_INI_SIZE:
+						case UPLOAD_ERR_FORM_SIZE:
+							$vista->assign('error_carga', 'El tamaño del archivo es incorrecto.');
+							break;
+						case UPLOAD_ERR_PARTIAL:
+							$vista->assign('error_carga', 'Los datos enviados están corruptos.');
+							break;
+						case UPLOAD_ERR_NO_FILE:
+							$vista->assign('error_carga', 'No has seleccionado un archivo.');
+							break;
+						case UPLOAD_ERR_NO_TMP_DIR:
+						case UPLOAD_ERR_CANT_WRITE:
+							$vista->assign('error_carga', 'Error interno al cargar el archivo. Reintente. Si el error persiste contacte al administrador.');
+							break;
+						case UPLOAD_ERR_EXTENSION:
+							$vista->assign('error_carga', 'La configuración del servidor no permite archivo con esa extensión.');
+							break;
+					}
+				}
+				else
+				{
+					// Cargo el mime.
+					$file['type'] = Update_Utils::get_mime($file['tmp_name']);
+
+					// Verifico esté dentro de los permitidos.
+					if ( ! in_array(Update_Utils::mime2compresor($file['type']), Update_Compresion::get_list()))
+					{
+						$error = TRUE;
+						$vista->assign('error_carga', 'El tipo de archivo no es soportado. Verifique la configuración del servidor.');
+					}
+				}
+			}
+			else
+			{
+				$error = TRUE;
+				$vista->assign('error_carga', 'No has seleccionado un archivo.');
+			}
+
+			// Verifico el contenido de los datos.
+			if ( ! $error)
+			{
+				// Armo directorio temporal para la descargar.
+				$tmp_dir = TMP_PATH.uniqid('pkg_').DS;
+				mkdir($tmp_dir, 0777, TRUE);
+
+				// Realizo la descompresión.
+				$compresor = Update_Compresion::get_instance(Update_Utils::mime2compresor($file['type']));
+				$compresor->set_temp_path($tmp_dir);
+				if ( ! $compresor->decompress($file['tmp_name']))
+				{
+					// Limpio salidas.
+					Update_Utils::unlink($file['tmp_name']);
+					Update_Utils::unlink($tmp_dir);
+
+					// Informo del error.
+					$error = TRUE;
+					$vista->assign('error_carga', 'No se pudo descomprimir el archivo. Compruebe que sea correcto.');
+				}
+				else
+				{
+					// Obtenemos la información del paquete.
+					if ( ! file_exists($tmp_dir.'info.json'))
+					{
+						// Limpio salidas.
+						Update_Utils::unlink($file['tmp_name']);
+						Update_Utils::unlink($tmp_dir);
+
+						// Informo del error.
+						$error = TRUE;
+						$vista->assign('error_carga', 'El paquete no es un plugins válido.');
+					}
+					else
+					{
+						// Obtengo la información.
+						$data = json_decode(file_get_contents($tmp_dir.'info.json'));
+
+						// Obtenemos el nombre del paquete.
+						$pkg_name = $data->nombre;
+
+						// Verifico no exista.
+						if (Plugin_Manager::get_instance()->get(Plugin_Manager::make_name($pkg_name)) !== NULL)
+						{
+							// Limpio salidas.
+							Update_Utils::unlink($file['tmp_name']);
+							Update_Utils::unlink($tmp_dir);
+
+							//TODO: Efectuar actualizacion.
+
+							// Informo del error.
+							$error = TRUE;
+							$vista->assign('error_carga', 'El plugin no puede ser importado porque ya existe.');
+						}
+						else
+						{
+							// Cargamos el archivo para personalizar la actualización.
+							if (file_exists($tmp_dir.'/install.php'))
+							{
+								@include($tmp_dir.'/install.php');
+
+								if (class_exists('Install'))
+								{
+									// Cargamos el instalador.
+									$install = new Install($tmp_dir, $update);
+								}
+							}
+
+							// Ejecutamos pre_instalacion.
+							if (isset($install))
+							{
+								// Verificamos soporte.
+								if (method_exists($install, 'before'))
+								{
+									$install->before();
+								}
+							}
+
+							// Movemos los archivos.
+							Update_Utils::copyr($tmp_dir.DS.'files'.DS, Plugin_Manager::nombre_as_path($pkg_name));
+
+							// Ejecutamos post_instalacion.
+							if (isset($install))
+							{
+								// Verificamos soporte.
+								if (method_exists($install, 'after'))
+								{
+									$install->after();
+								}
+							}
+
+							// Actualizo la cache.
+							Plugin_Manager::get_instance()->regenerar_lista();
+
+							// Limpiamos archivos de la instalación y salimos.
+							Update_Utils::unlink($tmp_dir);
+							Update_Utils::unlink($file['tmp_name']);
+
+							// Informo resultado.
+							Session::set('plugin_correcta', 'El plugin se importó correctamente.');
+
+							// Redireccionamos.
+							Request::redirect('/admin/configuracion/plugins');
+						}
+					}
+				}
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_plugins'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
 	 * Listado de temas.
 	 */
 	public function action_temas()
@@ -292,7 +628,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 					// Informo del error.
 					$error = TRUE;
-					$vista->assign('error_carga', 'No se pudo descomprimir el archivo. Compruebe que sea correcteo.');
+					$vista->assign('error_carga', 'No se pudo descomprimir el archivo. Compruebe que sea correcto.');
 				}
 				else
 				{
