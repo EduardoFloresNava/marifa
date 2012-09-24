@@ -94,7 +94,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_theme'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_temas'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -396,7 +396,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_theme'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_temas'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
