@@ -378,12 +378,17 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	}
 
 	/**
-	 * Obtenemos un arreglo con los IDs de los usuarios que tienen este rango.
+	 * Obtenemos un arreglo con los usuarios que tienen este rango.
 	 * @return array
 	 */
 	public function usuarios()
 	{
-		return $this->db->query('SELECT id FROM usuario WHERE rango = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+		$lst = $this->db->query('SELECT id FROM usuario WHERE rango = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+		foreach($lst as $k => $v)
+		{
+			$lst[$k] = new Model_Usuario($v);
+		}
+		return $lst;
 	}
 
 	/**
