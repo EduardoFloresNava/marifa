@@ -174,7 +174,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Paginación.
-		$total = $model_fotos->cantidad();
+		$total = $model_fotos->cantidad(TRUE);
 		$paginador = new Paginator($total, $cantidad_por_pagina);
 		$vista->assign('actual', $pagina);
 		$vista->assign('total', $total);
