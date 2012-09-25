@@ -115,12 +115,85 @@ class Base_Controller_Admin_Contenido extends Controller {
 			Request::redirect('/admin/contenido/posts/');
 		}
 
-		// Seteamos como eliminado.
-		$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
+		// Verifico cual es el estado actual.
+		if ($model_post->estado === Model_Post::ESTADO_BORRADO)
+		{
+			Session::set('post_error', 'El post ya se encuentra moderado.');
+			Request::redirect('/admin/contenido/posts/');
+		}
 
-		// Seteamos mensaje flash y volvemos.
-		Session::set('post_correcto', 'Post borrado correctamente.');
-		Request::redirect('/admin/contenido/posts/');
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/eliminar_post');
+
+		// Valores por defecto y errores.
+		$vista->assign('tipo', '');
+		$vista->assign('error_tipo', FALSE);
+		$vista->assign('razon', '');
+		$vista->assign('error_razon', FALSE);
+		$vista->assign('borrador', FALSE);
+		$vista->assign('error_borrador', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$tipo = isset($_POST['tipo']) ? (int) $_POST['tipo'] : NULL;
+			$razon = isset($_POST['razon']) ? preg_replace('/\s+/', ' ', trim($_POST['razon'])) : NULL;
+			$borrador = isset($_POST['borrador']) ? $_POST['borrador'] == 1 : FALSE;
+
+			// Valores para cambios.
+			$vista->assign('tipo', $tipo);
+			$vista->assign('razon', $razon);
+			$vista->assign('borrador', $borrador);
+
+			// Verifico el tipo.
+			if ( ! in_array($tipo, array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)))
+			{
+				$error = TRUE;
+				$vista->assign('error_tipo', 'No ha seleccionado un tipo válido.');
+			}
+			else
+			{
+				// Verifico la razón si corresponde.
+				if ($tipo === 12)
+				{
+					// Verificamos el nombre.
+					if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{10,200}$/iD', $razon))
+					{
+						$error = TRUE;
+						$vista->assign('error_razon', 'La razón dete tener entre 10 y 200 caractéres alphanuméricos.');
+					}
+				}
+				else
+				{
+					$razon = NULL;
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Creo la moderación.
+				$model_post->moderar($model_post->id, $tipo, $razon, $borrador);
+
+				// Seteamos mensaje flash y volvemos.
+				Session::set('post_correcto', 'Post borrado correctamente.');
+				Request::redirect('/admin/contenido/posts/');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_post'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**

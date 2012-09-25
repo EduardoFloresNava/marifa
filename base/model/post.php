@@ -29,6 +29,19 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
+ *
+ * @property-read int $id ID del post.
+ * @property-read int $usuario_id ID del usuario dueño del post.
+ * @property-read int $categoria_id ID de la categoria a la cual pertenece el post.
+ * @property-read int $comunidad_id ID de la comunidad a la que pertenece el post. NULL si no pertenece a ninguna.
+ * @property-read string $titulo Titulo del post.
+ * @property-read string $contenido Contenido del post. Es BBCode sin procesar.
+ * @property-read Fechahora $fecha Fecha de creación del post.
+ * @property-read int $vistas Cantidad de visitas que tuvo el post.
+ * @property-read bool $privado Si el post es privado o lo pueden ver los usuarios sin registrarse.
+ * @property-read bool $sponsored Si el post es patrocinado o no.
+ * @property-read bool $sticky Si el post esta fijo a la portada.
+ * @property-read int $estado Estado del post.
  */
 class Base_Model_Post extends Model_Dataset {
 
@@ -509,8 +522,9 @@ class Base_Model_Post extends Model_Dataset {
 	 * @param int $comunidad Comunidad donde se publica. NULL para general.
 	 * @return int
 	 */
-	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $comunidad = NULL)
+	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $comunidad = NULL, $borrador = FALSE)
 	{
+		$estado = $borrador ? self::ESTADO_BORRADOR : self::ESTADO_ACTIVO;
 		list($id,) = $this->db->insert(
 			'INSERT INTO post ( usuario_id, categoria_id, comunidad_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 			array(
@@ -524,7 +538,7 @@ class Base_Model_Post extends Model_Dataset {
 				$privado,
 				$sponsored,
 				$sticky,
-				0 //TODO: Ver estado de los posts.
+				$estado
 			)
 		);
 
@@ -726,6 +740,61 @@ class Base_Model_Post extends Model_Dataset {
 			$lst[] = new Model_Post($v);
 		}
 		return $lst;
+	}
+
+	/**
+	 * Agregamos una moderación al post.
+	 * @param int $usuario_id ID del usuario que realiza la moderación.
+	 * @param int $motivo Tipo de motivo para realizar la moderación.
+	 * @param string $razon Razon si corresponde o NULL en caso contrario.
+	 * @param bool $borrador Si creamos un borrador o no.
+	 * @return bool|int Si crea borrador el ID de ese, sino bool en función del resultado.
+	 */
+	public function moderar($usuario_id, $motivo, $razon = NULL, $borrador = FALSE)
+	{
+		// Verifico si es necesario borrador.
+		if ($borrador)
+		{
+			// Creo el post.
+			$id = $this->crear($this->get('usuario_id'), $this->get('titulo'), $this->get('contenido'), $this->get('categoria_id'), $this->get('privado'), $this->get('sponsored'), $this->get('sticky'), $this->get('comunidad_id'), TRUE);
+		}
+		else
+		{
+			$id = NULL;
+		}
+
+		// Creo la moderación.
+		$m_p = new Model_Post_Moderado;
+		$rst = $m_p->crear($this->primary_key['id'], $usuario_id, $motivo, $id, $razon);
+
+		// Actualizo el estado actual.
+		$this->actualizar_estado(self::ESTADO_BORRADO);
+
+		// Envio respuesta.
+		if ($id !== NULL)
+		{
+			return $id;
+		}
+		else
+		{
+			return $rst;
+		}
+	}
+
+	/**
+	 * Objeto de moderación o NULL si no posee.
+	 * @return Model_Post_Moderado|NULL
+	 */
+	public function moderacion()
+	{
+		if ($this->db->query('SELECT COUNT(*) FROM post_moderado WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT) > 0)
+		{
+			return new Model_Post_Moderado($this->primary_key['id']);
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 
 }
