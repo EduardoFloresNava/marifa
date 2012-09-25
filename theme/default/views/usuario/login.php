@@ -14,7 +14,7 @@
 				<div class="control-group{if="$error_nick"} error{/if}">
 					<label class="control-label" for="nick">E-Mail o Usuario</label>
 					<div class="controls">
-						<input type="text" class="input-large" id="nick" name="nick" value="{$nick}" />
+						<input type="text" class="input-xlarge" id="nick" name="nick" value="{$nick}" />
 						<span class="help-inline">Tu nick actual o tu E-Mail. Si has cambiado tu nick, debes colocar el último.</span>
 					</div>
 				</div>
