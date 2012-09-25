@@ -1,6 +1,7 @@
 <ul class="breadcrumb">
     <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
-    <li><a href="/admin/configuracion/noticias">Noticias</a> <span class="divider">/</span></li>
+	<li><a href="/admin/contenido">Contenido</a> <span class="divider">/</span></li>
+    <li><a href="/admin/contenido/noticias">Noticias</a> <span class="divider">/</span></li>
     <li class="active">Nueva</li>
 </ul>
 <div class="header">
@@ -86,6 +87,6 @@
 	</div>
 
 	<div class="form-actions">
-		<button type="submit" class="btn btn-large btn-primary">Crear</button>
+		<button type="submit" class="btn btn-large btn-primary">Crear</button> o <a href="/admin/contenido/noticias">Volver</a>
 	</div>
 </form>

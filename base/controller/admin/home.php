@@ -42,7 +42,6 @@ class Base_Controller_Admin_Home extends Controller {
 		$listado['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuracion', 'active' => FALSE);
 		$listado['configuracion_temas'] = array('link' => '/admin/configuracion/temas/', 'caption' => 'Temas', 'active' => FALSE);
 		$listado['configuracion_plugins'] = array('link' => '/admin/configuracion/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
-		$listado['configuracion_noticias'] = array('link' => '/admin/configuracion/noticias/', 'caption' => 'Noticias', 'active' => FALSE);
 		$listado['configuracion_publicidad'] = array('link' => '/admin/configuracion/publicidad/', 'caption' => 'Publicidad', 'active' => FALSE);
 
 		$listado['p_control'] = array('caption' => 'Control de PHPost');
@@ -58,6 +57,7 @@ class Base_Controller_Admin_Home extends Controller {
 		$listado['contenido_posts'] = array('link' => '/admin/contenido/posts', 'caption' => 'Posts', 'active' => FALSE);
 		$listado['contenido_fotos'] = array('link' => '/admin/contenido/fotos', 'caption' => 'Fotos', 'active' => FALSE);
 		$listado['contenido_categorias'] = array('link' => '/admin/contenido/categorias', 'caption' => 'Categorias', 'active' => FALSE);
+		$listado['contenido_noticias'] = array('link' => '/admin/contenido/noticias/', 'caption' => 'Noticias', 'active' => FALSE);
 
 		$listado['p_usuarios'] = array('caption' => 'Usuarios');
 		$listado['usuario'] = array('link' => '/admin/usuario/', 'caption' => 'General', 'active' => FALSE);
