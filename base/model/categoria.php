@@ -24,19 +24,19 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Modelo de categorias de los posts.
+ * Modelo de categorias de los posts, fotos y comunidades.
  *
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
  */
-class Base_Model_Post_Categoria extends Model_Dataset {
+class Base_Model_Categoria extends Model_Dataset {
 
 	/**
 	 * Nombre de la tabla para el dataset
 	 * @var string
 	 */
-	protected $table = 'post_categoria';
+	protected $table = 'categoria';
 
 	/**
 	 * Clave primaria.
@@ -89,9 +89,9 @@ class Base_Model_Post_Categoria extends Model_Dataset {
 	 * @param string $nombre Nombre a convertir.
 	 * @return string
 	 */
-	protected function make_seo($nombre)
+	public function make_seo($nombre)
 	{
-		return preg_replace('/\s+/', '-', preg_replace('/[^A-Za-z0-9\s]/', '', trim($nombre)));
+		return preg_replace('/\s+/', '-', preg_replace('/[^A-Za-z0-9\s]/', '', str_replace(array('á', 'é', 'í', 'ó', 'ú', 'ñ'), array('a', 'e', 'i', 'o', 'u', 'n'), trim($nombre))));
 	}
 
 	/**
@@ -105,22 +105,47 @@ class Base_Model_Post_Categoria extends Model_Dataset {
 		$seo = $this->make_seo($nombre);
 
 		// Verificamos que no exista.
-		if ($this->existe_seo($seo))
+		if ($this->existe_seo($seo, TRUE))
 		{
 			throw new Exception('Existe un campo con ese nombre');
 		}
 
 		// Actualizamos los datos.
-		$this->db->update('UPDATE post_categoria SET nombre = ? AND seo = ? WHERE id = ?', array($nombre, $seo, $this->primary_key['id']));
+		$this->db->update('UPDATE categoria SET nombre = ?, seo = ? WHERE id = ?', array($nombre, $seo, $this->primary_key['id']));
+	}
+
+	/**
+	 * Creo una nueva categoria.
+	 * @param string $nombre Nombre de la categoria.
+	 * @param string $imagen Imagen de la categoria.
+	 * @return int ID de la categoria.
+	 */
+	public function nueva($nombre, $imagen)
+	{
+		// Obtenemos seo.
+		$seo = $this->make_seo($nombre);
+
+		// Creamos la categoria.
+		list($id,) = $this->db->insert('INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array($nombre, $seo, $imagen));
+
+		return $id;
 	}
 
 	/**
 	 * Verificamos si existe un campo son el mismo SEO.
 	 * @param string $seo SEO a buscar.
+	 * @param bool $not_current Si omitimos el actual.
 	 */
-	public function existe_seo($seo)
+	public function existe_seo($seo, $not_current = FALSE)
 	{
-		return $this->db->query('SELECT id FROM post_categoria WHERE seo = ? LIMIT 1', array($seo))->num_rows() > 0;
+		if ($not_current)
+		{
+			return $this->db->query('SELECT id FROM categoria WHERE seo = ? AND id != ? LIMIT 1', array($seo, $this->primary_key['id']))->num_rows() > 0;
+		}
+		else
+		{
+			return $this->db->query('SELECT id FROM categoria WHERE seo = ? LIMIT 1', array($seo))->num_rows() > 0;
+		}
 	}
 
 	/**
@@ -129,7 +154,7 @@ class Base_Model_Post_Categoria extends Model_Dataset {
 	 */
 	public function cambiar_imagen($imagen)
 	{
-		$this->db->update('UPDATE post_categoria SET imagen = ? WHERE id = ?', array($imagen, $this->primary_key['id']));
+		$this->db->update('UPDATE categoria SET imagen = ? WHERE id = ?', array($imagen, $this->primary_key['id']));
 	}
 
 	/**
@@ -139,13 +164,13 @@ class Base_Model_Post_Categoria extends Model_Dataset {
 	public function borrar()
 	{
 		// Verificamos que no tenga posts.
-		if ($this->tiene_posts())
+		if ($this->tiene_posts() || $this->tiene_fotos())
 		{
-			throw new Exception('No se puede borrar la categoria porque tiene posts asociados.');
+			throw new Exception('No se puede borrar la categoria porque tiene posts y/o fotos asociados.');
 		}
 
 		// Borramos.
-		$this->db->delete('DELETE FROM post_categoria WHERE id = ?', $this->primary_key['id']);
+		$this->db->delete('DELETE FROM categoria WHERE id = ?', $this->primary_key['id']);
 	}
 
 	/**
@@ -155,7 +180,7 @@ class Base_Model_Post_Categoria extends Model_Dataset {
 	public function posts()
 	{
 		// Obtenemos la lista.
-		$rst = $this->db->query('SELECT id FROM post WHERE post_categoria_id = ?', $this->primary_key['id']);
+		$rst = $this->db->query('SELECT id FROM post WHERE categoria_id = ?', $this->primary_key['id']);
 		$rst->set_cast_type(array('id' => Database_Query::FIELD_INT));
 
 		$lst = array();
@@ -173,7 +198,7 @@ class Base_Model_Post_Categoria extends Model_Dataset {
 	 */
 	public function cantidad_posts()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post WHERE post_categoria_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT COUNT(*) FROM post WHERE categoria_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -182,7 +207,44 @@ class Base_Model_Post_Categoria extends Model_Dataset {
 	 */
 	public function tiene_posts()
 	{
-		return $this->db->query('SELECT post_categoria_id FROM post WHERE post_categoria_id = ? LIMIT 1', $this->primary_key['id'])->num_rows() > 0;
+		return $this->db->query('SELECT categoria_id FROM post WHERE categoria_id = ? LIMIT 1', $this->primary_key['id'])->num_rows() > 0;
+	}
+
+	/**
+	 * Obtenemos listado de fotos de esta categoria.
+	 * @return array
+	 */
+	public function fotos()
+	{
+		// Obtenemos la lista.
+		$rst = $this->db->query('SELECT id FROM foto WHERE categoria_id = ?', $this->primary_key['id']);
+		$rst->set_cast_type(array('id' => Database_Query::FIELD_INT));
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Foto($v['id']);
+		}
+
+		return $lst;
+	}
+
+	/**
+	 * Obtenemos la cantidad de post que tiene asignados la categoria.
+	 * @return int
+	 */
+	public function cantidad_fotos()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM foto WHERE categoria_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Verificamos si posee fotos.
+	 * @return bool
+	 */
+	public function tiene_fotos()
+	{
+		return $this->db->query('SELECT categoria_id FROM foto WHERE categoria_id = ? LIMIT 1', $this->primary_key['id'])->num_rows() > 0;
 	}
 
 	/**
@@ -191,7 +253,6 @@ class Base_Model_Post_Categoria extends Model_Dataset {
 	 */
 	public function lista()
 	{
-		return $this->db->query('SELECT seo, nombre, imagen FROM post_categoria')
-			->get_records();
+		return $this->db->query('SELECT id, seo, nombre, imagen FROM categoria ORDER BY nombre ASC')->get_records();
 	}
 }

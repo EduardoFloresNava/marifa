@@ -206,4 +206,269 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
+	/**
+	 * Listado de categorias de los posts, fotos y comunidades.
+	 */
+	public function action_categorias()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/categorias');
+
+		// Noticia Flash.
+		if (Session::is_set('categoria_correcto'))
+		{
+			$vista->assign('success', Session::get_flash('categoria_correcto'));
+		}
+
+		if (Session::is_set('categoria_error'))
+		{
+			$vista->assign('error', Session::get_flash('categoria_error'));
+		}
+
+		// Modelo de categorias.
+		$model_categorias = new Model_Categoria;
+
+		// Cargamos el listado de categorias.
+		$lst = $model_categorias->lista();
+
+		// Seteamos listado de las categorias.
+		$vista->assign('categorias', $lst);
+		unset($lst);
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_categorias'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Agregamos una nueva categoria.
+	 */
+	public function action_agregar_categoria()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/nueva_categoria');
+
+		// Cargamos el listado de imagens para rangos disponibles.
+		//TODO: implementar funcion para obtener URL completa.
+		$imagenes_categorias = scandir(APP_BASE.DS.VIEW_PATH.'default'.DS.'assets'.DS.'img'.DS.'categoria'.DS);
+		unset($imagenes_categorias[1], $imagenes_categorias[0]); // Quitamos . y ..
+
+		$vista->assign('imagenes_categorias', $imagenes_categorias);
+
+		// Valores por defecto y errores.
+		$vista->assign('nombre', '');
+		$vista->assign('error_nombre', FALSE);
+		$vista->assign('imagen', '');
+		$vista->assign('error_imagen', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$nombre = isset($_POST['nombre']) ? $_POST['nombre'] : NULL;
+			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+
+			// Valores para cambios.
+			$vista->assign('nombre', $nombre);
+			$vista->assign('imagen', $imagen);
+
+			// Formateamos el nombre.
+			$nombre = preg_replace('/\s+/', ' ', trim($nombre));
+
+			// Verificamos el nombre.
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{3,50}$/iD', $nombre))
+			{
+				$error = TRUE;
+				$vista->assign('error_nombre', 'El nombre de la categoria deben ser entre 5 y 32 caractéres alphanuméricos.');
+			}
+
+			// Verificamos la imagen.
+			if ( ! in_array($imagen, $imagenes_categorias))
+			{
+				$error = TRUE;
+				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
+			}
+
+			$model_categoria = new Model_Categoria;
+
+			if ( ! $error)
+			{
+				// Verifico no exista campo con ese nombre.
+				if ($model_categoria->existe_seo($model_categoria->make_seo($nombre)))
+				{
+					$error = TRUE;
+					$vista->assign('error_nombre', 'Ya existe una categoria con ese nombre seo.');
+				}
+			}
+
+
+			if ( ! $error)
+			{
+				// Creo la categoria.
+				$model_categoria->nueva($nombre, $imagen);
+
+				Session::set('categoria_correcto', 'Categoria creada correctamente.');
+				Request::redirect('/admin/contenido/categorias');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_categorias'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Borramos una categoria.
+	 * @param int $id ID de la categoria a borrar.
+	 */
+	public function action_eliminar_categoria($id)
+	{
+		// Cargamos el modelo de la categoria.
+		$model_categoria = new Model_Categoria( (int) $id);
+
+		// Verifico que exista.
+		if ( ! $model_categoria->existe())
+		{
+			Session::set('categoria_error', 'No exista la categoria que quiere borrar.');
+			Request::redirect('/admin/contenido/categorias');
+		}
+
+		// Verifico no tenga posts ni fotos.
+		if ($model_categoria->tiene_fotos() || $model_categoria->tiene_posts())
+		{
+			Session::set('categoria_error', 'No se puede borrar la categoria porque tiene fotos y/o posts asociados.');
+			Request::redirect('/admin/contenido/categorias');
+		}
+
+		// Borramos la categoria.
+		$model_categoria->borrar();
+
+		// Informamos.
+		Session::set('categoria_correcto', 'Categoria eliminada correctamente.');
+		Request::redirect('/admin/contenido/categorias');
+	}
+
+	/**
+	 * Editamos una categoria existente.
+	 * @param int $id ID de la categoria a editar.
+	 */
+	public function action_editar_categoria($id)
+	{
+		// Cargamos el modelo de la categoria.
+		$model_categoria = new Model_Categoria( (int) $id);
+
+		// Verifico que exista.
+		if ( ! $model_categoria->existe())
+		{
+			Session::set('categoria_error', 'No exista la categoria que quiere editar.');
+			Request::redirect('/admin/contenido/categorias');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/editar_categoria');
+
+		// Cargamos el listado de imagens para rangos disponibles.
+		//TODO: implementar funcion para obtener URL completa.
+		$imagenes_categorias = scandir(APP_BASE.DS.VIEW_PATH.'default'.DS.'assets'.DS.'img'.DS.'categoria'.DS);
+		unset($imagenes_categorias[1], $imagenes_categorias[0]); // Quitamos . y ..
+
+		$vista->assign('imagenes_categorias', $imagenes_categorias);
+
+		// Valores por defecto y errores.
+		$vista->assign('nombre', $model_categoria->nombre);
+		$vista->assign('error_nombre', FALSE);
+		$vista->assign('imagen', $model_categoria->imagen);
+		$vista->assign('error_imagen', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$nombre = isset($_POST['nombre']) ? $_POST['nombre'] : NULL;
+			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+
+			// Valores para cambios.
+			$vista->assign('nombre', $nombre);
+			$vista->assign('imagen', $imagen);
+
+			// Formateamos el nombre.
+			$nombre = preg_replace('/\s+/', ' ', trim($nombre));
+
+			// Verificamos el nombre.
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{3,50}$/iD', $nombre))
+			{
+				$error = TRUE;
+				$vista->assign('error_nombre', 'El nombre de la categoria deben ser entre 5 y 32 caractéres alphanuméricos.');
+			}
+
+			// Verificamos la imagen.
+			if ( ! in_array($imagen, $imagenes_categorias))
+			{
+				$error = TRUE;
+				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
+			}
+
+			if ( ! $error)
+			{
+				// Verifico no exista campo con ese nombre.
+				if ($model_categoria->existe_seo($model_categoria->make_seo($nombre), TRUE))
+				{
+					$error = TRUE;
+					$vista->assign('error_nombre', 'Ya existe una categoria con ese nombre seo.');
+				}
+			}
+
+
+			if ( ! $error)
+			{
+				// Actualizo el imagen.
+				if ($model_categoria->imagen != $imagen)
+				{
+					$model_categoria->cambiar_imagen($imagen);
+				}
+
+				// Actualizo el nombre.
+				if ($model_categoria->nombre != $nombre)
+				{
+					$model_categoria->cambiar_nombre($nombre);
+				}
+
+				// Informamos suceso.
+				$vista->assign('success', 'Información actualizada correctamente');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_categorias'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
 }

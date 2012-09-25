@@ -65,7 +65,7 @@ class Base_Model_Post extends Model_Dataset {
 	protected $fields = array(
 		'id' => Database_Query::FIELD_INT,
 		'usuario_id' => Database_Query::FIELD_INT,
-		'post_categoria_id' => Database_Query::FIELD_INT,
+		'categoria_id' => Database_Query::FIELD_INT,
 		'comunidad_id' => Database_Query::FIELD_INT,
 		'titulo' => Database_Query::FIELD_STRING,
 		'contenido' => Database_Query::FIELD_STRING,
@@ -369,7 +369,7 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function categoria()
 	{
-		return new Model_Post_Categoria($this->get('post_categoria_id'));
+		return new Model_Categoria($this->get('categoria_id'));
 	}
 
 	/**
@@ -494,7 +494,7 @@ class Base_Model_Post extends Model_Dataset {
 	public function cambiar_categoria($categoria_id)
 	{
 		//FIXME: Verificar si es lógico cambiar de categoria al post.
-		$this->db->update('UPDATE post SET post_catergoria_id = ? WHERE id = ?', array($categoria_id, $this->primary_key['id']));
+		$this->db->update('UPDATE post SET catergoria_id = ? WHERE id = ?', array($categoria_id, $this->primary_key['id']));
 	}
 
 	/**
@@ -512,7 +512,7 @@ class Base_Model_Post extends Model_Dataset {
 	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $comunidad = NULL)
 	{
 		list($id,) = $this->db->insert(
-			'INSERT INTO post ( usuario_id, post_categoria_id, comunidad_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			'INSERT INTO post ( usuario_id, categoria_id, comunidad_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 			array(
 				$usuario_id,
 				$categoria_id,

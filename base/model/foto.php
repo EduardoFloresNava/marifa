@@ -56,7 +56,8 @@ class Base_Model_Foto extends Model_Dataset {
 		'url' => Database_Query::FIELD_STRING,
 		'estado' => Database_Query::FIELD_INT,
 		'ultima_visita' => Database_Query::FIELD_DATETIME,
-		'visitas' => Database_Query::FIELD_INT
+		'visitas' => Database_Query::FIELD_INT,
+		'categoria_id' => Database_Query::FIELD_INT
 	);
 
 	/**
@@ -77,6 +78,15 @@ class Base_Model_Foto extends Model_Dataset {
 	public function usuario()
 	{
 		return new Model_Usuario($this->get('usuario_id'));
+	}
+
+	/**
+	 * Categoria de la foto.
+	 * @return Model_Categoria
+	 */
+	public function categoria()
+	{
+		return new Model_Categoria($this->get('categoria_id'));
 	}
 
 	/**
