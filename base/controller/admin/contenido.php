@@ -165,7 +165,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Cargamos el listado de fotos.
-		$lst = $model_fotos->listado($pagina, $cantidad_por_pagina);
+		$lst = $model_fotos->listado($pagina, $cantidad_por_pagina, TRUE);
 
 		// Si no hay elementos y no estamos en la inicial redireccionamos (Puso página incorrecta).
 		if (count($lst) == 0 && $pagina != 1)
@@ -204,6 +204,92 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Ocultamos una foto.
+	 * @param int $id ID de la foto a ocultar
+	 */
+	public function action_ocultar_foto($id)
+	{
+		// Cargamos el modelo de la foto.
+		$model_foto = new Model_Foto( (int) $id);
+
+		// Verifico que exista.
+		if ( ! $model_foto->existe())
+		{
+			Session::set('fotos_error', 'No existe la foto que quiere ocultar.');
+			Request::redirect('/admin/contenido/fotos');
+		}
+
+		// Verifico que esté activa.
+		if ($model_foto->estado == Model_Foto::ESTADO_OCULTA)
+		{
+			Session::set('fotos_error', 'La foto ya se encuentra oculta.');
+			Request::redirect('/admin/contenido/fotos');
+		}
+
+		// Ocultamos la foto.
+		$model_foto->actualizar_estado(Model_Foto::ESTADO_OCULTA);
+
+		// Informamos.
+		Session::set('fotos_correcto', 'Foto ocultada correctamente.');
+		Request::redirect('/admin/contenido/fotos');
+	}
+
+	/**
+	 * Seteamos como visible una foto.
+	 * @param int $id ID de la foto a mostrar
+	 */
+	public function action_mostrar_foto($id)
+	{
+		// Cargamos el modelo de la foto.
+		$model_foto = new Model_Foto( (int) $id);
+
+		// Verifico que exista.
+		if ( ! $model_foto->existe())
+		{
+			Session::set('fotos_error', 'No existe la foto que quiere mostrar.');
+			Request::redirect('/admin/contenido/fotos');
+		}
+
+		// Verifico que esté oculta.
+		if ($model_foto->estado == Model_Foto::ESTADO_ACTIVA)
+		{
+			Session::set('fotos_error', 'La foto ya se encuentra visible.');
+			Request::redirect('/admin/contenido/fotos');
+		}
+
+		// Mostramos la foto.
+		$model_foto->actualizar_estado(Model_Foto::ESTADO_ACTIVA);
+
+		// Informamos.
+		Session::set('fotos_correcto', 'Foto seteada como visible correctamente.');
+		Request::redirect('/admin/contenido/fotos');
+	}
+
+	/**
+	 * La foto se ha borrado correctamente.
+	 * @param int $id ID de la foto a borrar.
+	 */
+	public function action_eliminar_foto($id)
+	{
+		// Cargamos el modelo de la foto.
+		$model_foto = new Model_Foto( (int) $id);
+
+		// Verifico que exista.
+		if ( ! $model_foto->existe())
+		{
+			Session::set('fotos_error', 'No existe la foto que quiere mostrar.');
+			Request::redirect('/admin/contenido/fotos');
+		}
+
+		// Borramos la foto.
+		$model_foto->borrar();
+
+		// Informamos.
+		Session::set('fotos_correcto', 'Foto borrrada correctamente.');
+		Request::redirect('/admin/contenido/fotos');
 	}
 
 	/**

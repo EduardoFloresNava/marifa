@@ -32,9 +32,11 @@
 			<td><a href="/foto/index/{$value.id}">{$value.titulo}</a></td>
 			<td><a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 			<td>{$value.creacion->fuzzy()}</td>
-			<td>{$value.estado}</td>
+			<td><span class="label label-{if="$value.estado == 0"}success">VISIBLE{else}important">OCULTA{/if}</span></td>
 			<td style="text-align: center;">
 				<div class="btn-group">
+					{if="$value.estado == 0"}<a href="/admin/contenido/ocultar_foto/{$value.id}" class="btn btn-mini btn-info">Ocultar</a>{else}
+					<a href="/admin/contenido/mostrar_foto/{$value.id}" class="btn btn-mini btn-success">Mostrar</a>{/if}
 					<a href="/admin/contenido/eliminar_foto/{$value.id}" class="btn btn-mini btn-danger">Eliminar</a>
 				</div>
 			</td>
