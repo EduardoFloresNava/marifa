@@ -110,6 +110,7 @@ class Base_Controller_Perfil extends Controller {
 		$usuario['posts'] = $this->usuario->cantidad_posts();
 		$usuario['fotos'] = $this->usuario->cantidad_fotos();
 		$usuario['comentarios'] = $this->usuario->cantidad_comentarios();
+		$usuario['rango'] = $this->usuario->rango()->nombre;
 
 		// Cargamos campos del usuario.
 		$this->usuario->perfil()->load_list(array('nombre', 'mensaje_personal'));
