@@ -43,6 +43,37 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	}
 
 	/**
+	 * Portada de las configuraciones.
+	 */
+	public function action_index()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/configuracion/index');
+
+		// Noticia Flash.
+		if (Session::is_set('index_correcta'))
+		{
+			$vista->assign('success', Session::get_flash('index_correcta'));
+		}
+		if (Session::is_set('index_error'))
+		{
+			$vista->assign('error', Session::get_flash('index_error'));
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
 	 * Listado de plugins.
 	 */
 	public function action_plugins()
@@ -736,6 +767,24 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_temas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	public function action_publicidad()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/configuracion/publicidad');
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_publicidad'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

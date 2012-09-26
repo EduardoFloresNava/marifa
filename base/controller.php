@@ -73,6 +73,7 @@ class Base_Controller {
 		$vista->assign('usuario', $usuario->as_array());
 
 		// Sucesos.
+		/**
 		$model_sucesos = new Model_Suceso;
 		$lst = $model_sucesos->obtener_by_usuario( (int) Session::get('usuario_id'));
 		unset($model_sucesos);
@@ -108,7 +109,10 @@ class Base_Controller {
 			$eventos[] = $suceso_vista->parse();
 		}
 		$vista->assign('sucesos', $eventos);
-		unset($lst, $eventos);
+		unset($lst, $eventos);*/
+		// Su carga va a ir por AJAX.
+		$vista->assign('sucesos', array());
+
 
 		// Listado de mensajes.
 		$model_mensajes = new Model_Mensaje;

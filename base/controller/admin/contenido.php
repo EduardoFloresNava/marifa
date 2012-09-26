@@ -32,6 +32,72 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Admin_Contenido extends Controller {
 
+	public function action_index()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/index');
+
+		// Cargamos las estadísticas de posts.
+		$model_posts = new Model_Post;
+
+		// Cantidades por estado.
+		$vista->assign('posts_total', $model_posts->cantidad());
+		$vista->assign('posts_activos', $model_posts->cantidad(Model_Post::ESTADO_ACTIVO));
+		$vista->assign('posts_borrados', $model_posts->cantidad(Model_Post::ESTADO_BORRADO));
+		$vista->assign('posts_revision', $model_posts->cantidad()); // VER
+		$vista->assign('posts_correccion', $model_posts->cantidad_correccion()); // Cantidad pendiente de corrección.
+
+		// Cantidades por categoria.
+		$posts_categorias = $model_posts->cantidad_categorias();
+		foreach ($posts_categorias as $k => $v)
+		{
+			$a = new Model_Categoria($k);
+			$posts_categorias[$k] = array('categoria' => $a->as_array(), 'cantidad' => $v);
+		}
+		$vista->assign('posts_categorias', $posts_categorias);
+		unset($posts_categorias);
+
+		//TODO: estadísticas comentarios posts.
+		unset($model_posts);
+
+		// Estadísticas de las fotos.
+		$model_fotos = new Model_Foto;
+
+		// Cantidades por estado.
+		$total = $model_fotos->cantidad(TRUE);
+		$activas = $model_fotos->cantidad();
+		$ocultas = $total - $activas;
+		$vista->assign('fotos_total', $total);
+		$vista->assign('fotos_activas', $activas);
+		$vista->assign('fotos_ocultas', $ocultas);
+		unset($total, $activas, $ocultas);
+
+		// Cantidades por categoria.
+		$fotos_categorias = $model_fotos->cantidad_categorias();
+		foreach ($fotos_categorias as $k => $v)
+		{
+			$a = new Model_Categoria($k);
+			$fotos_categorias[$k] = array('categoria' => $a->as_array(), 'cantidad' => $v);
+		}
+		$vista->assign('fotos_categorias', $fotos_categorias);
+		unset($fotos_categorias);
+
+		//TODO: estadísticas comentarios fotos.
+		unset($model_fotos);
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
 	/**
 	 * Listado de posts existentes.
 	 * @param int $pagina Número de página a mostrar.

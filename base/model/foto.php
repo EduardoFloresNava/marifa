@@ -336,6 +336,15 @@ class Base_Model_Foto extends Model_Dataset {
 	}
 
 	/**
+	 * Obtenemos listado de categorias que tienen posts y su cantidad.
+	 * @return array
+	 */
+	public function cantidad_categorias()
+	{
+		return $this->db->query('SELECT categoria_id, SUM(id) AS total FROM foto GROUP BY categoria_id ORDER BY total DESC')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+	}
+
+	/**
 	 * Cantidad de comentarios en fotos que hay.
 	 * @return int
 	 */

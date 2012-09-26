@@ -595,21 +595,55 @@ class Base_Model_Post extends Model_Dataset {
 
 	/**
 	 * Cantidad total de posts.
+	 * @param int $estado Estado de la categoria a contar. NULL para todas.
+	 * @param int $categoria Categoria a contar. NULL para todas.
 	 * @return int
 	 */
-	public function cantidad()
+	public function cantidad($estado = NULL, $categoria = NULL)
 	{
 		$key = 'post_total';
+
+		if ($estado !== NULL)
+		{
+			$where = ' WHERE estado = ?';
+			$condiciones = $estado;
+			$key .= 'e_'.$estado;
+		}
+
+		if ($categoria !== NULL)
+		{
+			$where = isset($where) ? ' AND categoria = ?' : ' WHERE categoria = ?';
+			$condiciones = isset($condiciones) ? array($condiciones, $categoria) : $categoria;
+			$key .= 'c_'.$categoria;
+		}
 
 		$rst = Cache::get_instance()->get($key);
 		if ( ! $rst)
 		{
-			$rst = $this->db->query('SELECT COUNT(*) FROM post')->get_var(Database_Query::FIELD_INT);
+			$rst = $this->db->query('SELECT COUNT(*) FROM post'.(isset($where) ? $where : ''), (isset($condiciones) ? $condiciones : NULL))->get_var(Database_Query::FIELD_INT);
 
 			Cache::get_instance()->save($key, $rst);
 		}
 
 		return $rst;
+	}
+
+	/**
+	 * Cantidad de post que deben ser corregidos por los usuarios para ser publicados.
+	 * @return int
+	 */
+	public function cantidad_correccion()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM post_moderado INNER JOIN post ON post_moderado.padre_id = post.id WHERE post.estado = 1')->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Obtenemos listado de categorias que tienen posts y su cantidad.
+	 * @return array
+	 */
+	public function cantidad_categorias()
+	{
+		return $this->db->query('SELECT categoria_id, SUM(id) AS total FROM post WHERE estado = 0 GROUP BY categoria_id ORDER BY total DESC')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
 	}
 
 	/**
