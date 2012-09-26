@@ -38,6 +38,12 @@ class Base_Session {
 	private static $key = '';
 
 	/**
+	 * ID de la sessión.
+	 * @var string
+	 */
+	public static $id;
+
+	/**
 	 * Seteamos la clave e iniciamos la sesión
 	 * @param string $key Clave de la sesión
 	 */
@@ -48,6 +54,7 @@ class Base_Session {
 			session_start();
 		}
 		self::$key = md5($key);
+		self::$id = session_id();
 	}
 
 	/**

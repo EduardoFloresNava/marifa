@@ -77,7 +77,10 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 	 */
 	public function __destruct()
 	{
-		mysql_free_result($this->query);
+		if (is_resource($this->query))
+		{
+			mysql_free_result($this->query);
+		}
 	}
 
 	/**

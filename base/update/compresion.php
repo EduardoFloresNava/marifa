@@ -77,7 +77,7 @@ class Base_Update_Compresion {
      * Patrón singleton para obtener los distintos compresores si están
      * disponibles.
 	 * @param string $type Tipo de compresor a usar.
-	 * @return Api_Compresion_Compresion
+	 * @return Update_Compresion_Compresion
      */
     public static function get_instance($type)
     {
@@ -140,6 +140,14 @@ class Base_Update_Compresion {
      */
     private static function _test_support()
     {
+		// Cargo la cache.
+		$a = Cache::get_instance()->get('uploaders_cache');
+		if (is_array($a))
+		{
+			self::$available = $a;
+			return;
+		}
+
         self::$available = array();
         foreach (self::$compresors as $name => $info)
         {
@@ -182,6 +190,8 @@ class Base_Update_Compresion {
 	        }
 			self::$available[$name] = $info['compresor'];
         }
+
+		Cache::get_instance()->save('uploaders_cache', self::$available);
     }
 
     /**

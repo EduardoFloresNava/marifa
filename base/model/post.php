@@ -29,8 +29,36 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
+ *
+ * @property-read int $id ID del post.
+ * @property-read int $usuario_id ID del usuario dueño del post.
+ * @property-read int $categoria_id ID de la categoria a la cual pertenece el post.
+ * @property-read int $comunidad_id ID de la comunidad a la que pertenece el post. NULL si no pertenece a ninguna.
+ * @property-read string $titulo Titulo del post.
+ * @property-read string $contenido Contenido del post. Es BBCode sin procesar.
+ * @property-read Fechahora $fecha Fecha de creación del post.
+ * @property-read int $vistas Cantidad de visitas que tuvo el post.
+ * @property-read bool $privado Si el post es privado o lo pueden ver los usuarios sin registrarse.
+ * @property-read bool $sponsored Si el post es patrocinado o no.
+ * @property-read bool $sticky Si el post esta fijo a la portada.
+ * @property-read int $estado Estado del post.
  */
 class Base_Model_Post extends Model_Dataset {
+
+	/**
+	 * Post preparado para ser mostrado.
+	 */
+	const ESTADO_ACTIVO = 0;
+
+	/**
+	 * Post guardado como borrador.
+	 */
+	const ESTADO_BORRADOR = 1;
+
+	/**
+	 * Post eliminado.
+	 */
+	const ESTADO_BORRADO = 2;
 
 	/**
 	 * Nombre de la tabla para el dataset
@@ -50,7 +78,7 @@ class Base_Model_Post extends Model_Dataset {
 	protected $fields = array(
 		'id' => Database_Query::FIELD_INT,
 		'usuario_id' => Database_Query::FIELD_INT,
-		'post_categoria_id' => Database_Query::FIELD_INT,
+		'categoria_id' => Database_Query::FIELD_INT,
 		'comunidad_id' => Database_Query::FIELD_INT,
 		'titulo' => Database_Query::FIELD_STRING,
 		'contenido' => Database_Query::FIELD_STRING,
@@ -354,7 +382,7 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function categoria()
 	{
-		return new Model_Post_Categoria($this->get('post_categoria_id'));
+		return new Model_Categoria($this->get('categoria_id'));
 	}
 
 	/**
@@ -479,7 +507,7 @@ class Base_Model_Post extends Model_Dataset {
 	public function cambiar_categoria($categoria_id)
 	{
 		//FIXME: Verificar si es lógico cambiar de categoria al post.
-		$this->db->update('UPDATE post SET post_catergoria_id = ? WHERE id = ?', array($categoria_id, $this->primary_key['id']));
+		$this->db->update('UPDATE post SET catergoria_id = ? WHERE id = ?', array($categoria_id, $this->primary_key['id']));
 	}
 
 	/**
@@ -494,10 +522,11 @@ class Base_Model_Post extends Model_Dataset {
 	 * @param int $comunidad Comunidad donde se publica. NULL para general.
 	 * @return int
 	 */
-	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $comunidad = NULL)
+	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $comunidad = NULL, $borrador = FALSE)
 	{
+		$estado = $borrador ? self::ESTADO_BORRADOR : self::ESTADO_ACTIVO;
 		list($id,) = $this->db->insert(
-			'INSERT INTO post ( usuario_id, post_categoria_id, comunidad_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			'INSERT INTO post ( usuario_id, categoria_id, comunidad_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 			array(
 				$usuario_id,
 				$categoria_id,
@@ -509,7 +538,7 @@ class Base_Model_Post extends Model_Dataset {
 				$privado,
 				$sponsored,
 				$sticky,
-				0 //TODO: Ver estado de los posts.
+				$estado
 			)
 		);
 
@@ -566,21 +595,55 @@ class Base_Model_Post extends Model_Dataset {
 
 	/**
 	 * Cantidad total de posts.
+	 * @param int $estado Estado de la categoria a contar. NULL para todas.
+	 * @param int $categoria Categoria a contar. NULL para todas.
 	 * @return int
 	 */
-	public function cantidad()
+	public function cantidad($estado = NULL, $categoria = NULL)
 	{
 		$key = 'post_total';
+
+		if ($estado !== NULL)
+		{
+			$where = ' WHERE estado = ?';
+			$condiciones = $estado;
+			$key .= 'e_'.$estado;
+		}
+
+		if ($categoria !== NULL)
+		{
+			$where = isset($where) ? ' AND categoria = ?' : ' WHERE categoria = ?';
+			$condiciones = isset($condiciones) ? array($condiciones, $categoria) : $categoria;
+			$key .= 'c_'.$categoria;
+		}
 
 		$rst = Cache::get_instance()->get($key);
 		if ( ! $rst)
 		{
-			$rst = $this->db->query('SELECT COUNT(*) FROM post')->get_var(Database_Query::FIELD_INT);
+			$rst = $this->db->query('SELECT COUNT(*) FROM post'.(isset($where) ? $where : ''), (isset($condiciones) ? $condiciones : NULL))->get_var(Database_Query::FIELD_INT);
 
 			Cache::get_instance()->save($key, $rst);
 		}
 
 		return $rst;
+	}
+
+	/**
+	 * Cantidad de post que deben ser corregidos por los usuarios para ser publicados.
+	 * @return int
+	 */
+	public function cantidad_correccion()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM post_moderado INNER JOIN post ON post_moderado.padre_id = post.id WHERE post.estado = 1')->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Obtenemos listado de categorias que tienen posts y su cantidad.
+	 * @return array
+	 */
+	public function cantidad_categorias()
+	{
+		return $this->db->query('SELECT categoria_id, SUM(id) AS total FROM post WHERE estado = 0 GROUP BY categoria_id ORDER BY total DESC')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
 	}
 
 	/**
@@ -692,6 +755,80 @@ class Base_Model_Post extends Model_Dataset {
 
 		// Generamos la salida.
 		return array($lst, $total);
+	}
+
+	/**
+	 * Listado de posts existentes.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de posts por página.
+	 * @return array
+	 */
+	public function listado($pagina, $cantidad = 10)
+	{
+		$start = ($pagina - 1) * $cantidad;
+		$rst = $this->db->query('SELECT id FROM post ORDER BY fecha LIMIT '.$start.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Post($v);
+		}
+		return $lst;
+	}
+
+	/**
+	 * Agregamos una moderación al post.
+	 * @param int $usuario_id ID del usuario que realiza la moderación.
+	 * @param int $motivo Tipo de motivo para realizar la moderación.
+	 * @param string $razon Razon si corresponde o NULL en caso contrario.
+	 * @param bool $borrador Si creamos un borrador o no.
+	 * @return bool|int Si crea borrador el ID de ese, sino bool en función del resultado.
+	 */
+	public function moderar($usuario_id, $motivo, $razon = NULL, $borrador = FALSE)
+	{
+		// Verifico si es necesario borrador.
+		if ($borrador)
+		{
+			// Creo el post.
+			$id = $this->crear($this->get('usuario_id'), $this->get('titulo'), $this->get('contenido'), $this->get('categoria_id'), $this->get('privado'), $this->get('sponsored'), $this->get('sticky'), $this->get('comunidad_id'), TRUE);
+		}
+		else
+		{
+			$id = NULL;
+		}
+
+		// Creo la moderación.
+		$m_p = new Model_Post_Moderado;
+		$rst = $m_p->crear($this->primary_key['id'], $usuario_id, $motivo, $id, $razon);
+
+		// Actualizo el estado actual.
+		$this->actualizar_estado(self::ESTADO_BORRADO);
+
+		// Envio respuesta.
+		if ($id !== NULL)
+		{
+			return $id;
+		}
+		else
+		{
+			return $rst;
+		}
+	}
+
+	/**
+	 * Objeto de moderación o NULL si no posee.
+	 * @return Model_Post_Moderado|NULL
+	 */
+	public function moderacion()
+	{
+		if ($this->db->query('SELECT COUNT(*) FROM post_moderado WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT) > 0)
+		{
+			return new Model_Post_Moderado($this->primary_key['id']);
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 
 }

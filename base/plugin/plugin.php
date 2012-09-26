@@ -119,6 +119,15 @@ class Base_Plugin_Plugin {
 	}
 
 	/**
+	 * Estado del plugin.
+	 * @return bool
+	 */
+	public function estado()
+	{
+		return $this->estado;
+	}
+
+	/**
 	 * Verificamos si se puede instalar o no el plugin.
 	 * @return bool
 	 */
@@ -219,6 +228,9 @@ class Base_Plugin_Plugin {
 		$p = new $pc;
 		$p->install();
 
+		// Guardamos el estado en el sistema.
+		Plugin_Manager::get_instance()->set_state($this->nombre, TRUE);
+
 		return TRUE;
 	}
 
@@ -289,6 +301,9 @@ class Base_Plugin_Plugin {
 		// Llamamos al instalador.
 		$p = new $pc;
 		$p->remove();
+
+		// Guardamos el estado en el sistema.
+		Plugin_Manager::get_instance()->set_state($this->nombre, FALSE);
 
 		return TRUE;
 	}

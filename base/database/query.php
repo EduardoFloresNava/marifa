@@ -187,7 +187,7 @@ abstract class Base_Database_Query implements Iterator {
 		// Armamos arreglo inicial.
 		if ( ! is_array($list))
 		{
-			$list = ($list == NULL) ? array() : array($list);
+			$list = ($list === NULL) ? array() : array($list);
 		}
 
 		if (is_array($cant))

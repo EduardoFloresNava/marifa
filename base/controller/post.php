@@ -478,7 +478,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Listado de categorias.
-		$model_categoria = new Model_Post_Categoria;
+		$model_categoria = new Model_Categoria;
 		$view->assign('categorias', $model_categoria->lista());
 
 		// Menu.
@@ -533,7 +533,7 @@ class Base_Controller_Post extends Controller {
 			}
 
 			// Verificamos la categoria.
-			$model_categoria = new Model_Post_Categoria;
+			$model_categoria = new Model_Categoria;
 			if ( ! $model_categoria->existe_seo($categoria))
 			{
 				$view->assign('error_categoria', 'La categoría seleccionada es incorrecta.');

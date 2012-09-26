@@ -82,7 +82,7 @@ class Shell_Controller_Generador extends Shell_Controller {
 
 	protected function make_template($file, $class, $subpackage, $alias)
 	{
-		$template = "<?php
+		$t = "<?php
 /**
  * {{FILE}} is part of Marifa.
  *
@@ -112,7 +112,6 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 {{DECLARACION}}";
 
-		$t = file_get_contents($template);
 		$t = str_replace('{{DECLARACION}}', $class, $t);
 		$t = str_replace('{{BASE_CLASS_NAME}}', $alias, $t);
 		$t = str_replace('{{SUBPACKAGE1}}', trim($subpackage) == '' ? '' : "\n * @subpackage  $subpackage", $t);
@@ -130,6 +129,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 		{
 			if ( ! file_put_contents($file, $t))
 			{
+				var_dump($file, $t);
 				Shell_Cli::write_line(Shell_Cli::getColoredString("ERROR: $file", 'red'));
 				return FALSE;
 			}

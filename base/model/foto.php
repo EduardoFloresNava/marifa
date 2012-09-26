@@ -33,6 +33,16 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Model_Foto extends Model_Dataset {
 
 	/**
+	 * Estado normal de una foto.
+	 */
+	const ESTADO_ACTIVA = 0;
+
+	/**
+	 * Foto oculta que solo se puede ver en el panel de administración.
+	 */
+	const ESTADO_OCULTA = 1;
+
+	/**
 	 * Nombre de la tabla para el dataset
 	 * @var string
 	 */
@@ -56,7 +66,8 @@ class Base_Model_Foto extends Model_Dataset {
 		'url' => Database_Query::FIELD_STRING,
 		'estado' => Database_Query::FIELD_INT,
 		'ultima_visita' => Database_Query::FIELD_DATETIME,
-		'visitas' => Database_Query::FIELD_INT
+		'visitas' => Database_Query::FIELD_INT,
+		'categoria_id' => Database_Query::FIELD_INT
 	);
 
 	/**
@@ -77,6 +88,15 @@ class Base_Model_Foto extends Model_Dataset {
 	public function usuario()
 	{
 		return new Model_Usuario($this->get('usuario_id'));
+	}
+
+	/**
+	 * Categoria de la foto.
+	 * @return Model_Categoria
+	 */
+	public function categoria()
+	{
+		return new Model_Categoria($this->get('categoria_id'));
 	}
 
 	/**
@@ -197,7 +217,6 @@ class Base_Model_Foto extends Model_Dataset {
 	 */
 	public function actualizar_estado($estado)
 	{
-		//TODO: Constantes de estado.
 		$this->db->update('UPDATE foto SET estado = ? WHERE id = ?', array($estado, $this->primary_key['id']));
 	}
 
@@ -211,8 +230,7 @@ class Base_Model_Foto extends Model_Dataset {
 	 */
 	public function crear($usuario_id, $titulo, $descripcion, $url)
 	{
-		//TODO: ver estado.
-		list ($id, $c) = $this->db->insert('INSERT INTO foto (usuario_id, creacion, titulo, descripcion, url, estado, ultima_visita, visitas) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', array($usuario_id, date('Y/m/d H:i:s'), $titulo, $descripcion, $url, 0,  NULL, 0));
+		list ($id, $c) = $this->db->insert('INSERT INTO foto (usuario_id, creacion, titulo, descripcion, url, estado, ultima_visita, visitas) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', array($usuario_id, date('Y/m/d H:i:s'), $titulo, $descripcion, $url, self::ESTADO_ACTIVA,  NULL, 0));
 
 		if ($c > 0)
 		{
@@ -248,7 +266,7 @@ class Base_Model_Foto extends Model_Dataset {
 		$primero = $cantidad * ($pagina - 1);
 
 		// Obtenemos la lista de sucesos.
-		$sucesos = $this->db->query('SELECT id FROM foto ORDER BY creacion DESC LIMIT '.$primero.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+		$sucesos = $this->db->query('SELECT id FROM foto WHERE estado = ? ORDER BY creacion DESC LIMIT '.$primero.','.$cantidad, self::ESTADO_ACTIVA)->get_pairs(Database_Query::FIELD_INT);
 
 		$listado = array();
 		foreach ($sucesos as $s)
@@ -272,7 +290,7 @@ class Base_Model_Foto extends Model_Dataset {
 		$primero = $cantidad * ($pagina - 1);
 
 		// Obtenemos la lista de sucesos.
-		$sucesos = $this->db->query('SELECT id FROM foto WHERE usuario_id = ? ORDER BY creacion DESC LIMIT '.$primero.','.$cantidad, $usuario_id)->get_pairs(Database_Query::FIELD_INT);
+		$sucesos = $this->db->query('SELECT id FROM foto WHERE usuario_id = ? AND estado = ? ORDER BY creacion DESC LIMIT '.$primero.','.$cantidad, array($usuario_id, self::ESTADO_ACTIVA))->get_pairs(Database_Query::FIELD_INT);
 
 		$listado = array();
 		foreach ($sucesos as $s)
@@ -285,21 +303,45 @@ class Base_Model_Foto extends Model_Dataset {
 
 	/**
 	 * Cantidad total de fotos.
+	 * @param bool $ocultas Si contabilizar las ocultas o no.
 	 * @return int
 	 */
-	public function cantidad()
+	public function cantidad($ocultas = FALSE)
 	{
-		$key = 'foto_total';
+		if ($ocultas)
+		{
+			$key = 'foto_total';
+		}
+		else
+		{
+			$key = 'foto_total_generales';
+		}
 
 		$rst = Cache::get_instance()->get($key);
 		if ( ! $rst)
 		{
-			$rst = $this->db->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
+			if ($ocultas)
+			{
+				$rst = $this->db->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				$rst = $this->db->query('SELECT COUNT(*) FROM foto WHERE estado = ?', self::ESTADO_ACTIVA)->get_var(Database_Query::FIELD_INT);
+			}
 
 			Cache::get_instance()->save($key, $rst);
 		}
 
 		return $rst;
+	}
+
+	/**
+	 * Obtenemos listado de categorias que tienen posts y su cantidad.
+	 * @return array
+	 */
+	public function cantidad_categorias()
+	{
+		return $this->db->query('SELECT categoria_id, SUM(id) AS total FROM foto GROUP BY categoria_id ORDER BY total DESC')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
 	}
 
 	/**
@@ -319,5 +361,25 @@ class Base_Model_Foto extends Model_Dataset {
 		}
 
 		return $rst;
+	}
+
+	/**
+	 * Listado de fotos existentes.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de fotos por página.
+	 * @param boll $ocultas Si incluir o no las ocultas.
+	 * @return array
+	 */
+	public function listado($pagina, $cantidad = 10, $ocultas = FALSE)
+	{
+		$start = ($pagina - 1) * $cantidad;
+		$rst = $this->db->query('SELECT id FROM foto'.($ocultas ? '' : ' WHERE estado = ?').' ORDER BY creacion LIMIT '.$start.','.$cantidad, ($ocultas ? NULL : self::ESTADO_ACTIVA))->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Foto($v);
+		}
+		return $lst;
 	}
 }

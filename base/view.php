@@ -33,12 +33,6 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_View {
 
 	/**
-	 * Tema a utilizar.
-	 * @var string
-	 */
-	public static $theme = 'default';
-
-	/**
 	 * Propiedad que indica si esta o no configurado RainTPL.
 	 */
 	private static $is_configured = FALSE;
@@ -51,7 +45,7 @@ class Base_View {
 		// Defino constantes para URL's relativas.
 		if ( ! defined('THEME_URL'))
 		{
-			define('THEME_URL', 'http://'.$_SERVER['HTTP_HOST'].'/theme/default');
+			define('THEME_URL', 'http://'.$_SERVER['HTTP_HOST'].'/theme/'.THEME);
 		}
 
 		// No usarmos las URL's de RainTPL.
@@ -64,7 +58,7 @@ class Base_View {
 
 		// Directorio de cache de raintpl ( se usa subdirectorio por la cache de otros
 		// elementos).
-		RainTPL::configure('cache_dir', CACHE_PATH.DS.'raintpl'.DS.self::$theme.DS);
+		RainTPL::configure('cache_dir', CACHE_PATH.DS.'raintpl'.DS.THEME.DS);
 
 		// Extension de los templates iguales que los archivos generales. Evitamos su
 		// descarga.

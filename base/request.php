@@ -150,6 +150,8 @@ class Base_Request {
 
 		// Redireccionamos.
 		header("Location: $url");
+
+		die();
 	}
 
 	/**

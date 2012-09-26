@@ -108,9 +108,23 @@ class Base_Controller_Usuario extends Controller {
 						$view_usuario->assign('error', 'La cuenta no ha sido validada a&uacute;n.');
 						break;
 					case Model_Usuario::ESTADO_SUSPENDIDA: // Cuenta suspendida.
-						//TODO: Obtener el motivo.
+						// Obtenemos la suspensión.
+						$suspension = $model_usuario->suspension();
+
+						// Obtengo información para formar mensaje.
+						$motivo = Decoda::procesar($suspension->motivo);
+						$moderador = $suspension->moderador()->as_array();
+						$seconds = $suspension->restante();
+
+						// Tiempo restante
+						$restante = sprintf("%d:%02d:%02d", floor($seconds / 3600), floor($seconds % 3600 / 60), $seconds % 60);
+						unset($seconds);
+
+						$view_usuario->assign('error', sprintf(__('%s te ha suspendido por %s debido a:<br /> %s', FALSE), $moderador['nick'], $restante, $motivo));
+						break;
 					case Model_Usuario::ESTADO_BANEADA:    // Cuenta baneada.
-						//TODO: Obtener el motivo.
+						$baneo = $model_usuario->baneo();
+						$view_usuario->assign('error', sprintf(__('%s te ha baneado el %s debido a: <br /> %s', FALSE), $baneo->moderador()->nick, $baneo->fecha->format('d/m/Y H:i:s'), Decoda::procesar($baneo->razon)));
 				}
 
 				$view_usuario->assign('nick', $nick);
@@ -282,11 +296,7 @@ class Base_Controller_Usuario extends Controller {
 	 */
 	public function action_logout()
 	{
-		if (Session::is_set('usuario_id'))
-		{
-			Session::un_set('usuario_id');
-			Session::un_set();
-		}
+		Usuario::logout();
 		Request::redirect('/');
 	}
 }
