@@ -39,7 +39,8 @@ class Base_Controller_Post extends Controller {
 	protected function submenu($activo)
 	{
 		return array(
-			'index' => array('link' => '/', 'caption' => 'Posts', 'active' => $activo == 'index'),
+			'index' => array('link' => '/', 'caption' => 'Posts', 'active' => FALSE),
+			'buscador' => array('link' => '/buscador', 'caption' => 'Buscador', 'active' => FALSE),
 			'nuevo' => array('link' => '/post/nuevo', 'caption' => 'Agregar Post', 'active' => $activo == 'nuevo'),
 		);
 	}
@@ -514,23 +515,13 @@ class Base_Controller_Post extends Controller {
 			}
 
 			// Verificamos el contenido.
-			if ( ! isset($contenido{20}) || isset($contenido{600}))
+			$contenido_clean = preg_replace('/\[.*\]/', '', $contenido);
+			if ( ! isset($contenido_clean{20}) || isset($contenido{600}))
 			{
 				$view->assign('error_contenido', 'El contenido debe tener entre 20 y 600 caractéres.');
 				$error = TRUE;
 			}
-			else
-			{
-				// Verificamos quitando BBCODE.
-				$contenido_clean = preg_replace('/\[.*\]/', '', $contenido);
-
-				if ( ! isset($contenido_clean{20}))
-				{
-					$view->assign('error_contenido', 'El contenido debe tener entre 20 y 600 caractéres.');
-					$error = TRUE;
-				}
-				unset($contenido_clean);
-			}
+			unset($contenido_clean);
 
 			// Verificamos la categoria.
 			$model_categoria = new Model_Categoria;
@@ -552,15 +543,14 @@ class Base_Controller_Post extends Controller {
 				// Evitamos XSS.
 				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
 
-				// Procesamos BBCode.
-				$decoda = new Decoda($contenido);
-				$contenido = $decoda->parse(FALSE);
-
 				// Formateamos los campos.
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
 
+				// Verifico si es borrador.
+				$borrador = isset($_POST['submit']) ? $_POST['submit'] == 'borrador' : FALSE;
+
 				$model_post = new Model_Post;
-				$post_id = $model_post->crear( (int) Session::get('usuario_id'), $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky);
+				$post_id = $model_post->crear( (int) Session::get('usuario_id'), $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, NULL, $borrador);
 
 				if ($post_id > 0)
 				{

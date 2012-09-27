@@ -29,6 +29,18 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
+ *
+ * @property-read int $id ID de la foto.
+ * @property-read int $usuario_id ID del usuario que creo la foto.
+ * @property-read Fechahora $creacion Fecha y hora en la cual se creó la foto.
+ * @property-read string $titulo Titulo de la foto.
+ * @property-read string $descripcion Descripción de la foto.
+ * @property-read string $url URL a cargar de la imagen.
+ * @property-read int $estado Estado de la foto.
+ * @property-read Fechahora $ultima_visita Fecha de la última visita.
+ * @property-read int $visitas Cantidad de visitas. NULL implica que no se computan.
+ * @property-read int $categoria_id ID de la categoria a la que pertenece.
+ * @property-read bool $comentar Si se puede comentar o no.
  */
 class Base_Model_Foto extends Model_Dataset {
 
@@ -67,7 +79,8 @@ class Base_Model_Foto extends Model_Dataset {
 		'estado' => Database_Query::FIELD_INT,
 		'ultima_visita' => Database_Query::FIELD_DATETIME,
 		'visitas' => Database_Query::FIELD_INT,
-		'categoria_id' => Database_Query::FIELD_INT
+		'categoria_id' => Database_Query::FIELD_INT,
+		'comentar' => Database_Query::FIELD_BOOL
 	);
 
 	/**
@@ -200,6 +213,15 @@ class Base_Model_Foto extends Model_Dataset {
 	}
 
 	/**
+	 * Verificamos si se puede comentar o no.
+	 * @return bool
+	 */
+	public function soporta_comentarios()
+	{
+		return $this->db->query('SELECT comentar FROM foto WHERE id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_BOOL) == 1;
+	}
+
+	/**
 	 * Comentamos en una foto.
 	 * @param int $usuario_id ID del usuario que comenta la foto.
 	 * @param string $comentario Comentario a insertar.
@@ -226,11 +248,15 @@ class Base_Model_Foto extends Model_Dataset {
 	 * @param string $titulo Título de la foto.
 	 * @param string $descripcion Descripción de la foto.
 	 * @param string $url URL de la foto.
+	 * @param int $categoria ID de la categoria a la cual pertenece la foto.
+	 * @param bool $visitas Si mostrar las visitas o no.
+	 * @param bool $comentarios Si hay que permitir comentar o no.
 	 * @return bool
 	 */
-	public function crear($usuario_id, $titulo, $descripcion, $url)
+	public function crear($usuario_id, $titulo, $descripcion, $url, $categoria, $visitas = TRUE, $comentarios = TRUE)
 	{
-		list ($id, $c) = $this->db->insert('INSERT INTO foto (usuario_id, creacion, titulo, descripcion, url, estado, ultima_visita, visitas) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', array($usuario_id, date('Y/m/d H:i:s'), $titulo, $descripcion, $url, self::ESTADO_ACTIVA,  NULL, 0));
+		$visitas = $visitas ? 0 : NULL;
+		list ($id, $c) = $this->db->insert('INSERT INTO foto (usuario_id, creacion, titulo, descripcion, url, estado, ultima_visita, visitas, categoria_id, comentar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array($usuario_id, date('Y/m/d H:i:s'), $titulo, $descripcion, $url, self::ESTADO_ACTIVA,  NULL, $visitas, $categoria, $comentarios));
 
 		if ($c > 0)
 		{

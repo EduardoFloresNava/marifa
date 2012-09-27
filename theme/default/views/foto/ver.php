@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="span2">
-		<h3>{@Autor@}:</h3>
+		<h3 class="title">{@Autor@}:</h3>
 		<img class="thumbnail" src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
 		<h4>{$usuario.nick}</h4>
 		{if="$me != NULL && $me != $usuario.id"}<div class="row-fluid">
@@ -21,7 +21,7 @@
 			LISTADO DE FOTOS DEL USUARIO.
 		</div>-->
 		<div>
-			<h3>{$foto.titulo}<small class="pull-right">{$foto.creacion->fuzzy()}</small></h3>
+			<h3 class="title">{$foto.titulo}<small>{$foto.creacion->fuzzy()}</small></h3>
 			<div class="thumbnail" style="margin: 0 auto; min-height: 200px">
 				<img src="{$foto.url}" />
 			</div>
@@ -37,10 +37,10 @@
 				{if="!$es_favorito"}<a href="/foto/favorito/{$foto.id}" class="btn btn-success"><i class="icon-white icon-star"></i> {@Agregar a favoritos@}</a>{/if}
 				<span href="#" class="btn">{@Favoritos@}: {$foto.favoritos}</span>
 			</div>
-			<div class="btn-group">
+			{if="$foto.visitas !== NULL"}<div class="btn-group">
 				<span href="#" class="btn">{@Visitas@}: {$foto.visitas}</span>
 				{if="$foto.visitas > 0"}<span href="#" class="btn">{@&Uacute;ltima visita@}: {$foto.ultima_visita->fuzzy()}</span>{/if}
-			</div>
+			</div>{/if}
 			{if="$me != NULL && $foto.usuario_id != $me"}
 			<div class="btn-group pull-right">
 				<a href="#" class="btn btn-danger">{@Denunciar@}</a>
@@ -70,13 +70,15 @@
 					</div>
 				</div>
 				{else}
+					{if="$puedo_comentar"}
 				<div class="alert">
 					{@No hay comentarios sobre esta foto hasta el momento.@}
 				</div>
+					{/if}
 				{/loop}
 			</div>
 		</div>
-		{if="$me != NULL"}
+		{if="$me != NULL && $puedo_comentar"}
 		<form method="POST" action="/foto/comentar/{$foto.id}">
 			<div class="btn-toolbar bbcode-bar">
 				<div class="btn-group">
@@ -144,7 +146,11 @@
 			<textarea class="span10" name="comentario" id="comentario" placeholder="Comentario...">{$comentario_content}</textarea>
 		</form>
 		{else}
+			{if="$puedo_comentar"}
 		<div class="alert">{@Para poder comentar debes estar registrado.@}</div>
+			{else}
+		<div class="alert">{@Los comentarios se encuentran cerrados.@}</div>
+			{/if}
 		{/if}
 	</div>
 </div>

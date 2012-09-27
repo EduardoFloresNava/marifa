@@ -68,6 +68,8 @@ class Base_Controller_Foto extends Controller {
 		foreach ($fotos as $key => $value)
 		{
 			$d = $value->as_array();
+			$d['descripcion'] = Decoda::procesar($d['descripcion']);
+			$d['categoria'] = $value->categoria()->as_array();
 			$d['votos'] = $value->votos();
 			$d['favoritos'] = $value->favoritos();
 			$d['usuario'] = $value->usuario()->as_array();
@@ -130,6 +132,8 @@ class Base_Controller_Foto extends Controller {
 		foreach ($fotos as $key => $value)
 		{
 			$d = $value->as_array();
+			$d['descripcion'] = Decoda::procesar($d['descripcion']);
+			$d['categoria'] = $value->categoria()->as_array();
 			$d['votos'] = $value->votos();
 			$d['favoritos'] = $value->favoritos();
 			$d['usuario'] = $value->usuario()->as_array();
@@ -190,8 +194,9 @@ class Base_Controller_Foto extends Controller {
 
 		// Información de la foto.
 		$ft = $model_foto->as_array();
-		$ft['votos'] = $model_foto->votos();
-		$ft['favoritos'] = $model_foto->favoritos();
+		$ft['descripcion'] = Decoda::procesar($ft['descripcion']);
+		$ft['votos'] = (int) $model_foto->votos();
+		$ft['favoritos'] = (int) $model_foto->favoritos();
 		$view->assign('foto', $ft);
 		unset($ft);
 
@@ -202,12 +207,18 @@ class Base_Controller_Foto extends Controller {
 		}
 		else
 		{
-			// Computamos la visita.
-			$model_foto->agregar_visita();
+			// Computamos la visita si es necesario.
+			if ($model_foto->visitas !== NULL)
+			{
+				$model_foto->agregar_visita();
+			}
 
 			$view->assign('es_favorito', $model_foto->es_favorito( (int) Session::get('usuario_id')));
 			$view->assign('ya_vote', $model_foto->ya_voto( (int) Session::get('usuario_id')));
 		}
+
+		// Verifico si soporta comentarios.
+		$view->assign('puedo_comentar', $model_foto->soporta_comentarios());
 
 		// Comentarios del post.
 		$cmts = $model_foto->comentarios();
@@ -331,11 +342,19 @@ class Base_Controller_Foto extends Controller {
 			Request::redirect('/');
 		}
 
+		// Verifico se pueda comentar.
+		if ( ! $model_foto->soporta_comentarios())
+		{
+			Session::set('post_comentario_error', 'No se puede comentar la foto porque están cerrados.');
+			Request::redirect('/foto/ver/'.$foto);
+		}
+
 		// Obtenemos el comentario.
 		$comentario = isset($_POST['comentario']) ? $_POST['comentario'] : NULL;
 
 		// Verificamos el formato.
-		if ( ! isset($comentario{20}) || isset($comentario{400}))
+		$comentario_clean = preg_replace('/\[.*\]/', '', $comentario);
+		if ( ! isset($comentario_clean{20}) || isset($comentario{400}))
 		{
 			Session::set('post_comentario_error', 'El comentario debe tener entre 20 y 400 caracteres.');
 
@@ -346,23 +365,8 @@ class Base_Controller_Foto extends Controller {
 		}
 		else
 		{
-			// Verifico mínimo con BBCode.
-			if (str_len(preg_replace('/\[.*\]/', '', $contenido) < 20))
-			{
-				Session::set('post_comentario_error', 'El comentario debe tener entre 20 y 400 caracteres.');
-
-				// Evitamos la salida de la vista actual.
-				$this->template = NULL;
-
-				Dispatcher::call('/post/index/'.$post, TRUE);
-			}
-			
-			// Transformamos entidades HTML.
+			// Evitamos XSS.
 			$comentario = htmlentities($comentario, ENT_NOQUOTES, 'UTF-8');
-
-			// Procesamos BBCode.
-			$decoda = new Decoda($comentario);
-			$comentario = $decoda->parse(FALSE);
 
 			// Insertamos el comentario.
 			$id = $model_foto->comentar( (int) Session::get('usuario_id'), $comentario);
@@ -393,8 +397,14 @@ class Base_Controller_Foto extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('foto/nueva');
 
+		// Cargo el listado de categorias.
+		$model_categorias = new Model_Categoria;
+		$categorias = $model_categorias->lista();
+
+		$view->assign('categorias', $categorias);
+
 		// Elementos por defecto.
-		foreach (array('titulo', 'url', 'descripcion', 'comentarios', 'visitantes', 'error_titulo', 'error_url', 'error_descripcion') as $k)
+		foreach (array('titulo', 'url', 'descripcion', 'comentarios', 'visitantes', 'categoria', 'error_titulo', 'error_url', 'error_descripcion', 'error_categoria') as $k)
 		{
 			$view->assign($k, '');
 		}
@@ -408,18 +418,18 @@ class Base_Controller_Foto extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los datos y seteamos valores.
-			foreach (array('titulo', 'url', 'descripcion') as $k)
+			foreach (array('titulo', 'url', 'descripcion', 'categoria') as $k)
 			{
 				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
 				$view->assign($k, $$k);
 			}
 
 			// Obtenemos los checkbox.
-			foreach (array('comentarios', 'visitantes') as $k)
-			{
-				$$k = isset($_POST[$k]) ? ($_POST[$k] == 1) : FALSE;
-				$view->assign($k, $$k);
-			}
+			$visitantes = isset($_POST['visitantes']) ? ($_POST['visitantes'] == 1) : FALSE;
+			$view->assign('visitantes', $visitantes);
+
+			$comentarios = isset($_POST['comentarios']) ? ($_POST['comentarios'] == 1) : FALSE;
+			$view->assign('comentarios', $comentarios);
 
 			// Verificamos el titulo.
 			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/D', $titulo))
@@ -428,24 +438,16 @@ class Base_Controller_Foto extends Controller {
 				$error = TRUE;
 			}
 
+			// Verificamos quitando BBCODE.
+			$descripcion_clean = preg_replace('/\[([^\[\]]+)\]/', '', $descripcion);
+
 			// Verificamos la descripcion.
-			if ( ! isset($descripcion{20}) || isset($descripcion{600}))
+			if ( ! isset($descripcion_clean{20}) || isset($descripcion{600}))
 			{
 				$view->assign('error_descripcion', 'La descripción debe tener entre 20 y 600 caractéres.');
 				$error = TRUE;
 			}
-			else
-			{
-				// Verificamos quitando BBCODE.
-				$contenido_clean = preg_replace('/\[.*\]/', '', $descripcion);
-
-				if ( ! isset($contenido_clean{20}))
-				{
-					$view->assign('error_descripcion', 'La descripción debe tener entre 20 y 600 caractéres.');
-					$error = TRUE;
-				}
-				unset($contenido_clean);
-			}
+			unset($contenido_clean);
 
 			// Verificamos la URL.
 			if ( ! preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/Di', $url))
@@ -458,6 +460,15 @@ class Base_Controller_Foto extends Controller {
 				}
 			}
 
+			// Verifico la categoria.
+			if ( ! $model_categorias->existe_seo($categoria))
+			{
+				$view->assign('error_categoria', 'La categoria seleccionada es incorrecta.');
+				$error = TRUE;
+			}
+
+
+			// Proceso de verificación de método de carga de la imagen.
 			if ( ! $error)
 			{
 				if ( ! isset($_FILES['img']) || $_FILES['img']['error'] == UPLOAD_ERR_NO_FILE)
@@ -513,16 +524,14 @@ class Base_Controller_Foto extends Controller {
 				// Evitamos XSS.
 				$descripcion = htmlentities($descripcion, ENT_NOQUOTES, 'UTF-8');
 
-				// Procesamos BBCode.
-				$decoda = new Decoda($descripcion);
-				$descripcion = $decoda->parse(FALSE);
-
-
 				// Formateamos los campos.
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
 
+				// Obtengo el ID de la categoria.
+				$model_categorias->load_by_seo($categoria);
+
 				$model_foto = new Model_Foto;
-				$foto_id = $model_foto->crear( (int) Session::get('usuario_id'), $titulo, $descripcion, $url);
+				$foto_id = $model_foto->crear( (int) Session::get('usuario_id'), $titulo, $descripcion, $url, $model_categorias->id, $visitantes, $comentarios);
 
 				if ($foto_id > 0)
 				{

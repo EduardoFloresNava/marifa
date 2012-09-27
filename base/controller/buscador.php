@@ -107,7 +107,7 @@ class Base_Controller_Buscador extends Controller {
 		if ($categoria !== 'todos')
 		{
 			// Cargamos la categoria.
-			$model_categoria = new Model_Post_Categoria;
+			$model_categoria = new Model_Categoria;
 			if ($model_categoria->existe_seo($categoria))
 			{
 				$model_categoria->load_by_seo($categoria);
@@ -182,7 +182,7 @@ class Base_Controller_Buscador extends Controller {
 		$vista->assign('q', $query);
 
 		// Listado de categorias.
-		$mc = new Model_Post_Categoria;
+		$mc = new Model_Categoria;
 		$vista->assign('categorias', $mc->lista());
 		unset($mc);
 		$vista->assign('categoria', isset($model_categoria) ? $model_categoria->seo : 'todos');
@@ -191,7 +191,7 @@ class Base_Controller_Buscador extends Controller {
 		$vista->assign('usuario', isset($model_usuario) ? $model_usuario->nick : '');
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login());
+		$this->template->assign('master_bar', parent::base_menu_login('posts'));
 		$this->template->assign('top_bar', $this->submenu());
 
 		// Asignamos la vista.

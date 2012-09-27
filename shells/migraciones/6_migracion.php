@@ -1,6 +1,6 @@
 <?php
 /**
- * Modificaciones para implementar la administración y moderación de posts.
+ * Modificaciones para implementar la administración y moderación de posts y fotos.
  */
 
 // Creamos tabla para eventos de moderación y administración de posts.
@@ -26,3 +26,9 @@ CREATE TABLE `post_moderado` (
  *             ese borrador es el colocadó aquí.
  * razon:      En caso de ser un motivo no especificado, se colocá un texto para explicar.
  */
+
+// Agregamos la posibilidad de cerrar comentarios de fotos.
+Database::get_instance()->update('ALTER TABLE `foto` ADD `comentar` BIT NOT NULL');
+
+// Parámetros de visitas para poder representar que no muestre visitas.
+Database::get_instance()->update('ALTER TABLE `foto` CHANGE `visitas` `visitas` INT( 11 ) NULL DEFAULT NULL');
