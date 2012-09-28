@@ -61,7 +61,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		}
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -106,7 +106,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		unset($plugins);
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -397,7 +397,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		}
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -455,7 +455,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		unset($themes);
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -760,7 +760,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		}
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -778,7 +778,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista = View::factory('admin/configuracion/publicidad');
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');

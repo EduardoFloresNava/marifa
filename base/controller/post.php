@@ -33,19 +33,6 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Post extends Controller {
 
 	/**
-	 * Listado de pestañas del perfil.
-	 * @param int $activo Pestaña seleccionada.
-	 */
-	protected function submenu($activo)
-	{
-		return array(
-			'index' => array('link' => '/', 'caption' => 'Posts', 'active' => FALSE),
-			'buscador' => array('link' => '/buscador', 'caption' => 'Buscador', 'active' => FALSE),
-			'nuevo' => array('link' => '/post/nuevo', 'caption' => 'Agregar Post', 'active' => $activo == 'nuevo'),
-		);
-	}
-
-	/**
 	 * Información de un post.
 	 * @param int $post ID del post a visualizar.
 	 */
@@ -63,7 +50,7 @@ class Base_Controller_Post extends Controller {
 			Request::redirect('/');
 		}
 
-		if ($model_post->as_object()->privado && ! Session::is_set('usuario_id'))
+		if ($model_post->as_object()->privado && ! Usuario::is_login())
 		{
 			// Asignamos el título.
 			$this->template->assign('title', 'Post privado');
@@ -79,13 +66,13 @@ class Base_Controller_Post extends Controller {
 			// Cargamos la vista.
 			$view = View::factory('post/index');
 
-			if (Session::get('usuario_id') != $model_post->as_object()->usuario_id)
+			if (Usuario::usuario()->id != $model_post->as_object()->usuario_id)
 			{
 				$model_post->agregar_vista();
 			}
 
 			// Mi id.
-			$view->assign('me', Session::get('usuario_id'));
+			$view->assign('me', Usuario::usuario()->id);
 
 			// Información del usuario dueño del post.
 			$u_data = $model_post->usuario()->as_array();
@@ -104,7 +91,7 @@ class Base_Controller_Post extends Controller {
 			$view->assign('post', $pst);
 			unset($pst);
 
-			if ($model_post->as_object()->usuario_id == Session::get('usuario_id'))
+			if ($model_post->as_object()->usuario_id == Usuario::usuario()->id)
 			{
 				$view->assign('es_favorito', TRUE);
 				$view->assign('sigo_post', TRUE);
@@ -112,16 +99,16 @@ class Base_Controller_Post extends Controller {
 			}
 			else
 			{
-				$view->assign('es_favorito', $model_post->es_favorito( (int) Session::get('usuario_id')));
-				$view->assign('sigo_post', $model_post->es_seguidor( (int) Session::get('usuario_id')));
-				if ($model_post->dio_puntos( (int) Session::get('usuario_id')))
+				$view->assign('es_favorito', $model_post->es_favorito(Usuario::usuario()->id));
+				$view->assign('sigo_post', $model_post->es_seguidor(Usuario::usuario()->id));
+				if ($model_post->dio_puntos(Usuario::usuario()->id))
 				{
 					$view->assign('puntuacion', FALSE);
 				}
 				else
 				{
 					// Obtenemos puntos disponibles.
-					$m_user = new Model_Usuario( (int) Session::get('usuario_id'));
+					$m_user = Usuario::usuario();
 					$p_d = $m_user->puntos_disponibles;
 
 					$p_arr = array();
@@ -142,18 +129,20 @@ class Base_Controller_Post extends Controller {
 			$view->assign('etiquetas', $model_post->etiquetas());
 
 			// Comentarios del post.
-			$cmts = $model_post->comentarios();
+			$cmts = $model_post->comentarios(NULL);
 			$l_cmt = array();
 			foreach ($cmts as $cmt)
 			{
 				$cl_cmt = $cmt->as_array();
-				if ($cl_cmt['usuario_id'] == Session::get('usuario_id'))
+				$cl_cmt['contenido_raw'] = $cl_cmt['contenido'];
+				$cl_cmt['contenido'] = Decoda::procesar($cl_cmt['contenido']);
+				if ($cl_cmt['usuario_id'] == Usuario::usuario()->id)
 				{
 					$cl_cmt['vote'] = TRUE;
 				}
 				else
 				{
-					$cl_cmt['vote'] = $cmt->ya_voto( (int) Session::get('usuario_id'));
+					$cl_cmt['vote'] = $cmt->ya_voto(Usuario::usuario()->id);
 				}
 				$cl_cmt['votos'] = $cmt->cantidad_votos();
 				$cl_cmt['usuario'] = $cmt->usuario()->as_array();
@@ -169,23 +158,111 @@ class Base_Controller_Post extends Controller {
 
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('posts'));
-		$this->template->assign('top_bar', $this->submenu('index'));
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', Controller_Home::submenu('index'));
 
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());
-		/**
-		// Verificamos si es interna.
-		if ( ! Request::is_initial())
+	}
+
+	/**
+	 * Agregamos una denuncia a un post.
+	 * @param int $post
+	 */
+	public function action_denunciar($post)
+	{
+		// Convertimos el post a ID.
+		$post = (int) $post;
+
+		// Cargamos el post.
+		$model_post = new Model_Post($post);
+
+		// Verificamos exista.
+		if ( ! is_array($model_post->as_array()))
 		{
-			return $view;
+			Request::redirect('/');
 		}
-		else
+
+		// Verificamos que no sea autor.
+		if ($model_post->usuario_id == Usuario::usuario()->id)
 		{
-			// Asignamos la vista.
-			$this->template->assign('contenido', $view->parse());
-		}*/
+			Session::set('post_comentario_error', 'No puedes denunciar tu propio post.');
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Asignamos el título.
+		$this->template->assign('title', 'Denunciar post');
+
+		// Cargamos la vista.
+		$view = View::factory('post/denunciar');
+
+		$view->assign('post', $model_post->id);
+
+		// Elementos por defecto.
+		$view->assign('motivo', '');
+		$view->assign('comentario', '');
+		$view->assign('error_motivo', FALSE);
+		$view->assign('error_comentario', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$motivo = isset($_POST['motivo']) ? (int) $_POST['motivo'] : NULL;
+			$comentario = isset($_POST['comentario']) ? preg_replace('/\s+/', '', trim($_POST['comentario'])) : NULL;
+
+			// Valores para cambios.
+			$view->assign('motivo', $motivo);
+			$view->assign('comentario', $comentario);
+
+			// Verifico el tipo.
+			if ( ! in_array($motivo, array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)))
+			{
+				$error = TRUE;
+				$view->assign('error_motivo', 'No ha seleccionado un motivo válido.');
+			}
+
+			// Verifico la razón si corresponde.
+			if ($motivo === 12)
+			{
+				if ( ! isset($motivo{10}) || isset($motivo{400}))
+				{
+					$error = TRUE;
+					$view->assign('error_contenido', 'La descripción de la denuncia debe tener entre 10 y 400 caracteres.');
+				}
+			}
+			else
+			{
+				if (isset($motivo{400}))
+				{
+					$error = TRUE;
+					$view->assign('error_contenido', 'La descripción de la denuncia debe tener entre 10 y 400 caracteres.');
+				}
+				$comentario = NULL;
+			}
+
+			if ( ! $error)
+			{
+				// Creo la denuncia.
+				$model_post->denunciar(Usuario::usuario()->id, $motivo, $comentario);
+
+				//TODO: crear suceso.
+
+				// Seteamos mensaje flash y volvemos.
+				Session::set('post_correcto', 'Denuncia enviada correctamente.');
+				Request::redirect('/post/index/'.$model_post->id);
+			}
+		}
+
+		// Menu.
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', Controller_Home::submenu());
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $view->parse());
 	}
 
 	/**
@@ -216,7 +293,8 @@ class Base_Controller_Post extends Controller {
 		$comentario = isset($_POST['comentario']) ? $_POST['comentario'] : NULL;
 
 		// Verificamos el formato.
-		if ( ! isset($comentario{20}) || isset($comentario{400}))
+		$comentario_clean = preg_replace('/\[.*\]/', '', $comentario);
+		if ( ! isset($comentario_clean{20}) || isset($comentario{400}))
 		{
 			Session::set('post_comentario_error', 'El comentario debe tener entre 20 y 400 caracteres.');
 
@@ -227,32 +305,17 @@ class Base_Controller_Post extends Controller {
 		}
 		else
 		{
-			// Verifico mínimo con BBCode.
-			if (str_len(preg_replace('/\[.*\]/', '', $contenido) < 20))
-			{
-				Session::set('post_comentario_error', 'El comentario debe tener entre 20 y 400 caracteres.');
-
-				// Evitamos la salida de la vista actual.
-				$this->template = NULL;
-
-				Dispatcher::call('/post/index/'.$post, TRUE);
-			}
-
 			// Transformamos entidades HTML.
 			$comentario = htmlentities($comentario, ENT_NOQUOTES, 'UTF-8');
 
-			// Procesamos BBCode.
-			$decoda = new Decoda($comentario);
-			$comentario = $decoda->parse(FALSE);
-
 			// Insertamos el comentario.
-			$id = $model_post->comentar( (int) Session::get('usuario_id'), $comentario);
+			$id = $model_post->comentar(Usuario::usuario()->id, $comentario);
 
 			if ($id)
 			{
 				// Agregamos los sucesos.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array( (int) Session::get('usuario_id'), $model_post->usuario_id), 'comentario_post', $id);
+				$model_suceso->crear(array(Usuario::usuario()->id, $model_post->usuario_id), 'comentario_post', $id);
 
 				Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
 
@@ -289,20 +352,20 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifica autor.
-		if ($model_post->usuario_id != Session::get('usuario_id'))
+		if ($model_post->usuario_id != Usuario::usuario()->id)
 		{
 			// Verificamos el voto.
-			if ( ! $model_post->es_favorito( (int) Session::get('usuario_id')))
+			if ( ! $model_post->es_favorito(Usuario::usuario()->id))
 			{
-				$model_post->favorito( (int) Session::get('usuario_id'));
+				$model_post->favorito(Usuario::usuario()->id);
 				$model_suceso = new Model_Suceso;
 				$model_suceso->crear(
 						array(
-							(int) Session::get('usuario_id'),
+							Usuario::usuario()->id,
 							$model_post->usuario_id
 						),
 						'favorito_post',
-						(int) Session::get('usuario_id'),
+						Usuario::usuario()->id,
 						$post
 					);
 			}
@@ -330,7 +393,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Cargamos usuario.
-		$usuario_id = (int) Session::get('usuario_id');
+		$usuario_id = Usuario::usuario()->id;
 
 		// Verificamos autor.
 		if ($model_comentario->usuario_id != $usuario_id)
@@ -342,15 +405,67 @@ class Base_Controller_Post extends Controller {
 				$model_suceso = new Model_Suceso;
 				$model_suceso->crear(
 						array(
-							(int) Session::get('usuario_id'),
+							$usuario_id,
 							$model_comentario->usuario_id,
 							$model_comentario->post()->usuario_id
 						),
 						'voto_comentario_post',
-						(int) Session::get('usuario_id'),
+						$usuario_id,
 						(int) $comentario
 					);
 			}
+		}
+		Request::redirect('/post/index/'.$model_comentario->post_id);
+	}
+
+	/**
+	 * Ocultamos un comentario.
+	 * @param int $comentario ID del comentario a ocultar.
+	 */
+	public function action_ocultar_post($comentario)
+	{
+		// Cargamos el comentario.
+		$model_comentario = new Model_Post_Comentario( (int) $comentario);
+
+		// Verificamos existencia.
+		if ( ! is_array($model_comentario->as_array()))
+		{
+			Request::redirect('/');
+		}
+
+		// Cargamos usuario.
+		$usuario_id = Usuario::usuario()->id;
+
+		// Verificamos autor y permisos.
+		if (($model_comentario->usuario_id == $usuario_id && Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_COMENTARIO_PROPIO))
+			|| Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_COMENTARIOS_POSTS)
+			|| Usuario::permiso(Model_Usuario_Rango::PERMISO_ADMINISTRADOR)
+			|| Usuario::permiso(Model_Usuario_Rango::PERMISO_MODERADOR)
+			)
+		{
+			// Seteo el estado como borrado.
+			if ( ! $model_comentario->estado !== Model_Post_Comentario::ESTADO_OCULTO)
+			{
+				$model_comentario->actualizar_estado(Model_Post_Comentario::ESTADO_OCULTO);
+
+				//TODO: ejecutar sucesos.
+				/**
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(
+						array(
+							$usuario_id,
+							$model_comentario->usuario_id,
+							$model_comentario->post()->usuario_id
+						),
+						'voto_comentario_post',
+						$usuario_id,
+						(int) $comentario
+					);*/
+			}
+		}
+		else
+		{
+			Session::set('post_comentario_error', 'No tienes permiso para realizar esta acción.');
 		}
 		Request::redirect('/post/index/'.$model_comentario->post_id);
 	}
@@ -374,7 +489,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Cargamos usuario.
-		$usuario_id = (int) Session::get('usuario_id');
+		$usuario_id = Usuario::usuario()->id;
 
 		// Verifica autor.
 		if ($model_post->usuario_id != $usuario_id)
@@ -386,11 +501,11 @@ class Base_Controller_Post extends Controller {
 				$model_suceso = new Model_Suceso;
 				$model_suceso->crear(
 						array(
-							(int) Session::get('usuario_id'),
+							$usuario_id,
 							$model_post->usuario_id
 						),
 						'seguir_post',
-						(int) Session::get('usuario_id'),
+						$usuario_id,
 						$post
 					);
 			}
@@ -426,7 +541,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Cargamos usuario.
-		$usuario_id = (int) Session::get('usuario_id');
+		$usuario_id = Usuario::usuario()->id;
 
 		// Verifica autor.
 		if ($model_post->usuario_id != $usuario_id)
@@ -442,11 +557,11 @@ class Base_Controller_Post extends Controller {
 					$model_suceso = new Model_Suceso;
 					$model_suceso->crear(
 							array(
-								(int) Session::get('usuario_id'),
+								$usuario_id,
 								$model_post->usuario_id
 							),
 							'punto_post',
-							(int) Session::get('usuario_id'),
+							$usuario_id,
 							$post
 						);
 				}
@@ -461,7 +576,7 @@ class Base_Controller_Post extends Controller {
 	public function action_nuevo()
 	{
 		// Verificamos usuario logueado.
-		if ( ! Session::is_set('usuario_id'))
+		if ( ! Usuario::is_login())
 		{
 			Request::redirect('/usuario/login');
 		}
@@ -483,8 +598,8 @@ class Base_Controller_Post extends Controller {
 		$view->assign('categorias', $model_categoria->lista());
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('posts'));
-		$this->template->assign('top_bar', $this->submenu('nuevo'));
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', Controller_Home::submenu('nuevo'));
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());
@@ -550,14 +665,14 @@ class Base_Controller_Post extends Controller {
 				$borrador = isset($_POST['submit']) ? $_POST['submit'] == 'borrador' : FALSE;
 
 				$model_post = new Model_Post;
-				$post_id = $model_post->crear( (int) Session::get('usuario_id'), $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, NULL, $borrador);
+				$post_id = $model_post->crear(Usuario::usuario()->id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, NULL, $borrador);
 
 				if ($post_id > 0)
 				{
 					Request::redirect('/post/index/'.$post_id);
 
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear( (int) Session::get('usuario_id'), 'nuevo_post', $post_id);
+					$model_suceso->crear(Usuario::usuario()->id, 'nuevo_post', $post_id);
 				}
 				else
 				{
@@ -567,8 +682,8 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('posts'));
-		$this->template->assign('top_bar', $this->submenu('nuevo'));
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', Controller_Home::submenu('nuevo'));
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());

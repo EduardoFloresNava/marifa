@@ -33,23 +33,6 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Buscador extends Controller {
 
 	/**
-	 * Submenu de la portada.
-	 * @return array
-	 */
-	protected function submenu()
-	{
-		$items = array(
-			'inicio' => array('link' => '/', 'caption' => 'Inicio', 'active' => FALSE),
-			'buscador' => array('link' => '/buscador', 'caption' => 'Buscador', 'active' => TRUE),
-		);
-		if (Session::is_set('usuario_id'))
-		{
-			$items['nuevo'] = array('link' => '/post/nuevo', 'caption' => 'Agregar Post', 'active' => FALSE);
-		}
-		return $items;
-	}
-
-	/**
 	 * Alias de action_q
 	 * @param string $query Valores a buscar.
 	 * @see action_q
@@ -191,8 +174,8 @@ class Base_Controller_Buscador extends Controller {
 		$vista->assign('usuario', isset($model_usuario) ? $model_usuario->nick : '');
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('posts'));
-		$this->template->assign('top_bar', $this->submenu());
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', Controller_Home::submenu('buscador'));
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $vista->parse());
@@ -261,8 +244,8 @@ class Base_Controller_Buscador extends Controller {
 		unset($view_relacionado);
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login());
-		$this->template->assign('top_bar', $this->submenu());
+		$this->template->assign('master_bar', parent::base_menu());
+		$this->template->assign('top_bar', Controller_Home::submenu('buscador'));
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $vista->parse());

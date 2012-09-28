@@ -86,7 +86,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		unset($model_fotos);
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -156,7 +156,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		unset($lst);
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -250,7 +250,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -333,7 +333,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		unset($lst);
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -461,7 +461,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		unset($lst);
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -548,7 +548,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -684,7 +684,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -747,7 +747,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		unset($lst);
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -810,7 +810,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
@@ -937,7 +937,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');

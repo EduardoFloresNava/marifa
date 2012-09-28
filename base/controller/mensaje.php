@@ -37,7 +37,7 @@ class Base_Controller_Mensaje extends Controller {
 		parent::__construct();
 
 		// Solo usuarios conectados.
-		if ( ! Session::is_set('usuario_id'))
+		if ( ! Usuario::is_login())
 		{
 			Request::redirect('/');
 		}
@@ -62,7 +62,7 @@ class Base_Controller_Mensaje extends Controller {
 
 		// Cargamos el listado de mensajes.
 		$model_mensajes = new Model_Mensaje;
-		$recibidos = $model_mensajes->recibidos( (int) Session::get('usuario_id'));
+		$recibidos = $model_mensajes->recibidos(Usuario::usuario()->id);
 
 		// Procesamos información relevante.
 		foreach ($recibidos as $key => $value)
@@ -78,7 +78,7 @@ class Base_Controller_Mensaje extends Controller {
 		unset($recibidos);
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('inicio'));
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('index'));
 
 		// Asignamos la vista.
@@ -95,7 +95,7 @@ class Base_Controller_Mensaje extends Controller {
 
 		// Cargamos el listado de mensajes.
 		$model_mensajes = new Model_Mensaje;
-		$enviados = $model_mensajes->enviados( (int) Session::get('usuario_id'));
+		$enviados = $model_mensajes->enviados(Usuario::usuario()->id);
 
 		// Procesamos información relevante.
 		foreach ($enviados as $key => $value)
@@ -111,7 +111,7 @@ class Base_Controller_Mensaje extends Controller {
 		unset($recibidos);
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('inicio'));
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('enviados'));
 
 		// Asignamos la vista.
@@ -130,7 +130,7 @@ class Base_Controller_Mensaje extends Controller {
 
 			if (is_array($model_padre->as_array()))
 			{
-				if ($model_padre->receptor_id == Session::get('usuario_id'))
+				if ($model_padre->receptor_id == Usuario::usuario()->id)
 				{
 					$padre = $model_padre;
 				}
@@ -237,23 +237,13 @@ class Base_Controller_Mensaje extends Controller {
 			}
 
 			// Verificamos el contenido.
-			if ( ! isset($contenido{20}) || isset($contenido{600}))
+			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
+			if ( ! isset($contenido_clean{20}) || isset($contenido{600}))
 			{
 				$view->assign('error_contenido', 'El mensaje debe tener entre 20 y 600 caractéres.');
 				$error = TRUE;
 			}
-			else
-			{
-				// Verificamos quitando BBCODE.
-				$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
-
-				if ( ! isset($contenido_clean{20}))
-				{
-					$view->assign('error_contenido', 'El mensaje debe tener entre 20 y 600 caractéres.');
-					$error = TRUE;
-				}
-				unset($contenido_clean);
-			}
+			unset($contenido_clean);
 
 			// Procedemos a crear el mensaje.
 			if ( ! $error)
@@ -273,7 +263,7 @@ class Base_Controller_Mensaje extends Controller {
 					if (isset($padre) && $tipo == 1)
 					{
 						$padre->actualizar_estado(Model_Mensaje::ESTADO_RESPONDIDO);
-						$mensaje_id = $model_mensaje->enviar( (int) Session::get('usuario_id'), $u->id, $asunto, $contenido, $padre->id);
+						$mensaje_id = $model_mensaje->enviar(Usuario::usuario()->id, $u->id, $asunto, $contenido, $padre->id);
 					}
 					else
 					{
@@ -281,13 +271,13 @@ class Base_Controller_Mensaje extends Controller {
 						{
 							$padre->actualizar_estado(Model_Mensaje::ESTADO_REENVIADO);
 						}
-						$mensaje_id = $model_mensaje->enviar( (int) Session::get('usuario_id'), $u->id, $asunto, $contenido);
+						$mensaje_id = $model_mensaje->enviar(Usuario::usuario()->id, $u->id, $asunto, $contenido);
 					}
 
 					if ($mensaje_id > 0)
 					{
 						$model_suceso = new Model_Suceso;
-						$model_suceso->crear(array( (int) Session::get('usuario_id'), $u->id), 'nuevo_mensaje', $mensaje_id);
+						$model_suceso->crear(array(Usuario::usuario()->id, $u->id), 'nuevo_mensaje', $mensaje_id);
 					}
 					else
 					{
@@ -307,7 +297,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('inicio'));
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('nuevo'));
 
 		// Asignamos la vista.
@@ -328,7 +318,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Verificamos sea el receptor.
-		if (Session::get('usuario_id') != $model_mensaje->receptor_id)
+		if (Usuario::usuario()->id != $model_mensaje->receptor_id)
 		{
 			Request::redirect('/mensaje/');
 		}
@@ -360,7 +350,7 @@ class Base_Controller_Mensaje extends Controller {
 		// $view->assign('hijos', $this->listado_conversacion($model_mensaje->padre_id));
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('inicio'));
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('nuevo'));
 
 		// Asignamos la vista.
@@ -381,7 +371,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Verificamos sea el receptor.
-		if (Session::get('usuario_id') != $model_mensaje->receptor_id)
+		if (Usuario::usuario()->id != $model_mensaje->receptor_id)
 		{
 			Request::redirect('/mensaje/');
 		}
@@ -413,7 +403,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Verificamos sea el emisor.
-		if (Session::get('usuario_id') != $model_mensaje->emisor_id)
+		if (Usuario::usuario()->id != $model_mensaje->emisor_id)
 		{
 			Request::redirect('/mensaje/');
 		}
@@ -440,7 +430,7 @@ class Base_Controller_Mensaje extends Controller {
 		// $view->assign('hijos', $this->listado_conversacion($model_mensaje->padre_id));
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('inicio'));
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('nuevo'));
 
 		// Asignamos la vista.

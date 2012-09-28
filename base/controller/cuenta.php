@@ -38,7 +38,7 @@ class Base_Controller_Cuenta extends Controller {
 	public function __construct()
 	{
 		// Verificamos permisos.
-		if ( ! Session::is_set('usuario_id'))
+		if ( ! Usuario::is_login())
 		{
 			Request::redirect('/usuario/login');
 		}
@@ -74,8 +74,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view = View::factory('cuenta/index');
 
 		// Cargamos el usuario.
-		$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
-
+		$model_usuario = Usuario::usuario();
 		$model_usuario->perfil()->load_list(array('origen', 'sexo', 'nacimiento'));
 
 		// Seteamos los datos actuales.
@@ -256,7 +255,7 @@ class Base_Controller_Cuenta extends Controller {
 		}
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login());
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('index'));
 
 		// Asignamos la vista.
@@ -275,7 +274,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view = View::factory('cuenta/perfil');
 
 		// Cargamos el usuario.
-		$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
+		$model_usuario = Usuario::usuario();
 
 		$view->assign('email', $model_usuario->email);
 
@@ -698,7 +697,7 @@ class Base_Controller_Cuenta extends Controller {
 		}
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login());
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('perfil'));
 
 		// Asignamos la vista.
@@ -717,7 +716,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view = View::factory('cuenta/bloqueos');
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login());
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('bloqueados'));
 
 		// Asignamos la vista.
@@ -736,7 +735,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view = View::factory('cuenta/password');
 
 		// Cargamos el usuario actual.
-		$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
+		$model_usuario = Usuario::usuario();
 		$view->assign('email', $model_usuario->email);
 
 		// Valores por defecto.
@@ -807,7 +806,7 @@ class Base_Controller_Cuenta extends Controller {
 		}
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login());
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('password'));
 
 		// Asignamos la vista.
@@ -826,7 +825,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view = View::factory('cuenta/nick');
 
 		// Cargamos el usuario actual.
-		$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
+		$model_usuario = Usuario::usuario();
 
 		$view->assign('email', $model_usuario->email);
 
@@ -902,7 +901,7 @@ class Base_Controller_Cuenta extends Controller {
 		}
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login());
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('nick'));
 
 		// Asignamos la vista.

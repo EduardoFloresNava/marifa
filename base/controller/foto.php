@@ -35,13 +35,12 @@ class Base_Controller_Foto extends Controller {
 	/**
 	 * Listado de pestañas de la foto.
 	 * @param int $activo Pestaña seleccionada.
-	 * @param bool $login Menu para usuario logueado o no.
 	 */
-	protected function submenu($activo, $login = FALSE)
+	protected function submenu($activo)
 	{
 		$lst = array();
 		$lst['index'] = array('link' => '/foto/', 'caption' => 'Fotos', 'active' => $activo == 'index');
-		if ($login)
+		if (Usuario::is_login())
 		{
 			$lst['nuevo'] = array('link' => '/foto/nueva', 'caption' => 'Agregar Foto', 'active' => $activo == 'nuevo');
 			$lst['mis_fotos'] = array('link' => '/foto/mis_fotos', 'caption' => 'Mis Fotos', 'active' => $activo == 'mis_fotos');
@@ -75,17 +74,17 @@ class Base_Controller_Foto extends Controller {
 			$d['usuario'] = $value->usuario()->as_array();
 
 			// Acciones.
-			if (Session::is_set('usuario_id'))
+			if (Usuario::is_login())
 			{
-				if ( (int) Session::get('usuario_id') == $value->usuario_id)
+				if (Usuario::usuario()->id == $value->usuario_id)
 				{
 					$d['favorito'] = TRUE;
 					$d['voto'] = TRUE;
 				}
 				else
 				{
-					$d['favorito'] = $value->es_favorito( (int) Session::is_set('usuario_id'));
-					$d['voto'] = $value->ya_voto( (int) Session::is_set('usuario_id'));
+					$d['favorito'] = $value->es_favorito(Usuario::usuario()->id);
+					$d['voto'] = $value->ya_voto(Usuario::usuario()->id);
 				}
 			}
 			else
@@ -100,8 +99,8 @@ class Base_Controller_Foto extends Controller {
 		unset($fotos);
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('fotos'));
-		$this->template->assign('top_bar', $this->submenu('index', Session::is_set('usuario_id')));
+		$this->template->assign('master_bar', parent::base_menu('fotos'));
+		$this->template->assign('top_bar', $this->submenu('index'));
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());
@@ -126,7 +125,7 @@ class Base_Controller_Foto extends Controller {
 
 		// Cargamos el listado de fotos.
 		$model_fotos = new Model_Foto;
-		$fotos = $model_fotos->obtener_ultimas_usuario( (int) Session::get('usuario_id'));
+		$fotos = $model_fotos->obtener_ultimas_usuario(Usuario::usuario()->id);
 
 		// Procesamos información relevante.
 		foreach ($fotos as $key => $value)
@@ -149,8 +148,8 @@ class Base_Controller_Foto extends Controller {
 		unset($fotos);
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('fotos'));
-		$this->template->assign('top_bar', $this->submenu('mis_fotos', Session::is_set('usuario_id')));
+		$this->template->assign('master_bar', parent::base_menu('fotos'));
+		$this->template->assign('top_bar', $this->submenu('mis_fotos'));
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());
@@ -181,7 +180,7 @@ class Base_Controller_Foto extends Controller {
 		$view = View::factory('foto/ver');
 
 		// Mi id.
-		$view->assign('me', Session::get('usuario_id'));
+		$view->assign('me', Usuario::usuario()->id);
 
 		// Información del usuario dueño del post.
 		$u_data = $model_foto->usuario()->as_array();
@@ -200,7 +199,7 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('foto', $ft);
 		unset($ft);
 
-		if ( ! Session::is_set('usuario_id') || $model_foto->as_object()->usuario_id == Session::get('usuario_id'))
+		if ( ! Usuario::is_login() || $model_foto->as_object()->usuario_id == Usuario::usuario()->id)
 		{
 			$view->assign('es_favorito', TRUE);
 			$view->assign('ya_vote', TRUE);
@@ -213,8 +212,8 @@ class Base_Controller_Foto extends Controller {
 				$model_foto->agregar_visita();
 			}
 
-			$view->assign('es_favorito', $model_foto->es_favorito( (int) Session::get('usuario_id')));
-			$view->assign('ya_vote', $model_foto->ya_voto( (int) Session::get('usuario_id')));
+			$view->assign('es_favorito', $model_foto->es_favorito(Usuario::usuario()->id));
+			$view->assign('ya_vote', $model_foto->ya_voto(Usuario::usuario()->id));
 		}
 
 		// Verifico si soporta comentarios.
@@ -239,8 +238,8 @@ class Base_Controller_Foto extends Controller {
 
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('fotos'));
-		$this->template->assign('top_bar', $this->submenu('index', Session::is_set('usuario_id')));
+		$this->template->assign('master_bar', parent::base_menu('fotos'));
+		$this->template->assign('top_bar', $this->submenu('index'));
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());
@@ -266,7 +265,7 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Cargamos usuario.
-		$usuario_id = (int) Session::get('usuario_id');
+		$usuario_id = Usuario::usuario()->id;
 
 		// Verificamos autor.
 		if ($model_foto->usuario_id != $usuario_id)
@@ -303,16 +302,16 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Verifica autor.
-		if ($model_foto->usuario_id != Session::get('usuario_id'))
+		if ($model_foto->usuario_id != Usuario::usuario()->id)
 		{
 			// Verificamos el voto.
-			if ( ! $model_foto->es_favorito( (int) Session::get('usuario_id')))
+			if ( ! $model_foto->es_favorito(Usuario::usuario()->id))
 			{
 				Session::set('success', 'Foto agregada a favoritos correctamente.');
-				$model_foto->agregar_favorito( (int) Session::get('usuario_id'));
+				$model_foto->agregar_favorito(Usuario::usuario()->id);
 
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array( (int) Session::get('usuario_id'), $model_foto->usuario_id), 'favorito_foto', (int) Session::get('usuario_id'), $foto);
+				$model_suceso->crear(array(Usuario::usuario()->id, $model_foto->usuario_id), 'favorito_foto',Usuario::usuario()->id, $foto);
 			}
 		}
 		Request::redirect('/foto/ver/'.$foto);
@@ -369,10 +368,10 @@ class Base_Controller_Foto extends Controller {
 			$comentario = htmlentities($comentario, ENT_NOQUOTES, 'UTF-8');
 
 			// Insertamos el comentario.
-			$id = $model_foto->comentar( (int) Session::get('usuario_id'), $comentario);
+			$id = $model_foto->comentar(Usuario::usuario()->id, $comentario);
 
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array( (int) Session::get('usuario_id'), $model_foto->usuario_id), 'comentario_foto', $id);
+			$model_suceso->crear(array(Usuario::usuario()->id, $model_foto->usuario_id), 'comentario_foto', $id);
 
 			Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
 
@@ -386,7 +385,7 @@ class Base_Controller_Foto extends Controller {
 	public function action_nueva()
 	{
 		// Verificamos usuario conectado.
-		if ( ! Session::is_set('usuario_id'))
+		if ( ! Usuario::is_login())
 		{
 			Request::redirect('/');
 		}
@@ -410,8 +409,8 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Menu.
-		$this->template->assign('master_bar', parent::base_menu_login('fotos'));
-		$this->template->assign('top_bar', $this->submenu('nuevo', TRUE));
+		$this->template->assign('master_bar', parent::base_menu('fotos'));
+		$this->template->assign('top_bar', $this->submenu('nuevo'));
 
 		if (Request::method() == 'POST')
 		{
@@ -531,12 +530,12 @@ class Base_Controller_Foto extends Controller {
 				$model_categorias->load_by_seo($categoria);
 
 				$model_foto = new Model_Foto;
-				$foto_id = $model_foto->crear( (int) Session::get('usuario_id'), $titulo, $descripcion, $url, $model_categorias->id, $visitantes, $comentarios);
+				$foto_id = $model_foto->crear(Usuario::usuario()->id, $titulo, $descripcion, $url, $model_categorias->id, $visitantes, $comentarios);
 
 				if ($foto_id > 0)
 				{
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear( (int) Session::get('usuario_id'), 'nueva_foto', $model_foto->id);
+					$model_suceso->crear(Usuario::usuario()->id, 'nueva_foto', $model_foto->id);
 
 					Request::redirect('/foto/ver/'.$model_foto->id);
 				}

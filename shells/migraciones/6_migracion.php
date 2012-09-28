@@ -32,3 +32,7 @@ Database::get_instance()->update('ALTER TABLE `foto` ADD `comentar` BIT NOT NULL
 
 // Parámetros de visitas para poder representar que no muestre visitas.
 Database::get_instance()->update('ALTER TABLE `foto` CHANGE `visitas` `visitas` INT( 11 ) NULL DEFAULT NULL');
+
+// Comentarios vacios para denuncias post.
+Database::get_instance()->update('ALTER TABLE `post_denuncia` CHANGE `comentario` `comentario` TEXT NULL DEFAULT NULL');
+

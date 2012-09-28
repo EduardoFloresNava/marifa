@@ -38,6 +38,14 @@ class Base_Controller_Perfil extends Controller {
 	 */
 	protected $usuario;
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		// Cargo el menu.
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
+	}
+
 	/**
 	 * Cargamos el usuario. En caso de no existir vamos a la portada.
 	 * @param string $usuario ID o nick del usuario.
@@ -47,21 +55,29 @@ class Base_Controller_Perfil extends Controller {
 		if ($usuario == NULL)
 		{
 			// Verificamos si estamos logueados.
-			if ( ! Session::is_set('usuario_id'))
+			if ( ! Usuario::is_login())
 			{
 				Request::redirect('/');
 			}
-			$model_usuario = new Model_Usuario( (int) Session::get('usuario_id'));
+			$model_usuario = Usuario::usuario();
 		}
 		else
 		{
-			// Cargamos el modelo del usuario
-			$model_usuario = new Model_Usuario;
-
-			// Tratamos de cargar el usuario por su nick
-			if ( ! $model_usuario->load_by_nick($usuario))
+			// Verifico no sea yo.
+			if (Usuario::is_login() && Usuario::usuario()->nick == $usuario)
 			{
-				Request::redirect('/');
+				$model_usuario = Usuario::usuario();
+			}
+			else
+			{
+				// Cargamos el modelo del usuario
+				$model_usuario = new Model_Usuario;
+
+				// Tratamos de cargar el usuario por su nick
+				if ( ! $model_usuario->load_by_nick($usuario))
+				{
+					Request::redirect('/');
+				}
 			}
 		}
 
@@ -83,7 +99,7 @@ class Base_Controller_Perfil extends Controller {
 			unset($call);
 		}
 
-		$usuario = (Session::get('usuario_id') == $this->usuario->id) ? '' : $this->usuario->get('nick');
+		$usuario = (Usuario::usuario()->id == $this->usuario->id) ? '' : $this->usuario->get('nick');
 		return array(
 			'muro' => array('link' => '/perfil/index/'.$usuario, 'caption' => __('Muro', FALSE), 'active' => $activo == 'muro' || $activo == 'index'),
 			'informacion' => array('link' => '/perfil/informacion/'.$usuario, 'caption' => __('Información', FALSE), 'active' =>  $activo == 'informacion'),
@@ -259,20 +275,6 @@ class Base_Controller_Perfil extends Controller {
 		$this->template->assign('contenido', $this->header_block($information_view->parse()));
 		unset($information_view);
 
-		// Acciones para menu offline.
-		if ( ! Session::is_set('usuario_id'))
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_logout('posts'));
-			// $this->template->assign('top_bar', $this->submenu_logout('inicio'));
-		}
-		else
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_login('posts'));
-			// $this->template->assign('top_bar', $this->submenu_login('inicio'));
-		}
-
 		// Seteamos el titulo.
 		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
 	}
@@ -307,20 +309,6 @@ class Base_Controller_Perfil extends Controller {
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $this->header_block($information_view->parse()));
 		unset($information_view);
-
-		// Acciones para menu offline.
-		if ( ! Session::is_set('usuario_id'))
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_logout('posts'));
-			// $this->template->assign('top_bar', $this->submenu_logout('inicio'));
-		}
-		else
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_login('posts'));
-			// $this->template->assign('top_bar', $this->submenu_login('inicio'));
-		}
 
 		// Seteamos el titulo.
 		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
@@ -366,20 +354,6 @@ class Base_Controller_Perfil extends Controller {
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $this->header_block($information_view->parse()));
 		unset($information_view);
-
-		// Acciones para menu offline.
-		if ( ! Session::is_set('usuario_id'))
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_logout('posts'));
-			// $this->template->assign('top_bar', $this->submenu_logout('inicio'));
-		}
-		else
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_login('posts'));
-			// $this->template->assign('top_bar', $this->submenu_login('inicio'));
-		}
 
 		// Seteamos el titulo.
 		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
@@ -441,20 +415,6 @@ class Base_Controller_Perfil extends Controller {
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $this->header_block($information_view->parse()));
 		unset($information_view);
-
-		// Acciones para menu offline.
-		if ( ! Session::is_set('usuario_id'))
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_logout('posts'));
-			// $this->template->assign('top_bar', $this->submenu_logout('inicio'));
-		}
-		else
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_login('posts'));
-			// $this->template->assign('top_bar', $this->submenu_login('inicio'));
-		}
 
 		// Seteamos el titulo.
 		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));

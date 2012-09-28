@@ -32,7 +32,20 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Model_Post_Comentario extends Model_Dataset {
 
-	//TODO: Agregar estados.
+	/**
+	 * Comentario visible para todos.
+	 */
+	const ESTADO_VISIBLE = 0;
+
+	/**
+	 * Comentario oculto por acción de moderación o del usuario.
+	 */
+	const ESTADO_OCULTO = 1;
+
+	/**
+	 * Comentario pendiente de revisión.
+	 */
+	const ESTADO_PENDIENTE = 2;
 
 	/**
 	 * Nombre de la tabla para el dataset
@@ -165,7 +178,7 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 		$inicio = $cantidad * ($pagina - 1);
 
 		// Obtenemos el listado.
-		$rst = Database::get_instance()->query('SELECT id FROM post_comentario ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+		$rst = Database::get_instance()->query('SELECT post_comentario.id FROM post_comentario INNER JOIN post ON post_comentario.post_id = post.id WHERE post.estado = 0 ORDER BY post_comentario.fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
 
 		// Armamos la lista.
 		$lst = array();

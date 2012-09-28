@@ -35,28 +35,32 @@ class Base_Controller_Home extends Controller {
 	/**
 	 * Submenu de la portada.
 	 * @param string $selected Elemento seleccionado.
-	 * @return array
 	 */
-	protected function submenu_logout($selected = NULL)
+	public static function submenu($selected = NULL)
 	{
-		return array(
-		   'inicio' => array('link' => '/', 'caption' => 'Inicio', 'active' => $selected == 'inicio'),
-		   'buscador' => array('link' => '/buscador', 'caption' => 'Buscador', 'active' => $selected == 'buscador'),
-	   );
-	}
+		$data = array();
 
-	/**
-	 * Submenu de la portada.
-	 * @param string $selected Elemento seleccionado.
-	 * @return array
-	 */
-	protected function submenu_login($selected = NULL)
-	{
-		return array(
-			'inicio' => array('link' => '/', 'caption' => 'Inicio', 'active' => $selected == 'inicio'),
-			'buscador' => array('link' => '/buscador', 'caption' => 'Buscador', 'active' => $selected == 'buscador'),
-			'nuevo' => array('link' => '/post/nuevo', 'caption' => 'Agregar Post', 'active' => $selected == 'nuevo'),
-	   );
+		// Listado de elemento OFFLINE.
+		$data['inicio'] = array('link' => '/', 'caption' => 'Inicio', 'active' => FALSE);
+		$data['buscador'] = array('link' => '/buscador', 'caption' => 'Buscador', 'active' => FALSE);
+
+		// Listado de elementos ONLINE.
+		if (Usuario::is_login())
+		{
+			$data['nuevo'] = array('link' => '/post/nuevo', 'caption' => 'Agregar Post', 'active' => FALSE);
+		}
+
+		// Seleccionamos elemento.
+		if ($selected !== NULL && isset($data[$selected]))
+		{
+			$data[$selected]['active'] = TRUE;
+		}
+		else
+		{
+			$data['inicio']['active'] = TRUE;
+		}
+
+		return $data;
 	}
 
 	/**
@@ -67,21 +71,9 @@ class Base_Controller_Home extends Controller {
 		// Cargamos la portada.
 		$portada = View::factory('home/index');
 
-		// Acciones para menu offline.
-		if ( ! Session::is_set('usuario_id'))
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_logout('posts'));
-
-			$this->template->assign('top_bar', $this->submenu_logout('inicio'));
-		}
-		else
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_login('posts'));
-
-			$this->template->assign('top_bar', $this->submenu_login('inicio'));
-		}
+		// Seteo el menu.
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', self::submenu('inicio'));
 
 		// Cargamos datos de posts.
 		$model_post = new Model_Post;

@@ -47,7 +47,7 @@ class Base_Controller {
 		$this->template = View::factory('template');
 
 		// Acciones para menu offline.
-		if ( ! Session::is_set('usuario_id'))
+		if ( ! Usuario::is_login())
 		{
 			// Seteamos menu offline.
 			$this->template->assign('user_header', View::factory('header/logout')->parse());
@@ -69,8 +69,7 @@ class Base_Controller {
 		$vista = View::factory('header/login');
 
 		// Cargamos el usuario y sus datos.
-		$usuario = new Model_Usuario( (int) Session::get('usuario_id'));
-		$vista->assign('usuario', $usuario->as_array());
+		$vista->assign('usuario', Usuario::usuario()->as_array());
 
 		// Sucesos.
 		/**
@@ -116,7 +115,7 @@ class Base_Controller {
 
 		// Listado de mensajes.
 		$model_mensajes = new Model_Mensaje;
-		$msg_rst = $model_mensajes->recibidos( (int) Session::get('usuario_id'));
+		$msg_rst = $model_mensajes->recibidos(Usuario::usuario()->id);
 
 		$msg_event = array();
 		foreach ($msg_rst as $v)
@@ -161,35 +160,47 @@ class Base_Controller {
 	}
 
 	/**
-	 * Menu principal para el estado desconectado.
-	 * @param string $activo Clave activa.
+	 * Menu principal.
+	 * @param string $selected Clave seleccionada.
 	 * @return array
 	 */
-	protected function base_menu_logout($activo = NULL)
+	protected function base_menu($selected = NULL)
 	{
-		return array(
-			'posts' => array('link' => '/', 'caption' => 'Posts', 'active' => $activo == 'posts'),
-			'comunidades' => array('link' => '/comunidad/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
-			'fotos' => array('link' => '/foto/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
-			'tops' => array('link' => '/tops/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
-		);
-	}
+		$data = array();
 
-	/**
-	 * Menu principal para el estado conectado.
-	 * @param string $activo Clave activa.
-	 * @return array
-	 */
-	protected function base_menu_login($activo = NULL)
-	{
-		//TODO: administración y moderación.
-		return array(
-			'inicio' => array('link' => '/perfil/', 'caption' => 'Inicio', 'active' => $activo == 'inicio'),
-			'posts' => array('link' => '/', 'caption' => 'Posts', 'active' => $activo == 'posts'),
-			'comunidades' => array('link' => '/comunidad/', 'caption' => 'Comunidades', 'active' =>  $activo == 'comunidades'),
-			'fotos' => array('link' => '/foto/', 'caption' => 'Fotos', 'active' =>  $activo == 'fotos'),
-			'tops' => array('link' => '/tops/', 'caption' => 'TOPs', 'active' =>  $activo == 'tops'),
-			'admin' => array('link' => '/admin/', 'caption' => 'Administración', 'active' => $activo == 'admin'),
-		);
+		// Listado de elementos ONLINE.
+		if (Usuario::is_login())
+		{
+			$data['inicio'] = array('link' => '/perfil/', 'caption' => 'Inicio', 'active' => FALSE);
+		}
+
+		// Listado de elemento OFFLINE.
+		$data['posts'] = array('link' => '/', 'caption' => 'Posts', 'active' => FALSE);
+		$data['comunidades'] = array('link' => '/comunidad/', 'caption' => 'Comunidades', 'active' => FALSE);
+		$data['fotos'] = array('link' => '/foto/', 'caption' => 'Fotos', 'active' => FALSE);
+		$data['tops'] = array('link' => '/tops/', 'caption' => 'TOPs', 'active' => FALSE);
+
+		// Listado elemento por permisos.
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_ACCESO_PANEL_MODERACION))
+		{
+			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'active' => FALSE);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_ADMINISTRADOR))
+		{
+			$data['admin'] = array('link' => '/admin/', 'caption' => 'Administración', 'active' => FALSE);
+		}
+
+		// Seleccionamos elemento.
+		if ($selected !== NULL && isset($data[$selected]))
+		{
+			$data[$selected]['active'] = TRUE;
+		}
+		else
+		{
+			$data['posts']['active'] = TRUE;
+		}
+
+		return $data;
 	}
 }

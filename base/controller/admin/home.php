@@ -78,7 +78,7 @@ class Base_Controller_Admin_Home extends Controller {
 		$portada = View::factory('admin/home/index');
 
 		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu_login('admin'));
+		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');

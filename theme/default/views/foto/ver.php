@@ -1,15 +1,17 @@
 <div class="row">
-	<div class="span2">
+	<div class="span2 usuario-perfil-lateral">
 		<h3 class="title">{@Autor@}:</h3>
-		<img class="thumbnail" src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
-		<h4>{$usuario.nick}</h4>
+				<a href="/perfil/index/{$usuario.nick}" class="thumbnail">
+			<img src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
+			<h4 class="nick">{$usuario.nick}</h4>
+		</a>
 		{if="$me != NULL && $me != $usuario.id"}<div class="row-fluid">
-			<a href="#" class="btn span12" style="min-height: 0;">{@Seguir usuario@}</a>
+			<a href="#" class="btn span12" style="min-height: 0;">Seguir usuario</a>
 		</div>{/if}
-		<p><strong>{@Seguidores@}:</strong> {$usuario.seguidores}</p>
-		<p><strong>{@Puntos@}:</strong> {$usuario.puntos}</p>
-		<p><strong>{@Posts@}:</strong> {$usuario.posts}</p>
-		<p><strong>{@Comentarios@}:</strong> {$usuario.comentarios}</p>
+		<div class="well"><i class="icon icon-user"></i><span class="pull-right">{if="$usuario.seguidores > 1"}{$usuario.seguidores} {@seguidores@}{elseif="$usuario.seguidores == 1"}1 {@seguidor@}{else}{@sin@} {@seguidores@}{/if}</span></div>
+		<div class="well"><i class="icon icon-plus"></i><span class="pull-right">{if="$usuario.puntos > 1"}{$usuario.puntos} {@puntos@}{elseif="$usuario.puntos == 1"}1 {@puntos@}{else}{@sin@} {@puntos@}{/if}</span></div>
+		<div class="well"><i class="icon icon-book"></i><span class="pull-right">{if="$usuario.posts > 1"}{$usuario.posts} {@posts@}{elseif="$usuario.posts == 1"}1 {@post@}{else}{@sin@} {@posts@}{/if}</span></div>
+		<div class="well"><i class="icon icon-comment"></i><span class="pull-right">{if="$usuario.comentarios > 1"}{$usuario.comentarios} {@comentarios@}{elseif="$usuario.comentarios == 1"}1 {@comentario@}{else}{@sin@} {@comentarios@}{/if}</span></div>
 	</div>
 	<div class="span10">
 		{if="isset($success)"}

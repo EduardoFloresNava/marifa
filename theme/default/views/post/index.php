@@ -1,15 +1,17 @@
 <div class="row post">
-	<div class="span2 usuario">
+	<div class="span2 usuario-perfil-lateral">
 		<h3 class="title">Posteado por:</h3>
-		<img class="thumbnail" src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
-		<h4 class="nick">{$usuario.nick}</h4>
-		{if="$me != NULL && $me != $usuario.id"}<div class="row-fluid">
-			<a href="#" class="btn span12" style="min-height: 0;">Seguir usuario</a>
+		<a href="/perfil/index/{$usuario.nick}" class="thumbnail">
+			<img src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
+			<h4 class="nick">{$usuario.nick}</h4>
+		</a>
+		{if="$me != NULL && $me != $usuario.id"}<div class="row-fluid follow">
+			<a href="#" class="btn span12" style="min-height: 0;"><i class="icon icon-plus"></i> Seguir usuario</a>
 		</div>{/if}
-		<p><strong>Seguidores:</strong> {$usuario.seguidores}</p>
-		<p><strong>Puntos:</strong> {$usuario.puntos}</p>
-		<p><strong>Posts:</strong> {$usuario.posts}</p>
-		<p><strong>Comentarios:</strong> {$usuario.comentarios}</p>
+		<div class="well"><i class="icon icon-user"></i><span class="pull-right">{if="$usuario.seguidores > 1"}{$usuario.seguidores} {@seguidores@}{elseif="$usuario.seguidores == 1"}1 {@seguidor@}{else}{@sin@} {@seguidores@}{/if}</span></div>
+		<div class="well"><i class="icon icon-plus"></i><span class="pull-right">{if="$usuario.puntos > 1"}{$usuario.puntos} {@puntos@}{elseif="$usuario.puntos == 1"}1 {@puntos@}{else}{@sin@} {@puntos@}{/if}</span></div>
+		<div class="well"><i class="icon icon-book"></i><span class="pull-right">{if="$usuario.posts > 1"}{$usuario.posts} {@posts@}{elseif="$usuario.posts == 1"}1 {@post@}{else}{@sin@} {@posts@}{/if}</span></div>
+		<div class="well"><i class="icon icon-comment"></i><span class="pull-right">{if="$usuario.comentarios > 1"}{$usuario.comentarios} {@comentarios@}{elseif="$usuario.comentarios == 1"}1 {@comentario@}{else}{@sin@} {@comentarios@}{/if}</span></div>
 	</div>
 	<div class="span10 contenido">
 		<div class="row-fluid cabecera">
@@ -30,7 +32,7 @@
 				<div class="pull-left btn-group">
 					{if="$me != NULL && !$sigo_post"}<a href="/post/seguir_post/{$post.id}" class="btn">Seguir Post</a>{/if}
 					{if="$me != NULL && !$es_favorito"}<a href="/post/favorito/{$post.id}" class="btn">Agregar a favoritos</a>{/if}
-					{if="$me != NULL && $me != $usuario.id"}<a href="#" class="btn btn-danger">Denunciar</a>{/if}
+					{if="$me != NULL && $me != $usuario.id"}<a href="/post/denunciar/{$post.id}" class="btn btn-danger">Denunciar</a>{/if}
 				</div>
 				<div class="pull-right btn-group">
 					<span class="btn">{$post.seguidores} Seguidores</span>
@@ -50,13 +52,10 @@
 			</div>
 		</div>
 		<div class="row-fluid">
-			<div class="span12">
-				<div class="pull-left">
-					<i class="icon icon-tag"></i> Etiquetas:
-					<ul>
-						{loop="$etiquetas"}<li>{$value}</li>{/loop}
-					</ul>
-				</div>
+			<div class="span12 info">
+				<ul class="tags">
+					{loop="$etiquetas"}<li><a href="#">{$value}</a></li>{/loop}
+				</ul>
 				<div class="pull-right">
 					Creado: {function="$post.fecha->fuzzy()"}
 				</div>
@@ -78,6 +77,7 @@
 								<a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a>
 								<small>{function="$value.fecha->fuzzy()"}</small>
 								{if="$value.votos != 0"}<span class="badge badge-{if="$value.votos > 0"}success{else}important{/if}">{$value.votos|abs}</span>{/if}
+								{if="$value.estado == 1"}<span class="label label-important">OCULTO</span>{elseif="$value.estado == 2"}<span class="label label-info">EN REVISION</span>{/if}
 							</span>
 							<div class="btn-group pull-right acciones">
 								{if="$me != NULL && !$value.vote"}
@@ -86,7 +86,7 @@
 								{/if}
 								{if="$me != NULL"}<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}"><i class="icon icon-comment"></i></a>{/if}
 								{if="$me != NULL && $me == $value.usuario.id"}<a href="#" class="btn btn-mini"><i class="icon icon-pencil"></i></a>{/if}
-								{if="$me != NULL && $me == $value.usuario.id"}<a href="#" class="btn btn-mini btn-danger"><i class="icon-white icon-remove"></i></a>{/if}
+								{if="$me != NULL && $me == $value.usuario.id && $value.estado != 1"}<a href="/post/ocultar_post/{$value.id}" class="btn btn-mini btn-danger"><i class="icon-white icon-remove"></i></a>{/if}
 							</div>
 						</div>
 						<div class="comentario-body">{$value.contenido}</div>

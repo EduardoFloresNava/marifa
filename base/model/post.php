@@ -317,7 +317,7 @@ class Base_Model_Post extends Model_Dataset {
 		// Validamos estado.
 		if ($cantidad === FALSE)
 		{
-			$cantidad = $this->db->query('SELECT SUM(cantidad) FROM post_punto WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+			$cantidad = (int) $this->db->query('SELECT SUM(cantidad) FROM post_punto WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 
 			// Actualizamos la cache.
 			Cache::get_instance()->save('post_'.$this->primary_key['id'].'_puntos', $cantidad);
@@ -395,7 +395,14 @@ class Base_Model_Post extends Model_Dataset {
 		//TODO: UTILIZAR ESTADO DE LOS COMENTARIOS.
 		//TODO: IMPLEMENTAR UTILIZACION DIRECTA DE MODELOS EN LOS RESULTADOS.
 		//TODO: DIFERENCIAR 1 estado de un arreglo. Mejora rendimiento SQL.
-		$rst = $this->db->query('SELECT id FROM post_comentario WHERE post_id = ? AND estado IN (?)', array($this->primary_key['id'], $estado));
+		if ($estado === NULL)
+		{
+			$rst = $this->db->query('SELECT id FROM post_comentario WHERE post_id = ?', $this->primary_key['id']);
+		}
+		else
+		{
+			$rst = $this->db->query('SELECT id FROM post_comentario WHERE post_id = ? AND estado IN (?)', array($this->primary_key['id'], $estado));
+		}
 		$rst->set_cast_type(Database_Query::FIELD_INT);
 
 		$lst = array();
@@ -557,7 +564,7 @@ class Base_Model_Post extends Model_Dataset {
 		$inicio = $cantidad * ($pagina - 1);
 
 		// Obtenemos el listado.
-		$rst = $this->db->query('SELECT id FROM post ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+		$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
 
 		// Armamos la lista.
 		$lst = array();
@@ -581,7 +588,7 @@ class Base_Model_Post extends Model_Dataset {
 		$inicio = $cantidad * ($pagina - 1);
 
 		// Obtenemos el listado.
-		$rst = $this->db->query('SELECT SUM(post_punto.cantidad) as puntos, post.id FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id GROUP BY post.id ORDER BY puntos DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+		$rst = $this->db->query('SELECT SUM(post_punto.cantidad) as puntos, post.id FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id WHERE post.estado = 0 GROUP BY post.id ORDER BY puntos DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
 
 		// Armamos la lista.
 		$lst = array();
@@ -648,16 +655,31 @@ class Base_Model_Post extends Model_Dataset {
 
 	/**
 	 * Cantidad de comentarios en posts que hay.
+	 * Si hay una clave primaria es la cantidad que hay en un post.
 	 * @return int
 	 */
 	public function cantidad_comentarios()
 	{
-		$key = 'post_comentarios_total';
+		if ($this->primary_key['id'] !== NULL)
+		{
+			$key = 'post_'.$this->primary_key['id'].'_comentarios_total';
+		}
+		else
+		{
+			$key = 'post_comentarios_total';
+		}
 
 		$rst = Cache::get_instance()->get($key);
 		if ( ! $rst)
 		{
-			$rst = $this->db->query('SELECT COUNT(*) FROM post_comentario')->get_var(Database_Query::FIELD_INT);
+			if ($this->primary_key['id'] !== NULL)
+			{
+				$rst = $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				$rst = $this->db->query('SELECT COUNT(*) FROM post_comentario')->get_var(Database_Query::FIELD_INT);
+			}
 
 			Cache::get_instance()->save($key, $rst);
 		}
@@ -698,7 +720,7 @@ class Base_Model_Post extends Model_Dataset {
 		}
 
 		// Cantidad de elementos.
-		$total = $this->db->query('SELECT COUNT(*) FROM post WHERE MATCH (`titulo`, `contenido`, `tags`) AGAINST(? IN BOOLEAN MODE) '.$where, $condiciones)->get_var(Database_Query::FIELD_INT);
+		$total = $this->db->query('SELECT COUNT(*) FROM post WHERE MATCH (`titulo`, `contenido`, `tags`) AGAINST(? IN BOOLEAN MODE) AND estado = 0 '.$where, $condiciones)->get_var(Database_Query::FIELD_INT);
 
 		// Verificamos que existan resultados.
 		if ($total == 0)
@@ -710,7 +732,7 @@ class Base_Model_Post extends Model_Dataset {
 		$first = ($pagina - 1) * $cantidad;
 
 		// Obtenemos la lista de elementos.
-		$rst = $this->db->query('SELECT id FROM post WHERE MATCH (`titulo`, `contenido`, `tags`) AGAINST(? IN BOOLEAN MODE) '.$where.' LIMIT '.$first.', '.$cantidad, $condiciones)->get_pairs(Database_Query::FIELD_INT);
+		$rst = $this->db->query('SELECT id FROM post WHERE MATCH (`titulo`, `contenido`, `tags`) AGAINST(? IN BOOLEAN MODE) AND estado = 0 '.$where.' LIMIT '.$first.', '.$cantidad, $condiciones)->get_pairs(Database_Query::FIELD_INT);
 
 		// Listado de elementos.
 		$lst = array();
@@ -732,7 +754,7 @@ class Base_Model_Post extends Model_Dataset {
 	public function buscar_relacionados($pagina = 1, $cantidad = 10)
 	{
 		// Cantidad de elementos.
-		$total = $this->db->query('SELECT COUNT(*) FROM post INNER JOIN post_tag ON post.id = post_tag.post_id WHERE post_tag.nombre IN (SELECT nombre FROM post_tag WHERE post_id = ?) AND post.id != ? GROUP BY post.id', array($this->primary_key['id'], $this->primary_key['id']))->get_var(Database_Query::FIELD_INT);
+		$total = $this->db->query('SELECT COUNT(*) FROM post INNER JOIN post_tag ON post.id = post_tag.post_id WHERE post.estado = 0 AND post_tag.nombre IN (SELECT nombre FROM post_tag WHERE post_id = ?) AND post.id != ? GROUP BY post.id', array($this->primary_key['id'], $this->primary_key['id']))->get_var(Database_Query::FIELD_INT);
 
 		// Verificamos que existan resultados.
 		if ($total == 0)
@@ -744,7 +766,7 @@ class Base_Model_Post extends Model_Dataset {
 		$first = ($pagina - 1) * $cantidad;
 
 		// Obtenemos la lista de elementos.
-		$rst = $this->db->query('SELECT post.id, COUNT(post.id) AS cantidad FROM post INNER JOIN post_tag ON post.id = post_tag.post_id WHERE post_tag.nombre IN (SELECT nombre FROM post_tag WHERE post_id = ?) AND post.id != ? GROUP BY post.id ORDER BY cantidad DESC LIMIT '.$first.', '.$cantidad, array($this->primary_key['id'], $this->primary_key['id']))->get_pairs(Database_Query::FIELD_INT);
+		$rst = $this->db->query('SELECT post.id, COUNT(post.id) AS cantidad FROM post INNER JOIN post_tag ON post.id = post_tag.post_id WHERE post.estado = 0 AND post_tag.nombre IN (SELECT nombre FROM post_tag WHERE post_id = ?) AND post.id != ? GROUP BY post.id ORDER BY cantidad DESC LIMIT '.$first.', '.$cantidad, array($this->primary_key['id'], $this->primary_key['id']))->get_pairs(Database_Query::FIELD_INT);
 
 		// Listado de elementos.
 		$lst = array();

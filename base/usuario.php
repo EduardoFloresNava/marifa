@@ -45,6 +45,12 @@ class Base_Usuario {
 	private static $usuario;
 
 	/**
+	 * Listado de permisos que tiene el usuario asignados.
+	 * @var array
+	 */
+	private static $permisos;
+
+	/**
 	 * Obtenemos si hay un usuario logueado o no.
 	 * @return bool
 	 */
@@ -74,9 +80,32 @@ class Base_Usuario {
 	{
 		if ( ! isset(self::$usuario))
 		{
-			self::$usuario = self::is_login() ? new Model_Usuario( (int) Session::is_set('usuario_id')) : FALSE;
+			self::$usuario = self::is_login() ? new Model_Usuario( (int) Session::get('usuario_id')) : FALSE;
 		}
 		return self::$usuario;
+	}
+
+	/**
+	 * Verificamos si el usuario tiene el permiso asociado.
+	 * @return bool
+	 */
+	public static function permiso($permiso)
+	{
+		if (self::is_login())
+		{
+			// Verifico la lista de permisos.
+			if ( ! isset(self::$permisos))
+			{
+				// Cargo el modelo de permisos.
+				self::$permisos = self::usuario()->rango()->permisos();
+			}
+			// Verifico si existe.
+			return in_array($permiso, self::$permisos);
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
 
 	/**

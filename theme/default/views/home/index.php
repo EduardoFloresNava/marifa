@@ -6,7 +6,7 @@
 			<img style="float: left;" src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
 			<div style="margin-left: 30px;">
 				<p><a href="/post/index/{$value.id}/">{$value.titulo}</a></p>
-				<p>{$value.fecha->fuzzy()} - <a href="/perfil/informacion/{$value.usuario.nick}">@{$value.usuario.nick}</a> - {@Puntos@} {$value.puntos} - {@Comentarios@} {$value.comentarios}<span class="pull-right">{$value.categoria.nombre}</span></p>
+				<p>{$value.fecha->fuzzy()} - <a href="/perfil/informacion/{$value.usuario.nick}">@{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios}<span class="pull-right">{$value.categoria.nombre}</span></p>
 			</div>
 		</div>
 		{/loop}

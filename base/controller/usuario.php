@@ -40,11 +40,8 @@ class Base_Controller_Usuario extends Controller {
 	{
 		parent::__construct();
 
-		if ( ! Session::is_set('usuario_id'))
-		{
-			// Seteamos menu offline.
-			$this->template->assign('master_bar', parent::base_menu_logout());
-		}
+		// Seteo el menu.
+		$this->template->assign('master_bar', parent::base_menu());
 	}
 
 	/**
@@ -53,7 +50,7 @@ class Base_Controller_Usuario extends Controller {
 	public function action_login()
 	{
 		// Verificamos si el usuario está conectado.
-		if (Session::is_set('usuario_id'))
+		if (Usuario::is_login())
 		{
 			// Lo enviamos al perfil.
 			Request::redirect('/');
@@ -145,7 +142,7 @@ class Base_Controller_Usuario extends Controller {
 	public function action_register()
 	{
 		// Verificamos si el usuario está conectado.
-		if (Session::is_set('usuario_id'))
+		if (Usuario::is_login())
 		{
 			// Lo enviamos a la portada.
 			Request::redirect('/');
