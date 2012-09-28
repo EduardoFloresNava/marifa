@@ -246,7 +246,7 @@ class Base_Database_Parser {
 	{
 		if ( ! $parse)
 		{
-			$c = Loader::prefix_class(__CLASS__);
+			$c = loader_prefix_class(__CLASS__);
 			$value = new $c($value);
 		}
 

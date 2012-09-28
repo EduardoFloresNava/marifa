@@ -88,7 +88,7 @@ class Base_Plugin_Manager {
 	{
 		if ( ! isset(self::$instance))
 		{
-			$c = Loader::prefix_class(__CLASS__);
+			$c = loader_prefix_class(__CLASS__);
 			self::$instance = new $c;
 		}
 		return self::$instance;

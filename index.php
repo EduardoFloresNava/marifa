@@ -79,12 +79,11 @@ define('VIEW_PATH', 'theme'.DS);
  */
 define('CACHE_PATH', APP_BASE.DS.'cache');
 
-// Cargamos la libreria de carga de clases.
-require_once (APP_BASE.DS.'base'.DS.'loader.php');
-require_once (APP_BASE.DS.'marifa'.DS.'loader.php');
+// Cargamos funciones varias.
+require_once (APP_BASE.DS.'function.php');
 
 // Iniciamos el proceso de carga automatica de librerias.
-spl_autoload_register('Loader::load');
+spl_autoload_register('loader_load');
 
 // Inicio la session.
 Session::start('random_value');
@@ -127,7 +126,7 @@ else
 Cache::get_instance();
 
 // Cargamos las configuraciones del gestor de actualizaciones.
-if ( file_exists(CONFIG_PATH.DS.'update.php'))
+if (file_exists(CONFIG_PATH.DS.'update.php'))
 {
 	Configuraciones::load(CONFIG_PATH.DS.'update.php', TRUE);
 }
