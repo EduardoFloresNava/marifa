@@ -29,6 +29,45 @@ defined('APP_BASE') || die('No direct access allowed.');
  * fuera de clases mejora el rendimiento.
  */
 
+/**
+ * Carga un archivo de configuraciones y lo devuelve.
+ * @param string $file Nombre del archivo a cargar.
+ * @param boolean $prepend_name Si agregamos previamente un arreglo con el nombre
+ * del archivo.
+ * @return array
+ * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
+ */
+function configuracion_obtener($file, $prepend_name = FALSE)
+{
+	// Comprobamos que exista el archivo.
+	if ( ! file_exists($file))
+	{
+		throw new Exception("No existe el archivo de configuraciones '$file'.", 1);
+	}
+
+	// Comprobamos si hay que agregar el nombre del archivo a las llamadas.
+	if ($prepend_name)
+	{
+		// Obtenemos el nombre de archivo, sin extension.
+		$fi = pathinfo($file);
+
+		if ( ! isset($fi['filename']))
+		{
+			$fi['filename'] = substr($fi['basename'], 0, (-1) * strlen($fi['extension']) - 1);
+		}
+
+		$name = $fi['filename'];
+		unset($fi);
+
+		// Cargamos las configuraciones.
+		return array($name => include ($file));
+	}
+	else
+	{
+		// Cargamos las configuraciones
+		return include ($file);
+	}
+}
 
 /**
  * Funcion para la carga de una clase.
@@ -83,4 +122,22 @@ function loader_prefix_class($class, $prefix = FALSE)
 		}
 	}
 	return $class;
+}
+
+/**
+ * Armo la URL en función de parámetros del tipo.
+ * @return string
+ */
+function get_site_url()
+{
+	// Obtengo puerto.
+	$puerto = (int) $_SERVER['SERVER_PORT'];
+
+	// Verifico si es HTTPS.
+	$https = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] == 'on' : FALSE;
+
+	// URL del servidor.
+	$server_name = $_SERVER['SERVER_NAME'];
+
+	return ($https ? 'https' : 'http').'://'.$server_name.((($https && $puerto == 443) || ( ! $https && $puerto == 80)) ? '' : ':'.$puerto).'/';
 }

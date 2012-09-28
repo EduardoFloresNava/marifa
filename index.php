@@ -85,6 +85,11 @@ require_once (APP_BASE.DS.'function.php');
 // Iniciamos el proceso de carga automatica de librerias.
 spl_autoload_register('loader_load');
 
+/**
+ * Defino la URL del sitio.
+ */
+define('SITE_URL', get_site_url());
+
 // Inicio la session.
 Session::start('random_value');
 
@@ -113,11 +118,6 @@ if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
 	//TODO: lo mandamos al instalador.
 	die("Falta configurar la base de datos");
 }
-else
-{
-	// Cargamos la configuración de la base de datos.
-	Configuraciones::load(CONFIG_PATH.DS.'database.php', TRUE);
-}
 
 // Forzamos una cache inexistente. Comente esta linea para habilitar la cache.
 //Configuraciones::set('cache.type', NULL);
@@ -128,7 +128,7 @@ Cache::get_instance();
 // Cargamos las configuraciones del gestor de actualizaciones.
 if (file_exists(CONFIG_PATH.DS.'update.php'))
 {
-	Configuraciones::load(CONFIG_PATH.DS.'update.php', TRUE);
+	//Configuraciones::load(CONFIG_PATH.DS.'update.php', TRUE);
 }
 
 // Comprobamos que existe la lista de plugins.

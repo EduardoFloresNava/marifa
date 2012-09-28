@@ -264,7 +264,7 @@ class Base_Controller_Perfil extends Controller {
 		$country = Utils::prop($this->usuario->perfil(), 'origen');
 		if ($country !== NULL)
 		{
-			$lista_pais = Configuraciones::obtener(CONFIG_PATH.DS.'geonames.'.FILE_EXT);
+			$lista_pais = configuracion_obtener(CONFIG_PATH.DS.'geonames.'.FILE_EXT);
 			$country = explode('.', $country);
 			$information_view->assign('origen', $lista_pais[$country[0]][0].', '.$lista_pais[$country[0]][1][$country[1]]);
 			unset($lista_pais);

@@ -42,7 +42,7 @@ class Base_Upload_Imagen {
 	public function __construct()
 	{
 		// Cargamos la configuracion.
-		$this->config = Configuraciones::obtener(CONFIG_PATH.DS.'upload.'.FILE_EXT);
+		$this->config = configuracion_obtener(CONFIG_PATH.DS.'upload.'.FILE_EXT);
 	}
 
 	/**

@@ -89,7 +89,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view->assign('estado_nacimiento', 0);
 
 		// Listado de paises.
-		$lista_pais = Configuraciones::obtener(CONFIG_PATH.DS.'geonames.'.FILE_EXT);
+		$lista_pais = configuracion_obtener(CONFIG_PATH.DS.'geonames.'.FILE_EXT);
 		$view->assign('paices', $lista_pais);
 
 		if (Request::method() == 'POST')

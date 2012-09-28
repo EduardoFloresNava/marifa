@@ -30,6 +30,9 @@
 		<div class="row-fluid">
 			<div class="span12">
 				<div class="pull-left btn-group">
+					{if="$modificar_sticky"}{if="$post.sticky"}<a href="/post/fijar_post/{$post.id}/-1" class="btn">Quitar fijo</a>{else}<a href="/post/fijar_post/{$post.id}/1" class="btn">Fijar</a>{/if}{/if}
+					{if="$modificar_patrocinado"}{if="$post.sponsored"}<a href="/post/patrocinar_post/{$post.id}/-1" class="btn">Quitar patrocinio</a>{else}<a href="/post/patrocinar_post/{$post.id}/1" class="btn">Patrocinar</a>{/if}{/if}
+					{if="$modificar_borrar"}<a href="/post/eliminar_post/{$post.id}" class="btn btn-danger">Eliminar</a>{/if}
 					{if="$me != NULL && !$sigo_post"}<a href="/post/seguir_post/{$post.id}" class="btn">Seguir Post</a>{/if}
 					{if="$me != NULL && !$es_favorito"}<a href="/post/favorito/{$post.id}" class="btn">Agregar a favoritos</a>{/if}
 					{if="$me != NULL && $me != $usuario.id"}<a href="/post/denunciar/{$post.id}" class="btn btn-danger">Denunciar</a>{/if}

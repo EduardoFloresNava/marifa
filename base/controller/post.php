@@ -91,6 +91,11 @@ class Base_Controller_Post extends Controller {
 			$view->assign('post', $pst);
 			unset($pst);
 
+			// Verifico permisos para acciones extendidas.
+			$view->assign('modificar_sticky', Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS));
+			$view->assign('modificar_patrocinado', Usuario::permiso(Model_Usuario_Rango::PERMISO_ADMINISTRADOR));
+			$view->assign('modificar_borrar', Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS));
+
 			if ($model_post->as_object()->usuario_id == Usuario::usuario()->id)
 			{
 				$view->assign('es_favorito', TRUE);
@@ -101,7 +106,7 @@ class Base_Controller_Post extends Controller {
 			{
 				$view->assign('es_favorito', $model_post->es_favorito(Usuario::usuario()->id));
 				$view->assign('sigo_post', $model_post->es_seguidor(Usuario::usuario()->id));
-				if ($model_post->dio_puntos(Usuario::usuario()->id))
+				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_PUNTUAR_POST) || $model_post->dio_puntos(Usuario::usuario()->id))
 				{
 					$view->assign('puntuacion', FALSE);
 				}
@@ -289,6 +294,13 @@ class Base_Controller_Post extends Controller {
 			Request::redirect('/');
 		}
 
+		// Verifico permisos.
+		//TODO: ver de poder cerrar comentarios.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTAR_POST))
+		{
+			Request::redirect('/post/index/'.$post);
+		}
+
 		// Obtenemos el comentario.
 		$comentario = isset($_POST['comentario']) ? $_POST['comentario'] : NULL;
 
@@ -392,6 +404,12 @@ class Base_Controller_Post extends Controller {
 			Request::redirect('/');
 		}
 
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_VOTAR_COMENTARIO_POST))
+		{
+			Request::redirect('/post/index/'.$model_comentario->post_id);
+		}
+
 		// Cargamos usuario.
 		$usuario_id = Usuario::usuario()->id;
 
@@ -422,7 +440,7 @@ class Base_Controller_Post extends Controller {
 	 * Ocultamos un comentario.
 	 * @param int $comentario ID del comentario a ocultar.
 	 */
-	public function action_ocultar_post($comentario)
+	public function action_ocultar_comentario($comentario)
 	{
 		// Cargamos el comentario.
 		$model_comentario = new Model_Post_Comentario( (int) $comentario);
@@ -546,24 +564,28 @@ class Base_Controller_Post extends Controller {
 		// Verifica autor.
 		if ($model_post->usuario_id != $usuario_id)
 		{
-			// Verificamos el voto.
-			if ( ! $model_post->dio_puntos($usuario_id))
+			// Verifico permisos.
+			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_PUNTUAR_POST))
 			{
-				// Verificamos la cantidad de puntos.
-				$model_usuario = new Model_Usuario($usuario_id);
-				if ($model_usuario->puntos_disponibles >= $cantidad)
+				// Verificamos el voto.
+				if ( ! $model_post->dio_puntos($usuario_id))
 				{
-					$model_post->dar_puntos($usuario_id, $cantidad);
-					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(
-							array(
+					// Verificamos la cantidad de puntos.
+					$model_usuario = new Model_Usuario($usuario_id);
+					if ($model_usuario->puntos_disponibles >= $cantidad)
+					{
+						$model_post->dar_puntos($usuario_id, $cantidad);
+						$model_suceso = new Model_Suceso;
+						$model_suceso->crear(
+								array(
+									$usuario_id,
+									$model_post->usuario_id
+								),
+								'punto_post',
 								$usuario_id,
-								$model_post->usuario_id
-							),
-							'punto_post',
-							$usuario_id,
-							$post
-						);
+								$post
+							);
+					}
 				}
 			}
 		}
@@ -579,6 +601,13 @@ class Base_Controller_Post extends Controller {
 		if ( ! Usuario::is_login())
 		{
 			Request::redirect('/usuario/login');
+		}
+
+		// Verifico los permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_CREAR_POST))
+		{
+			//TODO: Mensaje de alerta.
+			Request::redirect('/');
 		}
 
 		// Asignamos el título.

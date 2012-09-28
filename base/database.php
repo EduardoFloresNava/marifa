@@ -67,7 +67,7 @@ class Base_Database {
 		if ( ! isset(self::$instance))
 		{
 			// Cargamos la configuración de la base de datos.
-			$config = Configuraciones::get('database', array());
+			$config = configuracion_obtener(CONFIG_PATH.DS.'database.php', FALSE);
 
 			// Comprobamos que exista un driver asignado.
 			if ( ! isset($config['type']))

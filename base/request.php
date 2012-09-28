@@ -43,7 +43,7 @@ class Base_Request {
 	 * @param string $call Url llamada.
 	 * @param string $method
 	 */
-	public static function add_stack($method = NULL, $controller, $action, $params, $plugin)
+	public static function add_stack($method , $controller, $action, $params, $plugin)
 	{
 		// Obtenemos metodo.
 		$method = ($method === NULL) ? (self::method()) : $method;
@@ -146,7 +146,12 @@ class Base_Request {
 			$url = '/'.implode('/', $url);
 		}
 
-		//TODO: agregamos directorio base.
+		if ($url{0} !== '/')
+		{
+			$url = '/'.$url;
+		}
+
+		$url = SITE_URL.$url;
 
 		// Redireccionamos.
 		header("Location: $url");

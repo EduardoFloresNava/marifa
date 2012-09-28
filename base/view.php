@@ -45,7 +45,7 @@ class Base_View {
 		// Defino constantes para URL's relativas.
 		if ( ! defined('THEME_URL'))
 		{
-			define('THEME_URL', 'http://'.$_SERVER['HTTP_HOST'].'/theme/'.THEME);
+			define('THEME_URL', SITE_URL.'theme/'.THEME);
 		}
 
 		// No usarmos las URL's de RainTPL.

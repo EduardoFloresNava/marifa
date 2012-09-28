@@ -599,7 +599,7 @@ class Base_Model_Usuario extends Model_Dataset {
 
 	/**
 	 * Cantidad de usuarios activos en el último minuto.
-	 * @return type
+	 * @return int
 	 */
 	public function cantidad_activos()
 	{
