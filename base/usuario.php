@@ -56,12 +56,35 @@ class Base_Usuario {
 	 */
 	public static function is_login()
 	{
+		// Verifico si ya tengo un valor.
 		if ( ! isset(self::$is_login))
 		{
+			// Verifico si existe el valor en la session.
 			if (Session::is_set('usuario_id'))
 			{
+				// Verifico si está en la base de datos.
 				$model_session = new Model_Session(Session::$id);
-				self::$is_login = $model_session->existe();
+
+				// Verifico el tiempo.
+				if ($model_session->existe())
+				{
+					if ($model_session->expira->getTimestamp() < time())
+					{
+						// Termino la sessión.
+						$model_session->borrar();
+						self::$is_login = FALSE;
+					}
+					else
+					{
+						// Actualizo la session.
+						$model_session->actualizar_expira(Session::$duracion);
+						self::$is_login = TRUE;
+					}
+				}
+				else
+				{
+					self::$is_login = FALSE;
+				}
 				unset($model_session);
 			}
 			else
@@ -117,7 +140,7 @@ class Base_Usuario {
 	public static function login($usuario, $ip)
 	{
 		$model_session = new Model_Session;
-		$model_session->crear(Session::$id, $usuario->id, $ip, date('Y/m/d H:i:s'));
+		$model_session->crear(Session::$id, $usuario->id, $ip, date('Y/m/d H:i:s', time() + Session::$duracion));
 		Session::set('usuario_id', $usuario->id);
 		self::$usuario = $usuario;
 		self::$is_login = TRUE;

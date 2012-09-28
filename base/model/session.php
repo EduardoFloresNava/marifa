@@ -29,6 +29,10 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
+ * @property-read string $id ID de la sessión.
+ * @property-read int $usuario_id ID del usuario dueño de la sessión.
+ * @property-read int $ip IP de la sessión.
+ * @property-read Fechahora $expira Fecha en la cual expira la sessión.
  */
 class Base_Model_Session extends Model_Dataset {
 
@@ -75,12 +79,29 @@ class Base_Model_Session extends Model_Dataset {
 	}
 
 	/**
+	 * Actualizamos la fecha en la cual expira la sessión.
+	 * @param type $tiempo
+	 */
+	public function actualizar_expira($tiempo)
+	{
+		$this->db->update('UPDATE session SET expira = ? WHERE id = ?', array(date('Y/m/d H:i:s', time() + $tiempo), $this->primary_key['id']));
+	}
+
+	/**
+	 * Borramos las sessiones antiguas.
+	 */
+	public function limpiar()
+	{
+		$this->db->delete('DELETE FROM session WHERE expira < ?', date('Y/m/d H:i:s'));
+	}
+
+	/**
 	 * Terminamos la sessión del usuario.
 	 * @return string
 	 */
 	public function borrar()
 	{
-		return $this->db->delete('DELETE FROM session WHERE id = ?', $this->primary_key['id']);
+		return $this->db->delete('DELETE FROM session WHERE id = ? OR expira < ?', array($this->primary_key['id'], date('Y/m/d H:i:s')));
 	}
 
 	public function crear($id, $usuario, $ip, $expira)
@@ -145,6 +166,24 @@ class Base_Model_Session extends Model_Dataset {
 			$q = '';
 		}
 		return $this->db->query('SELECT COUNT(*) FROM session'.$q, $params)->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Cantidad de sessiones activas existentes.
+	 * @return int
+	 */
+	public function cantidad_activas()
+	{
+		return (int) $this->db->query('SELECT COUNT(*) FROM session WHERE expira >= ?', date('Y/m/d H:i:s'))->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Cantidad de sessiones activas sin contar usuarios repetidos.
+	 * @return int
+	 */
+	public function cantidad_usuarios()
+	{
+		return (int) $this->db->query('SELECT COUNT( DISTINCT usuario_id ) FROM session WHERE expira >= ?', date('Y/m/d H:i:s'))->get_var(Database_Query::FIELD_INT);
 	}
 
 }

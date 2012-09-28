@@ -598,12 +598,14 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
-	 * Cantidad de usuarios activos en el último minuto..
+	 * Cantidad de usuarios activos en el último minuto.
 	 * @return type
 	 */
 	public function cantidad_activos()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM usuario WHERE UNIX_TIMESTAMP(lastactive) > ?', (time() - 60))->get_var(Database_Query::FIELD_INT);
+		$m_s = new Model_Session;
+		return $m_s->cantidad_usuarios();
+		//return $this->db->query('SELECT COUNT(*) FROM usuario WHERE UNIX_TIMESTAMP(lastactive) > ?', (time() - 60))->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**

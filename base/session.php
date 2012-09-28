@@ -44,6 +44,12 @@ class Base_Session {
 	public static $id;
 
 	/**
+	 * Cantidad de segundos que dura la sessión.
+	 * @var int
+	 */
+	public static $duracion;
+
+	/**
 	 * Seteamos la clave e iniciamos la sesión
 	 * @param string $key Clave de la sesión
 	 */
@@ -55,6 +61,7 @@ class Base_Session {
 		}
 		self::$key = md5($key);
 		self::$id = session_id();
+		self::$duracion = session_cache_expire() * 60;
 	}
 
 	/**
