@@ -111,11 +111,12 @@ class Base_Profiler_Profiler {
 	 */
 	public static function get_instance()
 	{
-		if ( ! isset(static::$instance))
+		if ( ! isset(self::$instance))
 		{
-			static::$instance = new static;
+			$c = __CLASS__;
+			self::$instance = new $c;
 		}
-		return static::$instance;
+		return self::$instance;
 	}
 
 	/**

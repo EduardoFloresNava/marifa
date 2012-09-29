@@ -144,19 +144,6 @@ Usuario::start();
 // Database profiler.
 Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
 
-
-function __($str, $echo = TRUE)
-{
-	if ($echo)
-	{
-		echo $str;
-	}
-	else
-	{
-		return $str;
-	}
-}
-
 if (DEBUG)
 {
 	Profiler_Profiler::get_instance()->log_memory('Framework memory');

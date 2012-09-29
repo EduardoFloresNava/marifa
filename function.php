@@ -141,3 +141,61 @@ function get_site_url()
 
 	return ($https ? 'https' : 'http').'://'.$server_name.((($https && $puerto == 443) || ( ! $https && $puerto == 80)) ? '' : ':'.$puerto).'/';
 }
+
+/**
+ * Función provisoria para el manejo de traducciones.
+ * @param string $str Cadena a procesar.
+ * @param bool $echo Si lo imprimimos o lo devolvemos.
+ * @return mixed
+ */
+function __($str, $echo = TRUE)
+{
+	if ($echo)
+	{
+		echo $str;
+	}
+	else
+	{
+		return $str;
+	}
+}
+
+/**
+ * Converts a number of bytes to a more readable format
+ *
+ * @param int   $size      The number of bytes
+ * @param string $format_string The format of the return string
+ *
+ * @return string
+ */
+function get_readable_file_size($size, $format_string = '')
+{
+	$sizes = array('bytes', 'kB', 'MB', 'GB', 'TB');
+
+	if ( ! $format_string)
+	{
+		$format_string = '%01.2f %s';
+	}
+
+	$last_size_string = end($sizes);
+
+	foreach ($sizes as $size_string)
+	{
+		if ($size < 1024)
+		{
+			break;
+		}
+
+		if ($size_string != $last_size_string)
+		{
+			$size /= 1024;
+		}
+	}
+
+	if ($size_string == $sizes[0])
+	{
+		$format_string = '%01d %s';
+	}
+
+	return sprintf($format_string, $size, $size_string);
+}

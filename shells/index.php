@@ -87,17 +87,5 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 	Plugin_Manager::get_instance()->regenerar_lista();
 }
 
-function __($str, $echo = TRUE)
-{
-	if ($echo)
-	{
-		echo $str;
-	}
-	else
-	{
-		return $str;
-	}
-}
-
 // Cargamos el despachador y damos el control al controlador correspondiente.
 Shell_Dispatcher::dispatch();

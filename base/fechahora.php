@@ -32,10 +32,44 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Fechahora extends DateTime {
 
+	/**
+	 * Fallback de diff.
+	 * @param DateTime $date
+	 * @return int
+	 */
+	function date_diff($date)
+	{
+		$a = new stdClass;
+
+		$aInt = array(
+			'y' => 'Y',
+			'm' => 'm',
+			'd' => 'd',
+			'h' => 'h',
+			'i' => 'i',
+			's' => 's'
+		);
+
+		foreach ($aInt as $k => $v)
+		{
+			$a->$k = $date->format($v) - $this->format($v);
+		}
+
+		return $a;
+	}
+
+
 	public function fuzzy()
 	{
 		// Obtenemos diferencia de tiempo.
-		$diff = $this->diff(new DateTime("now"));
+		if (method_exists($this, 'diff'))
+		{
+			$diff = $this->diff(new DateTime("now"));
+		}
+		else
+		{
+			$diff = $this->date_diff(new DateTime('now'));
+		}
 
 		if ($diff->y != 0)
 		{
