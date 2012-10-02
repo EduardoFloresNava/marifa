@@ -1,5 +1,6 @@
 <div class="row">
 	<div class="span12">
+		<h2 class="title">Nuevo post:</h2>
 		<form method="POST" class="form-horizontal" action="">
 
 			{loop="$error"}
@@ -92,17 +93,17 @@
 					<h3 class="title">Opciones</h3>
 
 					<label class="checkbox">
-						<input type="checkbox" id="privado" name="privado" value="1" /><strong>S&oacute;lo usuarios registrados</strong>
+						<input type="checkbox" id="privado" name="privado" value="1"><strong>S&oacute;lo usuarios registrados</strong>
 						<p>Tu post ser&aacute; visto s&oacute;lo por los usuarios que est&eacute;n registrados.</p>
 					</label>
-					<label class="checkbox">
-						<input type="checkbox" id="sponsored" name="sponsored" value="1" /><strong>Patrocinado</strong>
-						<p>Resalta este post entre los dem&aacute;s.</p>
+					{if="$permisos_especiales"}<label class="checkbox">
+						<input type="checkbox" id="patrocinado" name="patrocinado" value="1"><strong>Patrocinado</strong>
+						<p>TResalta este post entre los dem&aacute;s.</p>
 					</label>
 					<label class="checkbox">
 						<input type="checkbox" id="sticky" name="sticky" value="1"><strong>Sticky</strong>
 						<p>Colocar a este post fijo en la home.</p>
-					</label>
+					</label>{/if}
 				</div>
 			</div>
 

@@ -70,8 +70,9 @@ class Base_Model_Categoria extends Model_Dataset {
 	 */
 	public function load_by_seo($seo)
 	{
-		parent::load(array('seo' => $seo));
+		$rst = parent::load(array('seo' => $seo));
 		$this->primary_key['id'] = $this->get('id');
+		return $rst;
 	}
 
 	/**

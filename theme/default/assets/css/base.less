@@ -22,14 +22,46 @@
 .home-search {
     ul.nav {
         margin-bottom: 0;
+
+        a {
+            padding: 5px;
+        }
     }
 
     .contenido {
         border: 1px solid rgba(0, 0, 0, 0.1);
-        border-top: none;
+        border-top: 0;
         border-radius: 0 0 4px 4px;
-        margin-bottom: 10px;
-        padding: 5px;
+        padding: 5px 0;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+
+        form {
+            margin: 0 0 0 5px;
+        }
+
+        input {
+            float: left;
+            margin: 5px 0 5px 5px;
+            border-radius: 5px 0 0 5px;
+            border-right: 0;
+        }
+
+        button {
+            float: left;
+            margin: 5px 0 5px 0;
+            border-radius: 0 5px 5px 0;
+        }
+    }
+
+    .more-options {
+        display: block;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-top: none;
+        margin: 0 auto 10px auto;
+        width: 80px;
+        padding: 2px 0;
+        text-align: center;
+        border-radius: 0 0 4px 4px;
     }
 }
 
@@ -167,11 +199,25 @@
         .cabecera {
             border-bottom: 1px solid rgba(0, 0, 0, 0.2);
             margin-bottom: 10px;
+            position: relative;
 
             .title {
                 border: none;
                 margin: 0;
                 text-align: center;
+                width: 100%;
+            }
+
+            .lineal {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .aleatorio {
+                position: absolute;
+                top: 0;
+                right: 0;
             }
 
             .btn {
@@ -565,5 +611,13 @@ h1.title, h2.title, h3.title {
 
     small {
         float: right;
+    }
+}
+
+.top-options {
+    .btn {
+        width: 100%;
+        margin: 2px 0;
+        padding: 2px 0;
     }
 }

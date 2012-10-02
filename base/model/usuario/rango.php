@@ -141,7 +141,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	/**
 	 * Ver las fotos que hay en la papelera y eliminados.
 	 */
-	const PERMISO_VER_PAPALERA_FOTOS = 19;
+	const PERMISO_VER_PAPELERA_FOTOS = 19;
 
 	/**
 	 * Ver posts que están desaprobados.

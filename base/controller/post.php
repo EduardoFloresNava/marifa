@@ -92,8 +92,7 @@ class Base_Controller_Post extends Controller {
 			unset($pst);
 
 			// Verifico permisos para acciones extendidas.
-			$view->assign('modificar_sticky', Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS));
-			$view->assign('modificar_patrocinado', Usuario::permiso(Model_Usuario_Rango::PERMISO_ADMINISTRADOR));
+			$view->assign('modificaciones_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS));
 			$view->assign('modificar_borrar', Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS));
 
 			if ($model_post->as_object()->usuario_id == Usuario::usuario()->id)
@@ -532,6 +531,323 @@ class Base_Controller_Post extends Controller {
 	}
 
 	/**
+	 * Setamos o quitamos el atributo sticky de un post.
+	 * @param int $post ID del post a modificar el atributo.
+	 * @param bool $tipo Si se agrega o quita.
+	 */
+	public function action_fijar_post($post, $tipo)
+	{
+		// Convertimos el post a ID.
+		$post = (int) $post;
+
+		// Cargamos el post.
+		$model_post = new Model_Post($post);
+
+		// Verificamos exista.
+		if ( ! is_array($model_post->as_array()))
+		{
+			Request::redirect('/');
+		}
+
+		// Verifico el permiso.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS))
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Valido el valor actual.
+		$tipo = $tipo == 1;
+
+		// Verifico el parametro sticky.
+		if ($model_post->sticky !== $tipo)
+		{
+			$model_post->setear_sticky($tipo);
+		}
+		//TODO: informar.
+		//TODO: agregar suceso.
+		Request::redirect('/post/index/'.$post);
+	}
+
+	/**
+	 * Setamos o quitamos el atributo sponsored de un post.
+	 * @param int $post ID del post a modificar el atributo.
+	 * @param bool $tipo Si se agrega o quita.
+	 */
+	public function action_patrocinar_post($post, $tipo)
+	{
+		// Convertimos el post a ID.
+		$post = (int) $post;
+
+		// Cargamos el post.
+		$model_post = new Model_Post($post);
+
+		// Verificamos exista.
+		if ( ! is_array($model_post->as_array()))
+		{
+			Request::redirect('/');
+		}
+
+		// Verifico el permiso.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS))
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Valido el valor actual.
+		$tipo = $tipo == 1;
+
+		// Verifico el parametro sticky.
+		if ($model_post->sponsored !== $tipo)
+		{
+			$model_post->setear_sponsored($tipo);
+		}
+		//TODO: informar.
+		//TODO: agregar suceso.
+		Request::redirect('/post/index/'.$post);
+	}
+
+	/**
+	 * Oculto o muestro un post.
+	 * @param int $post ID del post a modificar el atributo.
+	 * @param bool $tipo Si se muestra o se oculta.
+	 */
+	public function action_ocultar_post($post, $tipo)
+	{
+		// Convertimos el post a ID.
+		$post = (int) $post;
+
+		// Cargamos el post.
+		$model_post = new Model_Post($post);
+
+		// Verificamos exista.
+		if ( ! is_array($model_post->as_array()))
+		{
+			Request::redirect('/');
+		}
+
+		// Verifico el usuario y sus permisos.
+		if ($model_post->usuario_id !== Usuario::usuario()->id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_OCULTAR_POSTS))
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Valido el valor actual.
+		$tipo = $tipo == 1;
+
+		// Verifico el estado actual.
+		if (($tipo && $model_post->estado !== Model_Post::ESTADO_OCULTO) || ( ! $tipo && $model_post->estado !== Model_Post::ESTADO_ACTIVO))
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Actualizo el estado.
+		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_OCULTO);
+
+		//TODO: informar.
+		//TODO: agregar suceso.
+		Request::redirect('/post/index/'.$post);
+	}
+
+	/**
+	 * Apruebo o rechazo un post.
+	 * @param int $post ID del post a modificar el atributo.
+	 * @param bool $tipo Si se aprueba o se rechaza.
+	 */
+	public function action_aprobar_post($post, $tipo)
+	{
+		// Convertimos el post a ID.
+		$post = (int) $post;
+
+		// Cargamos el post.
+		$model_post = new Model_Post($post);
+
+		// Verificamos exista.
+		if ( ! is_array($model_post->as_array()))
+		{
+			Request::redirect('/');
+		}
+
+		// Verifico el usuario y sus permisos.
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_VER_POSTS_DESAPROBADOS))
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Valido el valor actual.
+		$tipo = $tipo == 1;
+
+		// Verifico el estado actual.
+		if ($tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_RECHAZADO))
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+		elseif ( ! $tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_ACTIVO))
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Actualizo el estado.
+		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_RECHAZADO);
+
+		//TODO: informar.
+		//TODO: agregar suceso.
+		Request::redirect('/post/index/'.$post);
+	}
+
+	/**
+	 * Borramos un post o lo enviamos a la papelera.
+	 * @param int $post ID del post a modificar el atributo.
+	 * @param bool $tipo Si se aprueba o se rechaza.
+	 */
+	public function action_borrar_post($post, $tipo)
+	{
+		// Convertimos el post a ID.
+		$post = (int) $post;
+
+		// Cargamos el post.
+		$model_post = new Model_Post($post);
+
+		// Verificamos exista.
+		if ( ! is_array($model_post->as_array()))
+		{
+			Request::redirect('/');
+		}
+
+		// Verifico el usuario y sus permisos.
+		if (Usuario::usuario()->id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Verifico requisitos según permisos y usuario.
+		if (Usuario::usuario()->id == $model_post->usuario_id)
+		{
+			if ($model_post->estado === Model_Post::ESTADO_ACTIVO)
+			{
+				$tipo = $tipo != -1;
+			}
+			elseif ($model_post->estado !== Model_Post::ESTADO_PAPELERA && $model_post !== Model_Post::ESTADO_OCULTO)
+			{
+				//TODO: notificar.
+				Request::redirect('/post/index/'.$post);
+			}
+			else
+			{
+				$tipo = TRUE;
+			}
+		}
+		else
+		{
+			$tipo = TRUE;
+		}
+
+		// Actualizo el estado.
+		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_BORRADO : Model_Post::ESTADO_PAPELERA);
+
+		//TODO: informar.
+		//TODO: agregar suceso.
+		Request::redirect('/post/index/'.$post);
+	}
+
+	/**
+	 * Restauro un post enviado a la papelera.
+	 * @param int $post ID del post a restaurar.
+	 */
+	public function action_restaurar_post($post)
+	{
+		// Convertimos el post a ID.
+		$post = (int) $post;
+
+		// Cargamos el post.
+		$model_post = new Model_Post($post);
+
+		// Verificamos exista.
+		if ( ! is_array($model_post->as_array()))
+		{
+			Request::redirect('/');
+		}
+
+		// Verifico el usuario.
+		if (Usuario::usuario()->id !== $model_post->usuario_id)
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Verifico el estado.
+		if ($model_post->estado !== Model_Post::ESTADO_PAPELERA)
+		{
+			//TODO: notificar.
+				Request::redirect('/post/index/'.$post);
+		}
+
+		// Actualizo el estado.
+		$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
+
+		//TODO: informar.
+		//TODO: agregar suceso.
+		Request::redirect('/post/index/'.$post);
+	}
+
+	/**
+	 * Publico un post marcado como borrador.
+	 * @param int $post ID del post a publicar.
+	 */
+	public function action_publicar_post($post)
+	{
+		// Convertimos el post a ID.
+		$post = (int) $post;
+
+		// Cargamos el post.
+		$model_post = new Model_Post($post);
+
+		// Verificamos exista.
+		if ( ! is_array($model_post->as_array()))
+		{
+			Request::redirect('/');
+		}
+
+		// Verifico el usuario.
+		if (Usuario::usuario()->id !== $model_post->usuario_id)
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Verifico el estado.
+		if ($model_post->estado !== Model_Post::ESTADO_BORRADOR)
+		{
+			//TODO: notificar.
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Actualizo el estado.
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_REVISAR_POST))
+		{
+			$model_post->actualizar_estado(Model_Post::ESTADO_PENDIENTE);
+			$model_post->actualizar_fecha();
+		}
+		else
+		{
+			$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
+			$model_post->actualizar_fecha();
+		}
+
+		//TODO: informar.
+		//TODO: agregar suceso.
+		Request::redirect('/post/index/'.$post);
+	}
+
+
+	/**
 	 * Damos puntos a un post.
 	 * @param int $post ID del post al cual darle puntos.
 	 * @param int $cantidad Cantidad de puntos. Número entre 1 y 10.
@@ -616,8 +932,11 @@ class Base_Controller_Post extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('post/nuevo');
 
+		// Seteo permisos especiales.
+		$view->assign('permisos_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_REVISAR_POST));
+
 		// Elementos por defecto.
-		foreach (array('titulo', 'contenido', 'categoria', 'privado', 'sponsored', 'sticky', 'error_titulo', 'error_contenido', 'error_categoria') as $k)
+		foreach (array('titulo', 'contenido', 'categoria', 'privado', 'patrocinado', 'sticky', 'error_titulo', 'error_contenido', 'error_categoria') as $k)
 		{
 			$view->assign($k, '');
 		}
@@ -645,7 +964,7 @@ class Base_Controller_Post extends Controller {
 			}
 
 			// Obtenemos los checkbox.
-			foreach (array('privado', 'sponsored', 'sticky') as $k)
+			foreach (array('privado', 'patrocinado', 'sticky') as $k)
 			{
 				$$k = isset($_POST[$k]) ? ($_POST[$k] == 1) : FALSE;
 				$view->assign($k, $$k);
@@ -693,8 +1012,33 @@ class Base_Controller_Post extends Controller {
 				// Verifico si es borrador.
 				$borrador = isset($_POST['submit']) ? $_POST['submit'] == 'borrador' : FALSE;
 
+				// Obtengo el estado a aplicar.
+				if ($borrador)
+				{
+					$estado = Model_Post::ESTADO_BORRADOR;
+				}
+				else
+				{
+					if (Usuario::permiso(Model_Usuario_Rango::PERMISO_REVISAR_POST))
+					{
+						$estado = Model_Post::ESTADO_PENDIENTE;
+					}
+					else
+					{
+						$estado = Model_Post::ESTADO_ACTIVO;
+					}
+				}
+				unset($borrador);
+
+				// Verifico parámetros especiales.
+				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS))
+				{
+					$patrocinado = FALSE;
+					$sticky = FALSE;
+				}
+
 				$model_post = new Model_Post;
-				$post_id = $model_post->crear(Usuario::usuario()->id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, NULL, $borrador);
+				$post_id = $model_post->crear(Usuario::usuario()->id, $titulo, $contenido, $categoria_id, $privado, $patrocinado, $sticky, $estado);
 
 				if ($post_id > 0)
 				{

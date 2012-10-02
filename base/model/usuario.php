@@ -493,7 +493,6 @@ class Base_Model_Usuario extends Model_Dataset {
 		{
 			$cantidad = $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 			$cantidad += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-			$cantidad += $this->db->query('SELECT COUNT(*) FROM comunidad_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 
 			// Guardo cache.
 			Cache::get_instance()->save($cache_key, $cantidad);
@@ -672,5 +671,136 @@ class Base_Model_Usuario extends Model_Dataset {
 		{
 			return NULL;
 		}
+	}
+
+	/**
+	 * Obtenemos el listado de posts con más puntos.
+	 * @param int $categoria
+	 * @param int $intervalo
+	 */
+	public function top_puntos($categoria = NULL, $intervalo = 0)
+	{
+		$params = NULL;
+
+		// Verifico los intervalos.
+		if ($intervalo !== 0)
+		{
+
+			switch ($intervalo)
+			{
+				case 1:
+					$start = mktime(0, 0, 0, date('m'), date('d')-1, date('Y'));
+					$end = mktime(23, 59, 59, date('m'), date('d')-1, date('Y'));
+					break;
+				case 2:
+					$start = mktime(0, 0, 0);
+					break;
+				case 3:
+					$start = mktime(0, 0, 0, date('n'), date('j'), date('Y')) - ((date('N')-1)*3600*24);
+					break;
+				case 4:
+					$start = mktime(0, 0, 0, date('m'), 1, date('Y'));
+					break;
+			}
+
+			if (isset($end))
+			{
+				$where = ' AND post.fecha > ? AND post.fecha < ?';
+				$params = array(date('Y/m/d H:i:s', $start), date('Y/m/d H:i:s', $end));
+				unset($start, $end);
+			}
+			else
+			{
+				$where = ' AND post.fecha > ?';
+				$params = array(date('Y/m/d H:i:s', $start));
+				unset($start);
+			}
+		}
+
+		// Verifico las categorias.
+		if ($categoria !== NULL)
+		{
+			if ( ! isset($where))
+			{
+				$where = '';
+			}
+
+			$where .= ' AND post.categoria_id = ?';
+
+			if ( ! is_array($params))
+			{
+				$params = array($categoria);
+			}
+			else
+			{
+				$params[] = $categoria;
+			}
+		}
+
+		if ( ! isset($where))
+		{
+			$where = '';
+		}
+
+		return $this->db->query('SELECT SUM(post_punto.cantidad) AS puntos, usuario.nick FROM usuario INNER JOIN post ON post.usuario_id = usuario.id LEFT JOIN post_punto ON post.id = post_punto.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0'.$where.' GROUP BY post.id ORDER BY puntos DESC LIMIT 10', $params)
+			->get_records(Database_Query::FETCH_ASSOC, array(
+				'puntos' => Database_Query::FIELD_INT,
+				'nick' => Database_Query::FIELD_STRING
+		));
+	}
+
+	/**
+	 * Obtenemos el listado de usuario con más seguidores.
+	 * @param int $intervalo
+	 */
+	public function top_seguidores($intervalo = 0)
+	{
+		$params = NULL;
+
+		// Verifico los intervalos.
+		if ($intervalo !== 0)
+		{
+
+			switch ($intervalo)
+			{
+				case 1:
+					$start = mktime(0, 0, 0, date('m'), date('d')-1, date('Y'));
+					$end = mktime(23, 59, 59, date('m'), date('d')-1, date('Y'));
+					break;
+				case 2:
+					$start = mktime(0, 0, 0);
+					break;
+				case 3:
+					$start = mktime(0, 0, 0, date('n'), date('j'), date('Y')) - ((date('N')-1)*3600*24);
+					break;
+				case 4:
+					$start = mktime(0, 0, 0, date('m'), 1, date('Y'));
+					break;
+			}
+
+			if (isset($end))
+			{
+				$where = ' AND usuario_seguidor.fecha > ? AND usuario_seguidor.fecha < ?';
+				$params = array(date('Y/m/d H:i:s', $start), date('Y/m/d H:i:s', $end));
+				unset($start, $end);
+			}
+			else
+			{
+				$where = ' AND usuario_seguidor.fecha > ?';
+				$params = array(date('Y/m/d H:i:s', $start));
+				unset($start);
+			}
+		}
+
+		if ( ! isset($where))
+		{
+			$where = '';
+		}
+
+		return $this->db->query('SELECT COUNT(*) AS seguidores, usuario.nick FROM usuario LEFT JOIN usuario_seguidor ON usuario.id = usuario_seguidor.usuario_id WHERE usuario.estado = 1'.$where.' GROUP BY usuario.id ORDER BY seguidores DESC LIMIT 10', $params)
+			->get_records(Database_Query::FETCH_ASSOC, array(
+				'seguidores' => Database_Query::FIELD_INT,
+				'nick' => Database_Query::FIELD_STRING
+		));
 	}
 }

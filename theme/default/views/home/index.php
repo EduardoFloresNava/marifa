@@ -18,17 +18,13 @@
 				<li><a href="#">Comunidades</a></li>
 				<li><a href="#">Temas</a></li>
 			</ul>
-			<div class="contenido">
-				<div class="row-fluid">
-					<form>
-						<div class="input-prepend">
-							<input type="text" class="span8">
-							<button type="submit" class="btn span4">Search</button>
-						</div>
-					</form>
-				</div>
-				<a href="#">Opciones</a>
+			<div class="row-fluid contenido">
+				<form>
+					<input type="text" class="span8">
+					<button type="submit" class="btn span4">Search</button>
+				</form>
 			</div>
+			<a class="more-options" href="#">Opciones</a>
 		</div>
 		<div class="home-statistics">
 			<div class="row-fluid">

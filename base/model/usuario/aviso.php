@@ -129,7 +129,7 @@ class Base_Model_Usuario_Aviso extends Model_Dataset {
 	 */
 	public function nueva($usuario, $moderador, $asunto, $contenido)
 	{
-		list($id,) = $this->db->insert('INSERT INTO usuario_aviso (usuario_id, moderador_id, asunto, contenido, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)', array($usuario, $moderador, $asunto, $contenido, date('Y/m/d h:i:s'), self::ESTADO_NUEVO));
+		list($id,) = $this->db->insert('INSERT INTO usuario_aviso (usuario_id, moderador_id, asunto, contenido, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)', array($usuario, $moderador, $asunto, $contenido, date('Y/m/d H:i:s'), self::ESTADO_NUEVO));
 		return $id;
 	}
 

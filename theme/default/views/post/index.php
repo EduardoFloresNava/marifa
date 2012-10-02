@@ -14,15 +14,13 @@
 		<div class="well"><i class="icon icon-comment"></i><span class="pull-right">{if="$usuario.comentarios > 1"}{$usuario.comentarios} {@comentarios@}{elseif="$usuario.comentarios == 1"}1 {@comentario@}{else}{@sin@} {@comentarios@}{/if}</span></div>
 	</div>
 	<div class="span10 contenido">
-		<div class="row-fluid cabecera">
-			<div class="span1 lineal btn-group">
+		<div class="cabecera">
+			<div class="lineal btn-group">
 				<a href="#" class="btn btn-mini"><i class="icon icon-chevron-left"></i></a>
 				<a href="#" class="btn btn-mini"><i class="icon icon-chevron-right"></i></a>
 			</div>
-			<div class="span10">
-				<h2 class="title">{$post.titulo}</h2>
-			</div>
-			<div class="span1 aleatorio">
+			<h2 class="title">{$post.titulo}</h2>
+			<div class="aleatorio">
 				<a href="#" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
 			</div>
 		</div>
@@ -30,12 +28,40 @@
 		<div class="row-fluid">
 			<div class="span12">
 				<div class="pull-left btn-group">
-					{if="$modificar_sticky"}{if="$post.sticky"}<a href="/post/fijar_post/{$post.id}/-1" class="btn">Quitar fijo</a>{else}<a href="/post/fijar_post/{$post.id}/1" class="btn">Fijar</a>{/if}{/if}
-					{if="$modificar_patrocinado"}{if="$post.sponsored"}<a href="/post/patrocinar_post/{$post.id}/-1" class="btn">Quitar patrocinio</a>{else}<a href="/post/patrocinar_post/{$post.id}/1" class="btn">Patrocinar</a>{/if}{/if}
-					{if="$modificar_borrar"}<a href="/post/eliminar_post/{$post.id}" class="btn btn-danger">Eliminar</a>{/if}
+					{if="$modificaciones_especiales"}
+						{if="$post.sticky"}<a href="/post/fijar_post/{$post.id}/-1" class="btn btn-info">Quitar fijo</a>{else}<a href="/post/fijar_post/{$post.id}/1" class="btn btn-info">Fijar</a>{/if}
+						{if="$post.sponsored"}<a href="/post/patrocinar_post/{$post.id}/-1" class="btn btn-info">Quitar patrocinio</a>{else}<a href="/post/patrocinar_post/{$post.id}/1" class="btn btn-info">Patrocinar</a>{/if}
+						{if="$post.estado == 0"}
+							<a href="/post/ocultar_post/{$post.id}/-1" class="btn btn-inverse">Ocultar</a>
+							<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning">Rechazar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger">Borrar</a>
+							<a href="/post/borrar_post/{$post.id}/-1" class="btn btn-danger">Enviar a la papelera</a>
+						{/if}
+						{if="$post.estado == 1"}
+							<a href="/post/publicar_post/{$post.id}/" class="btn btn-success">Publicar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-primary">Borrar</a>
+						{/if}
+						{if="$post.estado == 3"}
+							<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success">Aprobar</a>
+							<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning">Rechazar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger">Borrar</a>
+						{/if}
+						{if="$post.estado == 4"}
+							<a href="/post/ocultar_post/{$post.id}/-1" class="btn btn-success">Mostrar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger">Borrar</a>
+						{/if}
+						{if="$post.estado == 5"}
+							<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success">Aprobar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger">Borrar</a>
+						{/if}
+						{if="$post.estado == 6"}
+							<a href="/post/restaurar_post/{$post.id}/" class="btn btn-success">Restaurar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"></i>Borrar</a>
+						{/if}
+					{/if}
 					{if="$me != NULL && !$sigo_post"}<a href="/post/seguir_post/{$post.id}" class="btn">Seguir Post</a>{/if}
 					{if="$me != NULL && !$es_favorito"}<a href="/post/favorito/{$post.id}" class="btn">Agregar a favoritos</a>{/if}
-					{if="$me != NULL && $me != $usuario.id"}<a href="/post/denunciar/{$post.id}" class="btn btn-danger">Denunciar</a>{/if}
+					{if="$me != NULL && $me != $usuario.id && $post.estado == 0"}<a href="/post/denunciar/{$post.id}" class="btn btn-danger">Denunciar</a>{/if}
 				</div>
 				<div class="pull-right btn-group">
 					<span class="btn">{$post.seguidores} Seguidores</span>

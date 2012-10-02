@@ -33,7 +33,6 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @property-read int $id ID del post.
  * @property-read int $usuario_id ID del usuario dueño del post.
  * @property-read int $categoria_id ID de la categoria a la cual pertenece el post.
- * @property-read int $comunidad_id ID de la comunidad a la que pertenece el post. NULL si no pertenece a ninguna.
  * @property-read string $titulo Titulo del post.
  * @property-read string $contenido Contenido del post. Es BBCode sin procesar.
  * @property-read Fechahora $fecha Fecha de creación del post.
@@ -61,6 +60,27 @@ class Base_Model_Post extends Model_Dataset {
 	const ESTADO_BORRADO = 2;
 
 	/**
+	 * El post esta pendiente de moderación.
+	 */
+	const ESTADO_PENDIENTE = 3;
+
+	/**
+	 * El post está oculto.
+	 * Puede ser producto de una acción de moderación o de un moderador.
+	 */
+	const ESTADO_OCULTO = 4;
+
+	/**
+	 * El post fue rechazado.
+	 */
+	const ESTADO_RECHAZADO = 5;
+
+	/**
+	 * El post está en la papelera del usuario.
+	 */
+	const ESTADO_PAPELERA = 6;
+
+	/**
 	 * Nombre de la tabla para el dataset
 	 * @var string
 	 */
@@ -79,7 +99,6 @@ class Base_Model_Post extends Model_Dataset {
 		'id' => Database_Query::FIELD_INT,
 		'usuario_id' => Database_Query::FIELD_INT,
 		'categoria_id' => Database_Query::FIELD_INT,
-		'comunidad_id' => Database_Query::FIELD_INT,
 		'titulo' => Database_Query::FIELD_STRING,
 		'contenido' => Database_Query::FIELD_STRING,
 		'fecha' => Database_Query::FIELD_DATETIME,
@@ -117,6 +136,16 @@ class Base_Model_Post extends Model_Dataset {
 	{
 		$this->db->update('UPDATE post SET vistas = vistas + 1 WHERE id = ?', $this->primary_key['id']);
 		$this->update_value('vistas', $this->get('vistas') + 1);
+	}
+
+	/**
+	 * Actualizamos la fecha de creación al momento actual.
+	 */
+	public function actualizar_fecha()
+	{
+		$fecha = new Fechahora();
+		$this->db->update('UPDATE post SET fecha = ? WHERE id = ?', array($fecha->format('Y/m/d H:i:s'), $this->primary_key['id']));
+		$this->update_value('fecha', $fecha);
 	}
 
 	/**
@@ -360,23 +389,6 @@ class Base_Model_Post extends Model_Dataset {
 	}
 
 	/**
-	 * Obtenemos la comunidad a la que pertenece el post.
-	 * @return Model_Comunidad|null
-	 */
-	public function comunidad()
-	{
-		$c = $this->get('comunidad_id');
-		if ($c !== NULL)
-		{
-			return new Model_Comunidad($c);
-		}
-		else
-		{
-			return NULL;
-		}
-	}
-
-	/**
 	 * Obtenemos la categoria del post.
 	 * @return Model_Post_Categoria
 	 */
@@ -526,18 +538,16 @@ class Base_Model_Post extends Model_Dataset {
 	 * @param bool $privado Solo usuarios registrados.
 	 * @param bool $sponsored Post patrocinado.
 	 * @param bool $sticky Post fijo en la portada.
-	 * @param int $comunidad Comunidad donde se publica. NULL para general.
+	 * @param int $estado Estado con el cual se publica el post.
 	 * @return int
 	 */
-	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $comunidad = NULL, $borrador = FALSE)
+	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $estado = self::ESTADO_ACTIVO)
 	{
-		$estado = $borrador ? self::ESTADO_BORRADOR : self::ESTADO_ACTIVO;
 		list($id,) = $this->db->insert(
-			'INSERT INTO post ( usuario_id, categoria_id, comunidad_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			'INSERT INTO post ( usuario_id, categoria_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 			array(
 				$usuario_id,
 				$categoria_id,
-				$comunidad,
 				$titulo,
 				$contenido,
 				date('Y/m/d H:i:s'),
@@ -812,7 +822,7 @@ class Base_Model_Post extends Model_Dataset {
 		if ($borrador)
 		{
 			// Creo el post.
-			$id = $this->crear($this->get('usuario_id'), $this->get('titulo'), $this->get('contenido'), $this->get('categoria_id'), $this->get('privado'), $this->get('sponsored'), $this->get('sticky'), $this->get('comunidad_id'), TRUE);
+			$id = $this->crear($this->get('usuario_id'), $this->get('titulo'), $this->get('contenido'), $this->get('categoria_id'), $this->get('privado'), $this->get('sponsored'), $this->get('sticky'), self::ESTADO_BORRADOR);
 		}
 		else
 		{
@@ -851,6 +861,318 @@ class Base_Model_Post extends Model_Dataset {
 		{
 			return NULL;
 		}
+	}
+
+	/**
+	 * Obtenemos el listado de posts con más puntos.
+	 * @param int $categoria
+	 * @param int $intervalo
+	 */
+	public function top_puntos($categoria = NULL, $intervalo = 0)
+	{
+		$params = NULL;
+
+		// Verifico los intervalos.
+		if ($intervalo !== 0)
+		{
+
+			switch ($intervalo)
+			{
+				case 1:
+					$start = mktime(0, 0, 0, date('m'), date('d')-1, date('Y'));
+					$end = mktime(23, 59, 59, date('m'), date('d')-1, date('Y'));
+					break;
+				case 2:
+					$start = mktime(0, 0, 0);
+					break;
+				case 3:
+					$start = mktime(0, 0, 0, date('n'), date('j'), date('Y')) - ((date('N')-1)*3600*24);
+					break;
+				case 4:
+					$start = mktime(0, 0, 0, date('m'), 1, date('Y'));
+					break;
+			}
+
+			if (isset($end))
+			{
+				$where = ' AND post.fecha > ? AND post.fecha < ?';
+				$params = array(date('Y/m/d H:i:s', $start), date('Y/m/d H:i:s', $end));
+				unset($start, $end);
+			}
+			else
+			{
+				$where = ' AND post.fecha > ?';
+				$params = array(date('Y/m/d H:i:s', $start));
+				unset($start);
+			}
+		}
+
+		// Verifico las categorias.
+		if ($categoria !== NULL)
+		{
+			if ( ! isset($where))
+			{
+				$where = '';
+			}
+
+			$where .= ' AND post.categoria_id = ?';
+
+			if ( ! is_array($params))
+			{
+				$params = array($categoria);
+			}
+			else
+			{
+				$params[] = $categoria;
+			}
+		}
+
+		if ( ! isset($where))
+		{
+			$where = '';
+		}
+
+		return $this->db->query('SELECT SUM(post_punto.cantidad) AS puntos, post.id, post.titulo, categoria.imagen FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0'.$where.' GROUP BY post.id ORDER BY puntos DESC LIMIT 10', $params)
+			->get_records(Database_Query::FETCH_ASSOC, array(
+				'puntos' => Database_Query::FIELD_INT,
+				'id' => Database_Query::FIELD_INT,
+				'titulo' => Database_Query::FIELD_STRING,
+				'imagen' => Database_Query::FIELD_STRING
+		));
+	}
+
+	/**
+	 * Obtenemos el listado de posts con más favoritos.
+	 * @param int $categoria
+	 * @param int $intervalo
+	 */
+	public function top_favoritos($categoria = NULL, $intervalo = 0)
+	{
+		$params = NULL;
+
+		// Verifico los intervalos.
+		if ($intervalo !== 0)
+		{
+
+			switch ($intervalo)
+			{
+				case 1:
+					$start = mktime(0, 0, 0, date('m'), date('d')-1, date('Y'));
+					$end = mktime(23, 59, 59, date('m'), date('d')-1, date('Y'));
+					break;
+				case 2:
+					$start = mktime(0, 0, 0);
+					break;
+				case 3:
+					$start = mktime(0, 0, 0, date('n'), date('j'), date('Y')) - ((date('N')-1)*3600*24);
+					break;
+				case 4:
+					$start = mktime(0, 0, 0, date('m'), 1, date('Y'));
+					break;
+			}
+
+			if (isset($end))
+			{
+				$where = ' AND post.fecha > ? AND post.fecha < ?';
+				$params = array(date('Y/m/d H:i:s', $start), date('Y/m/d H:i:s', $end));
+				unset($start, $end);
+			}
+			else
+			{
+				$where = ' AND post.fecha > ?';
+				$params = array(date('Y/m/d H:i:s', $start));
+				unset($start);
+			}
+		}
+
+		// Verifico las categorias.
+		if ($categoria !== NULL)
+		{
+			if ( ! isset($where))
+			{
+				$where = '';
+			}
+
+			$where .= ' AND post.categoria_id = ?';
+
+			if ( ! is_array($params))
+			{
+				$params = array($categoria);
+			}
+			else
+			{
+				$params[] = $categoria;
+			}
+		}
+
+		if ( ! isset($where))
+		{
+			$where = '';
+		}
+
+		return $this->db->query('SELECT COUNT(post_favorito.post_id) AS favoritos, post.id, post.titulo, categoria.imagen FROM post LEFT JOIN post_favorito ON post.id = post_favorito.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0'.$where.' GROUP BY post.id ORDER BY favoritos DESC LIMIT 10', $params)
+			->get_records(Database_Query::FETCH_ASSOC, array(
+				'favoritos' => Database_Query::FIELD_INT,
+				'id' => Database_Query::FIELD_INT,
+				'titulo' => Database_Query::FIELD_STRING,
+				'imagen' => Database_Query::FIELD_STRING
+		));
+	}
+
+	/**
+	 * Obtenemos el listado de posts con más comentarios.
+	 * @param int $categoria
+	 * @param int $intervalo
+	 */
+	public function top_comentarios($categoria = NULL, $intervalo = 0)
+	{
+		$params = NULL;
+
+		// Verifico los intervalos.
+		if ($intervalo !== 0)
+		{
+
+			switch ($intervalo)
+			{
+				case 1:
+					$start = mktime(0, 0, 0, date('m'), date('d')-1, date('Y'));
+					$end = mktime(23, 59, 59, date('m'), date('d')-1, date('Y'));
+					break;
+				case 2:
+					$start = mktime(0, 0, 0);
+					break;
+				case 3:
+					$start = mktime(0, 0, 0, date('n'), date('j'), date('Y')) - ((date('N')-1)*3600*24);
+					break;
+				case 4:
+					$start = mktime(0, 0, 0, date('m'), 1, date('Y'));
+					break;
+			}
+
+			if (isset($end))
+			{
+				$where = ' AND post.fecha > ? AND post.fecha < ?';
+				$params = array(date('Y/m/d H:i:s', $start), date('Y/m/d H:i:s', $end));
+				unset($start, $end);
+			}
+			else
+			{
+				$where = ' AND post.fecha > ?';
+				$params = array(date('Y/m/d H:i:s', $start));
+				unset($start);
+			}
+		}
+
+		// Verifico las categorias.
+		if ($categoria !== NULL)
+		{
+			if ( ! isset($where))
+			{
+				$where = '';
+			}
+
+			$where .= ' AND post.categoria_id = ?';
+
+			if ( ! is_array($params))
+			{
+				$params = array($categoria);
+			}
+			else
+			{
+				$params[] = $categoria;
+			}
+		}
+
+		if ( ! isset($where))
+		{
+			$where = '';
+		}
+
+		return $this->db->query('SELECT COUNT(*) AS comentarios, post.id, post.titulo, categoria.imagen FROM post LEFT JOIN post_comentario ON post.id = post_comentario.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0 AND post_comentario.estado = 0'.$where.' GROUP BY post.id ORDER BY comentarios DESC LIMIT 10', $params)
+			->get_records(Database_Query::FETCH_ASSOC, array(
+				'comentarios' => Database_Query::FIELD_INT,
+				'id' => Database_Query::FIELD_INT,
+				'titulo' => Database_Query::FIELD_STRING,
+				'imagen' => Database_Query::FIELD_STRING
+		));
+	}
+
+	/**
+	 * Obtenemos el listado de posts con más seguidores.
+	 * @param int $categoria
+	 * @param int $intervalo
+	 */
+	public function top_seguidores($categoria = NULL, $intervalo = 0)
+	{
+		$params = NULL;
+
+		// Verifico los intervalos.
+		if ($intervalo !== 0)
+		{
+
+			switch ($intervalo)
+			{
+				case 1:
+					$start = mktime(0, 0, 0, date('m'), date('d')-1, date('Y'));
+					$end = mktime(23, 59, 59, date('m'), date('d')-1, date('Y'));
+					break;
+				case 2:
+					$start = mktime(0, 0, 0);
+					break;
+				case 3:
+					$start = mktime(0, 0, 0, date('n'), date('j'), date('Y')) - ((date('N')-1)*3600*24);
+					break;
+				case 4:
+					$start = mktime(0, 0, 0, date('m'), 1, date('Y'));
+					break;
+			}
+
+			if (isset($end))
+			{
+				$where = ' AND post.fecha > ? AND post.fecha < ?';
+				$params = array(date('Y/m/d H:i:s', $start), date('Y/m/d H:i:s', $end));
+				unset($start, $end);
+			}
+			else
+			{
+				$where = ' AND post.fecha > ?';
+				$params = array(date('Y/m/d H:i:s', $start));
+				unset($start);
+			}
+		}
+
+		// Verifico las categorias.
+		if ($categoria !== NULL)
+		{
+			if ( ! isset($where))
+			{
+				$where = '';
+			}
+
+			$where .= ' AND post.categoria_id = ?';
+
+			if ( ! is_array($params))
+			{
+				$params = array($categoria);
+			}
+			else
+			{
+				$params[] = $categoria;
+			}
+		}
+
+		if ( ! isset($where))
+		{
+			$where = '';
+		}
+
+		return $this->db->query('SELECT COUNT(post_seguidor.post_id) AS seguidores, post.id, post.titulo, categoria.imagen FROM post LEFT JOIN post_seguidor ON post.id = post_seguidor.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0'.$where.' GROUP BY post.id ORDER BY seguidores DESC LIMIT 10', $params)
+			->get_records(Database_Query::FETCH_ASSOC, array(
+				'seguidores' => Database_Query::FIELD_INT,
+				'id' => Database_Query::FIELD_INT,
+				'titulo' => Database_Query::FIELD_STRING,
+				'imagen' => Database_Query::FIELD_STRING
+		));
 	}
 
 }

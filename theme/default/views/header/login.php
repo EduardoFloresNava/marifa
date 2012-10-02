@@ -1,6 +1,6 @@
 <div class="btn-toolbar">
     <div class="btn-group pull-right">
-        <button class="btn dropdown-toggle" data-toggle="dropdown"><img height="16" width="16" src="" />{$usuario.nick}&nbsp;<span class="caret"></span></button>
+        <button class="btn dropdown-toggle" data-toggle="dropdown"><img height="16" width="16" src="{function="Utils::get_gravatar($usuario.email, 32, 32)"}" /> {$usuario.nick}&nbsp;<span class="caret"></span></button>
         <ul class="dropdown-menu">
 			<li><a href="/favoritos/">Favoritos</a></li>
 			<li><a href="/borradores/">Borradores</a></li>
