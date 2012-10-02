@@ -153,7 +153,7 @@ class Base_Controller {
 	 */
 	public function __destruct()
 	{
-		if (is_object($this->template) && ! Request::is_ajax() && error_get_last() !== NULL)
+		if (is_object($this->template) && ! Request::is_ajax() && error_get_last() === NULL)
 		{
 			if (DEBUG)
 			{
@@ -180,7 +180,6 @@ class Base_Controller {
 
 		// Listado de elemento OFFLINE.
 		$data['posts'] = array('link' => '/', 'caption' => 'Posts', 'active' => FALSE);
-		$data['comunidades'] = array('link' => '/comunidad/', 'caption' => 'Comunidades', 'active' => FALSE);
 		$data['fotos'] = array('link' => '/foto/', 'caption' => 'Fotos', 'active' => FALSE);
 		$data['tops'] = array('link' => '/tops/', 'caption' => 'TOPs', 'active' => FALSE);
 

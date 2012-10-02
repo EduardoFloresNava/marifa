@@ -98,7 +98,6 @@ class Base_Dispatcher {
 		if (php_sapi_name() == 'cli-server')
 		{
 			$url = $_SERVER['REQUEST_URI'];
-			// $url = dirname();
 		}
 		else
 		{
