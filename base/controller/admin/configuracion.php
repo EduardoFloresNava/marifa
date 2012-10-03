@@ -36,7 +36,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	{
 		parent::__construct();
 		//TODO: verificar permisos para la accion.
-		if ( ! Session::is_set('usuario_id'))
+		if ( ! isset($_SESSION['usuario_id']))
 		{
 			Request::redirect('/usuario/login');
 		}
@@ -51,13 +51,13 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista = View::factory('admin/configuracion/index');
 
 		// Noticia Flash.
-		if (Session::is_set('index_correcta'))
+		if (isset($_SESSION['index_correcta']))
 		{
-			$vista->assign('success', Session::get_flash('index_correcta'));
+			$vista->assign('success', get_flash('index_correcta'));
 		}
-		if (Session::is_set('index_error'))
+		if (isset($_SESSION['index_error']))
 		{
-			$vista->assign('error', Session::get_flash('index_error'));
+			$vista->assign('error', get_flash('index_error'));
 		}
 
 		// Seteamos el menu.
@@ -82,13 +82,13 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista = View::factory('admin/configuracion/plugins');
 
 		// Noticia Flash.
-		if (Session::is_set('plugin_correcta'))
+		if (isset($_SESSION['plugin_correcta']))
 		{
-			$vista->assign('success', Session::get_flash('plugin_correcta'));
+			$vista->assign('success', get_flash('plugin_correcta'));
 		}
-		if (Session::is_set('plugin_error'))
+		if (isset($_SESSION['plugin_error']))
 		{
-			$vista->assign('error', Session::get_flash('plugin_error'));
+			$vista->assign('error', get_flash('plugin_error'));
 		}
 
 		// Cargo listado de plugins.
@@ -131,28 +131,28 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$p = $pm->get($plugin);
 		if ( ! is_object($p))
 		{
-			Session::set('plugin_error', 'El plugin no existe.');
+			$_SESSION['plugin_error'] = 'El plugin no existe.';
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Verifico su estado.
 		if ($p->estado())
 		{
-			Session::set('plugin_error', 'El plugin ya se encuentra activo.');
+			$_SESSION['plugin_error'] = 'El plugin ya se encuentra activo.';
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Verifico posibilidad de aplicar.
 		if ( ! $p->check_support())
 		{
-			Session::set('plugin_error', 'El plugin no puede ser instalado por la existencia de incompatibilidades.');
+			$_SESSION['plugin_error'] = 'El plugin no puede ser instalado por la existencia de incompatibilidades.';
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Realizamos la instalación.
 		$p->install();
 
-		Session::set('plugin_correcta', 'El plugin se ha instalado correctamente.');
+		$_SESSION['plugin_correcta'] = 'El plugin se ha instalado correctamente.';
 		Request::redirect('/admin/configuracion/plugins');
 	}
 
@@ -169,21 +169,21 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$p = $pm->get($plugin);
 		if ( ! is_object($p))
 		{
-			Session::set('plugin_error', 'El plugin no existe.');
+			$_SESSION['plugin_error'] = 'El plugin no existe.';
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Verifico su estado.
 		if ( ! $p->estado())
 		{
-			Session::set('plugin_error', 'El plugin ya se encuentra desactivado.');
+			$_SESSION['plugin_error'] = 'El plugin ya se encuentra desactivado.';
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Realizamos la desinstalación.
 		$p->remove();
 
-		Session::set('plugin_correcta', 'El plugin se ha desinstalado correctamente.');
+		$_SESSION['plugin_correcta'] = 'El plugin se ha desinstalado correctamente.';
 		Request::redirect('/admin/configuracion/plugins');
 	}
 
@@ -200,14 +200,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$p = $pm->get($plugin);
 		if ( ! is_object($p))
 		{
-			Session::set('plugin_error', 'El plugin no existe.');
+			$_SESSION['plugin_error'] = 'El plugin no existe.';
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Verifico su estado.
 		if ($p->estado())
 		{
-			Session::set('plugin_error', 'El plugin se encuentra activado, no se puede borrar.');
+			$_SESSION['plugin_error'] = 'El plugin se encuentra activado, no se puede borrar.';
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
@@ -215,7 +215,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		Update_Utils::unlink(Plugin_Manager::nombre_as_path($plugin));
 		Plugin_Manager::get_instance()->regenerar_lista();
 
-		Session::set('plugin_correcta', 'El plugin se ha borrado correctamente.');
+		$_SESSION['plugin_correcta'] = 'El plugin se ha borrado correctamente.';
 		Request::redirect('/admin/configuracion/plugins');
 	}
 
@@ -386,7 +386,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 							Update_Utils::unlink($file['tmp_name']);
 
 							// Informo resultado.
-							Session::set('plugin_correcta', 'El plugin se importó correctamente.');
+							$_SESSION['plugin_correcta'] = 'El plugin se importó correctamente.';
 
 							// Redireccionamos.
 							Request::redirect('/admin/configuracion/plugins');
@@ -418,17 +418,17 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista = View::factory('admin/configuracion/temas');
 
 		// Noticia Flash.
-		if (Session::is_set('tema_correcta'))
+		if (isset($_SESSION['tema_correcta']))
 		{
-			$vista->assign('success', Session::get_flash('tema_correcta'));
+			$vista->assign('success', get_flash('tema_correcta'));
 		}
-		if (Session::is_set('tema_error'))
+		if (isset($_SESSION['tema_error']))
 		{
-			$vista->assign('error', Session::get_flash('tema_error'));
+			$vista->assign('error', get_flash('tema_error'));
 		}
 
 		// Cargo tema previsualizado y el actual.
-		if (Session::is_set('preview-theme'))
+		if (isset($_SESSION['preview-theme']))
 		{
 			$vista->assign('preview', Theme::actual());
 			$vista->assign('actual', Theme::actual(TRUE));
@@ -476,20 +476,20 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Verificamos exista.
 		if ( ! in_array($tema, Theme::lista()))
 		{
-			Session::set('tema_error', 'El tema seleccionado para previsualizar es incorrecto.');
+			$_SESSION['tema_error'] = 'El tema seleccionado para previsualizar es incorrecto.';
 			Request::redirect('/admin/configuracion/temas');
 		}
 
 		// Verifico no sea actual.
 		if ($tema == Theme::actual(TRUE) || $tema == Theme::actual())
 		{
-			Session::set('tema_error', 'El tema seleccionado para previsualizar es el actual.');
+			$_SESSION['tema_error'] = 'El tema seleccionado para previsualizar es el actual.';
 			Request::redirect('/admin/configuracion/temas');
 		}
 
 		// Activo el tema.
-		Session::set('preview-theme', $tema);
-		Session::set('tema_correcta', 'El tema se a colocado para previsualizar correctamente');
+		$_SESSION['preview-theme'] = $tema;
+		$_SESSION['tema_correcta'] = 'El tema se a colocado para previsualizar correctamente';
 		Request::redirect('/admin/configuracion/temas');
 	}
 
@@ -499,16 +499,16 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	public function action_terminar_preview_tema()
 	{
 		// Verificamos si existe la previsualizacion.
-		if (Session::is_set('preview-theme'))
+		if (isset($_SESSION['preview-theme']))
 		{
 			// Quitamos la vista previa.
-			Session::un_set('preview-theme');
+			unset($_SESSION['preview-theme']);
 
-			Session::set('tema_correcta', 'Vista previa terminada correctamente.');
+			$_SESSION['tema_correcta'] = 'Vista previa terminada correctamente.';
 		}
 		else
 		{
-			Session::set('tema_error', 'No hay vista previa para deshabilitar.');
+			$_SESSION['tema_error'] = 'No hay vista previa para deshabilitar.';
 		}
 		Request::redirect('/admin/configuracion/temas');
 	}
@@ -525,27 +525,27 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Verifico no sea el actual.
 		if ($tema == $base)
 		{
-			Session::set('tema_error', 'El tema ya es el predeterminado.');
+			$_SESSION['tema_error'] = 'El tema ya es el predeterminado.';
 			Request::redirect('/admin/configuracion/temas');
 		}
 
 		// Verificamos exista.
 		if ( ! in_array($tema, Theme::lista()))
 		{
-			Session::set('tema_error', 'El tema seleccionado para setear como predeterminado es incorrecto.');
+			$_SESSION['tema_error'] = 'El tema seleccionado para setear como predeterminado es incorrecto.';
 			Request::redirect('/admin/configuracion/temas');
 		}
 
 		// Borro preview.
-		if (Session::is_set('preview-theme'))
+		if (isset($_SESSION['preview-theme']))
 		{
-			Session::un_set('preview-theme');
+			unset($_SESSION['preview-theme']);
 		}
 
 		// Activo tema.
 		Theme::setear_tema($tema);
 
-		Session::set('tema_correcta', 'El tema se ha seteado como predeterminado correctamente.');
+		$_SESSION['tema_correcta'] = 'El tema se ha seteado como predeterminado correctamente.';
 		Request::redirect('/admin/configuracion/temas');
 	}
 
@@ -558,14 +558,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Verificamos exista.
 		if ( ! in_array($tema, Theme::lista()))
 		{
-			Session::set('tema_error', 'El tema seleccionado para eliminar es incorrecto.');
+			$_SESSION['tema_error'] = 'El tema seleccionado para eliminar es incorrecto.';
 			Request::redirect('/admin/configuracion/temas');
 		}
 
 		// Verifico no sea el actual ni el de previsualizacion.
 		if ($tema == Theme::actual(TRUE) || $tema == Theme::actual())
 		{
-			Session::set('tema_error', 'El tema no se puede borrar por estar en uso.');
+			$_SESSION['tema_error'] = 'El tema no se puede borrar por estar en uso.';
 			Request::redirect('/admin/configuracion/temas');
 		}
 
@@ -575,7 +575,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Refrescamos la cache.
 		Theme::lista(TRUE);
 
-		Session::set('tema_correcta', 'El tema se ha eliminado correctamente.');
+		$_SESSION['tema_correcta'] = 'El tema se ha eliminado correctamente.';
 		Request::redirect('/admin/configuracion/temas');
 	}
 
@@ -751,7 +751,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					Update_Utils::unlink($tmp_dir);
 
 					// Informo resultado.
-					Session::set('tema_correcta', 'El tema se instaló correctamente.');
+					$_SESSION['tema_correcta'] = 'El tema se instaló correctamente.';
 
 					// Redireccionamos.
 					Request::redirect('/admin/configuracion/temas');

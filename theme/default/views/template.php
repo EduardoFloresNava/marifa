@@ -94,6 +94,7 @@
 		<script src="{#THEME_URL#}/assets/js/bootstrap-typeahead.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/bbcode.markitup.js"></script>
+		<script src="{#THEME_URL#}/assets/js/jquery.masonry.min.js"></script>
 		<script src="{#THEME_URL#}/assets/js/base.js"></script>
         {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}
     </body>

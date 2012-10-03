@@ -76,15 +76,15 @@ class Base_Controller_Foto extends Controller {
 			// Acciones.
 			if (Usuario::is_login())
 			{
-				if (Usuario::usuario()->id == $value->usuario_id)
+				if (Usuario::$usuario_id == $value->usuario_id)
 				{
 					$d['favorito'] = TRUE;
 					$d['voto'] = TRUE;
 				}
 				else
 				{
-					$d['favorito'] = $value->es_favorito(Usuario::usuario()->id);
-					$d['voto'] = $value->ya_voto(Usuario::usuario()->id);
+					$d['favorito'] = $value->es_favorito(Usuario::$usuario_id);
+					$d['voto'] = $value->ya_voto(Usuario::$usuario_id);
 				}
 			}
 			else
@@ -112,7 +112,7 @@ class Base_Controller_Foto extends Controller {
 	public function action_mis_fotos()
 	{
 		// Verificamos si esta conectado.
-		if ( ! Session::is_set('usuario_id'))
+		if ( ! isset($_SESSION['usuario_id']))
 		{
 			Request::redirect('/foto/');
 		}
@@ -125,7 +125,7 @@ class Base_Controller_Foto extends Controller {
 
 		// Cargamos el listado de fotos.
 		$model_fotos = new Model_Foto;
-		$fotos = $model_fotos->obtener_ultimas_usuario(Usuario::usuario()->id);
+		$fotos = $model_fotos->obtener_ultimas_usuario(Usuario::$usuario_id);
 
 		// Procesamos información relevante.
 		foreach ($fotos as $key => $value)
@@ -180,7 +180,7 @@ class Base_Controller_Foto extends Controller {
 		$view = View::factory('foto/ver');
 
 		// Mi id.
-		$view->assign('me', Usuario::usuario()->id);
+		$view->assign('me', Usuario::$usuario_id);
 
 		// Información del usuario dueño del post.
 		$u_data = $model_foto->usuario()->as_array();
@@ -199,7 +199,7 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('foto', $ft);
 		unset($ft);
 
-		if ( ! Usuario::is_login() || $model_foto->as_object()->usuario_id == Usuario::usuario()->id)
+		if ( ! Usuario::is_login() || $model_foto->as_object()->usuario_id == Usuario::$usuario_id)
 		{
 			$view->assign('es_favorito', TRUE);
 			$view->assign('ya_vote', TRUE);
@@ -212,8 +212,8 @@ class Base_Controller_Foto extends Controller {
 				$model_foto->agregar_visita();
 			}
 
-			$view->assign('es_favorito', $model_foto->es_favorito(Usuario::usuario()->id));
-			$view->assign('ya_vote', $model_foto->ya_voto(Usuario::usuario()->id));
+			$view->assign('es_favorito', $model_foto->es_favorito(Usuario::$usuario_id));
+			$view->assign('ya_vote', $model_foto->ya_voto(Usuario::$usuario_id));
 		}
 
 		// Verifico si soporta comentarios.
@@ -232,9 +232,9 @@ class Base_Controller_Foto extends Controller {
 		unset($l_cmt, $cmts);
 
 		$view->assign('comentario_content', isset($_POST['comentario']) ? $_POST['comentario'] : NULL);
-		$view->assign('comentario_error', Session::get_flash('post_comentario_error'));
-		$view->assign('comentario_success', Session::get_flash('post_comentario_success'));
-		$view->assign('success', Session::get_flash('success'));
+		$view->assign('comentario_error', get_flash('post_comentario_error'));
+		$view->assign('comentario_success', get_flash('post_comentario_success'));
+		$view->assign('success', get_flash('success'));
 
 
 		// Menu.
@@ -265,7 +265,7 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Cargamos usuario.
-		$usuario_id = Usuario::usuario()->id;
+		$usuario_id = Usuario::$usuario_id;
 
 		// Verificamos autor.
 		if ($model_foto->usuario_id != $usuario_id)
@@ -273,7 +273,7 @@ class Base_Controller_Foto extends Controller {
 			// Verificamos puntuación.
 			if ( ! $model_foto->ya_voto($usuario_id))
 			{
-				Session::set('success', 'El voto fue guardado correctamente.');
+				$_SESSION['success'] = 'El voto fue guardado correctamente.';
 				$model_foto->votar($usuario_id, $voto);
 
 				$model_suceso = new Model_Suceso;
@@ -302,16 +302,16 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Verifica autor.
-		if ($model_foto->usuario_id != Usuario::usuario()->id)
+		if ($model_foto->usuario_id != Usuario::$usuario_id)
 		{
 			// Verificamos el voto.
-			if ( ! $model_foto->es_favorito(Usuario::usuario()->id))
+			if ( ! $model_foto->es_favorito(Usuario::$usuario_id))
 			{
-				Session::set('success', 'Foto agregada a favoritos correctamente.');
-				$model_foto->agregar_favorito(Usuario::usuario()->id);
+				$_SESSION['success'] = 'Foto agregada a favoritos correctamente.';
+				$model_foto->agregar_favorito(Usuario::$usuario_id);
 
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::usuario()->id, $model_foto->usuario_id), 'favorito_foto',Usuario::usuario()->id, $foto);
+				$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'favorito_foto',Usuario::$usuario_id, $foto);
 			}
 		}
 		Request::redirect('/foto/ver/'.$foto);
@@ -344,7 +344,7 @@ class Base_Controller_Foto extends Controller {
 		// Verifico se pueda comentar.
 		if ( ! $model_foto->soporta_comentarios())
 		{
-			Session::set('post_comentario_error', 'No se puede comentar la foto porque están cerrados.');
+			$_SESSION['post_comentario_error'] = 'No se puede comentar la foto porque están cerrados.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
@@ -355,7 +355,7 @@ class Base_Controller_Foto extends Controller {
 		$comentario_clean = preg_replace('/\[.*\]/', '', $comentario);
 		if ( ! isset($comentario_clean{20}) || isset($comentario{400}))
 		{
-			Session::set('post_comentario_error', 'El comentario debe tener entre 20 y 400 caracteres.');
+			$_SESSION['post_comentario_error'] = 'El comentario debe tener entre 20 y 400 caracteres.';
 
 			// Evitamos la visualización de la plantilla.
 			$this->template = NULL;
@@ -368,12 +368,12 @@ class Base_Controller_Foto extends Controller {
 			$comentario = htmlentities($comentario, ENT_NOQUOTES, 'UTF-8');
 
 			// Insertamos el comentario.
-			$id = $model_foto->comentar(Usuario::usuario()->id, $comentario);
+			$id = $model_foto->comentar(Usuario::$usuario_id, $comentario);
 
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::usuario()->id, $model_foto->usuario_id), 'comentario_foto', $id);
+			$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'comentario_foto', $id);
 
-			Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
+			$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
 
 			Request::redirect('/foto/ver/'.$foto);
 		}
@@ -530,12 +530,12 @@ class Base_Controller_Foto extends Controller {
 				$model_categorias->load_by_seo($categoria);
 
 				$model_foto = new Model_Foto;
-				$foto_id = $model_foto->crear(Usuario::usuario()->id, $titulo, $descripcion, $url, $model_categorias->id, $visitantes, $comentarios);
+				$foto_id = $model_foto->crear(Usuario::$usuario_id, $titulo, $descripcion, $url, $model_categorias->id, $visitantes, $comentarios);
 
 				if ($foto_id > 0)
 				{
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(Usuario::usuario()->id, 'nueva_foto', $model_foto->id);
+					$model_suceso->crear(Usuario::$usuario_id, 'nueva_foto', $model_foto->id);
 
 					Request::redirect('/foto/ver/'.$model_foto->id);
 				}

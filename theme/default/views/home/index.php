@@ -15,7 +15,6 @@
 		<div class="home-search">
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#">Posts</a></li>
-				<li><a href="#">Comunidades</a></li>
 				<li><a href="#">Temas</a></li>
 			</ul>
 			<div class="row-fluid contenido">
@@ -38,10 +37,6 @@
 			<div class="row-fluid">
 				<div class="span6"><i class="icon icon-picture"></i>{$cantidad_fotos}</div>
 				<div class="span6"><i class="icon icon-comment"></i>{$cantidad_comentarios_fotos}</div>
-			</div>
-			<div class="row-fluid">
-				<div class="span6"><i class="icon icon-globe"></i>????</div>
-				<div class="span6"><i class="icon icon-book"></i>????</div>
 			</div>
 		</div>
 		<div>

@@ -62,7 +62,7 @@ class Base_Controller_Mensaje extends Controller {
 
 		// Cargamos el listado de mensajes.
 		$model_mensajes = new Model_Mensaje;
-		$recibidos = $model_mensajes->recibidos(Usuario::usuario()->id);
+		$recibidos = $model_mensajes->recibidos(Usuario::$usuario_id);
 
 		// Procesamos información relevante.
 		foreach ($recibidos as $key => $value)
@@ -95,7 +95,7 @@ class Base_Controller_Mensaje extends Controller {
 
 		// Cargamos el listado de mensajes.
 		$model_mensajes = new Model_Mensaje;
-		$enviados = $model_mensajes->enviados(Usuario::usuario()->id);
+		$enviados = $model_mensajes->enviados(Usuario::$usuario_id);
 
 		// Procesamos información relevante.
 		foreach ($enviados as $key => $value)
@@ -130,7 +130,7 @@ class Base_Controller_Mensaje extends Controller {
 
 			if (is_array($model_padre->as_array()))
 			{
-				if ($model_padre->receptor_id == Usuario::usuario()->id)
+				if ($model_padre->receptor_id == Usuario::$usuario_id)
 				{
 					$padre = $model_padre;
 				}
@@ -217,7 +217,7 @@ class Base_Controller_Mensaje extends Controller {
 						if ($model_usuario->exists_nick($u))
 						{
 							$model_usuario->load_by_nick($u);
-							if ($model_usuario->id == Session::get('usuario_id'))
+							if ($model_usuario->id == $_SESSION['usuario_id'])
 							{
 								$view->assign('error_para', "No puedes enviarte mensaje a ti mismo.");
 								$error = TRUE;
@@ -263,7 +263,7 @@ class Base_Controller_Mensaje extends Controller {
 					if (isset($padre) && $tipo == 1)
 					{
 						$padre->actualizar_estado(Model_Mensaje::ESTADO_RESPONDIDO);
-						$mensaje_id = $model_mensaje->enviar(Usuario::usuario()->id, $u->id, $asunto, $contenido, $padre->id);
+						$mensaje_id = $model_mensaje->enviar(Usuario::$usuario_id, $u->id, $asunto, $contenido, $padre->id);
 					}
 					else
 					{
@@ -271,13 +271,13 @@ class Base_Controller_Mensaje extends Controller {
 						{
 							$padre->actualizar_estado(Model_Mensaje::ESTADO_REENVIADO);
 						}
-						$mensaje_id = $model_mensaje->enviar(Usuario::usuario()->id, $u->id, $asunto, $contenido);
+						$mensaje_id = $model_mensaje->enviar(Usuario::$usuario_id, $u->id, $asunto, $contenido);
 					}
 
 					if ($mensaje_id > 0)
 					{
 						$model_suceso = new Model_Suceso;
-						$model_suceso->crear(array(Usuario::usuario()->id, $u->id), 'nuevo_mensaje', $mensaje_id);
+						$model_suceso->crear(array(Usuario::$usuario_id, $u->id), 'nuevo_mensaje', $mensaje_id);
 					}
 					else
 					{
@@ -318,7 +318,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Verificamos sea el receptor.
-		if (Usuario::usuario()->id != $model_mensaje->receptor_id)
+		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
 			Request::redirect('/mensaje/');
 		}
@@ -371,7 +371,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Verificamos sea el receptor.
-		if (Usuario::usuario()->id != $model_mensaje->receptor_id)
+		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
 			Request::redirect('/mensaje/');
 		}
@@ -403,7 +403,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Verificamos sea el emisor.
-		if (Usuario::usuario()->id != $model_mensaje->emisor_id)
+		if (Usuario::$usuario_id != $model_mensaje->emisor_id)
 		{
 			Request::redirect('/mensaje/');
 		}

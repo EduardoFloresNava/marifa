@@ -20,3 +20,9 @@
         }
     });
 } ($));
+
+(function ($) {
+    $('div.fotos ul.thumbnails').masonry({
+        itemSelector: 'li.span4'
+    });
+} ($));

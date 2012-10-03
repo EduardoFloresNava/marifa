@@ -1,6 +1,6 @@
 <?php
 /**
- * session.php is part of Marifa.
+ * borradores.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,14 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
  * @package		Marifa\Base
+ * @subpackage  Controller
  */
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Alias de Base_Session
+ * Alias de Base_Controller_Borradores
  *
  * @package    Marifa\Marifa
+ * @subpackage Controller
  */
-class Session extends Base_Session {}
+class Controller_Borradores extends Base_Controller_Borradores {}

@@ -99,7 +99,7 @@ class Base_Controller_Perfil extends Controller {
 			unset($call);
 		}
 
-		$usuario = (Usuario::usuario()->id == $this->usuario->id) ? '' : $this->usuario->get('nick');
+		$usuario = (Usuario::$usuario_id == $this->usuario->id) ? '' : $this->usuario->get('nick');
 		return array(
 			'muro' => array('link' => '/perfil/index/'.$usuario, 'caption' => __('Muro', FALSE), 'active' => $activo == 'muro' || $activo == 'index'),
 			'informacion' => array('link' => '/perfil/informacion/'.$usuario, 'caption' => __('Información', FALSE), 'active' =>  $activo == 'informacion'),

@@ -24,7 +24,7 @@
 				<a href="#" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
 			</div>
 		</div>
-		<pre>{$post.contenido}</pre>
+		<div class="contenido-post">{$post.contenido}</div>
 		<div class="row-fluid">
 			<div class="span12">
 				<div class="pull-left btn-group">
@@ -126,7 +126,7 @@
 		</div>
 		<div class="row-fluid">
 			<div class="span12">
-				{if="$me != NULL"}
+				{if="$me != NULL && $post.estado == 0"}
 				<form action="/post/comentar/{$post.id}" method="POST">
 					<div class="btn-toolbar bbcode-bar">
 						<div class="btn-group">
@@ -194,9 +194,11 @@
 					<textarea name="comentario" id="comentario" class="span12" placeholder="Comentario...">{if="isset($comentario_content)"}{$comentario_content}{/if}</textarea>
 				</form>
 				{else}
+					{if="$post.estado === 0"}
 				<div class="alert">
 					<strong>&iexcl;Atenci&oacute;n!</strong> Solo usuarios registrados pueden comentar este post.
 				</div>
+					{/if}
 				{/if}
 			</div>
 		</div>

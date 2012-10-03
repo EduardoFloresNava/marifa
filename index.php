@@ -90,8 +90,8 @@ spl_autoload_register('loader_load');
  */
 define('SITE_URL', get_site_url());
 
-// Inicio la session.
-Session::start('random_value');
+// Iniciamos el usuario.
+Usuario::start();
 
 // Cargo el tema actual.
 define('THEME', Theme::actual());
@@ -137,9 +137,6 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 	// Generamos la lista de plugins.
 	Plugin_Manager::get_instance()->regenerar_lista();
 }
-
-// Iniciamos el usuario.
-Usuario::start();
 
 // Database profiler.
 Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');

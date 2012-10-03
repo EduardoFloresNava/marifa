@@ -45,6 +45,12 @@ class Base_Usuario {
 	private static $usuario;
 
 	/**
+	 * Id del usuario que se encuentra logueado.
+	 * @var int
+	 */
+	public static $usuario_id;
+
+	/**
 	 * Listado de permisos que tiene el usuario asignados.
 	 * @var array
 	 */
@@ -60,13 +66,13 @@ class Base_Usuario {
 		if ( ! isset(self::$is_login))
 		{
 			// Verifico si existe el valor en la session.
-			if (Session::is_set('usuario_id'))
+			if (isset($_SESSION['usuario_id']))
 			{
 				// Verifico si está en la base de datos.
-				$model_session = new Model_Session(Session::$id);
+				$model_session = new Model_Session(session_id());
 
 				// Verifico el tiempo.
-				if ($model_session->existe())
+				if ($model_session->expira !== NULL)
 				{
 					if ($model_session->expira->getTimestamp() < time())
 					{
@@ -77,7 +83,7 @@ class Base_Usuario {
 					else
 					{
 						// Actualizo la session.
-						$model_session->actualizar_expira(Session::$duracion);
+						$model_session->actualizar_expira(session_cache_expire() * 60);
 						self::$is_login = TRUE;
 					}
 				}
@@ -103,7 +109,7 @@ class Base_Usuario {
 	{
 		if ( ! isset(self::$usuario))
 		{
-			self::$usuario = self::is_login() ? new Model_Usuario( (int) Session::get('usuario_id')) : FALSE;
+			self::$usuario = self::is_login() ? new Model_Usuario(self::$usuario_id) : FALSE;
 		}
 		return self::$usuario;
 	}
@@ -140,8 +146,9 @@ class Base_Usuario {
 	public static function login($usuario, $ip)
 	{
 		$model_session = new Model_Session;
-		$model_session->crear(Session::$id, $usuario->id, $ip, date('Y/m/d H:i:s', time() + Session::$duracion));
-		Session::set('usuario_id', $usuario->id);
+		$model_session->crear(session_id(), $usuario->id, $ip, date('Y/m/d H:i:s', time() + session_cache_expire() * 60));
+		$_SESSION['usuario_id'] = $usuario->id;
+		self::$usuario_id = $usuario->id;
 		self::$usuario = $usuario;
 		self::$is_login = TRUE;
 	}
@@ -151,11 +158,12 @@ class Base_Usuario {
 	 */
 	public static function logout()
 	{
-		if (Session::is_set('usuario_id'))
+		if (isset($_SESSION['usuario_id']))
 		{
-			$model_session = new Model_Session(Session::$id);
+			$model_session = new Model_Session(session_id());
 			$model_session->borrar();
-			Session::un_set('usuario_id');
+			unset($_SESSION['usuario_id']);
+			session_destroy();
 		}
 	}
 
@@ -165,9 +173,50 @@ class Base_Usuario {
 	 */
 	public static function start()
 	{
-		if ( ! self::is_login() && Session::is_set('usuario_id'))
+		// Inicio y verifico las sessiones.
+		self::start_session();
+
+		if ( ! self::is_login() && isset($_SESSION['usuario_id']))
 		{
-			Session::un_set('usuario_id');
+			unset($_SESSION['usuario_id']);
+		}
+		self::$usuario_id = arr_get($_SESSION, 'usuario_id', NULL);
+	}
+
+	private static function start_session()
+	{
+		// Fuerzo inicio de la sessión
+		if ( ! isset($_SESSION))
+		{
+			session_start();
+		}
+
+		// Verifico sessión iniciada validamente.
+		if ( ! isset($_SESSION['initiated']))
+		{
+			session_regenerate_id();
+			$_SESSION['initiated'] = TRUE;
+		}
+
+		// Verifico perdida de sessión.
+		if (isset($_SESSION['HTTP_USER_AGENT']))
+		{
+			if ($_SESSION['HTTP_USER_AGENT'] != md5($_SERVER['HTTP_USER_AGENT']))
+			{
+				// Borro la session.
+				if (isset($_SESSION['usuario_id']))
+				{
+					unset($_SESSION['usuario_id']);
+				}
+				session_destroy();
+
+				// Mando a la portada.
+				Request::redirect('/');
+			}
+		}
+		else
+		{
+			$_SESSION['HTTP_USER_AGENT'] = md5($_SERVER['HTTP_USER_AGENT']);
 		}
 	}
 }

@@ -129,14 +129,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 				// Rows
 				if (isset($v->rows) && $v->rows != NULL)
 				{
-					if ( ! isset($lst['rows']))
-					{
-						$lst['rows'] = (int) $v->rows;
-					}
-					else
-					{
-						$lst['rows'] += (int) $v->rows;
-					}
+					$lst['rows'] = (int) $v->rows;
 				}
 			}
 

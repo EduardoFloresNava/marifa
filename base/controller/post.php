@@ -66,13 +66,13 @@ class Base_Controller_Post extends Controller {
 			// Cargamos la vista.
 			$view = View::factory('post/index');
 
-			if (Usuario::usuario()->id != $model_post->as_object()->usuario_id)
+			if (Usuario::$usuario_id != $model_post->as_object()->usuario_id)
 			{
 				$model_post->agregar_vista();
 			}
 
 			// Mi id.
-			$view->assign('me', Usuario::usuario()->id);
+			$view->assign('me', Usuario::$usuario_id);
 
 			// Información del usuario dueño del post.
 			$u_data = $model_post->usuario()->as_array();
@@ -85,6 +85,8 @@ class Base_Controller_Post extends Controller {
 
 			// Información del post.
 			$pst = $model_post->as_array();
+			$pst['contenido_raw'] = $pst['contenido'];
+			$pst['contenido'] = Decoda::procesar($pst['contenido']);
 			$pst['seguidores'] = $model_post->cantidad_seguidores();
 			$pst['puntos'] = $model_post->puntos();
 			$pst['favoritos'] = $model_post->cantidad_favoritos();
@@ -95,7 +97,7 @@ class Base_Controller_Post extends Controller {
 			$view->assign('modificaciones_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS));
 			$view->assign('modificar_borrar', Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS));
 
-			if ($model_post->as_object()->usuario_id == Usuario::usuario()->id)
+			if ($model_post->as_object()->usuario_id == Usuario::$usuario_id)
 			{
 				$view->assign('es_favorito', TRUE);
 				$view->assign('sigo_post', TRUE);
@@ -103,9 +105,9 @@ class Base_Controller_Post extends Controller {
 			}
 			else
 			{
-				$view->assign('es_favorito', $model_post->es_favorito(Usuario::usuario()->id));
-				$view->assign('sigo_post', $model_post->es_seguidor(Usuario::usuario()->id));
-				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_PUNTUAR_POST) || $model_post->dio_puntos(Usuario::usuario()->id))
+				$view->assign('es_favorito', $model_post->es_favorito(Usuario::$usuario_id));
+				$view->assign('sigo_post', $model_post->es_seguidor(Usuario::$usuario_id));
+				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_PUNTUAR_POST) || $model_post->dio_puntos(Usuario::$usuario_id))
 				{
 					$view->assign('puntuacion', FALSE);
 				}
@@ -140,13 +142,13 @@ class Base_Controller_Post extends Controller {
 				$cl_cmt = $cmt->as_array();
 				$cl_cmt['contenido_raw'] = $cl_cmt['contenido'];
 				$cl_cmt['contenido'] = Decoda::procesar($cl_cmt['contenido']);
-				if ($cl_cmt['usuario_id'] == Usuario::usuario()->id)
+				if ($cl_cmt['usuario_id'] == Usuario::$usuario_id)
 				{
 					$cl_cmt['vote'] = TRUE;
 				}
 				else
 				{
-					$cl_cmt['vote'] = $cmt->ya_voto(Usuario::usuario()->id);
+					$cl_cmt['vote'] = $cmt->ya_voto(Usuario::$usuario_id);
 				}
 				$cl_cmt['votos'] = $cmt->cantidad_votos();
 				$cl_cmt['usuario'] = $cmt->usuario()->as_array();
@@ -156,8 +158,8 @@ class Base_Controller_Post extends Controller {
 			unset($l_cmt, $cmts);
 
 			$view->assign('comentario_content', isset($_POST['comentario']) ? $_POST['comentario'] : NULL);
-			$view->assign('comentario_error', Session::get_flash('post_comentario_error'));
-			$view->assign('comentario_success', Session::get_flash('post_comentario_success'));
+			$view->assign('comentario_error', get_flash('post_comentario_error'));
+			$view->assign('comentario_success', get_flash('post_comentario_success'));
 		}
 
 
@@ -189,9 +191,9 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verificamos que no sea autor.
-		if ($model_post->usuario_id == Usuario::usuario()->id)
+		if ($model_post->usuario_id == Usuario::$usuario_id)
 		{
-			Session::set('post_comentario_error', 'No puedes denunciar tu propio post.');
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No puedes denunciar tu propio post.';
 			Request::redirect('/post/index/'.$post);
 		}
 
@@ -251,12 +253,12 @@ class Base_Controller_Post extends Controller {
 			if ( ! $error)
 			{
 				// Creo la denuncia.
-				$model_post->denunciar(Usuario::usuario()->id, $motivo, $comentario);
+				$model_post->denunciar(Usuario::$usuario_id, $motivo, $comentario);
 
 				//TODO: crear suceso.
 
 				// Seteamos mensaje flash y volvemos.
-				Session::set('post_correcto', 'Denuncia enviada correctamente.');
+				$_SESSION['flash_success'] = 'Denuncia enviada correctamente.';
 				Request::redirect('/post/index/'.$model_post->id);
 			}
 		}
@@ -307,7 +309,7 @@ class Base_Controller_Post extends Controller {
 		$comentario_clean = preg_replace('/\[.*\]/', '', $comentario);
 		if ( ! isset($comentario_clean{20}) || isset($comentario{400}))
 		{
-			Session::set('post_comentario_error', 'El comentario debe tener entre 20 y 400 caracteres.');
+			$_SESSION['post_comentario_error'] = 'El comentario debe tener entre 20 y 400 caracteres.';
 
 			// Evitamos la salida de la vista actual.
 			$this->template = NULL;
@@ -320,21 +322,21 @@ class Base_Controller_Post extends Controller {
 			$comentario = htmlentities($comentario, ENT_NOQUOTES, 'UTF-8');
 
 			// Insertamos el comentario.
-			$id = $model_post->comentar(Usuario::usuario()->id, $comentario);
+			$id = $model_post->comentar(Usuario::$usuario_id, $comentario);
 
 			if ($id)
 			{
 				// Agregamos los sucesos.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::usuario()->id, $model_post->usuario_id), 'comentario_post', $id);
+				$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'comentario_post', $id);
 
-				Session::set('post_comentario_success', 'El comentario se ha realizado correctamente.');
+				$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
 
 				Request::redirect('/post/index/'.$post);
 			}
 			else
 			{
-				Session::set('post_comentario_error', 'Se produjo un error al colocar el comentario. Reintente.');
+				$_SESSION['post_comentario_error'] = 'Se produjo un error al colocar el comentario. Reintente.';
 
 				// Evitamos la salida de la vista actual.
 				$this->template = NULL;
@@ -359,28 +361,30 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Verifica autor.
-		if ($model_post->usuario_id != Usuario::usuario()->id)
+		if ($model_post->usuario_id != Usuario::$usuario_id)
 		{
 			// Verificamos el voto.
-			if ( ! $model_post->es_favorito(Usuario::usuario()->id))
+			if ( ! $model_post->es_favorito(Usuario::$usuario_id))
 			{
-				$model_post->favorito(Usuario::usuario()->id);
+				$model_post->favorito(Usuario::$usuario_id);
 				$model_suceso = new Model_Suceso;
 				$model_suceso->crear(
 						array(
-							Usuario::usuario()->id,
+							Usuario::$usuario_id,
 							$model_post->usuario_id
 						),
 						'favorito_post',
-						Usuario::usuario()->id,
+						Usuario::$usuario_id,
 						$post
 					);
 			}
 		}
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El post fue agregado a favoritos correctamente.';
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -400,17 +404,19 @@ class Base_Controller_Post extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Comentario incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_VOTAR_COMENTARIO_POST))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No tienes permiso para realizar esta acci&oacute;n.';
 			Request::redirect('/post/index/'.$model_comentario->post_id);
 		}
 
 		// Cargamos usuario.
-		$usuario_id = Usuario::usuario()->id;
+		$usuario_id = Usuario::$usuario_id;
 
 		// Verificamos autor.
 		if ($model_comentario->usuario_id != $usuario_id)
@@ -432,6 +438,7 @@ class Base_Controller_Post extends Controller {
 					);
 			}
 		}
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha votado correctamente.';
 		Request::redirect('/post/index/'.$model_comentario->post_id);
 	}
 
@@ -447,11 +454,12 @@ class Base_Controller_Post extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Comentario incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Cargamos usuario.
-		$usuario_id = Usuario::usuario()->id;
+		$usuario_id = Usuario::$usuario_id;
 
 		// Verificamos autor y permisos.
 		if (($model_comentario->usuario_id == $usuario_id && Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_COMENTARIO_PROPIO))
@@ -479,10 +487,11 @@ class Base_Controller_Post extends Controller {
 						(int) $comentario
 					);*/
 			}
+			$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&ocute;n realizada correctamente.';
 		}
 		else
 		{
-			Session::set('post_comentario_error', 'No tienes permiso para realizar esta acción.');
+			$_SESSION['flash_error'] = 'No tienes permiso para realizar esta acción.';
 		}
 		Request::redirect('/post/index/'.$model_comentario->post_id);
 	}
@@ -502,11 +511,12 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Cargamos usuario.
-		$usuario_id = Usuario::usuario()->id;
+		$usuario_id = Usuario::$usuario_id;
 
 		// Verifica autor.
 		if ($model_post->usuario_id != $usuario_id)
@@ -527,6 +537,7 @@ class Base_Controller_Post extends Controller {
 					);
 			}
 		}
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Ahora eres seguidor del post.';
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -546,13 +557,14 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Verifico el permiso.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS))
 		{
-			//TODO: notificar.
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
 		}
 
@@ -564,8 +576,8 @@ class Base_Controller_Post extends Controller {
 		{
 			$model_post->setear_sticky($tipo);
 		}
-		//TODO: informar.
 		//TODO: agregar suceso.
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acción realizada correctamente.';
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -585,13 +597,14 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Verifico el permiso.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS))
 		{
-			//TODO: notificar.
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
 		}
 
@@ -603,7 +616,7 @@ class Base_Controller_Post extends Controller {
 		{
 			$model_post->setear_sponsored($tipo);
 		}
-		//TODO: informar.
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
 		//TODO: agregar suceso.
 		Request::redirect('/post/index/'.$post);
 	}
@@ -624,13 +637,14 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Verifico el usuario y sus permisos.
-		if ($model_post->usuario_id !== Usuario::usuario()->id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_OCULTAR_POSTS))
+		if ($model_post->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_OCULTAR_POSTS))
 		{
-			//TODO: notificar.
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
 		}
 
@@ -647,7 +661,7 @@ class Base_Controller_Post extends Controller {
 		// Actualizo el estado.
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_OCULTO);
 
-		//TODO: informar.
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
 		//TODO: agregar suceso.
 		Request::redirect('/post/index/'.$post);
 	}
@@ -668,13 +682,14 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_VER_POSTS_DESAPROBADOS))
 		{
-			Session::set('flash_error', '<b>&iexcl;Error!</b> No tienes permisos para realizar esa acci&oacute;n.');
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No tienes permisos para realizar esa acci&oacute;n.';
 			Request::redirect('/post/index/'.$post);
 		}
 
@@ -684,19 +699,19 @@ class Base_Controller_Post extends Controller {
 		// Verifico el estado actual.
 		if ($tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_RECHAZADO))
 		{
-			Session::set('flash_error', '<b>&iexcl;Error!</b> No se puede realizar esa acci&oacute;n, el estado es incorrecto.');
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No se puede realizar esa acci&oacute;n, el estado es incorrecto.';
 			Request::redirect('/post/index/'.$post);
 		}
 		elseif ( ! $tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_ACTIVO))
 		{
-			Session::set('flash_error', '<b>&iexcl;Error!</b> No se puede realizar esa acci&oacute;n, el estado es incorrecto.');
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No se puede realizar esa acci&oacute;n, el estado es incorrecto.';
 			Request::redirect('/post/index/'.$post);
 		}
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_RECHAZADO);
 
-		Session::set('flash_success', '<b>&iexcl;Felicitaciones!</b> El estado se modific&oacute; correctamente.');
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El estado se modific&oacute; correctamente.';
 		//TODO: agregar suceso.
 		Request::redirect('/post/index/'.$post);
 	}
@@ -717,18 +732,19 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Verifico el usuario y sus permisos.
-		if (Usuario::usuario()->id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
+		if (Usuario::$usuario_id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
 		{
-			//TODO: notificar.
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
 		}
 
 		// Verifico requisitos según permisos y usuario.
-		if (Usuario::usuario()->id == $model_post->usuario_id)
+		if (Usuario::$usuario_id == $model_post->usuario_id)
 		{
 			if ($model_post->estado === Model_Post::ESTADO_ACTIVO)
 			{
@@ -736,7 +752,7 @@ class Base_Controller_Post extends Controller {
 			}
 			elseif ($model_post->estado !== Model_Post::ESTADO_PAPELERA && $model_post !== Model_Post::ESTADO_OCULTO)
 			{
-				//TODO: notificar.
+				$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Acci&oacute;n incorrecta.';
 				Request::redirect('/post/index/'.$post);
 			}
 			else
@@ -752,7 +768,7 @@ class Base_Controller_Post extends Controller {
 		// Actualizo el estado.
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_BORRADO : Model_Post::ESTADO_PAPELERA);
 
-		//TODO: informar.
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
 		//TODO: agregar suceso.
 		Request::redirect('/post/index/'.$post);
 	}
@@ -772,27 +788,28 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Verifico el usuario.
-		if (Usuario::usuario()->id !== $model_post->usuario_id)
+		if (Usuario::$usuario_id !== $model_post->usuario_id)
 		{
-			//TODO: notificar.
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
 		}
 
 		// Verifico el estado.
 		if ($model_post->estado !== Model_Post::ESTADO_PAPELERA)
 		{
-			//TODO: notificar.
-				Request::redirect('/post/index/'.$post);
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
+			Request::redirect('/post/index/'.$post);
 		}
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
 
-		//TODO: informar.
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
 		//TODO: agregar suceso.
 		Request::redirect('/post/index/'.$post);
 	}
@@ -812,20 +829,21 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Verifico el usuario.
-		if (Usuario::usuario()->id !== $model_post->usuario_id)
+		if (Usuario::$usuario_id !== $model_post->usuario_id)
 		{
-			//TODO: notificar.
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
 		}
 
 		// Verifico el estado.
 		if ($model_post->estado !== Model_Post::ESTADO_BORRADOR)
 		{
-			//TODO: notificar.
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
 		}
 
@@ -841,7 +859,7 @@ class Base_Controller_Post extends Controller {
 			$model_post->actualizar_fecha();
 		}
 
-		//TODO: informar.
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
 		//TODO: agregar suceso.
 		Request::redirect('/post/index/'.$post);
 	}
@@ -871,11 +889,12 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
 			Request::redirect('/');
 		}
 
 		// Cargamos usuario.
-		$usuario_id = Usuario::usuario()->id;
+		$usuario_id = Usuario::$usuario_id;
 
 		// Verifica autor.
 		if ($model_post->usuario_id != $usuario_id)
@@ -901,8 +920,21 @@ class Base_Controller_Post extends Controller {
 								$usuario_id,
 								$post
 							);
+						$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Se ha realizado la puntuación correctamente.';
+					}
+					else
+					{
+						$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Los puntos que posees no son suficientes.';
 					}
 				}
+				else
+				{
+					$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Ya has puntuado al post.';
+				}
+			}
+			else
+			{
+				$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			}
 		}
 		Request::redirect('/post/index/'.$post);
@@ -1038,14 +1070,14 @@ class Base_Controller_Post extends Controller {
 				}
 
 				$model_post = new Model_Post;
-				$post_id = $model_post->crear(Usuario::usuario()->id, $titulo, $contenido, $categoria_id, $privado, $patrocinado, $sticky, $estado);
+				$post_id = $model_post->crear(Usuario::$usuario_id, $titulo, $contenido, $categoria_id, $privado, $patrocinado, $sticky, $estado);
 
 				if ($post_id > 0)
 				{
 					Request::redirect('/post/index/'.$post_id);
 
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(Usuario::usuario()->id, 'nuevo_post', $post_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'nuevo_post', $post_id);
 				}
 				else
 				{

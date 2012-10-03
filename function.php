@@ -199,3 +199,32 @@ function get_readable_file_size($size, $format_string = '')
 
 	return sprintf($format_string, $size, $size_string);
 }
+
+/**
+ * Obtenemos una clave de un arreglo, si no existe devolvemos $default.
+ * @param array $array Arreglo de donde obtener la clave.
+ * @param mixed $key Clave a obtener.
+ * @param mixed $default Valor devuelto en caso de no encontrar la clave.
+ * @return mixed
+ */
+function arr_get($array, $key, $default = NULL)
+{
+	return isset($array[$key]) ? $array[$key] : $default;
+}
+
+/**
+ * Obtenemos un mensaje flash. Es decir, un mensaje que se aloja en 1 sessión y
+ * solo se muestra 1 vez.
+ * @param mixed $key
+ * @return mixed
+ */
+function get_flash($key)
+{
+	if (isset($_SESSION[$key]))
+	{
+		$rst = $_SESSION[$key];
+		unset($_SESSION[$key]);
+		return $rst;
+	}
+	return NULL;
+}

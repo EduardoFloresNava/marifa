@@ -59,14 +59,14 @@ class Base_Controller {
 		$this->template->assign('contenido', '');
 
 		// Eventos flash.
-		if (Session::is_set('flash_success'))
+		if (isset($_SESSION['flash_success']))
 		{
-			$this->template->assign('flash_success', Session::get_flash('flash_success'));
+			$this->template->assign('flash_success', get_flash('flash_success'));
 		}
 
-		if (Session::is_set('flash_error'))
+		if (isset($_SESSION['flash_error']))
 		{
-			$this->template->assign('flash_error', Session::get_flash('flash_error'));
+			$this->template->assign('flash_error', get_flash('flash_error'));
 		}
 	}
 
@@ -85,7 +85,7 @@ class Base_Controller {
 		// Sucesos.
 		/**
 		$model_sucesos = new Model_Suceso;
-		$lst = $model_sucesos->obtener_by_usuario( (int) Session::get('usuario_id'));
+		$lst = $model_sucesos->obtener_by_usuario( (int) $_SESSION['usuario_id']);
 		unset($model_sucesos);
 
 		$eventos = array();
@@ -123,10 +123,10 @@ class Base_Controller {
 		// Su carga va a ir por AJAX.
 		$vista->assign('sucesos', array());
 
-
+		/**
 		// Listado de mensajes.
 		$model_mensajes = new Model_Mensaje;
-		$msg_rst = $model_mensajes->recibidos(Usuario::usuario()->id);
+		$msg_rst = $model_mensajes->recibidos(Usuario::$usuario_id);
 
 		$msg_event = array();
 		foreach ($msg_rst as $v)
@@ -154,7 +154,8 @@ class Base_Controller {
 			$msg_event[] = $aux;
 		}
 		$vista->assign('mensajes', $msg_event);
-		unset($msg_event, $msg_rst);
+		unset($msg_event, $msg_rst);*/
+		$vista->assign('mensajes', array());
 
 		return $vista;
 	}

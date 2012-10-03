@@ -173,7 +173,7 @@ class Base_Theme {
 	private static function get_preview()
 	{
 		// Verifico esté seteado.
-		if (Session::is_set('preview-theme'))
+		if (isset($_SESSION['preview-theme']))
 		{
 			// Verifico exista.
 			if (file_exists(APP_BASE.DS.VIEW_PATH.Sesssion::get('preview-theme')))
