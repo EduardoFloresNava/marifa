@@ -38,11 +38,11 @@ else
 	// PARA PRODUCCION DEBE SER FALSE.
 }
 
-if (DEBUG)
-{
-	// Información de rendimiento para depuración.
-	define('START_MEMORY', memory_get_peak_usage());
-}
+// Defino producción para simplificar.
+define('PRODUCTION', ! DEBUG);
+
+// Información de rendimiento para depuración.
+PRODUCTION OR define('START_MEMORY', memory_get_peak_usage());
 
 /**
  * Separador de directorios
@@ -139,17 +139,11 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 }
 
 // Database profiler.
-Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
+PRODUCTION OR Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
 
-if (DEBUG)
-{
-	Profiler_Profiler::get_instance()->log_memory('Framework memory');
-}
+PRODUCTION OR Profiler_Profiler::get_instance()->log_memory('Framework memory');
 
 // Cargamos el despachador y damos el control al controlador correspondiente.
 Dispatcher::dispatch();
 
-if (DEBUG)
-{
-	Profiler_Profiler::get_instance()->display();
-}
+PRODUCTION OR Profiler_Profiler::get_instance()->display();

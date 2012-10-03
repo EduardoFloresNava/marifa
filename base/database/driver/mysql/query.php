@@ -62,13 +62,13 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 	 */
 	public function __construct($query, $conn)
 	{
-		Profiler_Profiler::get_instance()->log_query($query);
+		PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
 		$this->query = mysql_query($query, $conn);
 		if ($this->query === FALSE)
 		{
 			throw new Database_Exception(mysql_error($conn).' (error '.mysql_errno($conn).')', mysql_errno($conn));
 		}
-		Profiler_Profiler::get_instance()->log_query($query);
+		PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
 	}
 
 	/**

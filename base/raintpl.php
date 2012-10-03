@@ -122,11 +122,6 @@ class Base_RainTPL extends Lib_RainTPL {
 	protected function reduce_path($path)
 	{
 		return self::$base_url;
-		/**
-		var_dump($path);
-		$r = parent::reduce_path($path);
-		var_dump($r);
-		return $r;*/
 	}
 
 }

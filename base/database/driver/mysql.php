@@ -270,9 +270,9 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
 			$rst = mysql_query($query, $this->conn);
-			Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($rst === TRUE)
 			{
@@ -312,9 +312,9 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
 			$rst = mysql_query($query, $this->conn);
-			Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($rst === TRUE)
 			{
@@ -351,9 +351,9 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
 			$rst = mysql_query($query, $this->conn);
-			Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($rst === TRUE)
 			{
