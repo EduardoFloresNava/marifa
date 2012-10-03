@@ -57,6 +57,17 @@ class Base_Controller {
 			$this->template->assign('user_header', $this->make_user_header()->parse());
 		}
 		$this->template->assign('contenido', '');
+
+		// Eventos flash.
+		if (Session::is_set('flash_success'))
+		{
+			$this->template->assign('flash_success', Session::get_flash('flash_success'));
+		}
+
+		if (Session::is_set('flash_error'))
+		{
+			$this->template->assign('flash_error', Session::get_flash('flash_error'));
+		}
 	}
 
 	/**
