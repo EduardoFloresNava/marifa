@@ -68,6 +68,8 @@
 				{/loop}
 			</ul>
 			{/if}
+			{if="isset($flash_success)"}<div class="alert alert-success"><a class="close" data-dismiss="alert">×</a>{$flash_success}</div>{/if}
+			{if="isset($flash_error)"}<div class="alert"><a class="close" data-dismiss="alert">×</a>{$flash_error}</div>{/if}
 			{$contenido}
 		</div>
 		<footer class="footer container">

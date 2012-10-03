@@ -32,31 +32,31 @@
 						{if="$post.sticky"}<a href="/post/fijar_post/{$post.id}/-1" class="btn btn-info">Quitar fijo</a>{else}<a href="/post/fijar_post/{$post.id}/1" class="btn btn-info">Fijar</a>{/if}
 						{if="$post.sponsored"}<a href="/post/patrocinar_post/{$post.id}/-1" class="btn btn-info">Quitar patrocinio</a>{else}<a href="/post/patrocinar_post/{$post.id}/1" class="btn btn-info">Patrocinar</a>{/if}
 						{if="$post.estado == 0"}
-							<a href="/post/ocultar_post/{$post.id}/-1" class="btn btn-inverse">Ocultar</a>
-							<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning">Rechazar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger">Borrar</a>
-							<a href="/post/borrar_post/{$post.id}/-1" class="btn btn-danger">Enviar a la papelera</a>
+							<a href="/post/ocultar_post/{$post.id}/-1" class="btn btn-inverse"><i class="icon-white icon-eye-close"></i> Ocultar</a>
+							<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning"><i class="icon-white icon-hand-down"></i> Rechazar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
+							<a href="/post/borrar_post/{$post.id}/-1" class="btn btn-danger"><i class="icon-white icon-trash"></i> Enviar a la papelera</a>
 						{/if}
 						{if="$post.estado == 1"}
-							<a href="/post/publicar_post/{$post.id}/" class="btn btn-success">Publicar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-primary">Borrar</a>
+							<a href="/post/publicar_post/{$post.id}/" class="btn btn-success"><i class="icon-white icon-ok"></i> Publicar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
 						{/if}
 						{if="$post.estado == 3"}
-							<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success">Aprobar</a>
-							<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning">Rechazar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger">Borrar</a>
+							<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-hand-up"></i> Aprobar</a>
+							<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning"><i class="icon-white icon-hand-down"></i> Rechazar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
 						{/if}
 						{if="$post.estado == 4"}
-							<a href="/post/ocultar_post/{$post.id}/-1" class="btn btn-success">Mostrar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger">Borrar</a>
+							<a href="/post/ocultar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-eye-open"></i> Mostrar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
 						{/if}
 						{if="$post.estado == 5"}
-							<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success">Aprobar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger">Borrar</a>
+							<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-hand-up"></i> Aprobar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
 						{/if}
 						{if="$post.estado == 6"}
-							<a href="/post/restaurar_post/{$post.id}/" class="btn btn-success">Restaurar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"></i>Borrar</a>
+							<a href="/post/restaurar_post/{$post.id}/" class="btn btn-success"><i class="icon-white icon-refresh"></i> Restaurar</a>
+							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"></i><i class="icon-white icon-remove"></i> Borrar</a>
 						{/if}
 					{/if}
 					{if="$me != NULL && !$sigo_post"}<a href="/post/seguir_post/{$post.id}" class="btn">Seguir Post</a>{/if}

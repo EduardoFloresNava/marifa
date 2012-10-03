@@ -672,9 +672,9 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico el usuario y sus permisos.
-		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_VER_POSTS_DESAPROBADOS))
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_VER_POSTS_DESAPROBADOS))
 		{
-			//TODO: notificar.
+			Session::set('flash_error', '<b>&iexcl;Error!</b> No tienes permisos para realizar esa acci&oacute;n.');
 			Request::redirect('/post/index/'.$post);
 		}
 
@@ -684,19 +684,19 @@ class Base_Controller_Post extends Controller {
 		// Verifico el estado actual.
 		if ($tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_RECHAZADO))
 		{
-			//TODO: notificar.
+			Session::set('flash_error', '<b>&iexcl;Error!</b> No se puede realizar esa acci&oacute;n, el estado es incorrecto.');
 			Request::redirect('/post/index/'.$post);
 		}
 		elseif ( ! $tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_ACTIVO))
 		{
-			//TODO: notificar.
+			Session::set('flash_error', '<b>&iexcl;Error!</b> No se puede realizar esa acci&oacute;n, el estado es incorrecto.');
 			Request::redirect('/post/index/'.$post);
 		}
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_RECHAZADO);
 
-		//TODO: informar.
+		Session::set('flash_success', '<b>&iexcl;Felicitaciones!</b> El estado se modific&oacute; correctamente.');
 		//TODO: agregar suceso.
 		Request::redirect('/post/index/'.$post);
 	}

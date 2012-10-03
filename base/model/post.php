@@ -1175,4 +1175,35 @@ class Base_Model_Post extends Model_Dataset {
 		));
 	}
 
+	/**
+	 * Listado de borradores de un usuario.
+	 * @param int $usuario ID del usuario dueño de los borradores.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de posts por página.
+	 * @return array
+	 */
+	public function borradores($usuario, $pagina, $cantidad = 10)
+	{
+		$start = ($pagina - 1) * $cantidad;
+
+		// Calculo el total de elementos.
+		$total = $this->db->query('SELECT COUNT(*) FROM post WHERE estado = 1 AND usuario_id = ?', $usuario)->get_var(Database_Query::FIELD_INT);
+
+		$rst = $this->db->query('SELECT post.id, post_moderado.post_id FROM `post` LEFT JOIN `post_moderado` ON post.id = post_moderado.padre_id WHERE post.estado = 1 AND post.usuario_id = ? ORDER BY fecha LIMIT '.$start.','.$cantidad, $usuario)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+
+		$lst = array();
+		foreach ($rst as $k => $v)
+		{
+			if ($v !== NULL)
+			{
+				$lst[] = array('post' => new Model_Post($k), 'moderado' => new Model_Post($v));
+			}
+			else
+			{
+				$lst[] = new Model_Post($k);
+			}
+		}
+		return array($lst, $total);
+	}
+
 }
