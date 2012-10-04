@@ -100,7 +100,7 @@
 					<div class="span1">
 						<img class="thumbnail" src="{function="Utils::get_gravatar($value.usuario.email, 48, 48)"}" />
 					</div>
-					<div class="span11">
+					<div class="span11 comentario-data">
 						<div class="clearfix head">
 							<span class="informacion">
 								<a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a>
