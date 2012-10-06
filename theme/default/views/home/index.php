@@ -9,6 +9,8 @@
 				<p>{$value.fecha->fuzzy()} - <a href="/perfil/informacion/{$value.usuario.nick}">@{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios}<span class="pull-right">{$value.categoria.nombre}</span></p>
 			</div>
 		</div>
+		{else}
+		<div class="alert">No hay posts aún.</div>
 		{/loop}
 	</div>
 	<div class="span3">
@@ -46,6 +48,8 @@
 				<li>
 					<b><a href="/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="/post/index/{$value.post.id}">{$value.post.titulo}</a>
 				</li>
+			{else}
+				<li><div class="alert">No hay comentarios</div></li>
 			{/loop}
 			</ol>
 		</div>
@@ -54,6 +58,8 @@
 			<ol>
 			{loop="$top_posts"}
 				<li><a href="/post/index/{$value.id}">{$value.titulo}<span class="badge pull-right">{$value.puntos}</a></li>
+			{else}
+				<li><div class="alert">No hay puntos</div></li>
 			{/loop}
 			</ol>
 		</div>

@@ -24,20 +24,20 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Modelo de una denuncia de un post
+ * Modelo para denuncias de los usuarios
  *
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
  * @property-read int $id Id de la denuncia.
- * @property-read int $post_id ID del post al cual pertenece.
+ * @property-read int $denunciado_id ID del usuario denunciado.
  * @property-read int $usuario_id Id del usuario que realiza la denuncia.
  * @property-read int $motivo Número del motivo por el cual se realiza la denuncia.
  * @property-read string $comentario Información adicional sobre la denuncia.
  * @property-read Fechahora $fecha Fecha en la cual se realizó la denuncia.
  * @property-read int $estado Estado de la denuncia.
  */
-class Base_Model_Post_Denuncia extends Model_Dataset {
+class Base_Model_Usuario_Denuncia extends Model_Dataset {
 
 	/**
 	 * La denuncia se encuentra en espera de ser resuelta.
@@ -55,75 +55,47 @@ class Base_Model_Post_Denuncia extends Model_Dataset {
 	const ESTADO_APLICADA = 2;
 
 	/**
-	 * Post identicó a otro.
-	 */
-	const TIPO_REPOST = 0;
+	'Perfil falso/clon',
+	'Usuario insultante y agresivo',
+	'Publicaciones inapropiadas',
+	'Foto del perfil inapropiada',
+	'Publicidad no deseada (SPAM)',*/
 
 	/**
-	 * El post es spam.
+	 * El perfil es falso/clon.
 	 */
-	const TIPO_SPAM = 1;
+	const TIPO_CLON_FALSO = 0;
 
 	/**
-	 * El post contiene links muertos.
+	 * Insultante/agresivo
 	 */
-	const TIPO_LINKS_MUERTOS = 2;
+	const TIPO_AGRESIVO = 1;
 
 	/**
-	 * El post es racista o irrespetuoso.
+	 * Realiza publicaciones inaporpiadas.
 	 */
-	const TIPO_RACISTA_IRRESPETUOSO = 3;
+	const TIPO_PUBLICACIONES_INAPROPIADAS = 2;
 
 	/**
-	 * El post contiene información personal.
+	 * Foto de perfil inaporpiada.
 	 */
-	const TIPO_INFORMACION_PERSONAL = 4;
+	const TIPO_FOTO_PERFIL_INAPROPIADA = 3;
 
 	/**
-	 * El post tiene su titulo en mayusculas.
+	 * Realiza publicidad no deseada.
 	 */
-	const TIPO_TITULO_MAYUSCULA = 5;
-
-	/**
-	 * El post tiene contenido pedofilo.
-	 */
-	const TIPO_PEDOFILIA = 6;
-
-	/**
-	 * El post es gore o asqueroso.
-	 */
-	const TIPO_ASQUEROSO = 7;
-
-	/**
-	 * La fuente del post es incorrecta.
-	 */
-	const TIPO_FUENTE = 8;
-
-	/**
-	 * El post es pobre o crap.
-	 */
-	const TIPO_POBRE = 9;
-
-	/**
-	 * El sitio no es un foro.
-	 */
-	const TIPO_FORO = 10;
-
-	/**
-	 * El post con cumple con el protocolo.
-	 */
-	const TIPO_PROTOCOLO = 11;
+	const TIPO_SPAM = 4;
 
 	/**
 	 * Se especifica una razón diferente.
 	 */
-	const TIPO_PERSONALIZADA = 12;
+	const TIPO_PERSONALIZADA = 5;
 
 	/**
 	 * Nombre de la tabla para el dataset
 	 * @var string
 	 */
-	protected $table = 'post_denuncia';
+	protected $table = 'usuario_denuncia';
 
 	/**
 	 * Clave primaria.
@@ -136,7 +108,7 @@ class Base_Model_Post_Denuncia extends Model_Dataset {
 	 */
 	protected $fields = array(
 		'id' => Database_Query::FIELD_INT,
-		'post_id' => Database_Query::FIELD_INT,
+		'denunciado_id' => Database_Query::FIELD_INT,
 		'usuario_id' => Database_Query::FIELD_INT,
 		'motivo' => Database_Query::FIELD_INT,
 		'comentario' => Database_Query::FIELD_STRING,
@@ -165,12 +137,12 @@ class Base_Model_Post_Denuncia extends Model_Dataset {
 	}
 
 	/**
-	 * Obtenemos el post que fue denunciado.
-	 * @return Model_Post
+	 * Obtenemos el usuario denunciado.
+	 * @return Model_Usuario
 	 */
-	public function post()
+	public function denunciado()
 	{
-		return new Model_Post($this->get('post_id'));
+		return new Model_Usuario($this->get('denunciado_id'));
 	}
 
 	/**
@@ -186,17 +158,17 @@ class Base_Model_Post_Denuncia extends Model_Dataset {
 		// Verifico si hace falta el estado o no.
 		if ($estado === NULL)
 		{
-			$rst = $this->db->query('SELECT id FROM post_denuncia ORDER BY fecha LIMIT '.$start.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+			$rst = $this->db->query('SELECT id FROM usuario_denuncia ORDER BY fecha LIMIT '.$start.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
 		}
 		else
 		{
-			$rst = $this->db->query('SELECT id FROM post_denuncia WHERE estado = ? ORDER BY fecha LIMIT '.$start.','.$cantidad, $estado)->get_pairs(Database_Query::FIELD_INT);
+			$rst = $this->db->query('SELECT id FROM usuario_denuncia WHERE estado = ? ORDER BY fecha LIMIT '.$start.','.$cantidad, $estado)->get_pairs(Database_Query::FIELD_INT);
 		}
 
 		$lst = array();
 		foreach ($rst as $v)
 		{
-			$lst[] = new Model_Post_Denuncia($v);
+			$lst[] = new Model_Usuario_Denuncia($v);
 		}
 		return $lst;
 	}
@@ -210,11 +182,11 @@ class Base_Model_Post_Denuncia extends Model_Dataset {
 	{
 		if ($estado === NULL)
 		{
-			return Database::get_instance()->query('SELECT COUNT(*) FROM post_denuncia')->get_var(Database_Query::FIELD_INT);
+			return Database::get_instance()->query('SELECT COUNT(*) FROM usuario_denuncia')->get_var(Database_Query::FIELD_INT);
 		}
 		else
 		{
-			return Database::get_instance()->query('SELECT COUNT(*) FROM post_denuncia WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
+			return Database::get_instance()->query('SELECT COUNT(*) FROM usuario_denuncia WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
 		}
 	}
 }

@@ -62,10 +62,10 @@
 				<div class="btn-group">
 					<a href="/moderar/denuncias/detalle_post/{$value.id}" class="btn btn-mini" rel="tooltip" title="Detalles"><i class="icon icon-file"></i></a>
 					<a href="/post/index/{$value.post.id}" class="btn btn-mini btn-info" rel="tooltip" title="Ver post"><i class="icon-white icon-eye-close"></i></a>
-					{if="$value.estado == 0"}<a href="/moderar/denuncias/cerrar_denuncia/{$value.id}" class="btn btn-mini btn-danger" rel="tooltip" title="Rechazar denuncia"><i class="icon-white icon-trash"></i></a>
-					<a href="/moderar/denuncias/cerrar_denuncia/{$value.id}" class="btn btn-mini btn-success" rel="tooltip" title="Aceptar denuncia"><i class="icon-white icon-ok"></i></a>{/if}
-					<a href="/post/editar/{$value.post.id}" class="btn btn-mini btn-primary" rel="tooltip" title="Editar post"><i class="icon-white icon-pencil"></i></a>
-					<a href="/moderar/denuncias/borrar_post/{$value.post.id}" class="btn btn-mini btn-danger" rel="tooltip" title="Borrar post"><i class="icon-white icon-remove"></i></a>
+					{if="$value.estado == 0"}<a href="/moderar/denuncias/cerrar_denuncia_post/{$value.id}" class="btn btn-mini btn-danger" rel="tooltip" title="Rechazar denuncia"><i class="icon-white icon-trash"></i></a>
+					<a href="/moderar/denuncias/cerrar_denuncia_post/{$value.id}/1" class="btn btn-mini btn-success" rel="tooltip" title="Aceptar denuncia"><i class="icon-white icon-ok"></i></a>{/if}
+					{if="$value.post.estado != 2"}<a href="/post/editar/{$value.post.id}" class="btn btn-mini btn-primary" rel="tooltip" title="Editar post"><i class="icon-white icon-pencil"></i></a>
+					<a href="/moderar/denuncias/borrar_post/{$value.post.id}" class="btn btn-mini btn-danger" rel="tooltip" title="Borrar post"><i class="icon-white icon-remove"></i></a>{/if}
 				</div>
 			</td>
 		</tr>

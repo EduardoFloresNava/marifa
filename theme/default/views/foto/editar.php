@@ -2,7 +2,7 @@
 	<div class="span12">
 		<form method="POST" class="form-horizontal" action="" enctype="multipart/form-data">
 			<fieldset>
-				<legend>Nueva foto</legend>
+				<legend>Editar foto</legend>
 
 			{loop="$error"}
 			<div class="alert">
@@ -16,16 +16,6 @@
 				<div class="controls">
 					<input type="text" id="titulo" name="titulo" value="{$titulo}" class="span10" />
 					<span class="help-block">{if="$error_titulo"}{$error_titulo}{/if}</span>
-				</div>
-			</div>
-
-			<div class="control-group{if="$error_url"} error{/if}">
-				<label class="control-label" for="url">URL</label>
-				<div class="controls">
-					<input type="text" id="url" name="url" value="{$url}" class="span4" />
-					o
-					<input type="file" id="img" name="img" class="span5" />
-					<span class="help-block">{if="$error_url"}{$error_url}{/if}</span>
 				</div>
 			</div>
 
@@ -91,17 +81,6 @@
 				</div>
 			</div>
 
-			<div class="control-group{if="$error_categoria"} error{/if}">
-				<label class="control-label" for="categoria">Categor&iacute;a</label>
-				<div class="controls">
-					<select class="span12" name="categoria" id="categoria" size="10">
-						{loop="$categorias"}
-						<option value="{$value.seo}"{if="$categoria == $value.seo"}selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
-					</select>
-					<span class="help-block">{if="$error_categoria"}{$error_categoria}{/if}</span>
-				</div>
-			</div>
-
 			<div class="control-group">
 				<label class="control-label">Opciones</label>
 				<div class="controls">
@@ -118,7 +97,7 @@
 			</div>
 
 			<div class="form-actions">
-				<button type="submit" class="btn btn-large btn-primary">Agregar</button>
+				<button type="submit" class="btn btn-large btn-primary">Editar</button> o <a href="/foto/ver/{$foto}">Volver</a>
 			</div>
 
 			</fieldset>

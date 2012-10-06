@@ -41,9 +41,9 @@ class Base_Controller_Moderar_Home extends Controller {
 
 		$listado['p_denuncias'] = array('caption' => 'Denuncias');
 		$listado['denuncias_posts'] = array('link' => '/moderar/denuncias/posts/', 'caption' => 'Posts', 'active' => FALSE, 'cantidad' => Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE));
-		$listado['denuncias_fotos'] = array('link' => '/moderar/denuncias/fotos/', 'caption' => 'Fotos', 'active' => FALSE);
+		$listado['denuncias_fotos'] = array('link' => '/moderar/denuncias/fotos/', 'caption' => 'Fotos', 'active' => FALSE, 'cantidad' => Model_Foto_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE));
 		$listado['denuncias_mensajes'] = array('link' => '/moderar/denuncias/mensajes/', 'caption' => 'Mensajes', 'active' => FALSE);
-		$listado['denuncias_usuarios'] = array('link' => '/moderar/denuncias/usuarios/', 'caption' => 'Usuarios', 'active' => FALSE);
+		$listado['denuncias_usuarios'] = array('link' => '/moderar/denuncias/usuarios/', 'caption' => 'Usuarios', 'active' => FALSE, 'cantidad' => Model_Usuario_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE));
 
 		$listado['p_gestion'] = array('caption' => 'Gestión');
 		$listado['gestion_usuarios'] = array('link' => '/moderar/gestion/usuarios/', 'caption' => 'Usuarios', 'active' => FALSE, 'cantidad' => Model_Usuario_Suspension::cantidad());
@@ -58,7 +58,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		$listado['desaprobado_comentarios'] = array('link' => '/moderar/desaprobado/comentarios/', 'caption' => 'Comentarios', 'active' => FALSE);
 
 		// Seteamos el color.
-		foreach (array('denuncias_posts', 'gestion_usuarios') as $k)
+		foreach (array('denuncias_posts', 'denuncias_fotos', 'denuncias_usuarios', 'gestion_usuarios') as $k)
 		{
 			if ($listado[$k]['cantidad'] > 0)
 			{

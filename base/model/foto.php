@@ -55,6 +55,16 @@ class Base_Model_Foto extends Model_Dataset {
 	const ESTADO_OCULTA = 1;
 
 	/**
+	 * Se ha enviado a la papelera del usuario.
+	 */
+	const ESTADO_PAPELERA = 2;
+
+	/**
+	 * Se ha borrado la foto.
+	 */
+	const ESTADO_BORRADA = 3;
+
+	/**
 	 * Nombre de la tabla para el dataset
 	 * @var string
 	 */
@@ -407,5 +417,24 @@ class Base_Model_Foto extends Model_Dataset {
 			$lst[] = new Model_Foto($v);
 		}
 		return $lst;
+	}
+
+	/**
+	 * Denunciamos la foto
+	 * @param int $usuario_id Quien denuncia.
+	 * @param int $motivo El motivo de la denuncia.
+	 * @param string $comentario Descripción de la denuncia.
+	 */
+	public function denunciar($usuario_id, $motivo, $comentario)
+	{
+		$this->db->insert('INSERT INTO foto_denuncia (foto_id, usuario_id, motivo, comentario, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)',
+			array(
+				$this->primary_key['id'],
+				$usuario_id,
+				$motivo,
+				$comentario,
+				date('Y/m/d H:i:s'),
+				Model_Foto_Denuncia::ESTADO_PENDIENTE
+			));
 	}
 }

@@ -459,7 +459,7 @@ class Base_Model_Post extends Model_Dataset {
 				$motivo,
 				$comentario,
 				date('Y/m/d H:i:s'),
-				0 //TODO: VER ESTADOS.
+				Model_Post_Denuncia::ESTADO_PENDIENTE
 			));
 	}
 

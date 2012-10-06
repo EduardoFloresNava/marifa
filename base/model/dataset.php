@@ -166,12 +166,12 @@ class Base_Model_Dataset extends Model {
 
 		// Listado de claves.
 		$k_list = array();
-		foreach ($primary_key as $k => $v)
+		foreach ($this->primary_key as $k => $v)
 		{
 			$k_list[] = "$k = ?";
 		}
 
-		return $this->db->update('UPDATE '.$this->table.' SET '.$campo.' = ? WHERE '.implode('AND ', $k_list), array_merge(array($valor), array_values($primary_key)));
+		return $this->db->update('UPDATE '.$this->table.' SET '.$campo.' = ? WHERE '.implode('AND ', $k_list), array_merge(array($valor), array_values($this->primary_key)));
 	}
 
 	/**
@@ -198,12 +198,24 @@ class Base_Model_Dataset extends Model {
 
 		// Listado de asignaciones.
 		$asg = array();
+		$dt = array();
 		foreach ($campos as $k => $v)
 		{
-			$asg[] = $k.' = ?';
+			// Verifico que sea distinto.
+			if ($this->get($k) !== $v)
+			{
+				$asg[] = $k.' = ?';
+				$dt[] = $v;
+			}
 		}
 
-		return $this->db->update('UPDATE '.$this->table.' SET '.implode(', ', $asg).' WHERE '.implode('AND ', $k_list), array_merge(array_values($campos), array_values($this->primary_key)));
+		// Verifico si hay cambios.
+		if (count($dt) == 0)
+		{
+			return TRUE;
+		}
+
+		return $this->db->update('UPDATE '.$this->table.' SET '.implode(', ', $asg).' WHERE '.implode('AND ', $k_list), array_merge($dt, array_values($this->primary_key)));
 	}
 
 	/**

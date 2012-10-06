@@ -80,17 +80,20 @@ class Base_Controller_Foto extends Controller {
 				{
 					$d['favorito'] = TRUE;
 					$d['voto'] = TRUE;
+					$d['denunciar'] = FALSE;
 				}
 				else
 				{
 					$d['favorito'] = $value->es_favorito(Usuario::$usuario_id);
 					$d['voto'] = $value->ya_voto(Usuario::$usuario_id);
+					$d['denunciar'] = TRUE;
 				}
 			}
 			else
 			{
 				$d['favorito'] = TRUE;
 				$d['voto'] = TRUE;
+				$d['denunciar'] = FALSE;
 			}
 			$fotos[$key] = $d;
 		}
@@ -543,6 +546,228 @@ class Base_Controller_Foto extends Controller {
 				{
 					$view->assign('error', 'Se produjo un error cuando se creaba la foto. Reintente.');
 				}
+			}
+		}
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
+	 * Agregamos una denuncia a una foto.
+	 * @param int $foto ID de la foto a denunciar.
+	 */
+	public function action_denunciar($foto)
+	{
+		$foto = (int) $foto;
+
+		// Cargamos la foto.
+		$model_foto = new Model_Foto($foto);
+
+		// Verifico esté logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Debes estar identificado para poder borrar una foto.';
+			Request::redirect('/usuario/login/');
+		}
+
+		// Verificamos exista.
+		if ( ! is_array($model_foto->as_array()))
+		{
+			Request::redirect('/');
+		}
+
+		// Verificamos que no sea autor.
+		if ($model_foto->usuario_id == Usuario::$usuario_id)
+		{
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No puedes denunciar tu propia foto.';
+			Request::redirect('/post/ver/'.$post);
+		}
+
+		// Asignamos el título.
+		$this->template->assign('title', 'Denunciar foto');
+
+		// Cargamos la vista.
+		$view = View::factory('foto/denunciar');
+
+		$view->assign('foto', $model_foto->id);
+
+		// Elementos por defecto.
+		$view->assign('motivo', '');
+		$view->assign('comentario', '');
+		$view->assign('error_motivo', FALSE);
+		$view->assign('error_comentario', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$motivo = isset($_POST['motivo']) ? (int) $_POST['motivo'] : NULL;
+			$comentario = isset($_POST['comentario']) ? preg_replace('/\s+/', ' ', trim($_POST['comentario'])) : NULL;
+
+			// Valores para cambios.
+			$view->assign('motivo', $motivo);
+			$view->assign('comentario', $comentario);
+
+			// Verifico el tipo.
+			if ( ! in_array($motivo, array(0, 1, 2, 3, 4, 5, 6, 7)))
+			{
+				$error = TRUE;
+				$view->assign('error_motivo', 'No ha seleccionado un motivo válido.');
+			}
+
+			// Verifico la razón si corresponde.
+			if ($motivo === 7)
+			{
+				if ( ! isset($comentario{10}) || isset($comentario{400}))
+				{
+					$error = TRUE;
+					$view->assign('error_comentario', 'La descripción de la denuncia debe tener entre 10 y 400 caracteres.');
+				}
+			}
+			else
+			{
+				if (isset($comentario{400}))
+				{
+					$error = TRUE;
+					$view->assign('error_comentario', 'La descripción de la denuncia debe tener entre 10 y 400 caracteres.');
+				}
+				$comentario = NULL;
+			}
+
+			if ( ! $error)
+			{
+				// Creo la denuncia.
+				$model_foto->denunciar(Usuario::$usuario_id, $motivo, $comentario);
+
+				//TODO: crear suceso.
+
+				// Seteamos mensaje flash y volvemos.
+				$_SESSION['flash_success'] = 'Denuncia enviada correctamente.';
+				Request::redirect('/foto/ver/'.$model_foto->id);
+			}
+		}
+
+		// Menu.
+		$this->template->assign('master_bar', parent::base_menu('fotos'));
+		$this->template->assign('top_bar', Controller_Home::submenu());
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $view->parse());
+	}
+
+
+	/**
+	 * Editamos una foto.
+	 * @param int $foto ID de la foto a editar.
+	 */
+	public function action_editar($foto)
+	{
+		// Verificamos usuario conectado.
+		if ( ! Usuario::is_login())
+		{
+			Request::redirect('/');
+		}
+
+		// Cargamos la foto.
+		$foto = (int) $foto;
+		$model_foto = new Model_Foto($foto);
+
+		// Verifico la existencia.
+		if ( ! $model_foto->existe())
+		{
+			$_SESSION['flash_error'] = 'La foto no existe.';
+			Request::redirect('/foto/');
+		}
+
+		// Verifico los permisos.
+		if ($model_foto->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_EDITAR_FOTOS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permisos para editar es foto.';
+			Request::redirect('/foto/ver/'.$foto);
+		}
+
+		// Asignamos el título.
+		$this->template->assign('title', 'Editar foto');
+
+		// Cargamos la vista.
+		$view = View::factory('foto/editar');
+
+		$view->assign('foto', $model_foto->id);
+
+		// Cargo valores actuales.
+		$view->assign('titulo', $model_foto->titulo);
+		$view->assign('descripcion', $model_foto->descripcion);
+		$view->assign('comentarios', $model_foto->comentar);
+		$view->assign('visitantes', $model_foto->visitas !== NULL);
+
+		// Inicializo los errores.
+		$view->assign('error_titulo', FALSE);
+		$view->assign('error_descripcion', FALSE);
+
+		// Menu.
+		$this->template->assign('master_bar', parent::base_menu('fotos'));
+		$this->template->assign('top_bar', $this->submenu('index'));
+
+		if (Request::method() == 'POST')
+		{
+			$error = FALSE;
+
+			// Obtenemos los datos y seteamos valores.
+			foreach (array('titulo', 'descripcion') as $k)
+			{
+				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
+				$view->assign($k, $$k);
+			}
+
+			// Obtenemos los checkbox.
+			$visitantes = isset($_POST['visitantes']) ? ($_POST['visitantes'] == 1) : FALSE;
+			$view->assign('visitantes', $visitantes);
+
+			$comentarios = isset($_POST['comentarios']) ? ($_POST['comentarios'] == 1) : FALSE;
+			$view->assign('comentarios', $comentarios);
+
+			// Verificamos el titulo.
+			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/D', $titulo))
+			{
+				$view->assign('error_titulo', 'El formato del título no es correcto.');
+				$error = TRUE;
+			}
+
+			// Verificamos quitando BBCODE.
+			$descripcion_clean = preg_replace('/\[([^\[\]]+)\]/', '', $descripcion);
+
+			// Verificamos la descripcion.
+			if ( ! isset($descripcion_clean{20}) || isset($descripcion{600}))
+			{
+				$view->assign('error_descripcion', 'La descripción debe tener entre 20 y 600 caractéres.');
+				$error = TRUE;
+			}
+			unset($contenido_clean);
+
+			// Actualizamos los datos.
+			if ( ! $error)
+			{
+				// Evitamos XSS.
+				$descripcion = htmlentities($descripcion, ENT_NOQUOTES, 'UTF-8');
+
+				// Formateamos los campos.
+				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
+
+				// Listado de campos a actualizar.
+				$campos = array(
+					'titulo' => $titulo,
+					'descripcion' => $descripcion,
+					'comentar' => $comentarios,
+					'visitas' => $visitantes ? ($model_foto->visitas !== NULL ? $model_foto->visitas : 0) : NULL,
+				);
+
+				// Actualizo los datos.
+				$model_foto->actualizar_campos($campos);
+
+				$view->assign('flash_success', 'Actualización correcta');
 			}
 		}
 

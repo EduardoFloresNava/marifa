@@ -13,9 +13,10 @@
 					<p class="toolbar">
 						<span class="btn-toolbar">
 							<span class="btn-group"><a class="btn btn-primary" href="/foto/ver/{$value.id}">{@Ver@}</a></span>
-							{if="!$value.favorito"}<span class="btn-group"><a class="btn btn-info" href="/foto/favorito/{$value.id}"><i class="icon-white icon-star"></i> {@Agregar a favoritos@}</a></span>{/if}
-							{if="!$value.voto"}<span class="btn-group"><a class="btn btn-success" href="/foto/votar/{$value.id}/1"><i class="icon-white icon-thumbs-up"></i></a>
-							<a class="btn btn-danger" href="/foto/votar/{$value.id}/-1"><i class="icon-white icon-thumbs-down"></i></a></span>{/if}
+							{if="!$value.favorito"}<span class="btn-group"><a class="btn btn-info" href="/foto/favorito/{$value.id}" rel="tooltip" title="Agregar a favoritos"><i class="icon-white icon-star"></i></a></span>{/if}
+							{if="!$value.voto"}<span class="btn-group"><a class="btn btn-success" href="/foto/votar/{$value.id}/1" rel="tooltip" title="Votar positivamente"><i class="icon-white icon-thumbs-up"></i></a>
+							<a class="btn btn-danger" href="/foto/votar/{$value.id}/-1" rel="tooltip" title="Votar negativamente"><i class="icon-white icon-thumbs-down"></i></a></span>{/if}
+							{if="$value.denunciar"}<span class="btn-group"><a class="btn btn-warning" href="/foto/denunciar/{$value.id}/" rel="tooltip" title="Denunciar"><i class="icon-white icon-exclamation-sign"></i></a></span>{/if}
 						</span>
 					</p>
 					<p class="sumario clearfix">

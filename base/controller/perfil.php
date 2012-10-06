@@ -420,4 +420,99 @@ class Base_Controller_Perfil extends Controller {
 		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
 	}
 
+	public function action_denunciar($usuario)
+	{
+		// Cargamos el usuario.
+		$usuario = $this->cargar_usuario($usuario);
+
+		// Verifico estar logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes estar logueado para poder realizar denuncias.';
+			Request::redirect('/usuario/login');
+		}
+
+		// Verificamos no sea uno mismo.
+		if (Usuario::$usuario_id == $this->usuario->id)
+		{
+			$_SESSION['flash_error'] = 'No puedes denunciarte a vos mismo.';
+			Request::redirect('/perfil/index/'.$usuario->nick);
+		}
+
+		//TODO: verificar estado del usuario.
+
+		// Asignamos el título.
+		$this->template->assign('title', 'Denunciar usuario');
+
+		// Cargamos la vista.
+		$view = View::factory('perfil/denunciar');
+
+		$view->assign('usuario', $this->usuario->nick);
+
+		// Elementos por defecto.
+		$view->assign('motivo', '');
+		$view->assign('comentario', '');
+		$view->assign('error_motivo', FALSE);
+		$view->assign('error_comentario', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$motivo = isset($_POST['motivo']) ? (int) $_POST['motivo'] : NULL;
+			$comentario = isset($_POST['comentario']) ? preg_replace('/\s+/', '', trim($_POST['comentario'])) : NULL;
+
+			// Valores para cambios.
+			$view->assign('motivo', $motivo);
+			$view->assign('comentario', $comentario);
+
+			// Verifico el tipo.
+			if ( ! in_array($motivo, array(0, 1, 2, 3, 4, 5)))
+			{
+				$error = TRUE;
+				$view->assign('error_motivo', 'No ha seleccionado un motivo válido.');
+			}
+
+			// Verifico la razón si corresponde.
+			if ($motivo === 5)
+			{
+				if ( ! isset($comentario{10}) || isset($comentario{400}))
+				{
+					$error = TRUE;
+					$view->assign('error_contenido', 'La descripción de la denuncia debe tener entre 10 y 400 caracteres.');
+				}
+			}
+			else
+			{
+				if (isset($comentario{400}))
+				{
+					$error = TRUE;
+					$view->assign('error_contenido', 'La descripción de la denuncia debe tener entre 10 y 400 caracteres.');
+				}
+				$comentario = NULL;
+			}
+
+			if ( ! $error)
+			{
+				// Creo la denuncia.
+				$this->usuario->denunciar(Usuario::$usuario_id, $motivo, $comentario);
+
+				//TODO: crear suceso.
+
+				// Seteamos mensaje flash y volvemos.
+				$_SESSION['flash_success'] = 'Denuncia enviada correctamente.';
+				Request::redirect('/perfil/index/'.$this->usuario->id);
+			}
+		}
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $view->parse());
+		unset($view);
+
+		// Seteamos el titulo.
+		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+	}
+
 }

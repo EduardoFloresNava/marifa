@@ -815,4 +815,23 @@ class Base_Model_Usuario extends Model_Dataset {
 				'nick' => Database_Query::FIELD_STRING
 		));
 	}
+
+	/**
+	 * Denunciamos al usuario.
+	 * @param int $usuario_id Quien denuncia.
+	 * @param int $motivo El motivo de la denuncia.
+	 * @param string $comentario Descripción de la denuncia.
+	 */
+	public function denunciar($usuario_id, $motivo, $comentario)
+	{
+		$this->db->insert('INSERT INTO usuario_denuncia (denunciado_id, usuario_id, motivo, comentario, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)',
+			array(
+				$this->primary_key['id'],
+				$usuario_id,
+				$motivo,
+				$comentario,
+				date('Y/m/d H:i:s'),
+				Model_Usuario_Denuncia::ESTADO_PENDIENTE
+			));
+	}
 }
