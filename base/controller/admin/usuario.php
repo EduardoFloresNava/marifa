@@ -70,6 +70,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$vista->assign('error', get_flash('usuario_error'));
 		}
 
+		// Limpio antiguos.
+		Model_Usuario_Suspension::clean();
+
 		// Modelo de usuarios.
 		$model_usuarios = new Model_Usuario( (int) $_SESSION['usuario_id']);
 

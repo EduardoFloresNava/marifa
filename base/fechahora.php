@@ -32,33 +32,6 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Fechahora extends DateTime {
 
-	/**
-	 * Fallback de diff.
-	 * @param DateTime $date
-	 * @return int
-	 */
-	function date_diff($date)
-	{
-		$a = new stdClass;
-
-		$aInt = array(
-			'y' => 'Y',
-			'm' => 'm',
-			'd' => 'd',
-			'h' => 'h',
-			'i' => 'i',
-			's' => 's'
-		);
-
-		foreach ($aInt as $k => $v)
-		{
-			$a->$k = $date->format($v) - $this->format($v);
-		}
-
-		return $a;
-	}
-
-
 	public function fuzzy()
 	{
 		// Obtenemos diferencia de tiempo.
@@ -68,35 +41,44 @@ class Base_Fechahora extends DateTime {
 		}
 		else
 		{
-			$diff = $this->date_diff(new DateTime('now'));
+			$diff = date_diff(new DateTime('now'));
+		}
+
+		if ($diff->invert)
+		{
+			$key = __('en %s', FALSE);
+		}
+		else
+		{
+			$key = __('hace %s', FALSE);
 		}
 
 		if ($diff->y != 0)
 		{
-			return sprintf(__('hace %s', FALSE), $this->pluralize($diff->y, __('a&ntilde;o', FALSE)));
+			return sprintf($key, $this->pluralize($diff->y, __('a&ntilde;o', FALSE)));
 		}
 
 		if ($diff->m != 0)
 		{
-			return sprintf(__('hace %s', FALSE), $this->pluralize($diff->m, __('mes', FALSE)));
+			return sprintf($key, $this->pluralize($diff->m, __('mes', FALSE)));
 		}
 
 		if ($diff->d != 0)
 		{
-			return sprintf(__('hace %s', FALSE), $this->pluralize($diff->d, __('dia', FALSE)));
+			return sprintf($key, $this->pluralize($diff->d, __('dia', FALSE)));
 		}
 
 		if ($diff->h != 0)
 		{
-			return sprintf(__('hace %s', FALSE), $this->pluralize($diff->h, __('hora', FALSE)));
+			return sprintf($key, $this->pluralize($diff->h, __('hora', FALSE)));
 		}
 
 		if ($diff->i != 0)
 		{
-			return sprintf(__('hace %s', FALSE), $this->pluralize($diff->i, __('minuto', FALSE)));
+			return sprintf($key, $this->pluralize($diff->i, __('minuto', FALSE)));
 		}
 
-		return __('hace instantes', FALSE);
+		return sprintf($key, __('instantes', FALSE));
 	}
 
 	/**

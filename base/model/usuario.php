@@ -30,6 +30,18 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
+ * @property-read int $id ID del usuario.
+ * @property-read string $nick Nick del usuario.
+ * @property-read string $password Contraseña del usuario.
+ * @property-read string $email E-Mail del usuario.
+ * @property-read int $rango ID del rango del usuario.
+ * @property-read int $puntos Cantidad de puntos que se le dan al usuario.
+ * @property-read int $puntos_disponibles Cantidad de puntos que tiene el usuario.
+ * @property-read Fechahora $registro Fecha del registro.
+ * @property-read Fechahora $lastlogin Fecha de su último ingreso al sitio.
+ * @property-read Fechahora $lastactive Fecha de su última  visita.
+ * @property-read int $lastip La última IP utilizada.
+ * @property-read int $estado Estado de la cuenta.
  */
 class Base_Model_Usuario extends Model_Dataset {
 

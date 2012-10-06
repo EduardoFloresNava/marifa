@@ -29,6 +29,10 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
+ * @property-read int $id ID de la categoria.
+ * @property-read string $nombre Nombre completo de la categoria.
+ * @property-read string $seo Texto seo de la categoria.
+ * @property-read string $imagen Nombre de la imagen a utilizar.
  */
 class Base_Model_Categoria extends Model_Dataset {
 

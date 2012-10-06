@@ -90,6 +90,12 @@ spl_autoload_register('loader_load');
  */
 define('SITE_URL', get_site_url());
 
+// Verifico MCrypt.
+extension_loaded('mcrypt') OR die('Marifa necesita MCrypt para funcionar.');
+
+// Iniciamos las cookies.
+Cookie::start('secret_cookie_key');
+
 // Iniciamos el usuario.
 Usuario::start();
 

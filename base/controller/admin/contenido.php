@@ -263,6 +263,182 @@ class Base_Controller_Admin_Contenido extends Controller {
 	}
 
 	/**
+	 * Realizo el cambio de estados del post.
+	 * @param int $post ID del post al cual cambiarle el estado.
+	 * @param int $estado Estado que se debe colocar.
+	 */
+	public function action_cambiar_estado_post($post, $estado)
+	{
+		// Cargo el post.
+		$model_post = new Model_Post( (int) $post);
+
+		//TODO: verificar permisos.
+
+		// Verifico que exista.
+		if ( ! $model_post->existe())
+		{
+			$_SESSION['flash_error'] = 'El post seleccionado es inválido.';
+			Request::redirect('/admin/contenido/posts');
+		}
+
+		// Obtengo el estado.
+		switch ($model_post->estado)
+		{
+			case 0: // Activo
+				if ($estado == 2) // Borrar.
+				{
+					$model_post->actualizar_estado(2);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				elseif ($estado == 4) // Ocultar
+				{
+					$model_post->actualizar_estado(4);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				elseif ($estado == 5) // Rechazar.
+				{
+					$model_post->actualizar_estado(5);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				elseif ($estado == 6) // Enviar a la papelera.
+				{
+					$model_post->actualizar_estado(6);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				else
+				{
+					// Acción no permitida.
+					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				break;
+			case 1: // Borrador
+				if ($estado == 2) // Borrar.
+				{
+					$model_post->actualizar_estado(2);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				else
+				{
+					// Acción no permitida.
+					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				break;
+			case 2: // Borrado
+				// No hay acciones posibles a este punto.
+				$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+				Request::redirect('/admin/contenido/posts');
+				break;
+			case 3: // Pendiente
+				if ($estado == 0) // Aprobar.
+				{
+					$model_post->actualizar_estado(0);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				elseif ($estado == 5) // Rechazar
+				{
+					$model_post->actualizar_estado(5);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				elseif ($estado == 2) // Borrar.
+				{
+					$model_post->actualizar_estado(2);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				else
+				{
+					// Acción no permitida.
+					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				break;
+			case 4: // Oculto
+				if ($estado == 0) // Mostrar.
+				{
+					$model_post->actualizar_estado(0);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				elseif ($estado == 2) // Borrar.
+				{
+					$model_post->actualizar_estado(2);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				else
+				{
+					// Acción no permitida.
+					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				break;
+			case 5: // Rechazado
+				if ($estado == 0) // Aprobar.
+				{
+					$model_post->actualizar_estado(0);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				elseif ($estado == 2) // Borrar.
+				{
+					$model_post->actualizar_estado(2);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				else
+				{
+					// Acción no permitida.
+					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				break;
+			case 6: // Papelera
+				if ($estado == 0) // Restaurar.
+				{
+					$model_post->actualizar_estado(0);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				elseif ($estado == 2) // Borrar.
+				{
+					$model_post->actualizar_estado(2);
+					//TODO: enviar suceso.
+					$_SESSION['flash_success'] = 'Actualización correcta.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				else
+				{
+					// Acción no permitida.
+					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					Request::redirect('/admin/contenido/posts');
+				}
+				break;
+		}
+	}
+
+	/**
 	 * Listado de fotos existentes.
 	 * @param int $pagina Número de página a mostrar.
 	 */

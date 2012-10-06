@@ -574,7 +574,7 @@
     }
 }
 
-.administracion {
+.administracion, .moderar {
     h1.title {
         margin-bottom: 10px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.2);
@@ -586,8 +586,25 @@
         border-radius: 5px;
         padding-bottom: 5px;
 
+        li {
+
+            a {
+                padding-right: 10px;
+            }
+            .badge {
+                float: right;
+            }
+        }
+
         .nav-header {
-            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 3px 10px;
+
+            &:first-child {
+                border-top: none;
+            }
         }
     }
 

@@ -65,6 +65,15 @@ class Base_Usuario {
 		// Verifico si ya tengo un valor.
 		if ( ! isset(self::$is_login))
 		{
+			// Verifico cookie + session.
+			if ( ! isset($_SESSION['usuario_id']))
+			{
+				if (Cookie::cookie_exists('usuario_id'))
+				{
+					$_SESSION['usuario_id'] = Cookie::get_cookie_value($cookiename);
+				}
+			}
+
 			// Verifico si existe el valor en la session.
 			if (isset($_SESSION['usuario_id']))
 			{

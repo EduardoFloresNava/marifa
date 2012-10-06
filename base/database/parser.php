@@ -305,6 +305,10 @@ class Base_Database_Parser {
 			$object = array_map(array($this, __METHOD__), $object);
 			return implode(', ', $object);
 		}
+		elseif ($object === TRUE || $object === FALSE)
+		{
+			return $object ? 1 : 0;
+		}
 		else
 		{
 			// Suponemos una cadena, la limpiamos.

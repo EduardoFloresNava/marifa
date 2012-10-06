@@ -151,6 +151,62 @@ class Base_Model_Dataset extends Model {
 	}
 
 	/**
+	 * Actualizamos el valor de un campo.
+	 * No se permite que sea uno de la clave.
+	 * @param string $campo Campo a editar.
+	 * @param mixed $valor Nuevo valor a asignar.
+	 */
+	public function actualizar_campo($campo, $valor)
+	{
+		// Verifico la valides del campo.
+		if ( ! in_array($campo, $this->fields) || in_array($campo, array_keys($this->primary_key)))
+		{
+			throw new Database_Exception('El campo a actualizar no es válido.');
+		}
+
+		// Listado de claves.
+		$k_list = array();
+		foreach ($primary_key as $k => $v)
+		{
+			$k_list[] = "$k = ?";
+		}
+
+		return $this->db->update('UPDATE '.$this->table.' SET '.$campo.' = ? WHERE '.implode('AND ', $k_list), array_merge(array($valor), array_values($primary_key)));
+	}
+
+	/**
+	 * Actualizamos un listado de campos.
+	 * @param array $campos Arreglo clave => valor.
+	 */
+	public function actualizar_campos($campos)
+	{
+		// Verifico la valides de los campos.
+		foreach ($campos as $k => $v)
+		{
+			if ( ! in_array($k, array_keys($this->fields)) || in_array($k, array_keys($this->primary_key)))
+			{
+				throw new Database_Exception("El campo '$k' a actualizar no es válido.");
+			}
+		}
+
+		// Listado de claves.
+		$k_list = array();
+		foreach ($this->primary_key as $k => $v)
+		{
+			$k_list[] = "$k = ?";
+		}
+
+		// Listado de asignaciones.
+		$asg = array();
+		foreach ($campos as $k => $v)
+		{
+			$asg[] = $k.' = ?';
+		}
+
+		return $this->db->update('UPDATE '.$this->table.' SET '.implode(', ', $asg).' WHERE '.implode('AND ', $k_list), array_merge(array_values($campos), array_values($this->primary_key)));
+	}
+
+	/**
 	 * Verificamos la existencia de un elemento.
 	 * @param array $primary_key Clave primaria o NULL para la seteada en el constructor.
 	 * @return bool

@@ -29,6 +29,12 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
+ * @property-read int $id ID de la suspensión.
+ * @property-read int $usuario_id ID del usuario que fue suspendido.
+ * @property-read int $moderador_id ID del moderador que ha realizado la suspención.
+ * @property-read string $motivo Motivo por el cual se realiza la suspensión.
+ * @property-read Fechahora $inicio Fecha en la cual inicia la suspensión.
+ * @property-read Fechahora $fin Fecha en la cual termina la suspensión.
  */
 class Base_Model_Usuario_Suspension extends Model_Dataset {
 
@@ -96,6 +102,24 @@ class Base_Model_Usuario_Suspension extends Model_Dataset {
 	}
 
 	/**
+	 * Borramos las suspensiones terminadas.
+	 */
+	public static function clean()
+	{
+		// Borramos suspensiones caducas.
+		Database::get_instance()->delete('DELETE FROM usuario_suspension WHERE fin < ?', date('Y/m/d H:i:s'));
+
+		// Cargamos el listado.
+		$rst = Database::get_instance()->query('SELECT usuario.id FROM usuario LEFT JOIN usuario_suspension ON usuario.id = usuario_suspension.usuario_id WHERE usuario_suspension.usuario_id IS NULL AND usuario.estado = 2')->get_pairs(Database_Query::FIELD_INT);
+
+		if (is_array($rst) && count($rst) > 0)
+		{
+			// Actualizamos los estados.
+			Database::get_instance()->update('UPDATE usuario SET estado = 1 WHERE id IN ('.implode(', ', array_values($rst)).')');
+		}
+	}
+
+	/**
 	 *
 	 * @param int $usuario ID del usuario a suspender.
 	 * @param int $moderador ID del moderador que realiza la suspensión.
@@ -121,5 +145,34 @@ class Base_Model_Usuario_Suspension extends Model_Dataset {
 	public function anular()
 	{
 		return $this->db->query('DELETE FROM usuario_suspension WHERE id = ?', $this->primary_key['id']);
+	}
+
+	/**
+	 * Listado de suspenciones existentes.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de suspensiones por página.
+	 * @return array
+	 */
+	public function listado($pagina, $cantidad = 10)
+	{
+		$start = ($pagina - 1) * $cantidad;
+
+		$rst = $this->db->query('SELECT id FROM usuario_suspension WHERE fin > ? ORDER BY fin LIMIT '.$start.','.$cantidad, date('Y/m/d H:i:s'))->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Usuario_Suspension($v);
+		}
+		return $lst;
+	}
+
+	/**
+	 * Cantidad total de suspensiones.
+	 * @return int
+	 */
+	public static function cantidad()
+	{
+		return Database::get_instance()->query('SELECT COUNT(*) FROM usuario_suspension WHERE fin > ?', date('Y/m/d H:i:s'))->get_var(Database_Query::FIELD_INT);
 	}
 }

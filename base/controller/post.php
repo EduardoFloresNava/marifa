@@ -173,6 +173,167 @@ class Base_Controller_Post extends Controller {
 	}
 
 	/**
+	 * Creamos un nuevo post.
+	 */
+	public function action_editar($post)
+	{
+		// Verificamos usuario logueado.
+		if ( ! Usuario::is_login())
+		{
+			Request::redirect('/usuario/login');
+		}
+
+		// Limpio la entrada
+		$post = (int) $post;
+
+		// Cargo el post.
+		$model_post = new Model_Post($post);
+
+		// Verifico exista.
+		if ( ! $model_post->existe())
+		{
+			$_SESSION['flash_error'] = 'El post especificado no existe.';
+			Request::redirect('/');
+		}
+
+		// No podemos editar posts borrados.
+		if ($model_post->estado == Model_Post::ESTADO_BORRADO)
+		{
+			$_SESSION['flash_error'] = 'El post especificado no es válido.';
+			Request::redirect('/');
+		}
+
+		// Verifico el usuario y el permiso de edición para terceros.
+		if ( ! Usuario::$usuario_id == $model_post->usuario_id &&  ! Usuario::permiso(Model_Usuario_Rango::PERMISO_EDITAR_POSTS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permisos para realizar esa edición.';
+			Request::redirect('/');
+		}
+
+		// Asignamos el título.
+		$this->template->assign('title', 'Editar post');
+
+		// Cargamos la vista.
+		$view = View::factory('post/editar');
+
+		// Seteo permisos especiales.
+		$view->assign('permisos_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_REVISAR_POST));
+
+		// Cargamos valores por defecto.
+		$view->assign('titulo', $model_post->titulo);
+		$view->assign('contenido', $model_post->contenido);
+		$view->assign('categoria', $model_post->categoria()->seo);
+		$view->assign('privado', $model_post->privado);
+		$view->assign('patrocinado', $model_post->sponsored);
+		$view->assign('sticky', $model_post->sticky);
+
+
+		// Elementos por defecto.
+		foreach (array('error_titulo', 'error_contenido', 'error_categoria') as $k)
+		{
+			$view->assign($k, FALSE);
+		}
+
+		// Listado de categorias.
+		$model_categoria = new Model_Categoria;
+		$view->assign('categorias', $model_categoria->lista());
+
+		// Menu.
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', Controller_Home::submenu('index'));
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $view->parse());
+
+		if (Request::method() == 'POST')
+		{
+			$error = FALSE;
+
+			// Obtenemos los datos y seteamos valores.
+			foreach (array('titulo', 'contenido', 'categoria') as $k)
+			{
+				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
+				$view->assign($k, $$k);
+			}
+
+			// Obtenemos los checkbox.
+			foreach (array('privado', 'patrocinado', 'sticky') as $k)
+			{
+				$$k = isset($_POST[$k]) ? ($_POST[$k] == 1) : FALSE;
+				$view->assign($k, $$k);
+			}
+
+			// Verificamos el titulo.
+			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/D', $titulo))
+			{
+				$view->assign('error_titulo', 'El formato del título no es correcto.');
+				$error = TRUE;
+			}
+
+			// Verificamos el contenido.
+			$contenido_clean = preg_replace('/\[.*\]/', '', $contenido);
+			if ( ! isset($contenido_clean{20}) || isset($contenido{600}))
+			{
+				$view->assign('error_contenido', 'El contenido debe tener entre 20 y 600 caractéres.');
+				$error = TRUE;
+			}
+			unset($contenido_clean);
+
+			// Verificamos la categoria.
+			$model_categoria = new Model_Categoria;
+			if ( ! $model_categoria->existe_seo($categoria))
+			{
+				$view->assign('error_categoria', 'La categoría seleccionada es incorrecta.');
+				$error = TRUE;
+			}
+			else
+			{
+				$model_categoria->load_by_seo($categoria);
+				$categoria_id = $model_categoria->id;
+			}
+			unset($model_categoria);
+
+			// Procedemos a crear el post.
+			if ( ! $error)
+			{
+				// Evitamos XSS.
+				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
+
+				// Formateamos los campos.
+				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
+
+				$datos = array(
+						'titulo' => $titulo,
+						'contenido' => $contenido,
+						'categoria_id' => $categoria_id,
+						'privado' => $privado,
+						'sponsored' => $patrocinado,
+						'sticky' => $sticky
+				);
+
+				// Verifico parámetros especiales.
+				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS))
+				{
+					unset($datos['sponsored'], $datos['sticky']);
+				}
+
+				// Actualizo los parámetros.
+				$model_post->actualizar_campos($datos);
+
+				// Informo que todo fue correcto.
+				$_SESSION['flash_success'] = 'Actualización del post correcta.';
+			}
+		}
+
+		// Menu.
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', Controller_Home::submenu('nuevo'));
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
 	 * Agregamos una denuncia a un post.
 	 * @param int $post
 	 */
