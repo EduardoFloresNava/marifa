@@ -174,7 +174,10 @@ class Base_Error {
 		{
 			$func_name = self::arr_get($v, 'function');
 			if ($func_name == 'error_handler' || $func_name == 'shutdown_handler' || $func_name == 'exception_handler')
+			{
 				continue;
+			}
+
 			if ($func_name == "include" || $func_name == "include_once" || $func_name == "require_once" || $func_name == "require")
 			{
 				continue;
@@ -452,14 +455,44 @@ class Base_Error {
 		{
 			$func_name = self::arr_get($v, 'function');
 			if ($func_name == 'error_handler' || $func_name == 'shutdown_handler' || $func_name == 'exception_handler')
+			{
 				continue;
+			}
 			if ($func_name == "include" || $func_name == "include_once" || $func_name == "require_once" || $func_name == "require")
 			{
-				$backtrace[] = "#".$k." ".$func_name."(".self::arr_get(self::arr_get($v, 'args', array()), 0, '').") called at [".self::arr_get($v, 'file').":".self::arr_get($v, 'line')."]";
+				$args = '';
+				if (isset($v['args']))
+				{
+					$args = array();
+					foreach ($v['args'] as $v)
+					{
+						$args[] = gettype($v);
+					}
+					$args = implode(', ', $args);
+				}
+
+				$file = isset($v['file']) ? $v['file'] : '';
+				$line = isset($v['line']) ? $v['line'] : '';
+
+				$backtrace[] = "#$k $func_name($args) called at [$file:$line]";
 			}
 			else
 			{
-				$backtrace[] = "#".$k." ".$func_name."() called at [".self::arr_get($v, 'file').":".self::arr_get($v, 'line')."]";
+				$args = '';
+				if (isset($v['args']))
+				{
+					$args = array();
+					foreach ($v['args'] as $v)
+					{
+						$args[] = gettype($v);
+					}
+					$args = implode(', ', $args);
+				}
+
+				$file = isset($v['file']) ? $v['file'] : '';
+				$line = isset($v['line']) ? $v['line'] : '';
+
+				$backtrace[] = "#$k $func_name($args) called at [$file:$line]";
 			}
 		}
 		return "\n".implode("\n", $backtrace)."\n";

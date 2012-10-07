@@ -104,4 +104,49 @@ class Base_Model_Foto_Comentario extends Model_Dataset {
 		return new Model_Foto($this->get('foto_id'));
 	}
 
+	/**
+	 * Cantidad de comentarios.
+	 * @param int $estado Si contamos algun estado en particular o NULL para todos.
+	 * @return int
+	 */
+	public static function cantidad($estado = NULL)
+	{
+		if ($estado === NULL)
+		{
+			return Database::get_instance()->query('SELECT COUNT(*) FROM foto_comentario')->get_var(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			return Database::get_instance()->query('SELECT COUNT(*) FROM foto_comentario WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
+		}
+	}
+
+	/**
+	 * Listado de comentarios existentes.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de comentarios por página.
+	 * @param int $estado Estado a obtener. NULL para cualquiera.
+	 * @return array
+	 */
+	public function listado($pagina, $cantidad = 10, $estado = NULL)
+	{
+		$start = ($pagina - 1) * $cantidad;
+
+		if ($estado === NULL)
+		{
+			$rst = $this->db->query('SELECT id FROM foto_comentario ORDER BY fecha LIMIT '.$start.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			$rst = $this->db->query('SELECT id FROM foto_comentario WHERE estado = ? ORDER BY fecha LIMIT '.$start.','.$cantidad, $estado)->get_pairs(Database_Query::FIELD_INT);
+		}
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Foto_Comentario($v);
+		}
+		return $lst;
+	}
+
 }

@@ -30,7 +30,7 @@
 			<td>
 				{if="$value.estado == 3"}
 				<span class="label label-info">PENDIENTE</span>
-				{elseif="$value.motivo == 5"}
+				{elseif="$value.estado == 5"}
 				<span class="label label-important">RECHAZADO</span>
 				{else}
 				<span class="label label-important">TIPO SIN DEFINIR</span>
@@ -56,13 +56,13 @@
 {if="$total > $cpp"}
 <div class="pagination pagination-centered">
 	<ul>
-		{if="$paginacion.first != $actual"}<li><a href="/moderar/denuncias/posts/{$paginacion.first}/{$tipo}">&laquo;</a></li>{/if}
-		{if="$paginacion.prev > 0"}<li><a href="/moderar/denuncias/posts/{$paginacion.prev}/{$tipo}">{@Anterior@}</a></li>{/if}
+		{if="$paginacion.first != $actual"}<li><a href="/moderar/desaprobado/posts/{$paginacion.first}/{$tipo}">&laquo;</a></li>{/if}
+		{if="$paginacion.prev > 0"}<li><a href="/moderar/desaprobado/posts/{$paginacion.prev}/{$tipo}">{@Anterior@}</a></li>{/if}
 		{loop="$paginacion.pages"}
-		<li{if="$value == $actual"} class="active"{/if}}><a href="/moderar/denuncias/posts/{$value}/{$tipo}">{$value}</a></li>
+		<li{if="$value == $actual"} class="active"{/if}}><a href="/moderar/desaprobado/posts/{$value}/{$tipo}">{$value}</a></li>
 		{/loop}
-		{if="$paginacion.next <= $paginacion.last && $paginacion.next > 0"}<li><a href="/moderar/denuncias/posts/{$paginacion.next}/{$tipo}">{@Siguiente@}</a></li>{/if}
-		{if="$paginacion.last != $actual && $paginacion.last > 0"}<li><a href="/moderar/denuncias/posts/{$paginacion.last}/{$tipo}">&raquo;</a></li>{/if}
+		{if="$paginacion.next <= $paginacion.last && $paginacion.next > 0"}<li><a href="/moderar/desaprobado/posts/{$paginacion.next}/{$tipo}">{@Siguiente@}</a></li>{/if}
+		{if="$paginacion.last != $actual && $paginacion.last > 0"}<li><a href="/moderar/desaprobado/posts/{$paginacion.last}/{$tipo}">&raquo;</a></li>{/if}
 	</ul>
 </div>
 {/if}

@@ -81,7 +81,7 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 	 * Cargamos un comentario.
 	 * @param int $id ID del comentario.
 	 */
-	public function __construct($id)
+	public function __construct($id = NULL)
 	{
 		parent::__construct();
 
@@ -193,6 +193,51 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 			$lst[] = new Model_Post_Comentario($v);
 		}
 
+		return $lst;
+	}
+
+	/**
+	 * Cantidad de comentarios.
+	 * @param int $estado Si contamos algun estado en particular o NULL para todos.
+	 * @return int
+	 */
+	public static function cantidad($estado = NULL)
+	{
+		if ($estado === NULL)
+		{
+			return Database::get_instance()->query('SELECT COUNT(*) FROM post_comentario')->get_var(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			return Database::get_instance()->query('SELECT COUNT(*) FROM post_comentario WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
+		}
+	}
+
+	/**
+	 * Listado de comentarios existentes.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de comentarios por página.
+	 * @param int $estado Estado a obtener. NULL para cualquiera.
+	 * @return array
+	 */
+	public function listado($pagina, $cantidad = 10, $estado = NULL)
+	{
+		$start = ($pagina - 1) * $cantidad;
+
+		if ($estado === NULL)
+		{
+			$rst = $this->db->query('SELECT id FROM post_comentario ORDER BY fecha LIMIT '.$start.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			$rst = $this->db->query('SELECT id FROM post_comentario WHERE estado = ? ORDER BY fecha LIMIT '.$start.','.$cantidad, $estado)->get_pairs(Database_Query::FIELD_INT);
+		}
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Post_Comentario($v);
+		}
 		return $lst;
 	}
 }

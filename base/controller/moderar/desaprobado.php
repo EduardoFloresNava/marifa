@@ -204,4 +204,231 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		Request::redirect('/moderar/desaprobado/posts');
 	}
 
+	/**
+	 * Listado de comentarios que se encuentran desaprobados.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $tipo Tipo de comentarios a mostrar.
+	 */
+	public function action_comentarios($pagina, $tipo)
+	{
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
+		// 0: Posts y fotos
+		// 1: Fotos.
+		// 2: Posts.
+
+		// Verifico el tipo de comentarios a mostrar.
+		if ($tipo == 0 || $tipo == 1 || $tipo == 2)
+		{
+			$tipo = (int) $tipo;
+		}
+		else
+		{
+			$tipo = 0;
+		}
+
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = 20;
+
+		// Cargamos la vista.
+		$vista = View::factory('/moderar/desaprobado/comentarios');
+
+		// Asignamos datos.
+		$vista->assign('tipo', $tipo);
+
+		// Cargo datos en función del tipo.
+		if ($tipo === 0)
+		{
+			// Cargo el modelo.
+			$model_comentario = new Model_Comentario;
+
+			// Cargo el listado de comentarios.
+			$lst = $model_comentario->listado($pagina, $cantidad_por_pagina, Model_Comentario::ESTADO_OCULTO);
+
+			if (count($lst) == 0 && $pagina != 1)
+			{
+				Request::redirect('/moderar/desaprobado/comentarios');
+			}
+		}
+		elseif ($tipo === 1)
+		{
+			// Cargo el modelo.
+			$model_comentario = new Model_Foto_Comentario;
+
+			// Cargo el listado de comentarios.
+			$lst = $model_comentario->listado($pagina, $cantidad_por_pagina, Model_Foto_Comentario::ESTADO_OCULTO);
+
+			if (count($lst) == 0 && $pagina != 1)
+			{
+				Request::redirect('/moderar/desaprobado/comentarios/1/1');
+			}
+		}
+		else
+		{
+			// Cargo el modelo.
+			$model_comentario = new Model_Post_Comentario;
+
+			// Cargo el listado de comentarios.
+			$lst = $model_comentario->listado($pagina, $cantidad_por_pagina, Model_Post_Comentario::ESTADO_OCULTO);
+
+			if (count($lst) == 0 && $pagina != 1)
+			{
+				Request::redirect('/moderar/desaprobado/comentarios/1/2');
+			}
+		}
+
+		// Calculo las cantidades.
+		$c_foto = Model_Foto_Comentario::cantidad(Model_Foto_Comentario::ESTADO_OCULTO);
+		$c_post = Model_Post_Comentario::cantidad(Model_Post_Comentario::ESTADO_OCULTO);
+		$c_total = $c_foto + $c_post;
+
+		// Paso datos para barra.
+		$vista->assign('cantidad_fotos', $c_foto);
+		$vista->assign('cantidad_posts', $c_post);
+		$vista->assign('cantidad_total', $c_total);
+
+		// Paginación.
+		$total = $tipo == 0 ? $c_total : ($tipo == 1 ? $c_foto : $c_post);
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('actual', $pagina);
+		$vista->assign('total', $total);
+		$vista->assign('cpp', $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->paginate($pagina));
+
+		// Obtenemos datos de los comentarios.
+		foreach ($lst as $k => $v)
+		{
+			$a = $v->as_array();
+			if ($v instanceof Model_Foto_Comentario)
+			{
+				$a['foto'] = $v->foto()->as_array();
+			}
+			else
+			{
+				$a['post'] = $v->post()->as_array();
+			}
+			$a['usuario'] = $v->usuario()->as_array();
+			$lst[$k] = $a;
+		}
+
+		// Seteamos listado de comentarios.
+		$vista->assign('comentarios', $lst);
+		unset($lst);
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('moderar'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('moderar/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('desaprobado_comentarios'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Mostramos el comentario de un post o una foto
+	 * @param int $comentario ID del comentario.
+	 * @param int $tipo 1: post, 2: foto.
+	 */
+	public function action_mostrar_comentario($comentario, $tipo)
+	{
+		//TODO: verificar permisos.
+
+		// Verifico el tipo.
+		$tipo = (int) $tipo;
+		if ($tipo !== 1 && $tipo !== 2)
+		{
+			$_SESSION['flash_error'] = 'No se pudo encontrar el comentario.';
+			Request::redirect('/moderar/desaprobado/comentarios');
+		}
+
+		// Cargo el comentario.
+		$comentario = (int) $comentario;
+		if ($tipo == 1)
+		{
+			$model_comentario = new Model_Post_Comentario($comentario);
+		}
+		else
+		{
+			$model_comentario = new Model_Foto_Comentario($comentario);
+		}
+
+		// Verifico existencia.
+		if ( ! $model_comentario->existe())
+		{
+			$_SESSION['flash_error'] = 'No se pudo encontrar el comentario.';
+			Request::redirect('/moderar/desaprobado/comentarios');
+		}
+
+		// Verifico el estado.
+		if ($model_comentario->estado !== Model_Comentario::ESTADO_OCULTO)
+		{
+			$_SESSION['flash_error'] = 'El comentario no tiene un estado válido.';
+			Request::redirect('/moderar/desaprobado/comentarios');
+		}
+
+		// Actualizo.
+		$model_comentario->actualizar_campo('estado', Model_Comentario::ESTADO_VISIBLE);
+
+		//TODO: agregar suceso.
+
+		$_SESSION['flash_success'] = 'El comentario se ha aprobado correctamente.';
+		Request::redirect('/moderar/desaprobado/comentarios');
+	}
+
+	/**
+	 * Corramos el comentario de un post o una foto
+	 * @param int $comentario ID del comentario.
+	 * @param int $tipo 1: post, 2: foto.
+	 */
+	public function action_borrar_comentario($comentario, $tipo)
+	{
+		//TODO: verificar permisos.
+
+		// Verifico el tipo.
+		$tipo = (int) $tipo;
+		if ($tipo !== 1 && $tipo !== 2)
+		{
+			$_SESSION['flash_error'] = 'No se pudo encontrar el comentario.';
+			Request::redirect('/moderar/desaprobado/comentarios');
+		}
+
+		// Cargo el comentario.
+		$comentario = (int) $comentario;
+		if ($tipo == 1)
+		{
+			$model_comentario = new Model_Post_Comentario($comentario);
+		}
+		else
+		{
+			$model_comentario = new Model_Foto_Comentario($comentario);
+		}
+
+		// Verifico existencia.
+		if ( ! $model_comentario->existe())
+		{
+			$_SESSION['flash_error'] = 'No se pudo encontrar el comentario.';
+			Request::redirect('/moderar/desaprobado/comentarios');
+		}
+
+		// Verifico el estado.
+		if ($model_comentario->estado !== Model_Comentario::ESTADO_OCULTO)
+		{
+			$_SESSION['flash_error'] = 'El comentario no tiene un estado válido.';
+			Request::redirect('/moderar/desaprobado/comentarios');
+		}
+
+		// Actualizo.
+		$model_comentario->actualizar_campo('estado', Model_Comentario::ESTADO_BORRADO);
+
+		//TODO: agregar suceso.
+
+		$_SESSION['flash_success'] = 'El comentario se ha eliminado correctamente.';
+		Request::redirect('/moderar/desaprobado/comentarios');
+	}
+
 }

@@ -55,7 +55,7 @@ class Base_Controller_Moderar_Home extends Controller {
 
 		$listado['p_desaprobado'] = array('caption' => 'Contenido desaprobado');
 		$listado['desaprobado_posts'] = array('link' => '/moderar/desaprobado/posts', 'caption' => 'Posts', 'active' => FALSE, 'cantidad' => Model_Post::s_cantidad(Model_Post::ESTADO_PENDIENTE) + Model_Post::s_cantidad(Model_Post::ESTADO_RECHAZADO));
-		$listado['desaprobado_comentarios'] = array('link' => '/moderar/desaprobado/comentarios/', 'caption' => 'Comentarios', 'active' => FALSE);
+		$listado['desaprobado_comentarios'] = array('link' => '/moderar/desaprobado/comentarios/', 'caption' => 'Comentarios', 'active' => FALSE, 'cantidad' => Model_Comentario::cantidad(Model_Comentario::ESTADO_OCULTO));
 
 		// Seteamos el color.
 		foreach ($listado as $k => $v)
