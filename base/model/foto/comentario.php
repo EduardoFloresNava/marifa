@@ -29,8 +29,29 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
+ * @property-read int $id ID del comentario.
+ * @property-read int $foto_id ID de la foto donde se encuentra el comentario.
+ * @property-read int $usuario_id ID del usuario que creó el comentario.
+ * @property-read Fechahora $fech Cuando se creó el comentario. En caso de edición se debe actualizar esta fecha.
+ * @property-read string $contenido Contenido del comentario.
+ * @property-read int $estado Estado del comentario.
  */
 class Base_Model_Foto_Comentario extends Model_Dataset {
+
+	/**
+	 * Comentario visible para todos.
+	 */
+	const ESTADO_VISIBLE = 0;
+
+	/**
+	 * Comentario oculto por acción de moderación o del usuario.
+	 */
+	const ESTADO_OCULTO = 1;
+
+	/**
+	 * Comentario eliminado. Existe por cuestión de dependencias.
+	 */
+	const ESTADO_BORRADO = 2;
 
 	/**
 	 * Nombre de la tabla para el dataset

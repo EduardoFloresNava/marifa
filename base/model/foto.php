@@ -339,6 +339,33 @@ class Base_Model_Foto extends Model_Dataset {
 
 	/**
 	 * Cantidad total de fotos.
+	 * @param int $estado Estado de la categoria a contar. NULL para todas.
+	 * @return int
+	 */
+	public static function s_cantidad($estado = NULL)
+	{
+		$key = 'post_total';
+
+		if ($estado !== NULL)
+		{
+			$where = ' WHERE estado = ?';
+			$condiciones = $estado;
+			$key .= 'e_'.$estado;
+		}
+
+		$rst = Cache::get_instance()->get($key);
+		if ( ! $rst)
+		{
+			$rst = Database::get_instance()->query('SELECT COUNT(*) FROM foto'.(isset($where) ? $where : ''), (isset($condiciones) ? $condiciones : NULL))->get_var(Database_Query::FIELD_INT);
+
+			Cache::get_instance()->save($key, $rst);
+		}
+
+		return $rst;
+	}
+
+	/**
+	 * Cantidad total de fotos.
 	 * @param bool $ocultas Si contabilizar las ocultas o no.
 	 * @return int
 	 */
@@ -406,10 +433,18 @@ class Base_Model_Foto extends Model_Dataset {
 	 * @param boll $ocultas Si incluir o no las ocultas.
 	 * @return array
 	 */
-	public function listado($pagina, $cantidad = 10, $ocultas = FALSE)
+	public function listado($pagina, $cantidad = 10, $estado = NULL)
 	{
 		$start = ($pagina - 1) * $cantidad;
-		$rst = $this->db->query('SELECT id FROM foto'.($ocultas ? '' : ' WHERE estado = ?').' ORDER BY creacion LIMIT '.$start.','.$cantidad, ($ocultas ? NULL : self::ESTADO_ACTIVA))->get_pairs(Database_Query::FIELD_INT);
+
+		if ($estado === NULL)
+		{
+			$rst = $this->db->query('SELECT id FROM foto ORDER BY creacion LIMIT '.$start.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			$rst = $this->db->query('SELECT id FROM foto WHERE estado = ? ORDER BY creacion LIMIT '.$start.','.$cantidad, $estado)->get_pairs(Database_Query::FIELD_INT);
+		}
 
 		$lst = array();
 		foreach ($rst as $v)

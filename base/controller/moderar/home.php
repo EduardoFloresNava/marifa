@@ -50,23 +50,26 @@ class Base_Controller_Moderar_Home extends Controller {
 		$listado['gestion_buscador'] = array('link' => '/moderar/gestion/buscador/', 'caption' => 'Buscador contenido', 'active' => FALSE);
 
 		$listado['p_papelera'] = array('caption' => 'Papelera de reciclaje');
-		$listado['papelera_posts'] = array('link' => '/moderar/papelera/posts/', 'caption' => 'Posts eliminados', 'active' => FALSE);
-		$listado['papelera_fotos'] = array('link' => '/moderar/papelera/fotos/', 'caption' => 'Fotos eleminadas', 'active' => FALSE);
+		$listado['papelera_posts'] = array('link' => '/moderar/papelera/posts/', 'caption' => 'Posts eliminados', 'active' => FALSE, 'cantidad' => Model_Post::s_cantidad(Model_Post::ESTADO_PAPELERA));
+		$listado['papelera_fotos'] = array('link' => '/moderar/papelera/fotos/', 'caption' => 'Fotos eleminadas', 'active' => FALSE, 'cantidad' => Model_Foto::s_cantidad(Model_Foto::ESTADO_PAPELERA));
 
 		$listado['p_desaprobado'] = array('caption' => 'Contenido desaprobado');
-		$listado['desaprobado_posts'] = array('link' => '/moderar/desaprobado/posts', 'caption' => 'Posts', 'active' => FALSE);
+		$listado['desaprobado_posts'] = array('link' => '/moderar/desaprobado/posts', 'caption' => 'Posts', 'active' => FALSE, 'cantidad' => Model_Post::s_cantidad(Model_Post::ESTADO_PENDIENTE) + Model_Post::s_cantidad(Model_Post::ESTADO_RECHAZADO));
 		$listado['desaprobado_comentarios'] = array('link' => '/moderar/desaprobado/comentarios/', 'caption' => 'Comentarios', 'active' => FALSE);
 
 		// Seteamos el color.
-		foreach (array('denuncias_posts', 'denuncias_fotos', 'denuncias_usuarios', 'gestion_usuarios') as $k)
+		foreach ($listado as $k => $v)
 		{
-			if ($listado[$k]['cantidad'] > 0)
+			if (isset($v['cantidad']))
 			{
-				$listado[$k]['tipo'] = 'important';
-			}
-			else
-			{
-				$listado[$k]['tipo'] = 'success';
+				if ($listado[$k]['cantidad'] > 0)
+				{
+					$listado[$k]['tipo'] = 'important';
+				}
+				else
+				{
+					$listado[$k]['tipo'] = 'success';
+				}
 			}
 		}
 

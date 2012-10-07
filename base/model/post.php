@@ -616,7 +616,7 @@ class Base_Model_Post extends Model_Dataset {
 	 * @param int $categoria Categoria a contar. NULL para todas.
 	 * @return int
 	 */
-	public function cantidad($estado = NULL, $categoria = NULL)
+	public static function s_cantidad($estado = NULL, $categoria = NULL)
 	{
 		$key = 'post_total';
 
@@ -637,12 +637,23 @@ class Base_Model_Post extends Model_Dataset {
 		$rst = Cache::get_instance()->get($key);
 		if ( ! $rst)
 		{
-			$rst = $this->db->query('SELECT COUNT(*) FROM post'.(isset($where) ? $where : ''), (isset($condiciones) ? $condiciones : NULL))->get_var(Database_Query::FIELD_INT);
+			$rst = Database::get_instance()->query('SELECT COUNT(*) FROM post'.(isset($where) ? $where : ''), (isset($condiciones) ? $condiciones : NULL))->get_var(Database_Query::FIELD_INT);
 
 			Cache::get_instance()->save($key, $rst);
 		}
 
 		return $rst;
+	}
+
+	/**
+	 * Cantidad total de posts.
+	 * @param int $estado Estado de la categoria a contar. NULL para todas.
+	 * @param int $categoria Categoria a contar. NULL para todas.
+	 * @return int
+	 */
+	public function cantidad($estado = NULL, $categoria = NULL)
+	{
+		return self::s_cantidad($estado, $categoria);
 	}
 
 	/**
@@ -795,10 +806,33 @@ class Base_Model_Post extends Model_Dataset {
 	 * @param int $cantidad Cantidad de posts por página.
 	 * @return array
 	 */
-	public function listado($pagina, $cantidad = 10)
+	public function listado($pagina, $cantidad = 10, $estado = NULL)
 	{
 		$start = ($pagina - 1) * $cantidad;
-		$rst = $this->db->query('SELECT id FROM post ORDER BY fecha LIMIT '.$start.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+
+		if ($estado === NULL)
+		{
+			$rst = $this->db->query('SELECT id FROM post ORDER BY fecha LIMIT '.$start.','.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			if (is_array($estado))
+			{
+				// Armo la lista de estados.
+				$kk = array();
+				$c = count($estado);
+				for ($i = 0; $i < $c; $i++)
+				{
+					$kk[] = '?';
+				}
+
+				$rst = $this->db->query('SELECT id FROM post WHERE estado IN ('.implode(', ', $kk).') ORDER BY fecha LIMIT '.$start.','.$cantidad, $estado)->get_pairs(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				$rst = $this->db->query('SELECT id FROM post WHERE estado = ? ORDER BY fecha LIMIT '.$start.','.$cantidad, $estado)->get_pairs(Database_Query::FIELD_INT);
+			}
+		}
 
 		$lst = array();
 		foreach ($rst as $v)
