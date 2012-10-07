@@ -173,6 +173,35 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 	}
 
 	/**
+	 * Obtengo cantidad de posts por estado.
+	 * @return array
+	 */
+	public static function cantidad_agrupados()
+	{
+		// Arreglo de estados.
+		$categorias = array(
+			0 => 'visible',
+			1 => 'oculto',
+			2 => 'borrado'
+		);
+
+		// Obtengo grupos.
+		$rst = Database::get_instance()->query('SELECT estado, COUNT(*) AS total FROM post_comentario GROUP BY estado')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+
+		// Armo arreglo resultado.
+		$lst = array();
+		foreach ($categorias as $k => $v)
+		{
+			$lst[$v] = isset($rst[$k]) ? $rst[$k] : 0;
+		}
+
+		// Calculo total.
+		$lst['total'] = array_sum($lst);
+
+		return $lst;
+	}
+
+	/**
 	 * Obtenemos el listado de los últimos comentarios.
 	 * @param int $pagina Número de página empezando en 1.
 	 * @param int $cantidad Cantidad de post por página.

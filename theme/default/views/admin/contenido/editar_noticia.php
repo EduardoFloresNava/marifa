@@ -5,7 +5,7 @@
     <li class="active">Nueva</li>
 </ul>
 <div class="header">
-	<h2 class="title">Nueva noticia</h2>
+	<h2>Nueva noticia</h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 

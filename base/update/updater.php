@@ -48,13 +48,13 @@ class Base_Update_Updater {
 	/**
 	 * Creamos una instancia del servidor de actualizaciones.
 	 */
-    public function __construct()
+    public function __construct($server, $token)
     {
     	// Seteamos el servidor de actualizaciones.
-    	$this->server = Configuraciones::get('update.server', NULL);
+    	$this->server = $server;
 
 		// Seteamos el token.
-		$this->token = Configuraciones::get('update.token', NULL);
+		$this->token = $token;
     }
 
     /**

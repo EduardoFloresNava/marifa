@@ -235,6 +235,15 @@ class Base_Model_Categoria extends Model_Dataset {
 	}
 
 	/**
+	 * Cantidad de categorias que existen.
+	 * @return int
+	 */
+	public function cantidad()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM categoria')->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
 	 * Obtenemos la cantidad de post que tiene asignados la categoria.
 	 * @return int
 	 */

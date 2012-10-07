@@ -657,6 +657,39 @@ class Base_Model_Post extends Model_Dataset {
 	}
 
 	/**
+	 * Obtengo cantidad de posts por estado.
+	 * @return array
+	 */
+	public static function cantidad_agrupados()
+	{
+		// Arreglo de estados.
+		$categorias = array(
+			0 => 'activo',
+			1 => 'borrador',
+			2 => 'borrado',
+			3 => 'pendiente',
+			4 => 'oculto',
+			5 => 'rechazado',
+			6 => 'papelera'
+		);
+
+		// Obtengo grupos.
+		$rst = Database::get_instance()->query('SELECT estado, COUNT(*) AS total FROM post GROUP BY estado')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+
+		// Armo arreglo resultado.
+		$lst = array();
+		foreach ($categorias as $k => $v)
+		{
+			$lst[$v] = isset($rst[$k]) ? $rst[$k] : 0;
+		}
+
+		// Calculo total.
+		$lst['total'] = array_sum($lst);
+
+		return $lst;
+	}
+
+	/**
 	 * Cantidad de post que deben ser corregidos por los usuarios para ser publicados.
 	 * @return int
 	 */
@@ -669,9 +702,9 @@ class Base_Model_Post extends Model_Dataset {
 	 * Obtenemos listado de categorias que tienen posts y su cantidad.
 	 * @return array
 	 */
-	public function cantidad_categorias()
+	public static function cantidad_categorias()
 	{
-		return $this->db->query('SELECT categoria_id, SUM(id) AS total FROM post WHERE estado = 0 GROUP BY categoria_id ORDER BY total DESC')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+		return Database::get_instance()->query('SELECT categoria.nombre, COUNT(post.id) AS total FROM post INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0 GROUP BY post.categoria_id ORDER BY total DESC')->get_pairs(array(Database_Query::FIELD_STRING, Database_Query::FIELD_INT));
 	}
 
 	/**

@@ -11,7 +11,6 @@
 		<a href="/admin/contenido/ocultar_noticias/" class="btn btn-warning">Desactivar todas</a>
 	</div>
 </div>
-{if="isset($success)"}<div class="alert alert-success">{$success}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
 <table class="table table-bordered">
 	<thead>
 		<tr>

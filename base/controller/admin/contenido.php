@@ -37,53 +37,23 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/index');
 
-		// Cargamos las estadísticas de posts.
-		$model_posts = new Model_Post;
+		// Cantidades de posts por estado.
+		$vista->assign('post_estado', Model_Post::cantidad_agrupados());
 
-		// Cantidades por estado.
-		$vista->assign('posts_total', $model_posts->cantidad());
-		$vista->assign('posts_activos', $model_posts->cantidad(Model_Post::ESTADO_ACTIVO));
-		$vista->assign('posts_borrados', $model_posts->cantidad(Model_Post::ESTADO_BORRADO));
-		$vista->assign('posts_revision', $model_posts->cantidad()); // VER
-		$vista->assign('posts_correccion', $model_posts->cantidad_correccion()); // Cantidad pendiente de corrección.
+		// Cantidades de posts por categoria.
+		$vista->assign('posts_categorias', Model_Post::cantidad_categorias());
 
-		// Cantidades por categoria.
-		$posts_categorias = $model_posts->cantidad_categorias();
-		foreach ($posts_categorias as $k => $v)
-		{
-			$a = new Model_Categoria($k);
-			$posts_categorias[$k] = array('categoria' => $a->as_array(), 'cantidad' => $v);
-		}
-		$vista->assign('posts_categorias', $posts_categorias);
-		unset($posts_categorias);
+		// Cantidad de comentarios en posts por estado.
+		$vista->assign('post_comentarios_estado', Model_Post_Comentario::cantidad_agrupados());
 
-		//TODO: estadísticas comentarios posts.
-		unset($model_posts);
+		// Cantidad de fotos por estado.
+		$vista->assign('foto_estado', Model_Foto::cantidad_agrupados());
 
-		// Estadísticas de las fotos.
-		$model_fotos = new Model_Foto;
+		// Cantidad de comentarios en fotos por estado.
+		$vista->assign('foto_comentarios_estado', Model_Foto_Comentario::cantidad_agrupados());
 
-		// Cantidades por estado.
-		$total = $model_fotos->cantidad(TRUE);
-		$activas = $model_fotos->cantidad();
-		$ocultas = $total - $activas;
-		$vista->assign('fotos_total', $total);
-		$vista->assign('fotos_activas', $activas);
-		$vista->assign('fotos_ocultas', $ocultas);
-		unset($total, $activas, $ocultas);
-
-		// Cantidades por categoria.
-		$fotos_categorias = $model_fotos->cantidad_categorias();
-		foreach ($fotos_categorias as $k => $v)
-		{
-			$a = new Model_Categoria($k);
-			$fotos_categorias[$k] = array('categoria' => $a->as_array(), 'cantidad' => $v);
-		}
-		$vista->assign('fotos_categorias', $fotos_categorias);
-		unset($fotos_categorias);
-
-		//TODO: estadísticas comentarios fotos.
-		unset($model_fotos);
+		// Cantidad de fotos por categoria.
+		$vista->assign('fotos_categorias', Model_Foto::cantidad_categorias());
 
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
@@ -112,17 +82,6 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/posts');
-
-		// Noticia Flash.
-		if (isset($_SESSION['posts_correcto']))
-		{
-			$vista->assign('success', get_flash('posts_correcto'));
-		}
-
-		if (isset($_SESSION['posts_error']))
-		{
-			$vista->assign('error', get_flash('posts_error'));
-		}
 
 		// Modelo de posts.
 		$model_posts = new Model_Post;
@@ -178,13 +137,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_post = new Model_Post( (int) $id);
 		if ( ! $model_post->existe())
 		{
+			$_SESSION['flash_error'] = 'Post incorrecto.';
 			Request::redirect('/admin/contenido/posts/');
 		}
 
 		// Verifico cual es el estado actual.
 		if ($model_post->estado === Model_Post::ESTADO_BORRADO)
 		{
-			$_SESSION['post_error'] = 'El post ya se encuentra moderado.';
+			$_SESSION['flash_error'] = 'El post ya se encuentra moderado.';
 			Request::redirect('/admin/contenido/posts/');
 		}
 
@@ -244,7 +204,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 				$model_post->moderar($model_post->id, $tipo, $razon, $borrador);
 
 				// Seteamos mensaje flash y volvemos.
-				$_SESSION['post_correcto'] = 'Post borrado correctamente.';
+				$_SESSION['flash_success'] = 'Post borrado correctamente.';
 				Request::redirect('/admin/contenido/posts/');
 			}
 		}
@@ -453,17 +413,6 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/fotos');
 
-		// Noticia Flash.
-		if (isset($_SESSION['fotos_correcto']))
-		{
-			$vista->assign('success', get_flash('fotos_correcto'));
-		}
-
-		if (isset($_SESSION['fotos_error']))
-		{
-			$vista->assign('error', get_flash('fotos_error'));
-		}
-
 		// Modelo de fotos.
 		$model_fotos = new Model_Foto;
 
@@ -533,14 +482,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_foto->existe())
 		{
-			$_SESSION['fotos_error'] = 'No existe la foto que quiere ocultar.';
+			$_SESSION['flash_error'] = 'No existe la foto que quiere ocultar.';
 			Request::redirect('/admin/contenido/fotos');
 		}
 
 		// Verifico que esté activa.
 		if ($model_foto->estado == Model_Foto::ESTADO_OCULTA)
 		{
-			$_SESSION['fotos_error'] = 'La foto ya se encuentra oculta.';
+			$_SESSION['flash_error'] = 'La foto ya se encuentra oculta.';
 			Request::redirect('/admin/contenido/fotos');
 		}
 
@@ -548,7 +497,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_foto->actualizar_estado(Model_Foto::ESTADO_OCULTA);
 
 		// Informamos.
-		$_SESSION['fotos_correcto'] = 'Foto ocultada correctamente.';
+		$_SESSION['flash_success'] = 'Foto ocultada correctamente.';
 		Request::redirect('/admin/contenido/fotos');
 	}
 
@@ -564,14 +513,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_foto->existe())
 		{
-			$_SESSION['fotos_error'] = 'No existe la foto que quiere mostrar.';
+			$_SESSION['flash_error'] = 'No existe la foto que quiere mostrar.';
 			Request::redirect('/admin/contenido/fotos');
 		}
 
 		// Verifico que esté oculta.
 		if ($model_foto->estado == Model_Foto::ESTADO_ACTIVA)
 		{
-			$_SESSION['fotos_error'] = 'La foto ya se encuentra visible.';
+			$_SESSION['flash_error'] = 'La foto ya se encuentra visible.';
 			Request::redirect('/admin/contenido/fotos');
 		}
 
@@ -579,7 +528,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_foto->actualizar_estado(Model_Foto::ESTADO_ACTIVA);
 
 		// Informamos.
-		$_SESSION['fotos_correcto'] = 'Foto seteada como visible correctamente.';
+		$_SESSION['flash_success'] = 'Foto seteada como visible correctamente.';
 		Request::redirect('/admin/contenido/fotos');
 	}
 
@@ -595,7 +544,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_foto->existe())
 		{
-			$_SESSION['fotos_error'] = 'No existe la foto que quiere mostrar.';
+			$_SESSION['flash_error'] = 'No existe la foto que quiere mostrar.';
 			Request::redirect('/admin/contenido/fotos');
 		}
 
@@ -603,7 +552,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_foto->borrar();
 
 		// Informamos.
-		$_SESSION['fotos_correcto'] = 'Foto borrrada correctamente.';
+		$_SESSION['flash_success'] = 'Foto borrrada correctamente.';
 		Request::redirect('/admin/contenido/fotos');
 	}
 
@@ -614,17 +563,6 @@ class Base_Controller_Admin_Contenido extends Controller {
 	{
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/categorias');
-
-		// Noticia Flash.
-		if (isset($_SESSION['categoria_correcto']))
-		{
-			$vista->assign('success', get_flash('categoria_correcto'));
-		}
-
-		if (isset($_SESSION['categoria_error']))
-		{
-			$vista->assign('error', get_flash('categoria_error'));
-		}
 
 		// Modelo de categorias.
 		$model_categorias = new Model_Categoria;
@@ -718,7 +656,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 				// Creo la categoria.
 				$model_categoria->nueva($nombre, $imagen);
 
-				$_SESSION['categoria_correcto'] = 'Categoria creada correctamente.';
+				$_SESSION['flash_success'] = 'Categoria creada correctamente.';
 				Request::redirect('/admin/contenido/categorias');
 			}
 		}
@@ -748,14 +686,21 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_categoria->existe())
 		{
-			$_SESSION['categoria_error'] = 'No exista la categoria que quiere borrar.';
+			$_SESSION['flash_error'] = 'No exista la categoria que quiere borrar.';
 			Request::redirect('/admin/contenido/categorias');
 		}
 
 		// Verifico no tenga posts ni fotos.
 		if ($model_categoria->tiene_fotos() || $model_categoria->tiene_posts())
 		{
-			$_SESSION['categoria_error'] = 'No se puede borrar la categoria porque tiene fotos y/o posts asociados.';
+			$_SESSION['flash_error'] = 'No se puede borrar la categoria porque tiene fotos y/o posts asociados.';
+			Request::redirect('/admin/contenido/categorias');
+		}
+
+		// Verifico existan otras categorias.
+		if ($model_categoria->cantidad() <= 1)
+		{
+			$_SESSION['flash_error'] = 'No se puede borrar la categoría porque es la única existente.';
 			Request::redirect('/admin/contenido/categorias');
 		}
 
@@ -763,7 +708,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_categoria->borrar();
 
 		// Informamos.
-		$_SESSION['categoria_correcto'] = 'Categoria eliminada correctamente.';
+		$_SESSION['flash_success'] = 'Categoria eliminada correctamente.';
 		Request::redirect('/admin/contenido/categorias');
 	}
 
@@ -779,7 +724,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_categoria->existe())
 		{
-			$_SESSION['categoria_error'] = 'No exista la categoria que quiere editar.';
+			$_SESSION['flash_error'] = 'No exista la categoria que quiere editar.';
 			Request::redirect('/admin/contenido/categorias');
 		}
 
@@ -887,12 +832,6 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/noticias');
 
-		// Noticia Flash.
-		if (isset($_SESSION['noticia_correcta']))
-		{
-			$vista->assign('success', get_flash('noticia_correcta'));
-		}
-
 		// Modelo de noticias.
 		$model_noticias = new Model_Noticia;
 
@@ -978,7 +917,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 				//TODO: agregar suceso de administracion.
 
 				// Seteo FLASH message.
-				$_SESSION['noticia_correcta'] = 'La noticia se creó correctamente';
+				$_SESSION['flash_success'] = 'La noticia se creó correctamente';
 
 				// Redireccionamos.
 				Request::redirect('/admin/contenido/noticias');
@@ -1013,25 +952,25 @@ class Base_Controller_Admin_Contenido extends Controller {
 			if ($estado)
 			{
 				$model_noticia->activar();
-				$_SESSION['noticia_correcta'] = 'Se habilitó correctamente la noticia #'. (int) $id;
+				$_SESSION['flash_success'] = 'Se habilitó correctamente la noticia #'. (int) $id;
 			}
 			else
 			{
 				$model_noticia->desactivar();
-				$_SESSION['noticia_correcta'] = 'Se ocultó correctamente la noticia #'. (int) $id;
+				$_SESSION['flash_success'] = 'Se ocultó correctamente la noticia #'. (int) $id;
 			}
 		}
 		Request::redirect('/admin/contenido/noticias');
 	}
 
 	/**
-	 * Desctivamos todas las noticias.
+	 * Desactivamos todas las noticias.
 	 */
 	public function action_ocultar_noticias()
 	{
 		$model_noticia = new Model_Noticia;
 		$model_noticia->desactivar_todas();
-		$_SESSION['noticia_correcta'] = 'Se han ocultado correctamente todas las noticias.';
+		$_SESSION['flash_success'] = 'Se han ocultado correctamente todas las noticias.';
 		Request::redirect('/admin/contenido/noticias');
 	}
 
@@ -1048,7 +987,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		{
 			// Borramos la noticia.
 			$model_noticia->eliminar();
-			$_SESSION['noticia_correcta'] = 'Se borró correctamente la noticia #'. (int) $id;
+			$_SESSION['flash_success'] = 'Se borró correctamente la noticia #'. (int) $id;
 		}
 		Request::redirect('/admin/contenido/noticias');
 	}
@@ -1060,7 +999,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 	{
 		$model_noticia = new Model_Noticia;
 		$model_noticia->eliminar_todas();
-		$_SESSION['noticia_correcta'] = 'Se han borrado correctamente todas las noticias.';
+		$_SESSION['flash_success'] = 'Se han borrado correctamente todas las noticias.';
 		Request::redirect('/admin/contenido/noticias');
 	}
 
@@ -1074,6 +1013,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_noticia = new Model_Noticia( (int) $id);
 		if ( ! $model_noticia->existe())
 		{
+			$_SESSION['flash_error'] = 'Noticia incorrecta.';
 			Request::redirect('/admin/contenido/noticias');
 		}
 

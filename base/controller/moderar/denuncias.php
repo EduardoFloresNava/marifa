@@ -32,11 +32,6 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Moderar_Denuncias extends Controller {
 
-	public function action_index()
-	{
-		//TODO: hacer portada con estadisticas.
-	}
-
 	/**
 	 * Listado de posts con denuncias.
 	 * @param int $pagina Número de página a mostrar.

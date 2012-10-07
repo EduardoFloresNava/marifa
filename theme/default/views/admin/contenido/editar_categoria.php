@@ -5,7 +5,7 @@
     <li class="active">Editar</li>
 </ul>
 <div class="header">
-	<h2 class="title">Editar categor&iacute;a</h2>
+	<h2>Editar categor&iacute;a</h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 

@@ -580,9 +580,10 @@ class Base_Model_Usuario extends Model_Dataset {
 
 	/**
 	 * Cantidad total de usuarios.
+	 * @param int $estado Estado a contar. NULL para todos.
 	 * @return int
 	 */
-	public function cantidad()
+	public function cantidad($estado = NULL)
 	{
 		if ($this->primary_key['id'] !== NULL)
 		{
@@ -595,15 +596,29 @@ class Base_Model_Usuario extends Model_Dataset {
 			$q = '';
 		}
 
-		$key = 'usuario_total';
-
-		$rst = Cache::get_instance()->get($key);
-		if ( ! $rst)
+		if ($estado !== NULL)
 		{
+			if ( ! empty($q))
+			{
+				$q .= ' AND estado = ?';
+				$params = array($params, $estado);
+			}
+			else
+			{
+				$q = ' WHERE id = ?';
+				$params = $estado;
+			}
+		}
+
+		//$key = 'usuario_total';
+
+		//$rst = Cache::get_instance()->get($key);
+		//if ( ! $rst)
+		//{
 			$rst = $this->db->query('SELECT COUNT(*) FROM usuario'.$q, $params)->get_var(Database_Query::FIELD_INT);
 
-			Cache::get_instance()->save($key, $rst);
-		}
+		//	Cache::get_instance()->save($key, $rst);
+		//}
 
 		return $rst;
 	}
@@ -625,7 +640,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 * @param int $cantidad Cantidad de noticias por página.
 	 * @return array
 	 */
-	public function listado($pagina, $cantidad = 10)
+	public function listado($pagina, $cantidad = 10, $estado = NULL)
 	{
 		if ($this->primary_key['id'] !== NULL)
 		{
@@ -636,6 +651,20 @@ class Base_Model_Usuario extends Model_Dataset {
 		{
 			$params = NULL;
 			$q = '';
+		}
+
+		if ($estado !== NULL)
+		{
+			if ( ! empty($q))
+			{
+				$q .= ' AND estado = ?';
+				$params = array($params, $estado);
+			}
+			else
+			{
+				$q = ' WHERE id = ?';
+				$params = $estado;
+			}
 		}
 
 		$start = ($pagina - 1) * $cantidad;

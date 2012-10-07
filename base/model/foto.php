@@ -365,6 +365,36 @@ class Base_Model_Foto extends Model_Dataset {
 	}
 
 	/**
+	 * Obtengo cantidad de posts por estado.
+	 * @return array
+	 */
+	public static function cantidad_agrupados()
+	{
+		// Arreglo de estados.
+		$categorias = array(
+			0 => 'activa',
+			1 => 'oculta',
+			2 => 'papelera',
+			3 => 'borrada'
+		);
+
+		// Obtengo grupos.
+		$rst = Database::get_instance()->query('SELECT estado, COUNT(*) AS total FROM foto GROUP BY estado')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+
+		// Armo arreglo resultado.
+		$lst = array();
+		foreach ($categorias as $k => $v)
+		{
+			$lst[$v] = isset($rst[$k]) ? $rst[$k] : 0;
+		}
+
+		// Calculo total.
+		$lst['total'] = array_sum($lst);
+
+		return $lst;
+	}
+
+	/**
 	 * Cantidad total de fotos.
 	 * @param bool $ocultas Si contabilizar las ocultas o no.
 	 * @return int
@@ -402,9 +432,9 @@ class Base_Model_Foto extends Model_Dataset {
 	 * Obtenemos listado de categorias que tienen posts y su cantidad.
 	 * @return array
 	 */
-	public function cantidad_categorias()
+	public static function cantidad_categorias()
 	{
-		return $this->db->query('SELECT categoria_id, SUM(id) AS total FROM foto GROUP BY categoria_id ORDER BY total DESC')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+		return Database::get_instance()->query('SELECT categoria.nombre, COUNT(foto.id) AS total FROM foto INNER JOIN categoria ON categoria.id = foto.categoria_id GROUP BY foto.categoria_id ORDER BY total DESC')->get_pairs(array(Database_Query::FIELD_STRING, Database_Query::FIELD_INT));
 	}
 
 	/**

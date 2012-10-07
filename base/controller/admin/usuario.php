@@ -47,17 +47,28 @@ class Base_Controller_Admin_Usuario extends Controller {
 	/**
 	 * Listado de usuarios.
 	 * @param int $pagina Número de página.
+	 * @param int $tipo Tipo de usuarios a mostrar.
 	 */
-	public function action_index($pagina)
+	public function action_index($pagina, $tipo)
 	{
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
+		// TIPO, 0->todos, 1->activos, 2->suspendidos, 3->baneados
+		$tipo = (int) $tipo;
+		if ($tipo !== 0 && $tipo !== 1 && $tipo !== 2 && $tipo !== 3)
+		{
+			Request::redirect('/admin/usuario/');
+		}
 
 		// Cantidad de elementos por pagina.
 		$cantidad_por_pagina = 20;
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/usuario/index');
+
+		// Asigno el tipo.
+		$vista->assign('tipo', $tipo);
 
 		// Noticia Flash.
 		if (isset($_SESSION['usuario_correcto']))
@@ -76,11 +87,40 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Modelo de usuarios.
 		$model_usuarios = new Model_Usuario( (int) $_SESSION['usuario_id']);
 
+		// Cargo las cantidades.
+		$cantidad_activas = $model_usuarios->cantidad(Model_Usuario::ESTADO_ACTIVA);
+		$cantidad_suspendidas = $model_usuarios->cantidad(Model_Usuario::ESTADO_SUSPENDIDA);
+		$cantidad_baneadas = $model_usuarios->cantidad(Model_Usuario::ESTADO_BANEADA);
+		$cantidad_total = $cantidad_activas + $cantidad_suspendidas + $cantidad_baneadas;
+
+		// Seteo las cantidad.
+		$vista->assign('cantidad_activas', $cantidad_activas);
+		$vista->assign('cantidad_suspendidas', $cantidad_suspendidas);
+		$vista->assign('cantidad_baneadas', $cantidad_baneadas);
+		$vista->assign('cantidad_total', $cantidad_total);
+
 		// Cargamos el listado de usuarios.
-		$lst = $model_usuarios->listado($pagina, $cantidad_por_pagina);
+		switch ($tipo)
+		{
+			case 0:
+				$lst = $model_usuarios->listado($pagina, $cantidad_por_pagina);
+				$total = $cantidad_total;
+				break;
+			case 1:
+				$lst = $model_usuarios->listado($pagina, $cantidad_por_pagina, Model_Usuario::ESTADO_ACTIVA);
+				$total = $cantidad_activas;
+				break;
+			case 2:
+				$lst = $model_usuarios->listado($pagina, $cantidad_por_pagina, Model_Usuario::ESTADO_SUSPENDIDA);
+				$total = $cantidad_suspendidas;
+				break;
+			case 3:
+				$lst = $model_usuarios->listado($pagina, $cantidad_por_pagina, Model_Usuario::ESTADO_BANEADA);
+				$total = $cantidad_baneadas;
+				break;
+		}
 
 		// Paginación.
-		$total = $model_usuarios->cantidad();
 		$paginador = new Paginator($total, $cantidad_por_pagina);
 		$vista->assign('actual', $pagina);
 		$vista->assign('total', $total);
@@ -904,7 +944,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		}
 
 		// Modelo de sessiones.
-		$model_session = new Model_Session(Session::$id);
+		$model_session = new Model_Session(session_id());
+
+		$model_session->limpiar();
 
 		// Cargamos el listado de usuarios.
 		$lst = $model_session->listado($pagina, $cantidad_por_pagina);

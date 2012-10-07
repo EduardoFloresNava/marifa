@@ -5,7 +5,7 @@
     <li class="active">Crear categoria</li>
 </ul>
 <div class="header">
-	<h2 class="title">Crear categor&iacute;a</h2>
+	<h2>Crear categor&iacute;a</h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 

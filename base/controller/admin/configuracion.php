@@ -445,7 +445,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		foreach ($themes as $k => $v)
 		{
 			// Cargo información del tema.
-			$a = Configuraciones::obtener(APP_BASE.DS.VIEW_PATH.$v.DS.'theme.php');
+			$a = configuracion_obtener(APP_BASE.DS.VIEW_PATH.$v.DS.'theme.php');
 			$a['key'] = $v;
 			$a['nombre'] = isset($a['nombre']) ? $a['nombre'] : $v;
 			$a['descripcion'] = isset($a['descripcion']) ? $a['descripcion'] : 'Sin descripción';
@@ -670,7 +670,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					if (is_dir($tmp_dir) && file_exists($tmp_dir.DS.'theme.php') && file_exists($tmp_dir.DS.'views') && $tmp_dir.DS.'assets')
 					{
 						// Cargo configuraciones.
-						$data = Configuraciones::obtener($tmp_dir.DS.'theme.php');
+						$data = configuracion_obtener($tmp_dir.DS.'theme.php');
 
 						// Verifico su contenido.
 						if (is_array($data))

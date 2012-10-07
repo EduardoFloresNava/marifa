@@ -14,6 +14,7 @@
 			<th>ID</th>
 			<th>Usuario</th>
 			<th>IP</th>
+			<th>Expira</th>
 			<th>Acciones</th>
 		</tr>
 	</thead>
@@ -23,13 +24,14 @@
 			<td><code>{$value.id|strtoupper}</code></td>
 			<td><a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 			<td>{$value.ip}</td>
-			<td style="text-align: center;">
+			<td>{$value.expira->fuzzy()}</td>
+			<td>
 				<a href="/admin/usuario/terminar_session/{$value.id}" class="btn btn-mini btn-danger">Terminar Sessi&oacute;n</a>
 			</td>
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="4">&iexcl;No hay sesiones activas!</td>
+			<td class="alert" colspan="5">&iexcl;No hay sesiones activas!</td>
 		</tr>
 		{/loop}
 	</tbody>
