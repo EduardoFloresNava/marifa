@@ -34,13 +34,13 @@ class Base_Controller_Mensaje extends Controller {
 
 	public function __construct()
 	{
-		parent::__construct();
-
 		// Solo usuarios conectados.
 		if ( ! Usuario::is_login())
 		{
-			Request::redirect('/');
+			Request::redirect('/usuario/login', TRUE);
 		}
+
+		parent::__construct();
 	}
 
 	protected function submenu($activo)

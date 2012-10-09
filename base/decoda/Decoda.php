@@ -38,6 +38,7 @@ include_once DECODA . 'DecodaAbstract.php';
 include_once DECODA . 'DecodaHook.php';
 include_once DECODA . 'DecodaFilter.php';
 include_once DECODA . 'DecodaTemplateEngineInterface.php';
+include_once DECODA . 'DecodaPhpEngine.php';
 
 class Decoda_Decoda {
 

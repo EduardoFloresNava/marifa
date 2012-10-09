@@ -47,8 +47,42 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			$_SESSION['flash_error'] = 'El post al que intentas acceder no está disponible.';
 			Request::redirect('/');
 		}
+
+		// Verifico el estado de post y permisos necesarios para acceder.
+		switch ($model_post->estado)
+		{
+			case Model_Post::ESTADO_BORRADO:
+				$_SESSION['flash_error'] = 'El post al que intentas acceder no existe.';
+				Request::redirect('/');
+				break;
+			case Model_Post::ESTADO_PAPELERA:
+				if ($model_post->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
+				{
+					$_SESSION['flash_error'] = 'El post al que intentas acceder no se encuentra disponible.';
+					Request::redirect('/');
+				}
+				break;
+			case Model_Post::ESTADO_BORRADOR:
+				if ($model_post->usuario_id !== Usuario::$usuario_id)
+				{
+					$_SESSION['flash_error'] = 'El post al que intentas acceder no se encuentra disponible.';
+					Request::redirect('/');
+				}
+				break;
+			case Model_Post::ESTADO_PENDIENTE:
+			case Model_Post::ESTADO_OCULTO:
+			case Model_Post::ESTADO_RECHAZADO:
+				if ($model_post->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
+				{
+					$_SESSION['flash_error'] = 'El post al que intentas acceder no se encuentra disponible.';
+					Request::redirect('/');
+				}
+				break;
+		}
+
 
 		if ($model_post->as_object()->privado && ! Usuario::is_login())
 		{
@@ -66,6 +100,7 @@ class Base_Controller_Post extends Controller {
 			// Cargamos la vista.
 			$view = View::factory('post/index');
 
+			// Verifico si debo contabilizar la visita.
 			if (Usuario::$usuario_id != $model_post->as_object()->usuario_id)
 			{
 				$model_post->agregar_vista();
@@ -93,10 +128,21 @@ class Base_Controller_Post extends Controller {
 			$view->assign('post', $pst);
 			unset($pst);
 
-			// Verifico permisos para acciones extendidas.
-			$view->assign('modificaciones_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS));
-			$view->assign('modificar_borrar', Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS));
+			// Verifico las acciones extendidas.
+			$view->assign('modificar_ocultar', Usuario::$usuario_id === $model_post->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_OCULTAR));
+			$view->assign('modificar_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER));
+			$view->assign('modificar_aprobar', Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO) || Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS));
+			//TODO: ver si en todo momento es correcto permitir modificaciones.
+			$view->assign('modificar_editar', Usuario::$usuario_id === $model_post->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_EDITAR));
+			$view->assign('modificar_borrar', Usuario::$usuario_id === $model_post->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR));
 
+			// Verifico si el usuario puede comentar.
+			$view->assign('podemos_comentar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR_CERRADO) || $model_post->comentar && Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR));
+
+			// Verifico si el usuario puede votar comentarios.
+			$view->assign('podemos_votar_comentarios', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VOTAR));
+
+			// Verifico acciones generales.
 			if ($model_post->as_object()->usuario_id == Usuario::$usuario_id)
 			{
 				$view->assign('es_favorito', TRUE);
@@ -107,7 +153,7 @@ class Base_Controller_Post extends Controller {
 			{
 				$view->assign('es_favorito', $model_post->es_favorito(Usuario::$usuario_id));
 				$view->assign('sigo_post', $model_post->es_seguidor(Usuario::$usuario_id));
-				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_PUNTUAR_POST) || $model_post->dio_puntos(Usuario::$usuario_id))
+				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_PUNTUAR) || $model_post->dio_puntos(Usuario::$usuario_id))
 				{
 					$view->assign('puntuacion', FALSE);
 				}
@@ -139,6 +185,12 @@ class Base_Controller_Post extends Controller {
 			$l_cmt = array();
 			foreach ($cmts as $cmt)
 			{
+				// Verifico omito los no visibles si el usuario no puede verlos.
+				if ($cmp->estado !== Model_Comentario::ESTADO_VISIBLE &&  ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
+				{
+					continue;
+				}
+
 				$cl_cmt = $cmt->as_array();
 				$cl_cmt['contenido_raw'] = $cl_cmt['contenido'];
 				$cl_cmt['contenido'] = Decoda::procesar($cl_cmt['contenido']);
@@ -204,7 +256,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico el usuario y el permiso de edición para terceros.
-		if ( ! Usuario::$usuario_id == $model_post->usuario_id &&  ! Usuario::permiso(Model_Usuario_Rango::PERMISO_EDITAR_POSTS))
+		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_EDITAR))
 		{
 			$_SESSION['flash_error'] = 'No tienes permisos para realizar esa edición.';
 			Request::redirect('/');
@@ -216,8 +268,10 @@ class Base_Controller_Post extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('post/editar');
 
+		$view->assign('post', $post);
+
 		// Seteo permisos especiales.
-		$view->assign('permisos_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_REVISAR_POST));
+		$view->assign('permisos_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER));
 
 		// Cargamos valores por defecto.
 		$view->assign('titulo', $model_post->titulo);
@@ -226,10 +280,12 @@ class Base_Controller_Post extends Controller {
 		$view->assign('privado', $model_post->privado);
 		$view->assign('patrocinado', $model_post->sponsored);
 		$view->assign('sticky', $model_post->sticky);
+		$view->assign('comentar', $model_post->comentar);
+		$view->assign('tags', implode(', ', $model_post->etiquetas()));
 
 
 		// Elementos por defecto.
-		foreach (array('error_titulo', 'error_contenido', 'error_categoria') as $k)
+		foreach (array('error_titulo', 'error_contenido', 'error_categoria', 'error_tags') as $k)
 		{
 			$view->assign($k, FALSE);
 		}
@@ -250,14 +306,14 @@ class Base_Controller_Post extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los datos y seteamos valores.
-			foreach (array('titulo', 'contenido', 'categoria') as $k)
+			foreach (array('titulo', 'contenido', 'categoria', 'tags') as $k)
 			{
 				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
 				$view->assign($k, $$k);
 			}
 
 			// Obtenemos los checkbox.
-			foreach (array('privado', 'patrocinado', 'sticky') as $k)
+			foreach (array('privado', 'patrocinado', 'sticky', 'comentar') as $k)
 			{
 				$$k = isset($_POST[$k]) ? ($_POST[$k] == 1) : FALSE;
 				$view->assign($k, $$k);
@@ -272,9 +328,9 @@ class Base_Controller_Post extends Controller {
 
 			// Verificamos el contenido.
 			$contenido_clean = preg_replace('/\[.*\]/', '', $contenido);
-			if ( ! isset($contenido_clean{20}) || isset($contenido{600}))
+			if ( ! isset($contenido_clean{20}) || isset($contenido{5000}))
 			{
-				$view->assign('error_contenido', 'El contenido debe tener entre 20 y 600 caractéres.');
+				$view->assign('error_contenido', 'El contenido debe tener entre 20 y 5000 caractéres.');
 				$error = TRUE;
 			}
 			unset($contenido_clean);
@@ -293,6 +349,16 @@ class Base_Controller_Post extends Controller {
 			}
 			unset($model_categoria);
 
+			// Quito espacios adicionales a las etiquetas.
+			$tags = preg_replace('/\s+/', ' ', trim($tags));
+
+			// Verificamos las etiquetas.
+			if ( ! preg_match('/^[a-zA-Z0-9áéíóúñÑÁÉÍÓÚ, ]{0,}$/D', $tags))
+			{
+				$view->assign('error_tags', 'Las etiquetas ingresadas con son alphanuméricas..');
+				$error = TRUE;
+			}
+
 			// Procedemos a crear el post.
 			if ( ! $error)
 			{
@@ -302,23 +368,58 @@ class Base_Controller_Post extends Controller {
 				// Formateamos los campos.
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
 
+				// Obtengo el listado de etiquetas.
+				$tags = explode(',', $tags);
+				foreach ($tags as $k => $v)
+				{
+					$tags[$k] = trim($v);
+					if ($tags[$k] == '')
+					{
+						unset($tags[$k]);
+					}
+				}
+
+				// Obtengo listado a agregar, quitar y mantener.
+				$delta_etiquetas = array_intersect($model_post->etiquetas(), $tags);
+				$etiquetas_eliminadas = array_diff($model_post->etiquetas(), $delta_etiquetas);
+				$etiquetas_nuevos = array_diff($tags, $delta_etiquetas);
+				unset($tags, $delta_etiquetas);
+
 				$datos = array(
 						'titulo' => $titulo,
 						'contenido' => $contenido,
 						'categoria_id' => $categoria_id,
 						'privado' => $privado,
 						'sponsored' => $patrocinado,
-						'sticky' => $sticky
+						'sticky' => $sticky,
+						'comentar' => $comentar
 				);
 
 				// Verifico parámetros especiales.
-				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS))
+				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER))
 				{
 					unset($datos['sponsored'], $datos['sticky']);
 				}
 
 				// Actualizo los parámetros.
-				$model_post->actualizar_campos($datos);
+				$rst = $model_post->actualizar_campos($datos);
+
+				// Actualizo las etiquetas.
+				if (is_array($etiquetas_eliminadas) && count($etiquetas_eliminadas) > 0)
+				{
+					$rst = $rst || $model_post->borrar_etiqueta($etiquetas_eliminadas);
+				}
+				if (is_array($etiquetas_nuevos) && count($etiquetas_nuevos) > 0)
+				{
+					$rst = $rst || $model_post->agregar_etiqueta($etiquetas_nuevos);
+				}
+
+				// Emito suceso para el usuario.
+				if ($rst && Usuario::$usuario_id !== $model_post->usuario_id)
+				{
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear($model_post->usuario_id, 'post_editado', $model_post->id);
+				}
 
 				// Informo que todo fue correcto.
 				$_SESSION['flash_success'] = 'Actualización del post correcta.';
@@ -414,9 +515,10 @@ class Base_Controller_Post extends Controller {
 			if ( ! $error)
 			{
 				// Creo la denuncia.
-				$model_post->denunciar(Usuario::$usuario_id, $motivo, $comentario);
+				$id = $model_post->denunciar(Usuario::$usuario_id, $motivo, $comentario);
 
-				//TODO: crear suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_denunciado', $id);
 
 				// Seteamos mensaje flash y volvemos.
 				$_SESSION['flash_success'] = 'Denuncia enviada correctamente.';
@@ -457,9 +559,9 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico permisos.
-		//TODO: ver de poder cerrar comentarios.
-		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTAR_POST))
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR) || ( ! $model_post->comentar && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR_CERRADO)))
 		{
+			$_SESSION['flash_error'] = 'No puedes realizar comentarios en posts porque se encuentran cerrados.';
 			Request::redirect('/post/index/'.$post);
 		}
 
@@ -527,7 +629,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifica autor.
-		if ($model_post->usuario_id != Usuario::$usuario_id)
+		if ($model_post->usuario_id !== Usuario::$usuario_id)
 		{
 			// Verificamos el voto.
 			if ( ! $model_post->es_favorito(Usuario::$usuario_id))
@@ -570,7 +672,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico permisos.
-		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_VOTAR_COMENTARIO_POST))
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VOTAR))
 		{
 			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No tienes permiso para realizar esta acci&oacute;n.';
 			Request::redirect('/post/index/'.$model_comentario->post_id);
@@ -609,8 +711,10 @@ class Base_Controller_Post extends Controller {
 	 */
 	public function action_ocultar_comentario($comentario)
 	{
+		$comentario = (int) $comentario;
+
 		// Cargamos el comentario.
-		$model_comentario = new Model_Post_Comentario( (int) $comentario);
+		$model_comentario = new Model_Post_Comentario($comentario);
 
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
@@ -623,19 +727,15 @@ class Base_Controller_Post extends Controller {
 		$usuario_id = Usuario::$usuario_id;
 
 		// Verificamos autor y permisos.
-		if (($model_comentario->usuario_id == $usuario_id && Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_COMENTARIO_PROPIO))
-			|| Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_COMENTARIOS_POSTS)
-			|| Usuario::permiso(Model_Usuario_Rango::PERMISO_ADMINISTRADOR)
-			|| Usuario::permiso(Model_Usuario_Rango::PERMISO_MODERADOR)
-			)
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
 		{
 			// Seteo el estado como borrado.
 			if ( ! $model_comentario->estado !== Model_Post_Comentario::ESTADO_OCULTO)
 			{
+				// Actualizo el estado.
 				$model_comentario->actualizar_estado(Model_Post_Comentario::ESTADO_OCULTO);
 
-				//TODO: ejecutar sucesos.
-				/**
+				// Envio suceso.
 				$model_suceso = new Model_Suceso;
 				$model_suceso->crear(
 						array(
@@ -645,8 +745,8 @@ class Base_Controller_Post extends Controller {
 						),
 						'voto_comentario_post',
 						$usuario_id,
-						(int) $comentario
-					);*/
+						$comentario
+				);
 			}
 			$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&ocute;n realizada correctamente.';
 		}
@@ -680,12 +780,15 @@ class Base_Controller_Post extends Controller {
 		$usuario_id = Usuario::$usuario_id;
 
 		// Verifica autor.
-		if ($model_post->usuario_id != $usuario_id)
+		if ($model_post->usuario_id !== $usuario_id)
 		{
 			// Verificamos el voto.
 			if ( ! $model_post->es_seguidor($usuario_id))
 			{
+				// Empezamos a seguir.
 				$model_post->seguir($usuario_id);
+
+				// Enviamos el suceso.
 				$model_suceso = new Model_Suceso;
 				$model_suceso->crear(
 						array(
@@ -723,7 +826,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico el permiso.
-		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS))
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER))
 		{
 			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
@@ -735,9 +838,22 @@ class Base_Controller_Post extends Controller {
 		// Verifico el parametro sticky.
 		if ($model_post->sticky !== $tipo)
 		{
+			// Modificamos el parámetro.
 			$model_post->setear_sticky($tipo);
+
+			// Enviamos el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(
+					array(
+						Usuario::$usuario_id,
+						$model_post->usuario_id
+					),
+					'post_fijar',
+					Usuario::$usuario_id,
+					$post,
+					$tipo
+				);
 		}
-		//TODO: agregar suceso.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acción realizada correctamente.';
 		Request::redirect('/post/index/'.$post);
 	}
@@ -763,7 +879,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico el permiso.
-		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS))
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER))
 		{
 			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
@@ -775,10 +891,23 @@ class Base_Controller_Post extends Controller {
 		// Verifico el parametro sticky.
 		if ($model_post->sponsored !== $tipo)
 		{
+			// Actualizo campo.
 			$model_post->setear_sponsored($tipo);
+
+			// Enviamos el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(
+					array(
+						Usuario::$usuario_id,
+						$model_post->usuario_id
+					),
+					'post_sponsored',
+					Usuario::$usuario_id,
+					$post,
+					$tipo
+				);
 		}
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
-		//TODO: agregar suceso.
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -803,7 +932,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico el usuario y sus permisos.
-		if ($model_post->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_OCULTAR_POSTS))
+		if ($model_post->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_OCULTAR))
 		{
 			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
@@ -815,15 +944,29 @@ class Base_Controller_Post extends Controller {
 		// Verifico el estado actual.
 		if (($tipo && $model_post->estado !== Model_Post::ESTADO_OCULTO) || ( ! $tipo && $model_post->estado !== Model_Post::ESTADO_ACTIVO))
 		{
-			//TODO: notificar.
+			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Estado incorrecto.';
 			Request::redirect('/post/index/'.$post);
 		}
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_OCULTO);
 
+		// Agrego mensaje.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
-		//TODO: agregar suceso.
+
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(
+				array(
+					Usuario::$usuario_id,
+					$model_post->usuario_id
+				),
+				'post_ocultar',
+				Usuario::$usuario_id,
+				$post,
+				$tipo
+			);
+
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -848,7 +991,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico el usuario y sus permisos.
-		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_VER_POSTS_DESAPROBADOS))
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
 		{
 			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No tienes permisos para realizar esa acci&oacute;n.';
 			Request::redirect('/post/index/'.$post);
@@ -873,14 +1016,26 @@ class Base_Controller_Post extends Controller {
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_RECHAZADO);
 
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El estado se modific&oacute; correctamente.';
-		//TODO: agregar suceso.
+
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(
+				array(
+					Usuario::$usuario_id,
+					$model_post->usuario_id
+				),
+				'post_aprobar',
+				Usuario::$usuario_id,
+				$post,
+				$tipo
+			);
 		Request::redirect('/post/index/'.$post);
 	}
 
 	/**
 	 * Borramos un post o lo enviamos a la papelera.
 	 * @param int $post ID del post a modificar el atributo.
-	 * @param bool $tipo Si se aprueba o se rechaza.
+	 * @param bool $tipo Borra o se envia a la papelera.
 	 */
 	public function action_borrar_post($post, $tipo)
 	{
@@ -930,7 +1085,20 @@ class Base_Controller_Post extends Controller {
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_BORRADO : Model_Post::ESTADO_PAPELERA);
 
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
-		//TODO: agregar suceso.
+
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(
+				array(
+					Usuario::$usuario_id,
+					$model_post->usuario_id
+				),
+				'post_borrar',
+				Usuario::$usuario_id,
+				$post,
+				$tipo
+			);
+
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -954,7 +1122,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico el usuario.
-		if (Usuario::$usuario_id !== $model_post->usuario_id)
+		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
 		{
 			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
 			Request::redirect('/post/index/'.$post);
@@ -971,7 +1139,18 @@ class Base_Controller_Post extends Controller {
 		$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
 
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
-		//TODO: agregar suceso.
+
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(
+				array(
+					Usuario::$usuario_id,
+					$model_post->usuario_id
+				),
+				'post_restaurar',
+				Usuario::$usuario_id,
+				$post
+			);
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -1021,7 +1200,16 @@ class Base_Controller_Post extends Controller {
 		}
 
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
-		//TODO: agregar suceso.
+
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(
+				Usuario::$usuario_id,
+				'post_publicado',
+				Usuario::$usuario_id,
+				$post
+			);
+
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -1061,7 +1249,7 @@ class Base_Controller_Post extends Controller {
 		if ($model_post->usuario_id != $usuario_id)
 		{
 			// Verifico permisos.
-			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_PUNTUAR_POST))
+			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_PUNTUAR))
 			{
 				// Verificamos el voto.
 				if ( ! $model_post->dio_puntos($usuario_id))
@@ -1113,9 +1301,9 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico los permisos.
-		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_CREAR_POST))
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_CREAR))
 		{
-			//TODO: Mensaje de alerta.
+			$_SESSION['flash_error'] = 'No puedes crear posts.';
 			Request::redirect('/');
 		}
 
@@ -1126,10 +1314,10 @@ class Base_Controller_Post extends Controller {
 		$view = View::factory('post/nuevo');
 
 		// Seteo permisos especiales.
-		$view->assign('permisos_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_REVISAR_POST));
+		$view->assign('permisos_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER));
 
 		// Elementos por defecto.
-		foreach (array('titulo', 'contenido', 'categoria', 'privado', 'patrocinado', 'sticky', 'error_titulo', 'error_contenido', 'error_categoria') as $k)
+		foreach (array('titulo', 'contenido', 'categoria', 'privado', 'patrocinado', 'sticky', 'comentar', 'tags', 'error_titulo', 'error_contenido', 'error_categoria', 'error_tags') as $k)
 		{
 			$view->assign($k, '');
 		}
@@ -1150,14 +1338,14 @@ class Base_Controller_Post extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los datos y seteamos valores.
-			foreach (array('titulo', 'contenido', 'categoria') as $k)
+			foreach (array('titulo', 'contenido', 'categoria', 'tags') as $k)
 			{
 				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
 				$view->assign($k, $$k);
 			}
 
 			// Obtenemos los checkbox.
-			foreach (array('privado', 'patrocinado', 'sticky') as $k)
+			foreach (array('privado', 'patrocinado', 'sticky', 'comentar') as $k)
 			{
 				$$k = isset($_POST[$k]) ? ($_POST[$k] == 1) : FALSE;
 				$view->assign($k, $$k);
@@ -1172,9 +1360,9 @@ class Base_Controller_Post extends Controller {
 
 			// Verificamos el contenido.
 			$contenido_clean = preg_replace('/\[.*\]/', '', $contenido);
-			if ( ! isset($contenido_clean{20}) || isset($contenido{600}))
+			if ( ! isset($contenido_clean{20}) || isset($contenido{5000}))
 			{
-				$view->assign('error_contenido', 'El contenido debe tener entre 20 y 600 caractéres.');
+				$view->assign('error_contenido', 'El contenido debe tener entre 20 y 5000 caractéres.');
 				$error = TRUE;
 			}
 			unset($contenido_clean);
@@ -1193,6 +1381,16 @@ class Base_Controller_Post extends Controller {
 			}
 			unset($model_categoria);
 
+			// Quito espacios adicionales a las etiquetas.
+			$tags = preg_replace('/\s+/', ' ', trim($tags));
+
+			// Verificamos las etiquetas.
+			if ( ! preg_match('/^[a-zA-Z0-9áéíóúñÑÁÉÍÓÚ, ]{0,}$/D', $tags))
+			{
+				$view->assign('error_tags', 'Las etiquetas ingresadas con son alphanuméricas..');
+				$error = TRUE;
+			}
+
 			// Procedemos a crear el post.
 			if ( ! $error)
 			{
@@ -1201,6 +1399,17 @@ class Base_Controller_Post extends Controller {
 
 				// Formateamos los campos.
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
+
+				// Obtengo el listado de etiquetas.
+				$tags = explode(',', $tags);
+				foreach ($tags as $k => $v)
+				{
+					$tags[$k] = trim($v);
+					if ($tags[$k] == '')
+					{
+						unset($tags[$k]);
+					}
+				}
 
 				// Verifico si es borrador.
 				$borrador = isset($_POST['submit']) ? $_POST['submit'] == 'borrador' : FALSE;
@@ -1212,7 +1421,7 @@ class Base_Controller_Post extends Controller {
 				}
 				else
 				{
-					if (Usuario::permiso(Model_Usuario_Rango::PERMISO_REVISAR_POST))
+					if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_REVISAR_CONTENIDO))
 					{
 						$estado = Model_Post::ESTADO_PENDIENTE;
 					}
@@ -1224,21 +1433,28 @@ class Base_Controller_Post extends Controller {
 				unset($borrador);
 
 				// Verifico parámetros especiales.
-				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FIJAR_POSTS))
+				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER))
 				{
 					$patrocinado = FALSE;
 					$sticky = FALSE;
 				}
 
 				$model_post = new Model_Post;
-				$post_id = $model_post->crear(Usuario::$usuario_id, $titulo, $contenido, $categoria_id, $privado, $patrocinado, $sticky, $estado);
+				$post_id = $model_post->crear(Usuario::$usuario_id, $titulo, $contenido, $categoria_id, $privado, $patrocinado, $sticky, $comentar, $estado);
 
 				if ($post_id > 0)
 				{
-					Request::redirect('/post/index/'.$post_id);
+					// Cargo el post.
+					$model_post = new Model_Post($post_id);
 
+					// Agrego las etiquetas.
+					$model_post->agregar_etiqueta($tags);
+
+					// Agrego el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(Usuario::$usuario_id, 'nuevo_post', $post_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'nuevo_post', $post_id, $estado);
+
+					Request::redirect('/post/index/'.$post_id);
 				}
 				else
 				{

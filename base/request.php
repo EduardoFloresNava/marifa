@@ -137,21 +137,36 @@ class Base_Request {
 	/**
 	 * Redireccionamos a la ruta provista.
 	 * @param string|array $url URL o segmentos de la URL a donde redireccionar.
+	 * @param bool $save_current Si guardamos la URL para que el usuario pueda regresar.
+	 * @param bool $go_saved Si tratamos de ir a una ruta guardada.
 	 */
-	public static function redirect($url)
+	public static function redirect($url, $save_current = FALSE, $go_saved = FALSE)
 	{
+		// Verifico ruta guardada.
+		if ($go_saved && Cookie::cookie_exists('r_u'))
+		{
+			$url = Cookie::get_cookie_value('r_u');
+			Cookie::delete_cookie('r_u');
+		}
+
 		// Si tenemos los segmentos generamos la URL.
 		if (is_array($url))
 		{
 			$url = '/'.implode('/', $url);
 		}
 
-		if ($url{0} !== '/')
+		if ($url{0} == '/')
 		{
-			$url = '/'.$url;
+			$url = substr($url, 1);
 		}
 
 		$url = SITE_URL.$url;
+
+		// Verifico si tengo que guardar la URL.
+		if ($save_current)
+		{
+			Cookie::set_classic_cookie('r_u', Request::current());
+		}
 
 		// Redireccionamos.
 		header("Location: $url");

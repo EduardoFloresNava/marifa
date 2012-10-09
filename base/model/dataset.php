@@ -164,6 +164,12 @@ class Base_Model_Dataset extends Model {
 			throw new Database_Exception('El campo a actualizar no es válido.');
 		}
 
+		// Verifico cambios.
+		if ($valor === $this->get($campo))
+		{
+			return FALSE;
+		}
+
 		// Listado de claves.
 		$k_list = array();
 		foreach ($this->primary_key as $k => $v)
@@ -212,7 +218,7 @@ class Base_Model_Dataset extends Model {
 		// Verifico si hay cambios.
 		if (count($dt) == 0)
 		{
-			return TRUE;
+			return FALSE;
 		}
 
 		return $this->db->update('UPDATE '.$this->table.' SET '.implode(', ', $asg).' WHERE '.implode('AND ', $k_list), array_merge($dt, array_values($this->primary_key)));

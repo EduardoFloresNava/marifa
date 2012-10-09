@@ -193,15 +193,15 @@ class Base_Controller {
 		$data['tops'] = array('link' => '/tops/', 'caption' => 'TOPs', 'active' => FALSE);
 
 		// Listado elemento por permisos.
-		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_ACCESO_PANEL_MODERACION))
-		{
+		//if (Usuario::permiso(Model_Usuario_Rango::PERMISO_ACCESO_PANEL_MODERACION))
+		//{
 			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'active' => FALSE);
-		}
+		//}
 
-		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_ADMINISTRADOR))
-		{
+		//if (Usuario::permiso(Model_Usuario_Rango::PERMISO_ADMINISTRADOR))
+		//{
 			$data['admin'] = array('link' => '/admin/', 'caption' => 'Administración', 'active' => FALSE);
-		}
+		//}
 
 		// Seleccionamos elemento.
 		if ($selected !== NULL && isset($data[$selected]))

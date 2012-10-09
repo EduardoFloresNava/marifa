@@ -80,12 +80,20 @@
 				</div>
 			</div>
 
+			<div class="control-group{if="$error_tags"} error{/if}">
+				<label class="control-label" for="tags">Etiquetas</label>
+				<div class="controls">
+					<input type="text" id="tags" name="tags" value="{$tags}" class="span10" />
+					<span class="help-block">{if="$error_tags"}{$error_tags}{else}Listado de etiquetas separadas por ','. Las etiquetas deben ser alphanuméricas y contener espacios.{/if}</span>
+				</div>
+			</div>
+
 			<div class="row-fluid">
 				<div class="span6">
 					<h3 class="title">Categor&iacute;a</h3>
 					<select class="span12" name="categoria" id="categoria" size="10">
 						{loop="$categorias"}
-						<option value="{$value.seo}"{if="$categoria == $value.seo"}selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
+						<option value="{$value.seo}"{if="$categoria == $value.seo"} selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
 					</select>
 				</div>
 
@@ -93,15 +101,19 @@
 					<h3 class="title">Opciones</h3>
 
 					<label class="checkbox">
-						<input type="checkbox" id="privado" name="privado" value="1"><strong>S&oacute;lo usuarios registrados</strong>
+						<input type="checkbox" id="privado" name="privado" value="1"{if="$privado"} checked{/if}><strong>S&oacute;lo usuarios registrados</strong>
 						<p>Tu post ser&aacute; visto s&oacute;lo por los usuarios que est&eacute;n registrados.</p>
 					</label>
+					<label class="checkbox">
+						<input type="checkbox" id="comentar" name="comentar" value="1"{if="$comentar"} checked{/if}><strong>Comentarios cerrados</strong>
+						<p>No se permiten comentarios en el post.</p>
+					</label>
 					{if="$permisos_especiales"}<label class="checkbox">
-						<input type="checkbox" id="patrocinado" name="patrocinado" value="1"><strong>Patrocinado</strong>
-						<p>TResalta este post entre los dem&aacute;s.</p>
+						<input type="checkbox" id="patrocinado" name="patrocinado" value="1"{if="$patrocinado"} checked{/if}><strong>Patrocinado</strong>
+						<p>Resalta este post entre los dem&aacute;s.</p>
 					</label>
 					<label class="checkbox">
-						<input type="checkbox" id="sticky" name="sticky" value="1"><strong>Sticky</strong>
+						<input type="checkbox" id="sticky" name="sticky" value="1"{if="$sticky"} checked{/if}><strong>Sticky</strong>
 						<p>Colocar a este post fijo en la home.</p>
 					</label>{/if}
 				</div>

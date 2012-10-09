@@ -453,6 +453,10 @@ class Base_Error {
 		$backtrace = array();
 		foreach ($tb as $k => $v)
 		{
+			if ( ! is_array($v))
+			{
+				continue;
+			}
 			$func_name = self::arr_get($v, 'function');
 			if ($func_name == 'error_handler' || $func_name == 'shutdown_handler' || $func_name == 'exception_handler')
 			{

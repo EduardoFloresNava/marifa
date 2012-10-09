@@ -40,6 +40,7 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @property-read bool $privado Si el post es privado o lo pueden ver los usuarios sin registrarse.
  * @property-read bool $sponsored Si el post es patrocinado o no.
  * @property-read bool $sticky Si el post esta fijo a la portada.
+ * @property-read bool $comentar Si están abiertos o no los comentarios.
  * @property-read int $estado Estado del post.
  */
 class Base_Model_Post extends Model_Dataset {
@@ -106,6 +107,7 @@ class Base_Model_Post extends Model_Dataset {
 		'privado' => Database_Query::FIELD_BOOL,
 		'sponsored' => Database_Query::FIELD_BOOL,
 		'sticky' => Database_Query::FIELD_BOOL,
+		'comentar' => Database_Query::FIELD_BOOL,
 		'estado' => Database_Query::FIELD_INT
 	);
 
@@ -449,10 +451,11 @@ class Base_Model_Post extends Model_Dataset {
 	 * @param int $usuario_id Quien denuncia.
 	 * @param int $motivo El motivo de la denuncia.
 	 * @param string $comentario Descripción de la denuncia.
+	 * @return int ID de la denuncia.
 	 */
 	public function denunciar($usuario_id, $motivo, $comentario)
 	{
-		$this->db->insert('INSERT INTO post_denuncia (post_id, usuario_id, motivo, comentario, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)',
+		list($id,) = $this->db->insert('INSERT INTO post_denuncia (post_id, usuario_id, motivo, comentario, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)',
 			array(
 				$this->primary_key['id'],
 				$usuario_id,
@@ -461,6 +464,7 @@ class Base_Model_Post extends Model_Dataset {
 				date('Y/m/d H:i:s'),
 				Model_Post_Denuncia::ESTADO_PENDIENTE
 			));
+		return $id;
 	}
 
 	/**
@@ -538,13 +542,14 @@ class Base_Model_Post extends Model_Dataset {
 	 * @param bool $privado Solo usuarios registrados.
 	 * @param bool $sponsored Post patrocinado.
 	 * @param bool $sticky Post fijo en la portada.
+	 * @param bool $comentar Si se permiten comentarios o no.
 	 * @param int $estado Estado con el cual se publica el post.
 	 * @return int
 	 */
-	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $estado = self::ESTADO_ACTIVO)
+	public function crear($usuario_id, $titulo, $contenido, $categoria_id, $privado, $sponsored, $sticky, $comentar, $estado = self::ESTADO_ACTIVO)
 	{
 		list($id,) = $this->db->insert(
-			'INSERT INTO post ( usuario_id, categoria_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			'INSERT INTO post ( usuario_id, categoria_id, titulo, contenido, fecha, vistas, privado, sponsored, sticky, estado, comentar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 			array(
 				$usuario_id,
 				$categoria_id,
@@ -555,7 +560,8 @@ class Base_Model_Post extends Model_Dataset {
 				$privado,
 				$sponsored,
 				$sticky,
-				$estado
+				$estado,
+				$comentar
 			)
 		);
 

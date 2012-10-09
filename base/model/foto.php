@@ -261,12 +261,13 @@ class Base_Model_Foto extends Model_Dataset {
 	 * @param int $categoria ID de la categoria a la cual pertenece la foto.
 	 * @param bool $visitas Si mostrar las visitas o no.
 	 * @param bool $comentarios Si hay que permitir comentar o no.
+	 * @param int $estado Estado inicial de la foto.
 	 * @return bool
 	 */
-	public function crear($usuario_id, $titulo, $descripcion, $url, $categoria, $visitas = TRUE, $comentarios = TRUE)
+	public function crear($usuario_id, $titulo, $descripcion, $url, $categoria, $visitas = TRUE, $comentarios = TRUE, $estado = self::ESTADO_ACTIVA)
 	{
 		$visitas = $visitas ? 0 : NULL;
-		list ($id, $c) = $this->db->insert('INSERT INTO foto (usuario_id, creacion, titulo, descripcion, url, estado, ultima_visita, visitas, categoria_id, comentar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array($usuario_id, date('Y/m/d H:i:s'), $titulo, $descripcion, $url, self::ESTADO_ACTIVA,  NULL, $visitas, $categoria, $comentarios));
+		list ($id, $c) = $this->db->insert('INSERT INTO foto (usuario_id, creacion, titulo, descripcion, url, estado, ultima_visita, visitas, categoria_id, comentar, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array($usuario_id, date('Y/m/d H:i:s'), $titulo, $descripcion, $url, self::ESTADO_ACTIVA,  NULL, $visitas, $categoria, $comentarios, $estado));
 
 		if ($c > 0)
 		{
@@ -489,10 +490,11 @@ class Base_Model_Foto extends Model_Dataset {
 	 * @param int $usuario_id Quien denuncia.
 	 * @param int $motivo El motivo de la denuncia.
 	 * @param string $comentario Descripción de la denuncia.
+	 * @return int ID de la denuncia.
 	 */
 	public function denunciar($usuario_id, $motivo, $comentario)
 	{
-		$this->db->insert('INSERT INTO foto_denuncia (foto_id, usuario_id, motivo, comentario, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)',
+		list($id,) = $this->db->insert('INSERT INTO foto_denuncia (foto_id, usuario_id, motivo, comentario, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)',
 			array(
 				$this->primary_key['id'],
 				$usuario_id,
@@ -501,5 +503,6 @@ class Base_Model_Foto extends Model_Dataset {
 				date('Y/m/d H:i:s'),
 				Model_Foto_Denuncia::ESTADO_PENDIENTE
 			));
+		return $id;
 	}
 }

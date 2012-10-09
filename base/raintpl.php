@@ -103,7 +103,7 @@ class Base_RainTPL extends Lib_RainTPL {
 	}
 
 	/**
-	 * Similar a draw, aunque solo mostramos devolvemos la plantilla.
+	 * Similar a draw, aunque solo devolvemos la plantilla.
 	 * @return string
 	 */
 	public function parse()

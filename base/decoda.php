@@ -38,6 +38,12 @@ class Base_Decoda extends Decoda_Decoda {
 		// Llamamos constructor.
 		parent::__construct($string);
 
+		// Cargo y seteo el motor de vistas.
+		$engine = new DecodaPhpEngine;
+		$engine->setPath(APP_BASE.DS.VIEW_PATH.THEME.DS.'views'.DS.'decoda'.DS);
+
+		$this->setTemplateEngine($engine);
+
 		// Cargamos los Filtros y las configuraciones por defecto.
 		$this->setXhtml(TRUE);
 		$this->addFilter(new BlockFilter);

@@ -40,203 +40,155 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Model_Usuario_Rango extends Model_Dataset {
 
 	/**
-	 * Permiso de administrador general del sitio.
-	 * Engloba todas las acciones posibles.
+	 * Ver las denuncias de usuarios y actuar sobre ellas.
 	 */
-	const PERMISO_ADMINISTRADOR = 0;
+	const PERMISO_USUARIO_VER_DENUNCIAS = 0;
 
 	/**
-	 * Permiso de moderador del sitio.
-	 * Engloba las acciones de manejo de los contenido del sitio.
+	 * Ver suspensiones de usuarios y modificarlas.
 	 */
-	const PERMISO_MODERADOR = 1;
+	const PERMISO_USUARIO_SUSPENDER = 1;
+
+	/**
+	 * Ver baneos a usuarios y modificarlos.
+	 */
+	const PERMISO_USUARIO_BANEAR = 2;
+
+	/**
+	 * Enviar advertencias a usuarios.
+	 */
+	const PERMISO_USUARIO_ADVERTIR = 3;
+
+	/**
+	 * Revisar posts y fotos agregadas por el usuario.
+	 * Es decir, el contenido creado por el usuario va a revisión antes de postearse.
+	 */
+	const PERMISO_USUARIO_REVISAR_CONTENIDO = 4;
+
+	/**
+	 * Puede crear un post.
+	 */
+	const PERMISO_POST_CREAR = 20;
 
 	/**
 	 * Puede dar puntos a un post.
 	 */
-	const PERMISO_PUNTUAR_POST = 2;
+	const PERMISO_POST_PUNTUAR = 21;
 
 	/**
-	 * Puede crear posts.
+	 * Eliminar posts de TODOS los usuarios.
 	 */
-	const PERMISO_CREAR_POST = 3;
+	const PERMISO_POST_ELIMINAR = 22;
 
 	/**
-	 * Puede comentar los posts que se permitan.
+	 * Oculta/muestra posts de TODOS los usuarios.
 	 */
-	const PERMISO_COMENTAR_POST = 4;
+	const PERMISO_POST_OCULTAR = 23;
 
 	/**
-	 * Puede votar los comentarios de los post.
+	 * Ver las denuncias de posts y actuar sobre ellas.
 	 */
-	const PERMISO_VOTAR_COMENTARIO_POST = 5;
+	const PERMISO_POST_VER_DENUNCIAS = 24;
 
 	/**
-	 * Puede editar sus comentarios.
+	 * Ver los posts que no se encuentran aprobados.
 	 */
-	const PERMISO_EDITAR_COMENTARIO_PROPIO = 6;
+	const PERMISO_POST_VER_DESAPROBADO = 25;
 
 	/**
-	 * Puede eliminar sus comentarios.
+	 * Modificar el parámetro sticky y sponsored de los posts.
 	 */
-	const PERMISO_ELIMINAR_COMENTARIO_PROPIO = 7;
+	const PERMISO_POST_FIJAR_PROMOVER = 26;
 
 	/**
-	 * Puede cargar fotos.
+	 * Editar posts de TODOS los usuarios.
 	 */
-	const PERMISO_CREAR_FOTOS = 8;
+	const PERMISO_POST_EDITAR = 27;
 
 	/**
-	 * Puede comentar fotos.
+	 * Ver los posts que se encuentran en la papelera de TODOS los usuarios.
 	 */
-	const PERMISO_COMENTAR_FOTOS = 9;
+	const PERMISO_POST_VER_PAPELERA = 28;
 
 	/**
-	 * Los posts del usuario deberán ser revisados antes de ser mostrados.
+	 * Puede agregar fotos.
 	 */
-	const PERMISO_REVISAR_POST = 10;
+	const PERMISO_FOTO_CREAR = 40;
 
 	/**
-	 * El usuario puede acceder cuando el sitio está en mantenimiento.
-	 * Esto expresa que su IP estará en lista de las permitidas.
+	 * Puede votar las fotos.
 	 */
-	const PERMISO_ACCESO_MANTENIMIENTO = 11;
+	const PERMISO_FOTO_VOTAR = 41;
 
 	/**
-	 * Pueden acceder al panel de moderación.
+	 * Eliminar fotos de TODOS los usuarios.
 	 */
-	const PERMISO_ACCESO_PANEL_MODERACION = 12;
+	const PERMISO_FOTO_ELIMINAR = 42;
 
 	/**
-	 * Ver y cancelar reportes de usuarios.
+	 * Oculta/muestra fotos de TODOS los usuarios.
 	 */
-	const PERMISO_DENUNCIAS_USUARIOS = 13;
+	const PERMISO_FOTO_OCULTAR = 43;
 
 	/**
-	 * Ver y cancelar reportes de fotos.
+	 * Ver las denuncias y actuar sobre ellas.
 	 */
-	const PERMISO_DENUNCIAS_FOTOS = 14;
+	const PERMISO_FOTO_VER_DENUNCIAS = 44;
 
 	/**
-	 * Ver y cancelar reportes de posts.
+	 * Ver el contenido que no se encuentra aprobado.
 	 */
-	const PERMISO_DENUNCIAS_POSTS = 15;
+	const PERMISO_FOTO_VER_DESAPROBADO = 45;
 
 	/**
-	 * Ver y cancelar reportes de mensajes.
+	 * Editar fotos de TODOS los usuarios.
 	 */
-	const PERMISO_DENUNCIAS_MENSAJES = 16;
+	const PERMISO_FOTO_EDITAR = 46;
 
 	/**
-	 * Ver los usuarios baneados.
-	 * Es para ver los elementos de los comentarios que han sido baneados.
+	 * Ver la papelera de TODOS los usuarios.
 	 */
-	const PERMISO_VER_USUARIOS_BANEADOS = 17;
+	const PERMISO_FOTO_VER_PAPELERA = 47;
 
 	/**
-	 * Ver los posts que hay que en la papelera y los eliminados.
+	 * Crear comentarios.
 	 */
-	const PERMISO_VER_PAPELERA_POSTS = 18;
+	const PERMISO_COMENTARIO_COMENTAR = 60;
 
 	/**
-	 * Ver las fotos que hay en la papelera y eliminados.
+	 * Comentar aún cuando están cerrados.
 	 */
-	const PERMISO_VER_PAPELERA_FOTOS = 19;
+	const PERMISO_COMENTARIO_COMENTAR_CERRADO = 61;
 
 	/**
-	 * Ver posts que están desaprobados.
+	 * Puede votar comentarios.
 	 */
-	const PERMISO_VER_POSTS_DESAPROBADOS = 20;
+	const PERMISO_COMENTARIO_VOTAR = 62;
 
 	/**
-	 * Ver comentarios que están desaprobados y/o ocultos.
+	 * Puede eliminar comentarios de TODOS los usuarios.
 	 */
-	const PERMISO_VER_COMENTARIOS_DESPROBADOS = 21;
+	const PERMISO_COMENTARIO_ELIMINAR = 63;
 
 	/**
-	 * Pueden fijar o quitar posts.
+	 * Ocultar y mostrar comentarios de TODOS los usuarios.
 	 */
-	const PERMISO_FIJAR_POSTS = 22;
+	const PERMISO_COMENTARIO_OCULTAR = 64;
 
 	/**
-	 * Ver listado de usuarios con cuentas suspendidas.
+	 * Editar comentarios de TODOS los usuarios.
 	 */
-	const PERMISO_VER_CUENTAS_DESACTIVADAS = 23;
+	const PERMISO_COMENTARIO_EDITAR = 65;
 
 	/**
-	 * Ver listado de usuarios con cuentas baneadas.
+	 * Ver los comentarios que se encuentran desaprobados y tomar acciones sobre ellos.
 	 */
-	const PERMISO_VER_CUENTAS_BANEADAS = 24;
+	const PERMISO_COMENTARIO_VER_DESAPROBADO = 66;
 
 	/**
-	 * Suspender usuarios.
+	 * Puede ingresar aún con el sitio en mantenimiento.
 	 */
-	const PERMISO_SUSPENDER_USUARIOS = 25;
-
-	/**
-	 * Banear usuarios.
-	 */
-	const PERMISO_BANEAR_USUARIOS = 26;
-
-	/**
-	 * Puede eliminar posts de otros usuarios.
-	 */
-	const PERMISO_ELIMINAR_POSTS = 27;
-
-	/**
-	 * Puede editar posts de otros usuarios.
-	 */
-	const PERMISO_EDITAR_POSTS = 28;
-
-	/**
-	 * Puede ocultar posts de otros usuarios.
-	 */
-	const PERMISO_OCULTAR_POSTS = 29;
-
-	/**
-	 * Puede comentar en posts que tienen los comentarios cerrados.
-	 */
-	const PERMISO_COMENTAR_POST_CERRADO = 30;
-
-	/**
-	 * Editar comentarios en los posts.
-	 */
-	const PERMISO_EDITAR_COMENTARIOS_POSTS = 31;
-
-	/**
-	 * Aprobar/desaprobar comentario en posts y revisión de comentarios.
-	 */
-	const PERMISO_REVISAR_COMENTARIOS = 32;
-
-	/**
-	 * Eliminar comentarios de los post.
-	 */
-	const PERMISO_ELIMINAR_COMENTARIOS_POSTS = 33;
-
-	/**
-	 * Eliminar fotos.
-	 */
-	const PERMISO_ELIMINAR_FOTOS = 34;
-
-	/**
-	 * Eliminar comentario de las fotos.
-	 */
-	const PERMISO_ELIMINAR_COMENTARIOS_FOTOS = 35;
-
-	/**
-	 * Editar fotos.
-	 */
-	const PERMISO_EDITAR_FOTOS = 36;
-
-	/**
-	 * Eliminar publicaciones en los muros.
-	 */
-	const PERMISO_ELIMINAR_PUBLICACIONES_MUROS = 37;
-
-	/**
-	 * Eliminar comentarios en los muros.
-	 */
-	const PERMISO_ELIMINAR_COMENTARIOS_MUROS = 38;
+	const PERMISO_SITIO_ACCESO_MANTENIMIENTO = 80;
 
 	/**
 	 * Nombre de la tabla para el dataset

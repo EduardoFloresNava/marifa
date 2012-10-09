@@ -28,36 +28,37 @@
 		<div class="row-fluid">
 			<div class="span12">
 				<div class="pull-left btn-group">
-					{if="$modificaciones_especiales"}
+					{if="$modificar_especiales"}
 						{if="$post.sticky"}<a href="/post/fijar_post/{$post.id}/-1" class="btn btn-info">Quitar fijo</a>{else}<a href="/post/fijar_post/{$post.id}/1" class="btn btn-info">Fijar</a>{/if}
 						{if="$post.sponsored"}<a href="/post/patrocinar_post/{$post.id}/-1" class="btn btn-info">Quitar patrocinio</a>{else}<a href="/post/patrocinar_post/{$post.id}/1" class="btn btn-info">Patrocinar</a>{/if}
-						{if="$post.estado == 0"}
-							<a href="/post/ocultar_post/{$post.id}/-1" class="btn btn-inverse"><i class="icon-white icon-eye-close"></i> Ocultar</a>
-							<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning"><i class="icon-white icon-hand-down"></i> Rechazar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
-							<a href="/post/borrar_post/{$post.id}/-1" class="btn btn-danger"><i class="icon-white icon-trash"></i> Enviar a la papelera</a>
-						{/if}
-						{if="$post.estado == 1"}
-							<a href="/post/publicar_post/{$post.id}/" class="btn btn-success"><i class="icon-white icon-ok"></i> Publicar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
-						{/if}
-						{if="$post.estado == 3"}
-							<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-hand-up"></i> Aprobar</a>
-							<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning"><i class="icon-white icon-hand-down"></i> Rechazar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
-						{/if}
-						{if="$post.estado == 4"}
-							<a href="/post/ocultar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-eye-open"></i> Mostrar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
-						{/if}
-						{if="$post.estado == 5"}
-							<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-hand-up"></i> Aprobar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
-						{/if}
-						{if="$post.estado == 6"}
-							<a href="/post/restaurar_post/{$post.id}/" class="btn btn-success"><i class="icon-white icon-refresh"></i> Restaurar</a>
-							<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"></i><i class="icon-white icon-remove"></i> Borrar</a>
-						{/if}
+					{/if}
+					{if="$modificar_editar"}<a href="/post/editar/{$post.id}" class="btn btn-success"><i class="icon-white icon-pencil"></i> Editar</a>{/if}
+					{if="$post.estado == 0"}
+						{if="$modificar_ocultar"}<a href="/post/ocultar_post/{$post.id}/-1" class="btn btn-inverse"><i class="icon-white icon-eye-close"></i> Ocultar</a>{/if}
+						{if="$modificar_aprobar"}<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning"><i class="icon-white icon-hand-down"></i> Rechazar</a>{/if}
+						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
+						<a href="/post/borrar_post/{$post.id}/-1" class="btn btn-danger"><i class="icon-white icon-trash"></i> Enviar a la papelera</a>{/if}
+					{/if}
+					{if="$post.estado == 1"}
+						{if="$me == $usuario.id"}<a href="/post/publicar_post/{$post.id}/" class="btn btn-success"><i class="icon-white icon-ok"></i> Publicar</a>{/if}
+						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>{/if}
+					{/if}
+					{if="$post.estado == 3"}
+						{if="$modificar_aprobar"}<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-hand-up"></i> Aprobar</a>
+						<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning"><i class="icon-white icon-hand-down"></i> Rechazar</a>{/if}
+						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>{/if}
+					{/if}
+					{if="$post.estado == 4"}
+						{if="$modificar_ocultar"}<a href="/post/ocultar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-eye-open"></i> Mostrar</a>{/if}
+						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>{/if}
+					{/if}
+					{if="$post.estado == 5"}
+						{if="$modificar_aprobar"}<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-hand-up"></i> Aprobar</a>{/if}
+						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>{/if}
+					{/if}
+					{if="$post.estado == 6"}
+						{if="$modificar_borrar"}<a href="/post/restaurar_post/{$post.id}/" class="btn btn-success"><i class="icon-white icon-refresh"></i> Restaurar</a>
+						<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"></i><i class="icon-white icon-remove"></i> Borrar</a>{/if}
 					{/if}
 					{if="$me != NULL && !$sigo_post"}<a href="/post/seguir_post/{$post.id}" class="btn">Seguir Post</a>{/if}
 					{if="$me != NULL && !$es_favorito"}<a href="/post/favorito/{$post.id}" class="btn">Agregar a favoritos</a>{/if}
@@ -109,7 +110,7 @@
 								{if="$value.estado == 1"}<span class="label label-important">OCULTO</span>{elseif="$value.estado == 2"}<span class="label label-info">EN REVISION</span>{/if}
 							</span>
 							<div class="btn-group pull-right acciones">
-								{if="$me != NULL && !$value.vote"}
+								{if="$me != NULL && !$value.vote && $podemos_votar_comentarios"}
 								<a href="/post/voto_comentario/{$value.id}/1" class="btn btn-mini btn-success"><i class="icon-white icon-thumbs-up"></i></a>
 								<a href="/post/voto_comentario/{$value.id}/-1" class="btn btn-mini btn-danger"><i class="icon-white icon-thumbs-down"></i></a>
 								{/if}
@@ -126,7 +127,7 @@
 		</div>
 		<div class="row-fluid">
 			<div class="span12">
-				{if="$me != NULL && $post.estado == 0"}
+				{if="$me != NULL && $podemos_comentar"}
 				<form action="/post/comentar/{$post.id}" method="POST">
 					<div class="btn-toolbar bbcode-bar">
 						<div class="btn-group">
@@ -194,9 +195,13 @@
 					<textarea name="comentario" id="comentario" class="span12" placeholder="Comentario...">{if="isset($comentario_content)"}{$comentario_content}{/if}</textarea>
 				</form>
 				{else}
-					{if="$post.estado === 0"}
+					{if="$podemos_comentar"}
 				<div class="alert">
 					<strong>&iexcl;Atenci&oacute;n!</strong> Solo usuarios registrados pueden comentar este post.
+				</div>
+					{else}
+				<div class="alert">
+					<strong>&iexcl;Atenci&oacute;n!</strong> Los comentarios se encuentran cerrados.
 				</div>
 					{/if}
 				{/if}

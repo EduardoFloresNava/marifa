@@ -25,7 +25,7 @@
 				{else}
 				<ol>
 					{loop="$puntos"}
-					<li><a href="/post/index/{$value.id}"><img src="{#THEME_URL#}/assets/img/categoria/{$value.imagen}" /> {$value.titulo}<span class="badge pull-right">{$value.puntos}</span></a></li>
+					<li><a href="/post/index/{$value.id}"><img src="{#THEME_URL#}/assets/img/categoria/{$value.imagen}" /> {$value.titulo}<span class="badge pull-right">{$value.puntos|intval}</span></a></li>
 					{/loop}
 				</ol>
 				{/if}
@@ -37,7 +37,7 @@
 				{else}
 				<ol>
 					{loop="$favoritos"}
-					<li><a href="/post/index/{$value.id}"><img src="{#THEME_URL#}/assets/img/categoria/{$value.imagen}" /> {$value.titulo}<span class="badge pull-right">{$value.favoritos}</span></a></li>
+					<li><a href="/post/index/{$value.id}"><img src="{#THEME_URL#}/assets/img/categoria/{$value.imagen}" /> {$value.titulo}<span class="badge pull-right">{$value.favoritos|intval}</span></a></li>
 					{/loop}
 				</ol>
 				{/if}
@@ -51,7 +51,7 @@
 				{else}
 				<ol>
 					{loop="$seguidores"}
-					<li><a href="/post/index/{$value.id}"><img src="{#THEME_URL#}/assets/img/categoria/{$value.imagen}" /> {$value.titulo}<span class="badge pull-right">{$value.seguidores}</span></a></li>
+					<li><a href="/post/index/{$value.id}"><img src="{#THEME_URL#}/assets/img/categoria/{$value.imagen}" /> {$value.titulo}<span class="badge pull-right">{$value.seguidores|intval}</span></a></li>
 					{/loop}
 				</ol>
 				{/if}
@@ -63,7 +63,7 @@
 				{else}
 				<ol>
 					{loop="$comentarios"}
-					<li><a href="/post/index/{$value.id}"><img src="{#THEME_URL#}/assets/img/categoria/{$value.imagen}" /> {$value.titulo}<span class="badge pull-right">{$value.comentarios}</span></a></li>
+					<li><a href="/post/index/{$value.id}"><img src="{#THEME_URL#}/assets/img/categoria/{$value.imagen}" /> {$value.titulo}<span class="badge pull-right">{$value.comentarios|intval}</span></a></li>
 					{/loop}
 				</ol>
 				{/if}

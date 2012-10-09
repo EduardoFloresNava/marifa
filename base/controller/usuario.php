@@ -53,7 +53,7 @@ class Base_Controller_Usuario extends Controller {
 		if (Usuario::is_login())
 		{
 			// Lo enviamos al perfil.
-			Request::redirect('/');
+			Request::redirect('/', FALSE, TRUE);
 		}
 
 		// Asignamos el título.
@@ -99,7 +99,7 @@ class Base_Controller_Usuario extends Controller {
 						$view_usuario->assign('error_password', TRUE);
 						break;
 					case Model_Usuario::ESTADO_ACTIVA: // Cuenta activa.
-						Request::redirect('/');
+						Request::redirect('/', FALSE, TRUE);
 						break;
 					case Model_Usuario::ESTADO_PENDIENTE:  // Cuenta por activar.
 						$view_usuario->assign('error', 'La cuenta no ha sido validada a&uacute;n.');
