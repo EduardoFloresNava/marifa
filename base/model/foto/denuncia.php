@@ -55,16 +55,6 @@ class Base_Model_Foto_Denuncia extends Model_Dataset {
 	const ESTADO_APLICADA = 2;
 
 	/**
-	'Ya est&aacute; publicada',
-    		'Se hace Spam',
-    		'La imagen est&aacute; ca&iacute;da',
-    		'Es racista o irrespetuosa',
-    		'Contiene informaci&oacute;n personal',
-    		'Contiene pedofilia',
-    		'Es gore o asquerosa',
-    		'Otra raz&oacute;n (especificar)'*/
-
-	/**
 	 * La foto ya está publicada.
 	 */
 	const TIPO_EXISTE = 0;

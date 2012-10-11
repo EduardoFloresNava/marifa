@@ -345,24 +345,14 @@ class Base_Model_Foto extends Model_Dataset {
 	 */
 	public static function s_cantidad($estado = NULL)
 	{
-		$key = 'post_total';
-
 		if ($estado !== NULL)
 		{
-			$where = ' WHERE estado = ?';
-			$condiciones = $estado;
-			$key .= 'e_'.$estado;
+			return Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
 		}
-
-		$rst = Cache::get_instance()->get($key);
-		if ( ! $rst)
+		else
 		{
-			$rst = Database::get_instance()->query('SELECT COUNT(*) FROM foto'.(isset($where) ? $where : ''), (isset($condiciones) ? $condiciones : NULL))->get_var(Database_Query::FIELD_INT);
-
-			Cache::get_instance()->save($key, $rst);
+			return Database::get_instance()->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
 		}
-
-		return $rst;
 	}
 
 	/**
@@ -397,36 +387,12 @@ class Base_Model_Foto extends Model_Dataset {
 
 	/**
 	 * Cantidad total de fotos.
-	 * @param bool $ocultas Si contabilizar las ocultas o no.
+	 * @param int $estado Estado de la categoria a contar. NULL para todas.
 	 * @return int
 	 */
-	public function cantidad($ocultas = FALSE)
+	public function cantidad($estado = NULL)
 	{
-		if ($ocultas)
-		{
-			$key = 'foto_total';
-		}
-		else
-		{
-			$key = 'foto_total_generales';
-		}
-
-		$rst = Cache::get_instance()->get($key);
-		if ( ! $rst)
-		{
-			if ($ocultas)
-			{
-				$rst = $this->db->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
-			}
-			else
-			{
-				$rst = $this->db->query('SELECT COUNT(*) FROM foto WHERE estado = ?', self::ESTADO_ACTIVA)->get_var(Database_Query::FIELD_INT);
-			}
-
-			Cache::get_instance()->save($key, $rst);
-		}
-
-		return $rst;
+		return self::s_cantidad($estado);
 	}
 
 	/**
@@ -444,17 +410,14 @@ class Base_Model_Foto extends Model_Dataset {
 	 */
 	public function cantidad_comentarios()
 	{
-		$key = 'foto_comentarios_total';
-
-		$rst = Cache::get_instance()->get($key);
-		if ( ! $rst)
+		if (isset($this->primary_key['id']) && $this->primary_key['id'] !== NULL)
 		{
-			$rst = $this->db->query('SELECT COUNT(*) FROM foto_comentario')->get_var(Database_Query::FIELD_INT);
-
-			Cache::get_instance()->save($key, $rst);
+			return $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 		}
-
-		return $rst;
+		else
+		{
+			return $this->db->query('SELECT COUNT(*) FROM foto_comentario')->get_var(Database_Query::FIELD_INT);
+		}
 	}
 
 	/**

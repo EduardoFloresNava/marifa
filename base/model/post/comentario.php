@@ -144,12 +144,7 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 	 */
 	public function votar($usuario_id, $positivo = TRUE)
 	{
-		// Invalidamos la cache.
-		Cache::get_instance()->delete('post_comentario_'.$this->primary_key['id'].'_votos');
-
-		$cantidad = $positivo ? 1 : -1;
-
-		$this->db->insert('INSERT INTO post_comentario_voto (post_comentario_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->primary_key['id'], $usuario_id, $cantidad));
+		$this->db->insert('INSERT INTO post_comentario_voto (post_comentario_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->primary_key['id'], $usuario_id, $positivo ? 1 : -1));
 	}
 
 	/**
@@ -158,18 +153,7 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 	 */
 	public function cantidad_votos()
 	{
-		// Obtenemos la cache.
-		$cantidad = Cache::get_instance()->get('post_comentario_'.$this->primary_key['id'].'_votos');
-
-		// Validamos estado.
-		if ($cantidad === FALSE)
-		{
-			$cantidad = $this->db->query('SELECT SUM(cantidad) FROM post_comentario_voto WHERE post_comentario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-
-			// Actualizamos la cache.
-			Cache::get_instance()->save('post_comentario_'.$this->primary_key['id'].'_votos', $cantidad);
-		}
-		return $cantidad;
+		return $this->db->query('SELECT SUM(cantidad) FROM post_comentario_voto WHERE post_comentario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**

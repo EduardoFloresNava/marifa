@@ -159,7 +159,7 @@
 				<strong>{@&iexcl;Felicidades!@}</strong> {$comentario_success}
 			</div>{/if}
 			{if="isset($comentario_error)"}
-			<div class="alert">
+			<div class="alert alert-danger">
 				<strong>{@&iexcl;Error!@}</strong> {$comentario_error}
 			</div>{/if}
 			<textarea class="span10" name="comentario" id="comentario" placeholder="Comentario...">{$comentario_content}</textarea>
@@ -168,7 +168,7 @@
 			{if="$puedo_comentar"}
 		<div class="alert">{@Para poder comentar debes estar registrado.@}</div>
 			{else}
-		<div class="alert">{@Los comentarios se encuentran cerrados.@}</div>
+		<div class="alert alert-info">{@Los comentarios se encuentran cerrados.@}</div>
 			{/if}
 		{/if}
 	</div>

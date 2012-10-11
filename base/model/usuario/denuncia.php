@@ -55,13 +55,6 @@ class Base_Model_Usuario_Denuncia extends Model_Dataset {
 	const ESTADO_APLICADA = 2;
 
 	/**
-	'Perfil falso/clon',
-	'Usuario insultante y agresivo',
-	'Publicaciones inapropiadas',
-	'Foto del perfil inapropiada',
-	'Publicidad no deseada (SPAM)',*/
-
-	/**
 	 * El perfil es falso/clon.
 	 */
 	const TIPO_CLON_FALSO = 0;

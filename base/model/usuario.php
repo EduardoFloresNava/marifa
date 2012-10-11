@@ -394,21 +394,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_seguidores()
 	{
-		// Clave de la cache.
-		$cache_key = 'usuario_'.$this->primary_key['id'].'_seguidores';
-
-		// Obtenemos el objeto de cache.
-		$cantidad = Cache::get_instance()->get($cache_key);
-
-		if ( ! $cantidad)
-		{
-			$cantidad = $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-
-			// Guardo cache.
-			Cache::get_instance()->save($cache_key, $cantidad);
-		}
-
-		return $cantidad;
+		return $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -449,21 +435,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_posts()
 	{
-		// Clave de la cache.
-		$cache_key = 'usuario_'.$this->primary_key['id'].'_posts';
-
-		// Obtenemos el objeto de cache.
-		$cantidad = Cache::get_instance()->get($cache_key);
-
-		if ($cantidad === FALSE)
-		{
-			$cantidad = $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-
-			// Guardo cache.
-			Cache::get_instance()->save($cache_key, $cantidad);
-		}
-
-		return $cantidad;
+		return $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -472,21 +444,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_fotos()
 	{
-		// Clave de la cache.
-		$cache_key = 'usuario_'.$this->primary_key['id'].'_fotos';
-
-		// Obtenemos el objeto de cache.
-		$cantidad = Cache::get_instance()->get($cache_key);
-
-		if ($cantidad === FALSE)
-		{
-			$cantidad = $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-
-			// Guardo cache.
-			Cache::get_instance()->save($cache_key, $cantidad);
-		}
-
-		return $cantidad;
+		return $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -495,20 +453,8 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_comentarios()
 	{
-		// Clave de la cache.
-		$cache_key = 'usuario_'.$this->primary_key['id'].'_comentarios';
-
-		// Obtenemos el objeto de cache.
-		$cantidad = Cache::get_instance()->get($cache_key);
-
-		if ($cantidad === FALSE)
-		{
-			$cantidad = $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-			$cantidad += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-
-			// Guardo cache.
-			Cache::get_instance()->save($cache_key, $cantidad);
-		}
+		$cantidad = $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		$cantidad += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 
 		return $cantidad;
 	}
@@ -519,21 +465,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_puntos()
 	{
-		// Clave de la cache.
-		$cache_key = 'usuario_'.$this->primary_key['id'].'_puntos';
-
-		// Obtenemos el objeto de cache.
-		$cantidad = Cache::get_instance()->get($cache_key);
-
-		if ($cantidad === FALSE)
-		{
-			$cantidad = (int) $this->db->query('SELECT SUM(cantidad) FROM post_punto, post WHERE post.id = post_punto.post_id AND post.usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-
-			// Guardo cache.
-			Cache::get_instance()->save($cache_key, $cantidad);
-		}
-
-		return $cantidad;
+		return (int) $this->db->query('SELECT SUM(cantidad) FROM post_punto, post WHERE post.id = post_punto.post_id AND post.usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -609,18 +541,7 @@ class Base_Model_Usuario extends Model_Dataset {
 				$params = $estado;
 			}
 		}
-
-		//$key = 'usuario_total';
-
-		//$rst = Cache::get_instance()->get($key);
-		//if ( ! $rst)
-		//{
-			$rst = $this->db->query('SELECT COUNT(*) FROM usuario'.$q, $params)->get_var(Database_Query::FIELD_INT);
-
-		//	Cache::get_instance()->save($key, $rst);
-		//}
-
-		return $rst;
+		return $this->db->query('SELECT COUNT(*) FROM usuario'.$q, $params)->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**

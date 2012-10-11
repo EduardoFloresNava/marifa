@@ -71,6 +71,7 @@ class Base_Controller_Foto extends Controller {
 			$d['categoria'] = $value->categoria()->as_array();
 			$d['votos'] = $value->votos();
 			$d['favoritos'] = $value->favoritos();
+			$d['comentarios'] = $value->cantidad_comentarios();
 			$d['usuario'] = $value->usuario()->as_array();
 
 			// Acciones.
@@ -138,6 +139,7 @@ class Base_Controller_Foto extends Controller {
 			$d['categoria'] = $value->categoria()->as_array();
 			$d['votos'] = $value->votos();
 			$d['favoritos'] = $value->favoritos();
+			$d['comentarios'] = $value->cantidad_comentarios();
 			$d['usuario'] = $value->usuario()->as_array();
 
 			// Acciones. Como son nuestras fotos no hacen falta acciones.
