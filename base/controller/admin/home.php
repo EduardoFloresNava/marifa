@@ -79,7 +79,7 @@ class Base_Controller_Admin_Home extends Controller {
 			$listado['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuracion', 'active' => FALSE);
 			$listado['configuracion_temas'] = array('link' => '/admin/configuracion/temas/', 'caption' => 'Temas', 'active' => FALSE);
 			$listado['configuracion_plugins'] = array('link' => '/admin/configuracion/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
-			$listado['configuracion_publicidad'] = array('link' => '/admin/configuracion/publicidad/', 'caption' => 'Publicidad', 'active' => FALSE);
+			//$listado['configuracion_publicidad'] = array('link' => '/admin/configuracion/publicidad/', 'caption' => 'Publicidad', 'active' => FALSE);
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONTROL_ACCESOS))

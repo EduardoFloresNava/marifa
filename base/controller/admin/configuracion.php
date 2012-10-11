@@ -779,22 +779,4 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
-
-	public function action_publicidad()
-	{
-		// Cargamos la vista.
-		$vista = View::factory('admin/configuracion/publicidad');
-
-		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu('admin'));
-
-		// Cargamos plantilla administracion.
-		$admin_template = View::factory('admin/template');
-		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_publicidad'));
-
-		// Asignamos la vista a la plantilla base.
-		$this->template->assign('contenido', $admin_template->parse());
-	}
 }
