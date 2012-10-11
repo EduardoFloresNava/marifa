@@ -250,8 +250,6 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargo el post.
 		$model_post = new Model_Post( (int) $post);
 
-		//TODO: verificar permisos.
-
 		// Verifico que exista.
 		if ( ! $model_post->existe())
 		{
@@ -614,8 +612,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$vista = View::factory('admin/contenido/nueva_categoria');
 
 		// Cargamos el listado de imagens para rangos disponibles.
-		//TODO: implementar funcion para obtener URL completa.
-		$imagenes_categorias = scandir(APP_BASE.DS.VIEW_PATH.'default'.DS.'assets'.DS.'img'.DS.'categoria'.DS);
+		$imagenes_categorias = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS);
 		unset($imagenes_categorias[1], $imagenes_categorias[0]); // Quitamos . y ..
 
 		$vista->assign('imagenes_categorias', $imagenes_categorias);
@@ -750,8 +747,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$vista = View::factory('admin/contenido/editar_categoria');
 
 		// Cargamos el listado de imagens para rangos disponibles.
-		//TODO: implementar funcion para obtener URL completa.
-		$imagenes_categorias = scandir(APP_BASE.DS.VIEW_PATH.'default'.DS.'assets'.DS.'img'.DS.'categoria'.DS);
+		$imagenes_categorias = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS);
 		unset($imagenes_categorias[1], $imagenes_categorias[0]); // Quitamos . y ..
 
 		$vista->assign('imagenes_categorias', $imagenes_categorias);

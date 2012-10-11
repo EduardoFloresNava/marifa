@@ -588,8 +588,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('error_imagen', FALSE);
 
 		// Cargamos el listado de imagens para rangos disponibles.
-		//TODO: implementar funcion para obtener URL completa.
-		$imagenes_rangos = scandir(APP_BASE.DS.VIEW_PATH.'default'.DS.'assets'.DS.'img'.DS.'rangos'.DS);
+		$imagenes_rangos = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
 		unset($imagenes_rangos[1], $imagenes_rangos[0]); // Quitamos . y ..
 
 		$vista->assign('imagenes_rangos', $imagenes_rangos);
@@ -683,8 +682,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista = View::factory('admin/usuario/editar_rango');
 
 		// Cargamos el listado de imagens para rangos disponibles.
-		//TODO: implementar funcion para obtener URL completa.
-		$imagenes_rangos = scandir(APP_BASE.DS.VIEW_PATH.'default'.DS.'assets'.DS.'img'.DS.'rangos'.DS);
+		$imagenes_rangos = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
 		unset($imagenes_rangos[1], $imagenes_rangos[0]); // Quitamos . y ..
 
 		$vista->assign('imagenes_rangos', $imagenes_rangos);
