@@ -32,37 +32,84 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Admin_Home extends Controller {
 
+	public function __construct()
+	{
+		// Verifico estar logueado.
+		if ( ! Usuario::is_login())
+		{
+			Request::redirect('/usuario/login');
+		}
+
+		// Verifico si tiene alguno de los permisos solicitados.
+		if ( ! self::permisos_acceso())
+		{
+			$_SESSION['flash_error'] = 'No tienes permisos para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
+		parent::__construct();
+	}
+
+	/**
+	 * Verifica si los permisos de acceso son los requeridos para acceder a esta sección.
+	 * @return bool
+	 */
+	public static function permisos_acceso()
+	{
+		// Verifico si tiene algun permiso.
+		$permisos = array(
+			Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR,
+			Model_Usuario_Rango::PERMISO_SITIO_CONTROL_ACCESOS,
+			Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO,
+			Model_Usuario_Rango::PERMISO_USUARIO_ADMINISTRAR
+		);
+
+		return Usuario::permiso($permisos);
+	}
+
 	public static function submenu($activo)
 	{
 		$listado = array();
 		$listado['p_general'] = array('caption' => 'General');
 		$listado['index'] = array('link' => '/admin/', 'caption' => 'Inicio', 'active' => FALSE);
 
-		$listado['p_configuracion'] = array('caption' => 'Configuración');
-		$listado['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuracion', 'active' => FALSE);
-		$listado['configuracion_temas'] = array('link' => '/admin/configuracion/temas/', 'caption' => 'Temas', 'active' => FALSE);
-		$listado['configuracion_plugins'] = array('link' => '/admin/configuracion/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
-		$listado['configuracion_publicidad'] = array('link' => '/admin/configuracion/publicidad/', 'caption' => 'Publicidad', 'active' => FALSE);
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
+		{
+			$listado['p_configuracion'] = array('caption' => 'Configuración');
+			$listado['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuracion', 'active' => FALSE);
+			$listado['configuracion_temas'] = array('link' => '/admin/configuracion/temas/', 'caption' => 'Temas', 'active' => FALSE);
+			$listado['configuracion_plugins'] = array('link' => '/admin/configuracion/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
+			$listado['configuracion_publicidad'] = array('link' => '/admin/configuracion/publicidad/', 'caption' => 'Publicidad', 'active' => FALSE);
+		}
 
-		$listado['p_control'] = array('caption' => 'Control de PHPost');
-		$listado['control_medallas'] = array('link' => '/admin/control/medallas', 'caption' => 'Medallas', 'active' => FALSE);
-		$listado['control_afiliados'] = array('link' => '/admin/control/afiliados', 'caption' => 'Afiliados', 'active' => FALSE);
-		$listado['control_estaditicas'] = array('link' => '/admin/control/estadisticas', 'caption' => 'Estadísticas', 'active' => FALSE);
-		$listado['control_bloqueos'] = array('link' => '/admin/control/bloqueos', 'caption' => 'Bloqueos', 'active' => FALSE);
-		$listado['control_censuras'] = array('link' => '/admin/control/censuras', 'caption' => 'Censuras', 'active' => FALSE);
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONTROL_ACCESOS))
+		{
+			$listado['p_control'] = array('caption' => 'Control de PHPost');
+			$listado['control_medallas'] = array('link' => '/admin/control/medallas', 'caption' => 'Medallas', 'active' => FALSE);
+			$listado['control_afiliados'] = array('link' => '/admin/control/afiliados', 'caption' => 'Afiliados', 'active' => FALSE);
+			$listado['control_estaditicas'] = array('link' => '/admin/control/estadisticas', 'caption' => 'Estadísticas', 'active' => FALSE);
+			$listado['control_bloqueos'] = array('link' => '/admin/control/bloqueos', 'caption' => 'Bloqueos', 'active' => FALSE);
+			$listado['control_censuras'] = array('link' => '/admin/control/censuras', 'caption' => 'Censuras', 'active' => FALSE);
+		}
 
-		$listado['p_contenido'] = array('caption' => 'Contenido');
-		$listado['contenido'] = array('link' => '/admin/contenido', 'caption' => 'Informe contenido', 'active' => FALSE);
-		$listado['contenido_posts'] = array('link' => '/admin/contenido/posts', 'caption' => 'Posts', 'active' => FALSE);
-		$listado['contenido_fotos'] = array('link' => '/admin/contenido/fotos', 'caption' => 'Fotos', 'active' => FALSE);
-		$listado['contenido_categorias'] = array('link' => '/admin/contenido/categorias', 'caption' => 'Categorias', 'active' => FALSE);
-		$listado['contenido_noticias'] = array('link' => '/admin/contenido/noticias/', 'caption' => 'Noticias', 'active' => FALSE);
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
+		{
+			$listado['p_contenido'] = array('caption' => 'Contenido');
+			$listado['contenido'] = array('link' => '/admin/contenido', 'caption' => 'Informe contenido', 'active' => FALSE);
+			$listado['contenido_posts'] = array('link' => '/admin/contenido/posts', 'caption' => 'Posts', 'active' => FALSE);
+			$listado['contenido_fotos'] = array('link' => '/admin/contenido/fotos', 'caption' => 'Fotos', 'active' => FALSE);
+			$listado['contenido_categorias'] = array('link' => '/admin/contenido/categorias', 'caption' => 'Categorias', 'active' => FALSE);
+			$listado['contenido_noticias'] = array('link' => '/admin/contenido/noticias/', 'caption' => 'Noticias', 'active' => FALSE);
+		}
 
-		$listado['p_usuarios'] = array('caption' => 'Usuarios');
-		$listado['usuario'] = array('link' => '/admin/usuario/', 'caption' => 'General', 'active' => FALSE);
-		$listado['usuario_sesiones'] = array('link' => '/admin/usuario/sesiones', 'caption' => 'Sesiones', 'active' => FALSE);
-		$listado['usuario_nicks'] = array('link' => '/admin/usuario/nicks', 'caption' => 'Nicks', 'active' => FALSE);
-		$listado['usuario_rangos'] = array('link' => '/admin/usuario/rangos', 'caption' => 'Rangos', 'active' => FALSE);
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_ADMINISTRAR))
+		{
+			$listado['p_usuarios'] = array('caption' => 'Usuarios');
+			$listado['usuario'] = array('link' => '/admin/usuario/', 'caption' => 'General', 'active' => FALSE);
+			$listado['usuario_sesiones'] = array('link' => '/admin/usuario/sesiones', 'caption' => 'Sesiones', 'active' => FALSE);
+			$listado['usuario_nicks'] = array('link' => '/admin/usuario/nicks', 'caption' => 'Nicks', 'active' => FALSE);
+			$listado['usuario_rangos'] = array('link' => '/admin/usuario/rangos', 'caption' => 'Rangos', 'active' => FALSE);
+		}
 
 		if (isset($listado[$activo]))
 		{

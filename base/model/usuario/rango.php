@@ -66,6 +66,12 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	const PERMISO_USUARIO_REVISAR_CONTENIDO = 4;
 
 	/**
+	 * Permite realizar tareas de administración de usuarios.
+	 * Entre ellas está la asignación de rangos, su creación, etc.
+	 */
+	const PERMISO_USUARIO_ADMINISTRAR = 5;
+
+	/**
 	 * Puede crear un post.
 	 */
 	const PERMISO_POST_CREAR = 20;
@@ -189,6 +195,23 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	 * Puede ingresar aún con el sitio en mantenimiento.
 	 */
 	const PERMISO_SITIO_ACCESO_MANTENIMIENTO = 80;
+
+	/**
+	 * Permisos para modificar configuraciones globales, acciones sobre temas y
+	 * plugins. Modificar la publicidades y todo lo relacionado a configuracion
+	 * general.
+	 */
+	const PERMISO_SITIO_CONFIGURAR = 81;
+
+	/**
+	 * Acceso a la administración de contenido del panel de administración.
+	 */
+	const PERMISO_SITIO_ADMINISTRAR_CONTENIDO = 82;
+
+	/**
+	 * Acceso a los controles de censuras, bloqueos, etc. en el panel de administración.
+	 */
+	const PERMISO_SITIO_CONTROL_ACCESOS = 83;
 
 	/**
 	 * Nombre de la tabla para el dataset

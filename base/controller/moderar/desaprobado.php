@@ -39,6 +39,13 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 	 */
 	public function action_posts($pagina, $tipo)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
@@ -176,6 +183,13 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 	 */
 	public function action_borrar_post($post)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Convertimos el post a ID.
 		$post = (int) $post;
 
@@ -211,6 +225,13 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 	 */
 	public function action_comentarios($pagina, $tipo)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
@@ -336,7 +357,12 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 	 */
 	public function action_mostrar_comentario($comentario, $tipo)
 	{
-		//TODO: verificar permisos.
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
 
 		// Verifico el tipo.
 		$tipo = (int) $tipo;
@@ -387,7 +413,12 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 	 */
 	public function action_borrar_comentario($comentario, $tipo)
 	{
-		//TODO: verificar permisos.
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
 
 		// Verifico el tipo.
 		$tipo = (int) $tipo;

@@ -125,6 +125,8 @@ class Base_Usuario {
 
 	/**
 	 * Verificamos si el usuario tiene el permiso asociado.
+	 * @param int|array Permiso o listado de permisos a comprobar. Si se pasa un
+	 * listado, con la existencia de 1 es TRUE.
 	 * @return bool
 	 */
 	public static function permiso($permiso)
@@ -138,7 +140,21 @@ class Base_Usuario {
 				self::$permisos = self::usuario()->rango()->permisos();
 			}
 			// Verifico si existe.
-			return in_array($permiso, self::$permisos);
+			if (is_array($permiso))
+			{
+				foreach ($permiso as $p)
+				{
+					if (in_array($p, self::$permisos))
+					{
+						return TRUE;
+					}
+				}
+				return FALSE;
+			}
+			else
+			{
+				return in_array($permiso, self::$permisos);
+			}
 		}
 		else
 		{

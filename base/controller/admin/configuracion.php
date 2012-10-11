@@ -34,12 +34,20 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 	public function __construct()
 	{
-		parent::__construct();
-		//TODO: verificar permisos para la accion.
-		if ( ! isset($_SESSION['usuario_id']))
+		// Verifico estar logueado.
+		if ( ! Usuario::is_login())
 		{
 			Request::redirect('/usuario/login');
 		}
+
+		// Verifico los permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
+		{
+			$_SESSION['flash_error'] = 'No tienes permisos para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
+		parent::__construct();
 	}
 
 	/**

@@ -38,6 +38,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_posts($pagina, $tipo)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
@@ -112,6 +119,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_detalle_post($denuncia)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Valido la denuncia.
 		$denuncia = (int) $denuncia;
 
@@ -153,6 +167,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_cerrar_denuncia_post($denuncia, $tipo)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Valido la denuncia.
 		$denuncia = (int) $denuncia;
 
@@ -163,8 +184,6 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$_SESSION['flash_error'] = 'La denuncia es incorrecta.';
 			Request::redirect('/moderar/denuncias/posts');
 		}
-
-		//TODO: verificar permisos.
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Post_Denuncia::ESTADO_PENDIENTE)
@@ -200,6 +219,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_borrar_post($post)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Verificamos esté logueado.
 		if ( ! Usuario::is_login())
 		{
@@ -246,6 +272,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_fotos($pagina, $tipo)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
@@ -320,6 +353,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_detalle_foto($denuncia)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Valido la denuncia.
 		$denuncia = (int) $denuncia;
 
@@ -361,6 +401,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_cerrar_denuncia_foto($denuncia, $tipo)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Valido la denuncia.
 		$denuncia = (int) $denuncia;
 
@@ -371,8 +418,6 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$_SESSION['flash_error'] = 'La denuncia es incorrecta.';
 			Request::redirect('/moderar/denuncias/fotos');
 		}
-
-		//TODO: verificar permisos.
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Foto_Denuncia::ESTADO_PENDIENTE)
@@ -408,6 +453,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_borrar_foto($foto)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Verificamos esté logueado.
 		if ( ! Usuario::is_login())
 		{
@@ -454,6 +506,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_usuarios($pagina, $tipo)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
@@ -528,6 +587,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_detalle_usuario($denuncia)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Valido la denuncia.
 		$denuncia = (int) $denuncia;
 
@@ -569,6 +635,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_cerrar_denuncia_usuario($denuncia, $tipo)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Valido la denuncia.
 		$denuncia = (int) $denuncia;
 
@@ -579,8 +652,6 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$_SESSION['flash_error'] = 'La denuncia es incorrecta.';
 			Request::redirect('/moderar/denuncias/usuarios');
 		}
-
-		//TODO: verificar permisos.
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Usuario_Denuncia::ESTADO_PENDIENTE)
@@ -616,6 +687,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_advertir_usuario($id)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
@@ -712,6 +790,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	 */
 	public function action_suspender_usuario($id)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+		
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{

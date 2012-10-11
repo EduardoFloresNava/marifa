@@ -34,6 +34,12 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 	public function action_usuarios($pagina)
 	{
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
@@ -99,10 +105,14 @@ class Base_Controller_Moderar_Gestion extends Controller {
 	 */
 	public function action_terminar_suspension($usuario)
 	{
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Valido el ID.
 		$usuario = (int) $usuario;
-
-		//TODO: verificar permisos.
 
 		// Verifico que exista el usuario.
 		$model_usuario = new Model_Usuario($usuario);

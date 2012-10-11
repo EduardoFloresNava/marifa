@@ -38,6 +38,13 @@ class Base_Controller_Moderar_Papelera extends Controller {
 	 */
 	public function action_posts($pagina)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
@@ -97,6 +104,13 @@ class Base_Controller_Moderar_Papelera extends Controller {
 	 */
 	public function action_restaurar_post($post)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Convertimos el post a ID.
 		$post = (int) $post;
 
@@ -131,6 +145,13 @@ class Base_Controller_Moderar_Papelera extends Controller {
 	 */
 	public function action_borrar_post($post)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Convertimos el post a ID.
 		$post = (int) $post;
 
@@ -165,6 +186,13 @@ class Base_Controller_Moderar_Papelera extends Controller {
 	 */
 	public function action_fotos($pagina)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
@@ -224,6 +252,13 @@ class Base_Controller_Moderar_Papelera extends Controller {
 	 */
 	public function action_restaurar_foto($foto)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		$foto = (int) $foto;
 
 		// Cargamos la foto.
@@ -257,6 +292,13 @@ class Base_Controller_Moderar_Papelera extends Controller {
 	 */
 	public function action_borrar_foto($foto)
 	{
+		// Verifico permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
+		{
+			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			Request::redirect('/');
+		}
+		
 		$foto = (int) $foto;
 
 		// Cargamos la foto.

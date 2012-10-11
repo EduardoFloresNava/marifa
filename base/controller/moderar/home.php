@@ -40,7 +40,36 @@ class Base_Controller_Moderar_Home extends Controller {
 			Request::redirect('/usuario/login', TRUE);
 		}
 
+		// Verifico si tiene algun permiso.
+		if ( ! self::permisos_acceso())
+		{
+			$_SESSION['flash_error'] = 'No tienes permisos para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
 		parent::__construct();
+	}
+
+	/**
+	 * Verifica si los permisos de acceso son los requeridos para acceder a esta sección.
+	 * @return bool
+	 */
+	public static function permisos_acceso()
+	{
+		// Verifico si tiene algun permiso.
+		$permisos = array(
+			Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS,
+			Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS,
+			Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS,
+			Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER,
+			Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA,
+			Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA,
+			Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO,
+			Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO
+
+		);
+
+		return Usuario::permiso($permisos);
 	}
 
 	public static function submenu($activo)
@@ -50,7 +79,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		$listado['p_principal'] = array('caption' => 'Principal');
 		$listado['index'] = array('link' => '/moderar/', 'caption' => 'Inicio', 'active' => FALSE);
 
-		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS) || Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS) || Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
+		if (Usuario::permiso(array(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS, Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS, Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS)))
 		{
 			$listado['p_denuncias'] = array('caption' => 'Denuncias');
 			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
@@ -70,10 +99,14 @@ class Base_Controller_Moderar_Home extends Controller {
 		}
 
 		$listado['p_gestion'] = array('caption' => 'Gestión');
-		$listado['gestion_usuarios'] = array('link' => '/moderar/gestion/usuarios/', 'caption' => 'Usuarios', 'active' => FALSE, 'cantidad' => Model_Usuario_Suspension::cantidad());
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
+		{
+			$listado['gestion_usuarios'] = array('link' => '/moderar/gestion/usuarios/', 'caption' => 'Usuarios', 'active' => FALSE, 'cantidad' => Model_Usuario_Suspension::cantidad());
+		}
 		$listado['gestion_buscador'] = array('link' => '/moderar/gestion/buscador/', 'caption' => 'Buscador contenido', 'active' => FALSE);
 
-		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA) || Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
+		if (Usuario::permiso(array(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA, Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA)))
 		{
 			$listado['p_papelera'] = array('caption' => 'Papelera de reciclaje');
 
@@ -88,7 +121,7 @@ class Base_Controller_Moderar_Home extends Controller {
 			}
 		}
 
-		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO) || Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
+		if (Usuario::permiso(array(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO, Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO)))
 		{
 			$listado['p_desaprobado'] = array('caption' => 'Contenido desaprobado');
 

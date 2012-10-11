@@ -32,6 +32,24 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Admin_Contenido extends Controller {
 
+	public function __construct()
+	{
+		// Verifico estar logueado.
+		if ( ! Usuario::is_login())
+		{
+			Request::redirect('/usuario/login');
+		}
+
+		// Verifico los permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
+		{
+			$_SESSION['flash_error'] = 'No tienes permisos para acceder a esa sección.';
+			Request::redirect('/');
+		}
+
+		parent::__construct();
+	}
+
 	public function action_index()
 	{
 		// Cargamos la vista.
