@@ -86,6 +86,23 @@ class Base_Model_Noticia extends Model_Dataset {
 	}
 
 	/**
+	 * Obtenemos una noticia a mostrar.
+	 */
+	public static function get_active()
+	{
+		$id = Database::get_instance()->query('SELECT id FROM noticia WHERE estado = ? LIMIT 1', self::ESTADO_VISIBLE)->get_var(Database_Query::FIELD_INT);
+
+		if ($id !== NULL)
+		{
+			return new Model_Noticia($id);
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+
+	/**
 	 * Quien creó el mensaje.
 	 * @return Model_Usuario
 	 */

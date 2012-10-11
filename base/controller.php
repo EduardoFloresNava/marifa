@@ -46,6 +46,14 @@ class Base_Controller {
 		// Cargamos la plantilla base.
 		$this->template = View::factory('template');
 
+		// Cargo las noticias.
+		$noticia = Model_Noticia::get_active();
+		if ($noticia !== NULL)
+		{
+			$this->template->assign('noticia', Decoda::procesar($noticia->contenido));
+		}
+		unset($noticia);
+
 		// Acciones para menu offline.
 		if ( ! Usuario::is_login())
 		{
@@ -184,23 +192,23 @@ class Base_Controller {
 		// Listado de elementos ONLINE.
 		if (Usuario::is_login())
 		{
-			$data['inicio'] = array('link' => '/perfil/', 'caption' => 'Inicio', 'active' => FALSE);
+			$data['inicio'] = array('link' => '/perfil/', 'caption' => 'Inicio', 'icon' => 'home', 'active' => FALSE);
 		}
 
 		// Listado de elemento OFFLINE.
-		$data['posts'] = array('link' => '/', 'caption' => 'Posts', 'active' => FALSE);
-		$data['fotos'] = array('link' => '/foto/', 'caption' => 'Fotos', 'active' => FALSE);
-		$data['tops'] = array('link' => '/tops/', 'caption' => 'TOPs', 'active' => FALSE);
+		$data['posts'] = array('link' => '/', 'caption' => 'Posts', 'icon' => 'book', 'active' => FALSE);
+		$data['fotos'] = array('link' => '/foto/', 'caption' => 'Fotos', 'icon' => 'picture', 'active' => FALSE);
+		$data['tops'] = array('link' => '/tops/', 'caption' => 'TOPs', 'icon' => 'signal', 'active' => FALSE);
 
 		// Listado elemento por permisos.
 		if (Controller_Moderar_Home::permisos_acceso())
 		{
-			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'active' => FALSE);
+			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'icon' => 'eye-open', 'active' => FALSE);
 		}
 
 		if (Controller_Admin_Home::permisos_acceso())
 		{
-			$data['admin'] = array('link' => '/admin/', 'caption' => 'Administración', 'active' => FALSE);
+			$data['admin'] = array('link' => '/admin/', 'caption' => 'Administración', 'icon' => 'certificate', 'active' => FALSE);
 		}
 
 		// Seleccionamos elemento.

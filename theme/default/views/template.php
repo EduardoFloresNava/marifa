@@ -50,7 +50,7 @@
                         <ul class="nav">
                             {loop="master_bar"}
                             <li{if="$value.active"}  class="active"{/if}>
-                                <a href="{$value.link}">{$value.caption}{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
+                                <a href="{$value.link}">{if="isset($value.icon)"}<i class="icon-white icon-{$value.icon}"></i> {/if}{$value.caption}{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
                             </li>
                             {/loop}
                         </ul>
@@ -67,6 +67,8 @@
 				</li>
 				{/loop}
 			</ul>
+			{/if}
+			{if="isset($noticia)"}<div class="alert alert-info">{$noticia}<a class="close" data-dismiss="alert">×</a></div>
 			{/if}
 			{if="isset($flash_success)"}<div class="alert alert-success"><a class="close" data-dismiss="alert">×</a>{$flash_success}</div>{/if}
 			{if="isset($flash_error)"}<div class="alert"><a class="close" data-dismiss="alert">×</a>{$flash_error}</div>{/if}
