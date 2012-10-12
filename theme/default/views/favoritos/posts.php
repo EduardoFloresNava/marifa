@@ -1,5 +1,5 @@
-<h2 class="title">Borradores</h2>
-{if="count($borradores)"}
+<h2 class="title">Favoritos - Posts</h2>
+{if="count($favoritos)"}
 <table class="table table-bordered">
 	<thead>
 		<tr>
@@ -8,7 +8,7 @@
 		</tr>
 	</thead>
 	<tbody>
-	{loop="$borradores"}
+	{loop="$favoritos"}
 		<tr>
 			<td><a href="/post/index/{$value.id}" class="title"><img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" /> {$value.titulo}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
@@ -17,6 +17,6 @@
 	</tbody>
 </table>
 {else}
-<div class="alert">No tienes ning&uacute;n borrador</div>
+<div class="alert alert-info">No tienes ning&uacute;n posts como favorito.</div>
 {/if}
 {$paginacion}

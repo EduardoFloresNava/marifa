@@ -186,7 +186,7 @@ class Base_Controller_Post extends Controller {
 			foreach ($cmts as $cmt)
 			{
 				// Verifico omito los no visibles si el usuario no puede verlos.
-				if ($cmp->estado !== Model_Comentario::ESTADO_VISIBLE &&  ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
+				if ($cmt->estado !== Model_Comentario::ESTADO_VISIBLE &&  ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
 				{
 					continue;
 				}

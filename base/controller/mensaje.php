@@ -32,6 +32,9 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Mensaje extends Controller {
 
+	/**
+	 * Verificamos los permisos.
+	 */
 	public function __construct()
 	{
 		// Solo usuarios conectados.
@@ -43,26 +46,52 @@ class Base_Controller_Mensaje extends Controller {
 		parent::__construct();
 	}
 
+	/**
+	 * Submenu del usuario.
+	 * @param string $activo Elemento activo.
+	 * @return array
+	 */
 	protected function submenu($activo)
 	{
 		return array(
-			'index' => array('link' => '/mensaje/', 'caption' => 'Bandeja entrada', 'active' => $activo == 'index'),
+			'index' => array('link' => '/mensaje/', 'caption' => 'Bandeja entrada', 'active' => $activo == 'index', 'cantidad' => Usuario::usuario()->cantidad_mensajes_nuevos(), 'tipo' => 'success'),
 			'enviados' => array('link' => '/mensaje/enviados', 'caption' => 'Bandeja salida', 'active' => $activo == 'enviados'),
 			'nuevo' => array('link' => '/mensaje/nuevo', 'caption' => 'Enviar', 'active' => $activo == 'nuevo'),
 		);
 	}
 
-	public function action_index()
+	/**
+	 * Bandeja de entrada.
+	 * @param int $pagina Número de página a mostrar.
+	 */
+	public function action_index($pagina)
 	{
 		// Asignamos el título.
 		$this->template->assign('title', 'Mensajes - Bandeja de entrada');
 
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = 10;
+
 		// Cargamos la vista.
 		$view = View::factory('mensaje/index');
 
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
 		// Cargamos el listado de mensajes.
 		$model_mensajes = new Model_Mensaje;
-		$recibidos = $model_mensajes->recibidos(Usuario::$usuario_id);
+		$recibidos = $model_mensajes->recibidos(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
+
+		// Verifivo validez de la pagina.
+		if (count($recibidos) == 0 && $pagina != 1)
+		{
+			Request::redirect('/mensaje/');
+		}
+
+		// Paginación.
+		$paginador = new Paginator($model_mensajes->total_recibidos(Usuario::$usuario_id), $cantidad_por_pagina);
+		$view->assign('paginacion', $paginador->get_view($pagina, '/mensaje/index/%d'));
+		unset($paginador);
 
 		// Procesamos información relevante.
 		foreach ($recibidos as $key => $value)
@@ -85,17 +114,38 @@ class Base_Controller_Mensaje extends Controller {
 		$this->template->assign('contenido', $view->parse());
 	}
 
-	public function action_enviados()
+	/**
+	 * Bandeja de salida.
+	 * @param int $pagina Página actual.
+	 */
+	public function action_enviados($pagina)
 	{
 		// Asignamos el título.
 		$this->template->assign('title', 'Mensajes - Bandeja de salida');
 
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = 10;
+
 		// Cargamos la vista.
 		$view = View::factory('mensaje/enviados');
 
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
 		// Cargamos el listado de mensajes.
 		$model_mensajes = new Model_Mensaje;
-		$enviados = $model_mensajes->enviados(Usuario::$usuario_id);
+		$enviados = $model_mensajes->enviados(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
+
+		// Verifivo validez de la pagina.
+		if (count($enviados) == 0 && $pagina != 1)
+		{
+			Request::redirect('/mensaje/enviados/');
+		}
+
+		// Paginación.
+		$paginador = new Paginator($model_mensajes->total_enviados(Usuario::$usuario_id), $cantidad_por_pagina);
+		$view->assign('paginacion', $paginador->get_view($pagina, '/mensaje/enviados/%d'));
+		unset($paginador);
 
 		// Procesamos información relevante.
 		foreach ($enviados as $key => $value)
@@ -228,7 +278,7 @@ class Base_Controller_Mensaje extends Controller {
 						}
 						else
 						{
-							$view->assign('error_para', "El usuario '$u' no es válida.");
+							$view->assign('error_para', "El usuario '$u' no es válido.");
 							$error = TRUE;
 						}
 					}
@@ -287,7 +337,8 @@ class Base_Controller_Mensaje extends Controller {
 
 				if (count($errors) == 0)
 				{
-					$view->assign('success', 'Mensajes enviados correctamente.');
+					$_SESSION['flash_success'] = 'Mensajes enviados correctamente.';
+					Request::redirect('/mensaje/');
 				}
 				else
 				{
@@ -304,6 +355,10 @@ class Base_Controller_Mensaje extends Controller {
 		$this->template->assign('contenido', $view->parse());
 	}
 
+	/**
+	 * Vemos un mensaje recibido por el usuario.
+	 * @param type $mensaje
+	 */
 	public function action_ver($mensaje)
 	{
 		// Forzamos entero.
@@ -314,12 +369,21 @@ class Base_Controller_Mensaje extends Controller {
 
 		if ( ! is_array($model_mensaje->as_array()))
 		{
+			$_SESSION['flash_error'] = 'El mensaje seleccionado no es válido.';
 			Request::redirect('/mensaje/');
 		}
 
 		// Verificamos sea el receptor.
 		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
+			$_SESSION['flash_error'] = 'El mensaje seleccionado no es válido.';
+			Request::redirect('/mensaje/');
+		}
+
+		// Verifico el estado.
+		if ($model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
+		{
+			$_SESSION['flash_error'] = 'El mensaje seleccionado no es válido.';
 			Request::redirect('/mensaje/');
 		}
 
@@ -357,6 +421,10 @@ class Base_Controller_Mensaje extends Controller {
 		$this->template->assign('contenido', $view->parse());
 	}
 
+	/**
+	 * Marcamos el mensaje como no leido
+	 * @param int $mensaje ID del mensaje.
+	 */
 	public function action_noleido($mensaje)
 	{
 		// Forzamos entero.
@@ -380,6 +448,38 @@ class Base_Controller_Mensaje extends Controller {
 		if ($model_mensaje->estado == Model_Mensaje::ESTADO_LEIDO)
 		{
 			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_NUEVO);
+		}
+
+		Request::redirect('/mensaje/');
+	}
+
+	/**
+	 * Marcamos el mensaje como leido.
+	 * @param int $mensaje ID del mensaje.
+	 */
+	public function action_leido($mensaje)
+	{
+		// Forzamos entero.
+		$mensaje = (int) $mensaje;
+
+		// Verificamos exista el mensaje.
+		$model_mensaje = new Model_Mensaje($mensaje);
+
+		if ( ! is_array($model_mensaje->as_array()))
+		{
+			Request::redirect('/mensaje/');
+		}
+
+		// Verificamos sea el receptor.
+		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
+		{
+			Request::redirect('/mensaje/');
+		}
+
+		// Seteamos como leido.
+		if ($model_mensaje->estado == Model_Mensaje::ESTADO_NUEVO)
+		{
+			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_LEIDO);
 		}
 
 		Request::redirect('/mensaje/');
@@ -478,4 +578,41 @@ class Base_Controller_Mensaje extends Controller {
 		return $rst;
 	}
 
+	/**
+	 * Eliminamos un mensaje del usuario.
+	 * @param int $mensaje ID del mensaje a borrar.
+	 */
+	public function action_borrar($mensaje)
+	{
+		$mensaje = (int) $mensaje;
+
+		// Verificamos exista el mensaje.
+		$model_mensaje = new Model_Mensaje($mensaje);
+
+		if ( ! is_array($model_mensaje->as_array()))
+		{
+			$_SESSION['flash_error'] = 'El mensaje a eliminar no existe.';
+			Request::redirect('/mensaje/');
+		}
+
+		// Verificamos sea el receptor.
+		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
+		{
+			$_SESSION['flash_error'] = 'El mensaje a eliminar no existe.';
+			Request::redirect('/mensaje/');
+		}
+
+		// Verifico el estado.
+		if ($model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
+		{
+			$_SESSION['flash_error'] = 'El mensaje a eliminar no existe.';
+			Request::redirect('/mensaje/');
+		}
+
+		// Seteamos como eliminado.
+		$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_ELIMINADO);
+
+		$_SESSION['flash_success'] = 'Mensaje eliminado correctamente.';
+		Request::redirect('/mensaje/');
+	}
 }

@@ -826,7 +826,6 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$permisos[80] = array('PERMISO_SITIO_ACCESO_MANTENIMIENTO', 'Puede ingresar aún con el sitio en mantenimiento.');
 		$permisos[81] = array('PERMISO_SITIO_CONFIGURAR', 'Permisos para modificar configuraciones globales, acciones sobre temas y plugins. Modificar la publicidades y todo lo relacionado a configuracion general.');
 		$permisos[82] = array('PERMISO_SITIO_ADMINISTRAR_CONTENIDO', 'Acceso a la administración de contenido del panel de administración.');
-		$permisos[83] = array('PERMISO_SITIO_CONTROL_ACCESOS', 'Acceso a los controles de censuras, bloqueos, etc. en el panel de administración.');
 
 		$vista->assign('permisos', $permisos);
 
@@ -1006,42 +1005,4 @@ class Base_Controller_Admin_Usuario extends Controller {
 		}
 		Request::redirect('/admin/usuario/sesiones');
 	}
-
-	public function action_nicks()
-	{
-		//TODO: implementar manejo de NICKS.
-
-		// Formato de la página.
-		//$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
-
-		// Cantidad de elementos por pagina.
-		//$cantidad_por_pagina = 20;
-
-		// Cargamos la vista.
-		$vista = View::factory('admin/usuario/nicks');
-
-		// Noticia Flash.
-		if (isset($_SESSION['nick_correcto']))
-		{
-			$vista->assign('success', get_flash('nick_correcto'));
-		}
-
-		if (isset($_SESSION['nick_error']))
-		{
-			$vista->assign('error', get_flash('nick_error'));
-		}
-
-		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu('admin'));
-
-		// Cargamos plantilla administracion.
-		$admin_template = View::factory('admin/template');
-		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_nicks'));
-
-		// Asignamos la vista a la plantilla base.
-		$this->template->assign('contenido', $admin_template->parse());
-	}
-
 }

@@ -23,3 +23,4 @@
 	No hay mensajes que mostrar.
 </div>
 {/if}
+{$paginacion}

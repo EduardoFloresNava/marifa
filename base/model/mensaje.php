@@ -62,6 +62,11 @@ class Base_Model_Mensaje extends Model_Dataset {
 	const ESTADO_REENVIADO = 3;
 
 	/**
+	 * Se ha eliminado el mensaje.
+	 */
+	const ESTADO_ELIMINADO = 4;
+
+	/**
 	 * Nombre de la tabla para el dataset
 	 * @var string
 	 */
@@ -142,7 +147,7 @@ class Base_Model_Mensaje extends Model_Dataset {
 	public function recibidos($usuario_id, $pagina = 1, $cantidad = 20)
 	{
 		$start = ($pagina - 1) * $cantidad;
-		$rst = $this->db->query('SELECT id FROM mensaje WHERE receptor_id = ? LIMIT '.$start.','.$cantidad, $usuario_id)->get_pairs(Database_Query::FIELD_INT);
+		$rst = $this->db->query('SELECT id FROM mensaje WHERE receptor_id = ? AND estado != ? ORDER BY fecha DESC LIMIT '.$start.','.$cantidad, array($usuario_id, self::ESTADO_ELIMINADO))->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
 		foreach ($rst as $v)
@@ -157,9 +162,16 @@ class Base_Model_Mensaje extends Model_Dataset {
 	 * @param int $usuario_id ID del usuario del cual contar los mensajes.
 	 * @return int
 	 */
-	public function total_recibidos($usuario_id)
+	public function total_recibidos($usuario_id, $estado = NULL)
 	{
-		return $this->db->query('SELECT COUNT(*) FROM mensaje WHERE receptor_id = ?', $usuario_id)->get_pairs(Database_Query::FIELD_INT);
+		if ($estado === NULL)
+		{
+			return $this->db->query('SELECT COUNT(*) FROM mensaje WHERE receptor_id = ? AND estado != ?', array($usuario_id, self::ESTADO_ELIMINADO))->get_var(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			return $this->db->query('SELECT COUNT(*) FROM mensaje WHERE receptor_id = ? AND estado = ?', array($usuario_id, $estado))->get_var(Database_Query::FIELD_INT);
+		}
 	}
 
 	/**
@@ -189,7 +201,7 @@ class Base_Model_Mensaje extends Model_Dataset {
 	 */
 	public function total_enviados($usuario_id)
 	{
-		return $this->db->query('SELECT COUNT(*) FROM mensaje WHERE emisor_id = ?', $usuario_id)->get_pairs(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT COUNT(*) FROM mensaje WHERE emisor_id = ?', $usuario_id)->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**

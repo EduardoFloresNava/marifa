@@ -59,7 +59,6 @@ class Base_Controller_Admin_Home extends Controller {
 		// Verifico si tiene algun permiso.
 		$permisos = array(
 			Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR,
-			Model_Usuario_Rango::PERMISO_SITIO_CONTROL_ACCESOS,
 			Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO,
 			Model_Usuario_Rango::PERMISO_USUARIO_ADMINISTRAR
 		);
@@ -82,16 +81,6 @@ class Base_Controller_Admin_Home extends Controller {
 			//$listado['configuracion_publicidad'] = array('link' => '/admin/configuracion/publicidad/', 'caption' => 'Publicidad', 'active' => FALSE);
 		}
 
-		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONTROL_ACCESOS))
-		{
-			$listado['p_control'] = array('caption' => 'Control de PHPost');
-			$listado['control_medallas'] = array('link' => '/admin/control/medallas', 'caption' => 'Medallas', 'active' => FALSE);
-			$listado['control_afiliados'] = array('link' => '/admin/control/afiliados', 'caption' => 'Afiliados', 'active' => FALSE);
-			$listado['control_estaditicas'] = array('link' => '/admin/control/estadisticas', 'caption' => 'Estadísticas', 'active' => FALSE);
-			$listado['control_bloqueos'] = array('link' => '/admin/control/bloqueos', 'caption' => 'Bloqueos', 'active' => FALSE);
-			$listado['control_censuras'] = array('link' => '/admin/control/censuras', 'caption' => 'Censuras', 'active' => FALSE);
-		}
-
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
 		{
 			$listado['p_contenido'] = array('caption' => 'Contenido');
@@ -107,7 +96,6 @@ class Base_Controller_Admin_Home extends Controller {
 			$listado['p_usuarios'] = array('caption' => 'Usuarios');
 			$listado['usuario'] = array('link' => '/admin/usuario/', 'caption' => 'General', 'active' => FALSE);
 			$listado['usuario_sesiones'] = array('link' => '/admin/usuario/sesiones', 'caption' => 'Sesiones', 'active' => FALSE);
-			$listado['usuario_nicks'] = array('link' => '/admin/usuario/nicks', 'caption' => 'Nicks', 'active' => FALSE);
 			$listado['usuario_rangos'] = array('link' => '/admin/usuario/rangos', 'caption' => 'Rangos', 'active' => FALSE);
 		}
 

@@ -44,6 +44,18 @@ class Base_Paginator {
 	protected $show;
 
 	/**
+	 * Cantidad total de elementos.
+	 * @var int
+	 */
+	protected $total;
+
+	/**
+	 * Cantidad de elementos por página.
+	 * @var int
+	 */
+	protected $cpp;
+
+	/**
 	 * Constructor de la clase.
 	 * @param int $total Cantidad de elementos total.
 	 * @param int $nodes_x_page Cantidad de elementos por página.
@@ -53,6 +65,8 @@ class Base_Paginator {
 	{
 		$this->pages = ceil($total / $nodes_x_page);
 		$this->show = $show;
+		$this->total = $total;
+		$this->cpp = $nodes_x_page;
 	}
 
 	/**
@@ -131,6 +145,26 @@ class Base_Paginator {
 		{
 			return FALSE;
 		}
+	}
+
+	/**
+	 * Obtenemos la vista por defecto del paginador.
+	 * @param int $pagina Numero de página actual.
+	 * @param string URL de la paginación.
+	 * @return string
+	 */
+	public function get_view($pagina, $url)
+	{
+		$vista = View::factory('helper/paginacion');
+
+		// Paso datos.
+		$vista->assign('actual', $pagina);
+		$vista->assign('total', $this->total);
+		$vista->assign('cpp', $this->cpp);
+		$vista->assign('paginacion', $this->paginate($pagina));
+		$vista->assign('url', $url);
+
+		return $vista->parse();
 	}
 
 }

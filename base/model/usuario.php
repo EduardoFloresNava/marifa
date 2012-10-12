@@ -511,6 +511,24 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * Cantidad de posts en favoritos del usuario.
+	 * @return type
+	 */
+	public function cantidad_favoritos_posts()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM post_favorito INNER JOIN post ON post_favorito.post_id = post.id WHERE post_favorito.usuario_id = ? AND post.estado = ?', array($this->primary_key['id'], Model_Post::ESTADO_ACTIVO))->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Cantidad de fotos en favoritos del usuario.
+	 * @return type
+	 */
+	public function cantidad_favoritos_fotos()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM foto_favorito INNER JOIN foto ON foto_favorito.foto_id = foto.id WHERE foto_favorito.usuario_id = ? AND foto.estado = ?', array($this->primary_key['id'], Model_Foto::ESTADO_ACTIVA))->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
 	 * Cantidad total de usuarios.
 	 * @param int $estado Estado a contar. NULL para todos.
 	 * @return int
@@ -553,6 +571,17 @@ class Base_Model_Usuario extends Model_Dataset {
 		$m_s = new Model_Session;
 		return $m_s->cantidad_usuarios();
 		//return $this->db->query('SELECT COUNT(*) FROM usuario WHERE UNIX_TIMESTAMP(lastactive) > ?', (time() - 60))->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Cantidad de mensajes que tiene el usuario en su bandeja de entrada para
+	 * ser leidos.
+	 * @return int
+	 */
+	public function cantidad_mensajes_nuevos()
+	{
+		$m = new Model_Mensaje();
+		return $m->total_recibidos($this->primary_key['id'], Model_Mensaje::ESTADO_NUEVO);
 	}
 
 	/**
@@ -783,5 +812,43 @@ class Base_Model_Usuario extends Model_Dataset {
 				date('Y/m/d H:i:s'),
 				Model_Usuario_Denuncia::ESTADO_PENDIENTE
 			));
+	}
+
+	/**
+	 * Listado de posts favoritos del usuario.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de noticias por página.
+	 * @return array
+	 */
+	public function listado_posts_favoritos($pagina, $cantidad = 10)
+	{
+		$start = ($pagina - 1) * $cantidad;
+		$rst = $this->db->query('SELECT post.id FROM post INNER JOIN post_favorito ON post.id = post_favorito.post_id WHERE post_favorito.usuario_id = ? AND post.estado = ? LIMIT '.$start.','.$cantidad, array($this->primary_key['id'], Model_Post::ESTADO_ACTIVO))->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Post($v);
+		}
+		return $lst;
+	}
+
+	/**
+	 * Listado de fotos favoritas del usuario.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de noticias por página.
+	 * @return array
+	 */
+	public function listado_fotos_favoritos($pagina, $cantidad = 10)
+	{
+		$start = ($pagina - 1) * $cantidad;
+		$rst = $this->db->query('SELECT foto.id FROM foto INNER JOIN foto_favorito ON foto.id = foto_favorito.foto_id WHERE foto_favorito.usuario_id = ? AND foto.estado = ? LIMIT '.$start.','.$cantidad, array($this->primary_key['id'], Model_Foto::ESTADO_ACTIVA))->get_pairs(Database_Query::FIELD_INT);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Foto($v);
+		}
+		return $lst;
 	}
 }

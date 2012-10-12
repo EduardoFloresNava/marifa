@@ -209,11 +209,6 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	const PERMISO_SITIO_ADMINISTRAR_CONTENIDO = 82;
 
 	/**
-	 * Acceso a los controles de censuras, bloqueos, etc. en el panel de administración.
-	 */
-	const PERMISO_SITIO_CONTROL_ACCESOS = 83;
-
-	/**
 	 * Nombre de la tabla para el dataset
 	 * @var string
 	 */

@@ -30,5 +30,5 @@
 
 // Tooptips en los elementos.
 (function ($) {
-    $('a[rel="tooltip"]').tooltip();
+    $('a[rel="tooltip"],span[rel="tooltip"]').tooltip();
 } ($));

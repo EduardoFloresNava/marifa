@@ -32,6 +32,15 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Borradores extends Controller {
 
+	public function __construct()
+	{
+		if ( ! Usuario::is_login())
+		{
+			Request::redirect('/usuario/login');
+		}
+		parent::__construct();
+	}
+
 	/**
 	 * Portada de los borradores.
 	 * @param int $pagina Número de página a mostrar.
@@ -42,7 +51,7 @@ class Base_Controller_Borradores extends Controller {
 		$vista = View::factory('borradores/index');
 
 		// Cantidad de elementos por pagina.
-		$cantidad_por_pagina = 1;
+		$cantidad_por_pagina = 10;
 
 		// Cargamos datos de posts.
 		$model_post = new Model_Post;
@@ -51,7 +60,7 @@ class Base_Controller_Borradores extends Controller {
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
 		// Cargamos el listado de borradores.
-		list($borradores, $total) = $model_post->borradores(Usuario::$usuario_id, $pagina);
+		list($borradores, $total) = $model_post->borradores(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
 
 		// Verifivo validez de la pñagina.
 		if (count($borradores) == 0 && $pagina != 1)
@@ -61,10 +70,8 @@ class Base_Controller_Borradores extends Controller {
 
 		// Paginación.
 		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/borradores/index/%d'));
+		unset($paginador);
 
 		foreach ($borradores as $k => $v)
 		{
