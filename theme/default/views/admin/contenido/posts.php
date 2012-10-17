@@ -78,16 +78,4 @@
 		{/loop}
 	</tbody>
 </table>
-{if="$total > $cpp"}
-<div class="pagination pagination-centered">
-	<ul>
-		{if="$paginacion.first != $actual"}<li><a href="/admin/contenido/posts/{$paginacion.first}">&laquo;</a></li>{/if}
-		{if="$paginacion.prev > 0"}<li><a href="/admin/contenido/posts/{$paginacion.prev}">{@Anterior@}</a></li>{/if}
-		{loop="$paginacion.pages"}
-		<li{if="$value == $actual"} class="active"{/if}}><a href="/admin/contenido/posts/{$value}">{$value}</a></li>
-		{/loop}
-		{if="$paginacion.next <= $paginacion.last && $paginacion.next > 0"}<li><a href="/admin/contenido/posts/{$paginacion.next}">{@Siguiente@}</a></li>{/if}
-		{if="$paginacion.last != $actual && $paginacion.last > 0"}<li><a href="/admin/contenido/posts/{$paginacion.last}">&raquo;</a></li>{/if}
-	</ul>
-</div>
-{/if}
+{$paginacion}
