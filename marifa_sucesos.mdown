@@ -1,0 +1,206 @@
+# Listado de sucesos con sus parámetros.
+
+## Posts:
+
+ * **post_nuevo** (*post_id*): Se ha creado un nuevo post. El post se considera creado cuando deja de ser un borrador.
+ * * **post_id**: ID del post que se ha creado.
+
+ * **post_editado** (*post_id*, *usuario_id*): Se ha realizado alguna modificación al post.
+ * * **post_id**: ID del post que se ha editado.
+ * * **usuario_id**: ID del usuario que ha editado el post. Nos permite saber si es dueño o un moderador/administrador del sitio.
+
+ * **post_favorito** (*post_id*, *usuario_id*): Agregamos a un post como favorito.
+ * * **post_id**: ID del post que se pone como favorito.
+ * * **usuario_id**: ID del usuario que agrega el post como favorito.
+
+ * **post_seguir** (*post_id*, *usuario_id*): El usuario comienza a seguir un post.
+ * * **post_id**: ID del post que se está por seguir.
+ * * **usuario_id**: ID del usuario que comienza a seguir el post.
+
+ * **post_puntuar** (*post_id*, *usuario_id*, *puntos*): Un usuario da puntos a un post.
+ * * **post_id**: ID del post al cual se le dan puntos.
+ * * **usuario_id**: ID del usuario que da los puntos.
+ * * **puntos**: Cantidad de puntos que dio el usuario. Estos puntos se pueden calcular directamente de la entrada pero se pasan de igual forma.
+
+ * **post_fijar** (*post_id*, *usuario_id*, *tipo*): Ponemos/Quitamos un post como fijo.
+ * * **post_id**: ID del post a modificar el atributo sticky.
+ * * **usuario_id**: ID del usuario que realiza la modificación (un moderador o administrador).
+ * * **tipo**: Tipo de modificación. 0 si se quita el estado fijo y 1 si se pone como fijo.
+
+ * **post_patrocinar** (*post_id*, *usuario_id*, *tipo*): Ponemos/Quitamos el post como patrocinado.
+ * * **post_id**: ID del post a modificar el atributo sponsored.
+ * * **usuario_id**: ID del usuario que realiza la modificación (un moderador o administrador).
+ * * **tipo**: Tipo de modificación. 0 si se quita el estado sponsored y 1 si se pone como patrocinado.
+
+ * **post_ocultar** (*post_id*, *usuario_id*, *tipo*): Ocultamos/mostramos un post.
+ * * **post_id**: ID del post a ocultar/mostrar.
+ * * **usuario_id**: ID del usuario que realiza la acción de ocultar/mostrar el post.
+ * * **tipo**: Tipo de acción. 0 ocultar, 1 mostrar.
+
+ * **post_aprobar** (*post_id*, *usuario_id*, *tipo*): Aprobamos/Rechazamos un post.
+ * * **post_id**: ID del post a aprobar/rechazar.
+ * * **usuario_id**: ID del usuario que realiza la acción de aprobar/rechazar el post.
+ * * **tipo**: Tipo de acción. 0 rechazar, 1 aprobar.
+
+ * **post_borrar** (*post_id*, *usuario_id*): Eliminamos un post.
+ * * **post_id**: ID del post a eliminar.
+ * * **usuario_id**: ID del usuario que elimina el post.
+
+ * **post_papelera** (*post_id*, *usuario_id*): Enviamos un post a la papelera de posts.
+ * * **post_id**: ID del post que se envia a la papelera.
+ * * **usuario_id**: ID del usuario que envia el post a la papelera.
+
+ * **post_restaurar** (*post_id*, *usuario_id*): Restauramos un post que se encuentra en la papelera.
+ * * **post_id**: ID del post a restaurar.
+ * * **usuario_id**: ID del usuario que restaura el post.
+
+ * **post_publicar** (*post_id*, *usuario_id*): Publicamos un post que se encuentra pendiente o como borrador.
+ * * **post_id**: ID del post a publicar.
+ * * **usuario_id**: ID del usuario que publica el post.
+
+### Denuncias a posts:
+
+ * **post_denuncia_crear** (*denuncia_id*): Se denuncia un post. Implica la creación que luego debe ser verificada por un moderador/administrador para tomar una acción.
+ * * **denuncia_id**: ID de la denuncia creada.
+
+ * **post_denuncia_aceptar** (*denuncia_id*, *usuario_id*): Aceptamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a aceptar.
+ * * **usuario_id**: ID del usuario que acepta la denuncia.
+
+ * **post_denuncia_rechazar** (*denuncia_id*, *usuario_id*): Rechazamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a rechazar.
+ * * **usuario_id**: ID del usuario que rechaza la denuncia.
+
+### Comentarios en Posts:
+ * **post_comentario_crear** (*comentario_id*): Creamos un comentario en un post.
+ * * **comentario_id**: ID del comentario que se crea.
+
+ * **post_comentario_voto** (*comentario_id*, *usuario_id*, *voto*): Votamos el comentario de un post.
+ * * **comentario_id**: ID del comentario a votar.
+ * * **usuario_id**: ID del usuario que realiza la votación.
+ * * **voto**: Si el voto es positivo o negativo. 0 voto negativo, 1 voto positivo.
+
+ * **post_comentario_ocultar** (*comentario_id*, *usuario_id*): El moderador/administrador oculta el comentario de un post.
+ * * **comentario_id**: ID del comentario a ocultar.
+ * * **usuario_id**: ID del usuario que realiza la acción de ocultar. Puede ser un moderador/administrador.
+
+ * **post_comentario_mostrar** (*comentario_id*, *usuario_id*): El moderador/administrador muestra el comentario de un post.
+ * * **comentario_id**: ID del comentario a mostrar.
+ * * **usuario_id**: ID del usuario que realiza la acción de mostrar. Puede ser un moderador/administrador.
+
+ * **post_comentario_borrar** (*comentario_id*, *usuario_id*): Se elimina un comentario.
+ * * **comentario_id**: ID del comentario a eliminar.
+ * * **usuario_id**: ID del usuario que elimina el comentario.
+
+## Fotos:
+
+ * **foto_votar** (*foto_id*, *usuario_id*, *tipo*): Votamos una foto.
+ * * **foto_id**: ID de la foto a votar.
+ * * **usuario_id**: ID del usuario que realiza la votación.
+ * * **tipo**: Tipo de voto. 0 negativo, 1 positivo.
+
+ * **foto_favorito** (*foto_id*, *usuario_id*): Agregamos una foto a favoritos.
+ * * **foto_id**: ID de la foto que se agrega a favoritos.
+ * * **usuario_id**: ID del usuario que agrega la foto a favoritos.
+
+ * **foto_nueva** (*foto_id*): Creamos una nueva foto.
+ * * **foto_id**: ID de la foto creada.
+
+ * **foto_editar** (*foto_id*, *usuario_id*): Un usuario edita una foto. Puede ser el dueño o un administrador/moderador.
+ * * **foto_id**: ID de la foto que fue editada.
+ * * **usuario_id**: ID del usuario que edita la foto. Puede ser un administrador/moderador o el creador.
+
+ * **foto_ocultar** (*foto_id*, *usuario_id*, *tipo*): Ocultamos/Mostramos una foto.
+ * * **foto_id**: ID de la foto a ocultar/mostrar.
+ * * **usuario_id**: ID del usuario que oculta/muestra la foto.
+ * * **tipo**: Tipo de modificación. 0 oculta, 1 muestra.
+
+ * **foto_borrar** (*foto_id*, *usuario_id*): Eliminamos una foto.
+ * * **foto_id**: ID de la foto a eliminar.
+ * * **usuario_id**: ID del usuario que elimina la foto.
+
+ * **foto_papelera** (*foto_id*, *usuario_id*): Enviamos una foto a la papelera de fotos.
+ * * **foto_id**: ID de la foto que se envia a la papelera.
+ * * **usuario_id**: ID del usuario que envia la foto a la papelera.
+
+ * **foto_restaurar** (*foto_id*, *usuario_id*): Restauramos una foto que se encuentra en la papelera.
+ * * **foto_id**: ID de la foto a restaurar.
+ * * **usuario_id**: ID del usuario que restaura la foto.
+
+### Denuncias a fotos:
+
+ * **foto_denuncia_crear** (*denuncia_id*): Se denuncia una foto. Implica la creación que luego debe ser verificada por un moderador/administrador para tomar una acción.
+ * * **denuncia_id**: ID de la denuncia creada.
+
+ * **foto_denuncia_aceptar** (*denuncia_id*, *usuario_id*): Aceptamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a aceptar.
+ * * **usuario_id**: ID del usuario que acepta la denuncia.
+
+ * **foto_denuncia_rechazar** (*denuncia_id*, *usuario_id*): Rechazamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a rechazar.
+ * * **usuario_id**: ID del usuario que rechaza la denuncia.
+
+### Comentarios en Fotos:
+ * **foto_comentario_crear** (*comentario_id*): Creamos un comentario en una foto.
+ * * **comentario_id**: ID del comentario que se crea.
+
+ * **foto_comentario_voto** (*comentario_id*, *usuario_id*, *voto*): Votamos el comentario de una foto.
+ * * **comentario_id**: ID del comentario a votar.
+ * * **usuario_id**: ID del usuario que realiza la votación.
+ * * **voto**: Si el voto es positivo o negativo. 0 voto negativo, 1 voto positivo.
+
+ * **foto_comentario_ocultar** (*comentario_id*, *usuario_id*): El moderador/administrador oculta el comentario de  una foto.
+ * * **comentario_id**: ID del comentario a ocultar.
+ * * **usuario_id**: ID del usuario que realiza la acción de ocultar. Puede ser un moderador/administrador.
+
+ * **foto_comentario_mostrar** (*comentario_id*, *usuario_id*): El moderador/administrador muestra el comentario de  una foto.
+ * * **comentario_id**: ID del comentario a mostrar.
+ * * **usuario_id**: ID del usuario que realiza la acción de mostrar. Puede ser un moderador/administrador.
+
+ * **foto_comentario_borrar** (*comentario_id*, *usuario_id*): Se elimina un comentario.
+ * * **comentario_id**: ID del comentario a eliminar.
+ * * **usuario_id**: ID del usuario que elimina el comentario.
+
+## Usuarios:
+ * **usuario_nuevo** (*usuario_id*): Se crea una cuenta de usuario nueva.
+ * * **usuario_id**: ID del usuario que ha sido creado.
+
+ * **usuario_bloqueo** (*usuario_id*, *bloqueado_id*, *tipo*): El usuario *usuario_id* bloquea/desbloquea al usuario *bloqueado_id* para acceder a su perfil y eventos.
+ * * **usuario_id**: ID del usuario que bloquea/desbloquea al otro.
+ * * **bloquedo_id**: ID del usuario que es bloqueado/desbloqueado.
+ * * **tipo**: Tipo de acción: 0 bloquea, 1 desbloquea.
+
+ * **usuario_cambio_nick** (*usuario_id*, *nick_inicial_id*, *nick_final_id*): Un usuario cambia su nick.
+ * * **usuario_id**: ID del usuario que cambia el nick.
+ * * **nick_inicial_id**: ID del nick anterior del usuario.
+ * * **nick_final_id**: ID del nick nuevo del usuario.
+
+ * **usuario_suspender** (*suspension_id*): El usuario es suspendido.
+ * * **suspension_id**: ID de la suspensión.
+
+ * **usuario_fin_suspension** (*usuario_id*, [*moderador_id*]): Suspensión del usuario finalizada. Puede ser de forma automática (terminada la suspensión) o por acción de un usuario.
+ * * **usuario_id**: ID del usuario del que se quitó(o finalizo) la suspensión.
+ * * **moderador_id**: ID del moderador que termina la suspensión. En caso de ser NULO es porque finalizó el periodo de forma automática.
+
+ * **usuario_baneo** (*baneo_id*): Un usuario es baneado.
+ * * **baneo_id**: ID del baneo al usuario.
+
+ * **usuario_fin_baneo** (*usuario_id*, *moderador_id*): Se cancela el baneo del usuario.
+ * * **usuario_id:**: ID del usuario al que se le quita el baneo.
+ * * **moderador_id**: ID del usuario (moderador o administrador) que ha quitado el baneo al usuario.
+
+ * **usuario_advertir** (*advertencia_id*): Se envía una advertencia al usuario.
+ * * **advertencia_id*: ID de la advertencia que se ha creado.
+
+### Denuncias a usuarios:
+
+ * **usuario_denuncia_crear** (*denuncia_id*): Se denuncia un usuario. Implica la creación que luego debe ser verificada por un moderador/administrador para tomar una acción.
+ * * **denuncia_id**: ID de la denuncia creada.
+
+ * **usuario_denuncia_aceptar** (*denuncia_id*, *usuario_id*): Aceptamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a aceptar.
+ * * **usuario_id**: ID del usuario que acepta la denuncia.
+
+ * **usuario_denuncia_rechazar** (*denuncia_id*, *usuario_id*): Rechazamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a rechazar.
+ * * **usuario_id**: ID del usuario que rechaza la denuncia.

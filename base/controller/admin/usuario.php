@@ -34,11 +34,16 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Admin_Usuario extends Controller {
 
+	/**
+	 * Constructor de la clase.
+	 * Verificamos permisos para acceder a la sección.
+	 */
 	public function __construct()
 	{
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
 			Request::redirect('/usuario/login');
 		}
 
@@ -60,7 +65,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 	public function action_index($pagina, $tipo)
 	{
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = $pagina > 0 ? (int) $pagina : 1;
 
 		// TIPO, 0->todos, 1->activos, 2->suspendidos, 3->baneados
 		$tipo = (int) $tipo;
@@ -78,22 +83,11 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Asigno el tipo.
 		$vista->assign('tipo', $tipo);
 
-		// Noticia Flash.
-		if (isset($_SESSION['usuario_correcto']))
-		{
-			$vista->assign('success', get_flash('usuario_correcto'));
-		}
-
-		if (isset($_SESSION['usuario_error']))
-		{
-			$vista->assign('error', get_flash('usuario_error'));
-		}
-
 		// Limpio antiguos.
 		Model_Usuario_Suspension::clean();
 
 		// Modelo de usuarios.
-		$model_usuarios = new Model_Usuario( (int) $_SESSION['usuario_id']);
+		$model_usuarios = Usuario::usuario();
 
 		// Cargo las cantidades.
 		$cantidad_activas = $model_usuarios->cantidad(Model_Usuario::ESTADO_ACTIVA);
@@ -130,10 +124,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		// Paginación.
 		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/usuario/index/%s/'.$tipo));
 
 		// Obtenemos datos de las noticias.
 		foreach ($lst as $k => $v)
@@ -169,16 +160,20 @@ class Base_Controller_Admin_Usuario extends Controller {
 	 */
 	public function action_suspender_usuario($id)
 	{
+		$id = (int) $id;
+
 		// Verificamos no sea actual.
-		if ($id == $_SESSION['usuario_id'])
+		if ($id == Usuario::$usuario_id)
 		{
+			$_SESSION['flash_error'] = 'El usuario que quieres suspender no se encuentra disponible.';
 			Request::redirect('/admin/usuario/');
 		}
 
 		// Cargamos el modelo del usuario.
-		$model_usuario = new Model_Usuario( (int) $id);
+		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
+			$_SESSION['flash_error'] = 'El usuario que quieres suspender no se encuentra disponible.';
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -192,7 +187,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 			else
 			{
-				$_SESSION['usuario_error'] = 'Usuario con suspensión en efecto.';
+				$_SESSION['flash_error'] = 'El usuario que quieres suspender no se encuentra disponible.';
 				Request::redirect('/admin/usuario/');
 			}
 		}
@@ -257,10 +252,14 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 				// Cargamos el modelo de suspensiones.
 				$model_suspension = new Model_Usuario_Suspension;
-				$model_suspension->nueva($id, (int) $_SESSION['usuario_id'], $motivo	, $fin);
+				$s_id = $model_suspension->nueva($id, Usuario::$usuario_id, $motivo, $fin);
 
-				// Seteamos mensaje flash y volvemos.
-				$_SESSION['usuario_correcto'] = 'Usuario suspendido correctamente.';
+				// Envio el suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_suspender', $s_id);
+
+				// Informamos el resultado.
+				$_SESSION['flash_success'] = 'Usuario suspendido correctamente.';
 				Request::redirect('/admin/usuario');
 			}
 		}
@@ -284,16 +283,20 @@ class Base_Controller_Admin_Usuario extends Controller {
 	 */
 	public function action_quitar_suspension_usuario($id)
 	{
+		$id = (int) $id;
+
 		// Verificamos no sea actual.
-		if ($id == $_SESSION['usuario_id'])
+		if ($id == Usuario::$usuario_id)
 		{
+			$_SESSION['flash_error'] = 'El usuario al que quieres quitar la suspensión no se encuentra disponible.';
 			Request::redirect('/admin/usuario/');
 		}
 
 		// Cargamos el modelo del usuario.
-		$model_usuario = new Model_Usuario( (int) $id);
+		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
+			$_SESSION['flash_error'] = 'El usuario al que quieres quitar la suspensión no se encuentra disponible.';
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -305,24 +308,37 @@ class Base_Controller_Admin_Usuario extends Controller {
 			// Verifico el estado.
 			if ($model_usuario->estado === Model_Usuario::ESTADO_SUSPENDIDA)
 			{
+				// Actualizamos el estado.
 				$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
 			}
 		}
 		else
 		{
+			// Anulamos la suspensión.
 			$suspension->anular();
+
+			// Actualizamos el estado.
 			$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
+
+			// Envio el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_fin_suspension', $suspension->id, $suspension->restante() > 0 ? Usuario::$usuario_id : NULL);
 		}
-		// Seteamos mensaje flash y volvemos.
-		$_SESSION['usuario_correcto'] = 'Suspensión anulada correctamente.';
+		// Informo el resultado.
+		$_SESSION['flash_success'] = 'Suspensión anulada correctamente.';
 		Request::redirect('/admin/usuario');
 	}
 
+	/**
+	 * Enviamos una advertencia a un usuario.
+	 * @param int $id ID del usuario a advertir.
+	 */
 	public function action_advertir_usuario($id)
 	{
 		// Verificamos no sea actual.
-		if ($id == $_SESSION['usuario_id'])
+		if ($id == Usuario::$usuario_id)
 		{
+			$_SESSION['flash_error'] = 'El usuario que quieres advertir no se encuentra disponible.';
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -333,6 +349,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
+			$_SESSION['flash_error'] = 'El usuario que quieres advertir no se encuentra disponible.';
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -386,14 +403,16 @@ class Base_Controller_Admin_Usuario extends Controller {
 				// Evitamos XSS.
 				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
 
-				// Cargamos el modelo de advertencias.
+				// Creamos la advertencia.
 				$model_advertencia = new Model_Usuario_Aviso;
-				$model_advertencia->nueva($id, (int) $_SESSION['usuario_id'], $asunto, $contenido);
+				$adv_id = $model_advertencia->nueva($id, Usuario::$usuario_id, $asunto, $contenido);
 
-				//TODO: agregar el suceso.
+				// Enviamos el suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_suspender', $adv_id);
 
 				// Seteamos mensaje flash y volvemos.
-				$_SESSION['usuario_correcto'] = 'Advertencia enviada correctamente.';
+				$_SESSION['flash_success'] = 'Advertencia enviada correctamente.';
 				Request::redirect('/admin/usuario');
 			}
 		}
@@ -411,11 +430,16 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
+	/**
+	 * Baneamos a un usuario
+	 * @param int $id ID del usuario a banear.
+	 */
 	public function action_banear_usuario($id)
 	{
 		// Verificamos no sea actual.
-		if ($id == $_SESSION['usuario_id'])
+		if ($id == Usuario::$usuario_id)
 		{
+			$_SESSION['flash_error'] = 'El usuario que quieres banear no se encuentra disponible.';
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -426,6 +450,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
+			$_SESSION['flash_error'] = 'El usuario que quieres banear no se encuentra disponible.';
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -467,14 +492,16 @@ class Base_Controller_Admin_Usuario extends Controller {
 				// Evitamos XSS.
 				$razon = htmlentities($razon, ENT_NOQUOTES, 'UTF-8');
 
-				// Cargamos el modelo de advertencias.
+				// Baneamos al usuario.
 				$model_baneos = new Model_Usuario_Baneo;
-				$model_baneos->nuevo($id, (int) $_SESSION['usuario_id'], 0, $razon);
+				$ban_id = $model_baneos->nuevo($id, Usuario::$usuario_id, 0, $razon);
 
-				//TODO: agregar el suceso.
+				// Enviamos el suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_baneo', $ban_id);
 
-				// Seteamos mensaje flash y volvemos.
-				$_SESSION['usuario_correcto'] = 'Baneo realizado correctamente.';
+				// Informamos el resultado.
+				$_SESSION['flash_success'] = 'Baneo realizado correctamente.';
 				Request::redirect('/admin/usuario');
 			}
 		}
@@ -498,16 +525,20 @@ class Base_Controller_Admin_Usuario extends Controller {
 	 */
 	public function action_desbanear_usuario($id)
 	{
+		$id = (int) $id;
+
 		// Verificamos no sea actual.
-		if ($id == $_SESSION['usuario_id'])
+		if ($id == Usuario::$usuario_id)
 		{
+			$_SESSION['flash_error'] = 'El usuario que deseas banear no se encuentra disponible.';
 			Request::redirect('/admin/usuario/');
 		}
 
 		// Cargamos el modelo del usuario.
-		$model_usuario = new Model_Usuario( (int) $id);
+		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
+			$_SESSION['flash_error'] = 'El usuario que deseas banear no se encuentra disponible.';
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -516,10 +547,16 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		if ($baneo !== NULL)
 		{
+			// Quito el baneo.
 			$baneo->borrar();
+
+			// Genero el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_fin_baneo', $id, Usuario::$id);
 		}
-		// Seteamos mensaje flash y volvemos.
-		$_SESSION['usuario_correcto'] = 'El baneo fue anulado correctamente.';
+
+		// Informo el resultado.
+		$_SESSION['flash_success'] = 'El baneo fue anulado correctamente.';
 		Request::redirect('/admin/usuario');
 	}
 
@@ -530,17 +567,6 @@ class Base_Controller_Admin_Usuario extends Controller {
 	{
 		// Cargamos la vista.
 		$vista = View::factory('admin/usuario/rangos');
-
-		// Noticia Flash.
-		if (isset($_SESSION['rango_correcto']))
-		{
-			$vista->assign('success', get_flash('rango_correcto'));
-		}
-
-		if (isset($_SESSION['rango_error']))
-		{
-			$vista->assign('error', get_flash('rango_error'));
-		}
 
 		// Modelo de rangos.
 		$model_rangos = new Model_Usuario_Rango;
@@ -620,7 +646,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 
 			// Verificamos el color.
-			if ( ! preg_match('/^[0-9a-z]{6}$/Di', $color))
+			if ( ! preg_match('/^[0-9a-f]{6}$/Di', $color))
 			{
 				$error = TRUE;
 				$vista->assign('error_color', 'El color debe ser HEXADECIMAL de 6 digitos. Por ejemplo: 00FF00.');
@@ -671,8 +697,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 	 */
 	public function action_editar_rango($id)
 	{
+		$id = (int) $id;
 		// Cargamos el modelo del rango.
-		$model_rango = new Model_Usuario_Rango( (int) $id);
+		$model_rango = new Model_Usuario_Rango($id);
 		if ( ! $model_rango->existe())
 		{
 			Request::redirect('/admin/usuario/rangos');
@@ -721,7 +748,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 
 			// Verificamos el color.
-			if ( ! preg_match('/^[0-9a-z]{6}$/Di', $color))
+			if ( ! preg_match('/^[0-9a-f]{6}$/Di', $color))
 			{
 				$error = TRUE;
 				$vista->assign('error_color', 'El color debe ser HEXADECIMAL de 6 digitos. Por ejemplo: 00FF00.');
@@ -904,23 +931,27 @@ class Base_Controller_Admin_Usuario extends Controller {
 			// Verificamos exista otro y además no tenga usuarios.
 			if ($model_rango->tiene_usuarios())
 			{
-				$_SESSION['rango_error'] = 'El rango tiene usuarios y no puede ser eliminado.';
+				$_SESSION['flash_error'] = 'El rango tiene usuarios y no puede ser eliminado.';
 				Request::redirect('/admin/usuario/rangos');
 			}
 
 			if (count($model_rango->listado()) < 2)
 			{
-				$_SESSION['rango_error'] = 'No se puede eliminar al único rango existente.';
+				$_SESSION['flash_error'] = 'No se puede eliminar al único rango existente.';
 				Request::redirect('/admin/usuario/rangos');
 			}
 
 			// Borramos la noticia.
 			$model_rango->borrar_rango();
-			$_SESSION['rango_correcto'] = 'Se borró correctamente el rango.';
+			$_SESSION['flash_success'] = 'Se borró correctamente el rango.';
 		}
 		Request::redirect('/admin/usuario/rangos');
 	}
 
+	/**
+	 * Listado de sessiones de usuarios activas.
+	 * @param int $pagina Número de página a mostrar.
+	 */
 	public function action_sesiones($pagina)
 	{
 		// Formato de la página.
@@ -932,32 +963,18 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/usuario/sesiones');
 
-		// Noticia Flash.
-		if (isset($_SESSION['session_correcto']))
-		{
-			$vista->assign('success', get_flash('session_correcto'));
-		}
-
-		if (isset($_SESSION['session_error']))
-		{
-			$vista->assign('error', get_flash('session_error'));
-		}
-
 		// Modelo de sessiones.
 		$model_session = new Model_Session(session_id());
 
+		// Quitamos sessiones terminadas.
 		$model_session->limpiar();
 
 		// Cargamos el listado de usuarios.
 		$lst = $model_session->listado($pagina, $cantidad_por_pagina);
 
 		// Paginación.
-		$total = $model_session->cantidad();
-		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$paginador = new Paginator($model_session->cantidad(), $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/usuario/sessiones/%s/'));
 
 		// Obtenemos datos de las noticias.
 		foreach ($lst as $k => $v)
@@ -1001,7 +1018,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		{
 			// Terminamos la session.
 			$model_session->borrar();
-			$_SESSION['session_correcto'] = 'Se terminó correctamente la sessión.';
+			$_SESSION['flash_success'] = 'Se terminó correctamente la sessión.';
 		}
 		Request::redirect('/admin/usuario/sesiones');
 	}

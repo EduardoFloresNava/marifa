@@ -99,6 +99,7 @@ class Base_Controller_Usuario extends Controller {
 						$view_usuario->assign('error_password', TRUE);
 						break;
 					case Model_Usuario::ESTADO_ACTIVA: // Cuenta activa.
+						$_SESSION['flash_success'] = 'Bienvenido.';
 						Request::redirect('/', FALSE, TRUE);
 						break;
 					case Model_Usuario::ESTADO_PENDIENTE:  // Cuenta por activar.
@@ -145,6 +146,7 @@ class Base_Controller_Usuario extends Controller {
 		if (Usuario::is_login())
 		{
 			// Lo enviamos a la portada.
+			$_SESSION['flash_error'] = 'No puedes registrarte si ya estás logueado.';
 			Request::redirect('/');
 		}
 
@@ -294,6 +296,7 @@ class Base_Controller_Usuario extends Controller {
 	public function action_logout()
 	{
 		Usuario::logout();
+		$_SESSION['flash_success'] = 'Gracias por su visita.';
 		Request::redirect('/');
 	}
 }

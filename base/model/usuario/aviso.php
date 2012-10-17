@@ -43,7 +43,7 @@ class Base_Model_Usuario_Aviso extends Model_Dataset {
 	const ESTADO_VISTO = 1;
 
 	/**
-	 * El estado ha borrado el aviso.
+	 * El usuario ha borrado el aviso.
 	 */
 	const ESTADO_OCULTO = 2;
 

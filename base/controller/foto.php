@@ -118,7 +118,8 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos si esta conectado.
 		if ( ! isset($_SESSION['usuario_id']))
 		{
-			Request::redirect('/foto/');
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder ver esta sección.';
+			Request::redirect('/usuario/login');
 		}
 
 		// Asignamos el título.
@@ -176,13 +177,14 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			Request::redirect('/');
+			$_SESSION['flash_error'] = 'La foto a la que intentas acceder no está disponible.';
+			Request::redirect('/foto/');
 		}
 
 		// Verifico el estado.
 		if ($model_foto->usuario_id !== Usuario::$usuario_id && $model_foto->estado !== Model_Foto::ESTADO_ACTIVA && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DESAPROBADO) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			$_SESSION['flash_error'] == 'No tienes permiso para ver esa foto.';
+			$_SESSION['flash_error'] == 'La foto a la que intentas acceder no está disponible.';
 			Request::redirect('/foto/');
 		}
 
@@ -269,49 +271,63 @@ class Base_Controller_Foto extends Controller {
 	 */
 	public function action_votar($foto, $voto)
 	{
+		$foto = (int) $foto;
 		// Obtenemos el voto.
 		$voto = $voto == 1;
 
-		// Cargamos el comentario.
-		$model_foto = new Model_Foto( (int) $foto);
-
-		// Verificamos existencia.
-		if ( ! is_array($model_foto->as_array()))
+		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'La foto no existe.';
-			Request::redirect('/');
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder ver esta sección.';
+			Request::redirect('/usuario/login');
 		}
 
 		// Verificamos los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VOTAR))
 		{
-			$_SESSION['flash_error'] = 'No tienes permido votar fotos.';
-			Request::redirect('/foto/ver/'.$foto);
+			$_SESSION['flash_error'] = 'No tienes los permisos suficientes para votar fotos.';
+			Request::redirect('/foto/');
+		}
+
+		// Cargamos el comentario.
+		$model_foto = new Model_Foto($foto);
+
+		// Verificamos existencia.
+		if ( ! is_array($model_foto->as_array()))
+		{
+			$_SESSION['flash_error'] = 'La foto que deseas votar no se encuenta disponible.';
+			Request::redirect('/foto/');
 		}
 
 		// Verifico el estado de la foto.
 		if ($model_foto->estado !== Model_Foto::ESTADO_ACTIVA)
 		{
-			$_SESSION['flash_error'] = 'La foto no se encuentra disponible.';
+			$_SESSION['flash_error'] = 'La foto que deseas votar no se encuenta disponible.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
-		// Cargamos usuario.
-		$usuario_id = Usuario::$usuario_id;
-
-		// Verificamos autor.
-		if ($model_foto->usuario_id != $usuario_id)
+		// Verificamos el autor.
+		if ($model_foto->usuario_id === Usuario::$usuario_id)
 		{
-			// Verificamos puntuación.
-			if ( ! $model_foto->ya_voto($usuario_id))
-			{
-				$model_foto->votar($usuario_id, $voto);
-				$_SESSION['flash_success'] = 'El voto fue guardado correctamente.';
-
-				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array($usuario_id, $model_foto->usuario_id), 'voto_foto', $usuario_id, $foto);
-			}
+			$_SESSION['flash_error'] = 'La foto que deseas votar no se encuentra disponible.';
+			Request::redirect('/foto/ver/'.$foto);
 		}
+
+		// Verificamos si puede votar.
+		if ($model_foto->ya_voto(Usuario::$usuario_id))
+		{
+			$_SESSION['flash_error'] = 'La foto que deseas votar ya la has votado.';
+			Request::redirect('/foto/ver/'.$foto);
+		}
+
+		// Votamos la foto.
+		$model_foto->votar(Usuario::$usuario_id, $voto);
+
+		// Creamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_votar', $foto, Usuario::$usuario_id, (int) $voto);
+
+		// Informamos el resultado.
+		$_SESSION['flash_success'] = 'El voto fue guardado correctamente.';
 		Request::redirect('/foto/ver/'.$model_foto->foto_id);
 	}
 
@@ -324,36 +340,53 @@ class Base_Controller_Foto extends Controller {
 		// Convertimos el post a ID.
 		$foto = (int) $foto;
 
+		// Verifico que esté logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder agregar la foto a tus favoritos.';
+			Request::redirect('/usuario/login');
+		}
+
 		// Cargamos el post.
 		$model_foto = new Model_Foto($foto);
 
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			$_SESSION['flash_error'] = 'La foto no existe.';
-			Request::redirect('/');
+			$_SESSION['flash_error'] = 'La foto que quiere poner como favorito no se encuentra disponible.';
+			Request::redirect('/foto/');
 		}
 
 		// Verifico el estado de la foto.
 		if ($model_foto->estado != Model_Foto::ESTADO_ACTIVA)
 		{
-			$_SESSION['flash_error'] = 'La foto no está disponible.';
+			$_SESSION['flash_error'] = 'La foto que quiere poner como favorito no se encuentra disponible.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
 		// Verifica autor.
-		if ($model_foto->usuario_id != Usuario::$usuario_id)
+		if ($model_foto->usuario_id === Usuario::$usuario_id)
 		{
-			// Verificamos el voto.
-			if ( ! $model_foto->es_favorito(Usuario::$usuario_id))
-			{
-				$_SESSION['flash_success'] = 'Foto agregada a favoritos correctamente.';
-				$model_foto->agregar_favorito(Usuario::$usuario_id);
-
-				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'favorito_foto', Usuario::$usuario_id, $foto);
-			}
+			$_SESSION['flash_error'] = 'La foto que quiere poner como favorito no se encuentra disponible.';
+			Request::redirect('/foto/ver/'.$foto);
 		}
+
+		// Verificamos que no sea favorito.
+		if ($model_foto->es_favorito(Usuario::$usuario_id))
+		{
+			$_SESSION['flash_error'] = 'La foto ya está en tus favoritos.';
+			Request::redirect('/foto/ver/'.$foto);
+		}
+
+		// Agrego a favoritos.
+		$model_foto->agregar_favorito(Usuario::$usuario_id);
+
+		// Envio el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_favorito', $foto, Usuario::$usuario_id);
+
+		// Informo el resultado.
+		$_SESSION['flash_success'] = 'Foto agregada a favoritos correctamente.';
 		Request::redirect('/foto/ver/'.$foto);
 	}
 
@@ -369,6 +402,13 @@ class Base_Controller_Foto extends Controller {
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
+		// Verifico esté conectado.
+		if( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder realizar comentarios.';
+			Request::redirect('/usuario/login');
+		}
+
 		// Convertimos el foto a ID.
 		$foto = (int) $foto;
 
@@ -378,14 +418,14 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			Request::redirect('/');
+			$_SESSION['flash_error'] = 'La foto que quiere comentar no se encuentra disponible.';
+			Request::redirect('/foto/');
 		}
 
 		// Verifico se pueda comentar.
-
 		if ( ! (Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR_CERRADO) || ($model_foto->soporta_comentarios() && Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR))))
 		{
-			$_SESSION['post_comentario_error'] = 'No puede realizar comentarios en esa foto.';
+			$_SESSION['post_comentario_error'] = 'No tienes permisos para realizar comentarios en esa foto.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
@@ -411,11 +451,12 @@ class Base_Controller_Foto extends Controller {
 			// Insertamos el comentario.
 			$id = $model_foto->comentar(Usuario::$usuario_id, $comentario);
 
+			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'comentario_foto', $id);
+			$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_comentario_crear', $id);
 
+			// Informo el resultado.
 			$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
-
 			Request::redirect('/foto/ver/'.$foto);
 		}
 	}
@@ -428,7 +469,8 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos usuario conectado.
 		if ( ! Usuario::is_login())
 		{
-			Request::redirect('/');
+			$_SESSION['flash_error'] = 'Debes loguearte para poder agregar fotos.';
+			Request::redirect('/usuario/login');
 		}
 
 		// Verifico los permisos para crear foto.
@@ -586,11 +628,12 @@ class Base_Controller_Foto extends Controller {
 
 				if ($foto_id > 0)
 				{
+					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(Usuario::$usuario_id, 'nueva_foto', $model_foto->id);
+					$model_suceso->crear(Usuario::$usuario_id, 'foto_nueva', $model_foto->id);
 
+					// Informo el resultado.
 					$_SESSION['flash_success'] = 'Foto creada correctamente.';
-
 					Request::redirect('/foto/ver/'.$model_foto->id);
 				}
 				else
@@ -612,34 +655,34 @@ class Base_Controller_Foto extends Controller {
 	{
 		$foto = (int) $foto;
 
-		// Cargamos la foto.
-		$model_foto = new Model_Foto($foto);
-
 		// Verifico esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Debes estar identificado para poder borrar una foto.';
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder borrar una foto.';
 			Request::redirect('/usuario/login/');
 		}
 
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			$_SESSION['flash_error'] = 'La foto no existe.';
-			Request::redirect('/');
+			$_SESSION['flash_error'] = 'La foto que quieres denunciar no se encuentra disponible.';
+			Request::redirect('/foto/');
 		}
 
+		// Cargamos la foto.
+		$model_foto = new Model_Foto($foto);
+
 		// Verificamos que no sea autor.
-		if ($model_foto->usuario_id == Usuario::$usuario_id)
+		if ($model_foto->usuario_id === Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No puedes denunciar tu propia foto.';
+			$_SESSION['flash_error'] = 'La foto que quieres denunciar no se encuentra disponible.';
 			Request::redirect('/post/ver/'.$post);
 		}
 
 		// Verifico que esté activa.
 		if ($model_foto->estado !== Model_Foto::ESTADO_ACTIVA)
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No puedes denunciar esa foto.';
+			$_SESSION['flash_error'] = 'La foto que quieres denunciar no se encuentra disponible.';
 			Request::redirect('/post/ver/'.$post);
 		}
 
@@ -703,7 +746,7 @@ class Base_Controller_Foto extends Controller {
 
 				// Agregamos el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(Usuario::$usuario_id, 'foto_denunciada', $model_foto->id, $id);
+				$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_denuncia_crear', $id);
 
 				// Seteamos mensaje flash y volvemos.
 				$_SESSION['flash_success'] = 'Denuncia enviada correctamente.';
@@ -729,6 +772,7 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos usuario conectado.
 		if ( ! Usuario::is_login())
 		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para editar fotos.';
 			Request::redirect('/usuario/login/', TRUE);
 		}
 
@@ -739,14 +783,14 @@ class Base_Controller_Foto extends Controller {
 		// Verifico la existencia.
 		if ( ! $model_foto->existe())
 		{
-			$_SESSION['flash_error'] = 'La foto no existe.';
+			$_SESSION['flash_error'] = 'La foto que quiere editar no se encuentra disponible.';
 			Request::redirect('/foto/');
 		}
 
 		// Verifico los permisos.
 		if ($model_foto->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_EDITAR))
 		{
-			$_SESSION['flash_error'] = 'No tienes permisos para editar es foto.';
+			$_SESSION['flash_error'] = 'La foto que deseas editar no se encuentra disponible.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
@@ -830,7 +874,7 @@ class Base_Controller_Foto extends Controller {
 				{
 					// Agregamos el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear($model_foto->usuario_id, 'foto_editada', $model_foto->id, Usuario::$usuario_id);
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_editar', $model_foto->id, Usuario::$usuario_id);
 				}
 
 				$view->assign('flash_success', 'Actualización correcta');
@@ -847,6 +891,12 @@ class Base_Controller_Foto extends Controller {
 	 */
 	public function action_ocultar_foto($foto)
 	{
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder ocultar/mostrar fotos.';
+			Request::redirect('/usuario/login');
+		}
+
 		$foto = (int) $foto;
 
 		// Cargamos la foto.
@@ -855,14 +905,14 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Foto incorrecta.';
+			$_SESSION['flash_error'] = 'La foto que deseas ocultar/mostrar no se encuentra disponible.';
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_OCULTAR) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DESAPROBADO) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
+			$_SESSION['flash_error'] = 'La foto que deseas ocultar/mostrar no se encuentra disponible.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
@@ -877,28 +927,19 @@ class Base_Controller_Foto extends Controller {
 		}
 		else
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Acci&oacute;n incorrecta.';
+			$_SESSION['flash_error'] = 'La foto que deseas ocultar/mostrar no se encuentra disponible.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
 		// Actualizo el estado.
 		$model_foto->actualizar_estado($n_estado);
 
-		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
-
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(
-				array(
-					Usuario::$usuario_id,
-					$model_foto->usuario_id
-				),
-				'foto_ocultada',
-				Usuario::$usuario_id,
-				$foto,
-				$n_estado
-			);
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_ocultar', $foto, Usuario::$usuario_id, $n_estado == Model_Foto::ESTADO_OCULTA ? 0 : 1);
 
+		// Informo el resultado.
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
 		Request::redirect('/foto/ver/'.$foto);
 	}
 
@@ -909,6 +950,12 @@ class Base_Controller_Foto extends Controller {
 	 */
 	public function action_borrar_foto($foto, $tipo)
 	{
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder eliminar una foto.';
+			Request::redirect('/usuario/login');
+		}
+
 		$foto = (int) $foto;
 
 		// Cargamos la foto.
@@ -917,14 +964,14 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Foto incorrecta.';
+			$_SESSION['flash_error'] = 'La foto que deseas borrar no se encuentra disponible.';
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_foto->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
+			$_SESSION['flash_error'] = 'La foto que deseas borrar no se encuentra disponible.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
@@ -937,7 +984,7 @@ class Base_Controller_Foto extends Controller {
 			}
 			elseif ($model_foto->estado === Model_Foto::ESTADO_PAPELERA || $model_foto === Model_Foto::ESTADO_BORRADA)
 			{
-				$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Acci&oacute;n incorrecta.';
+				$_SESSION['flash_error'] = 'La foto que deseas borrar no se encuentra disponible.';
 				Request::redirect('/foto/ver/'.$foto);
 			}
 			else
@@ -953,21 +1000,12 @@ class Base_Controller_Foto extends Controller {
 		// Actualizo el estado.
 		$model_foto->actualizar_estado($tipo ? Model_Foto::ESTADO_BORRADA : Model_Foto::ESTADO_PAPELERA);
 
-		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
-
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(
-				array(
-					Usuario::$usuario_id,
-					$model_foto->usuario_id
-				),
-				'foto_borrada',
-				Usuario::$usuario_id,
-				$foto,
-				$tipo ? Model_Foto::ESTADO_BORRADA : Model_Foto::ESTADO_PAPELERA
-			);
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), $tipo ? 'foto_borrar' : 'foto_papelera', $foto, Usuario::$usuario_id);
 
+		// Informamos el resultado.
+		$_SESSION['flash_success'] = 'Acción realizada correctamente.';
 		Request::redirect('/foto/ver/'.$foto);
 	}
 
@@ -977,6 +1015,12 @@ class Base_Controller_Foto extends Controller {
 	 */
 	public function action_restaurar_foto($foto)
 	{
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder restaurar fotos.';
+			Request::redirect('/usuario/login');
+		}
+
 		$foto = (int) $foto;
 
 		// Cargamos la foto.
@@ -985,41 +1029,33 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Foto incorrecta.';
+			$_SESSION['flash_error'] = 'La foto que intentas restaurar no se encuentra disponible.';
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_foto->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
+			$_SESSION['flash_error'] = 'La foto que intentas restaurar no se encuentra disponible.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
 		// Verifico el estado de la foto.
 		if ($model_foto->estado !== Model_Foto::ESTADO_PAPELERA)
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> La foto no tiene un estado válido.';
+			$_SESSION['flash_error'] = 'La foto que intentas restaurar no se encuentra disponible.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
 
 		// Actualizo el estado.
 		$model_foto->actualizar_estado(Model_Foto::ESTADO_ACTIVA);
 
-		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> La foto se ha restaurado correctamente.';
-
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(
-				array(
-					Usuario::$usuario_id,
-					$model_foto->usuario_id
-				),
-				'foto_restaurada',
-				Usuario::$usuario_id,
-				$foto
-			);
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_restaurar', $foto, Usuario::$usuario_id);
 
+		// Informamos el resultado.
+		$_SESSION['flash_success'] = 'La foto se ha restaurado correctamente.';
 		Request::redirect('/foto/ver/'.$foto);
 	}
 

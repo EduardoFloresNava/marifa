@@ -27,7 +27,7 @@
         </div>
     </div>
     <div class="btn-group pull-right">
-        <a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-inbox"></i>&nbsp;</a><!--MENSAJES-->
+        <a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-inbox"></i>{if="$mensajes_nuevos > 0"}&nbsp;<span class="badge badge-info">{$mensajes_nuevos}</span>{/if}</a><!--MENSAJES-->
         <div class="dropdown-menu" id="message-dropdown">
 			<ul>
 				{loop="$mensajes"}
@@ -41,7 +41,7 @@
 					{elseif="$value.estado == 3"}
 					<i class="icon icon-repeat"></i>
 					{/if}
-					<a class="usuario" href="/perfil/index/{$value.emisor.nick}/">{$value.emisor.nick}</a> <a href="/mensaje/ver/{$value.id}">{$value.asunto}</a> <span class="fecha">{$value.fecha->fuzzy()}</span></li>
+					<a class="usuario" href="/perfil/index/{$value.emisor.nick}/">{$value.emisor.nick}</a> <a href="/mensaje/ver/{$value.id}">{$value.asunto|Texto::limit_chars:20,'...', TRUE}</a> <span class="fecha">{$value.fecha->fuzzy()}</span></li>
 				{/loop}
 			</ul>
 			<div class="actions">

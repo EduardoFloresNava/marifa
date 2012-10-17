@@ -34,7 +34,7 @@
 			</div>
 
 			<div class="form-actions">
-				<button type="submit" name="submit" value="enviar" class="btn btn-large btn-primary">Denunciar</button> o <a href="/post/index/{$usuario}">Volver</a>
+				<button type="submit" name="submit" value="enviar" class="btn btn-large btn-primary">Denunciar</button> o <a href="/perfil/index/{$usuario}">Volver</a>
 			</div>
 		</form>
 	</div>

@@ -40,6 +40,7 @@ class Base_Controller_Cuenta extends Controller {
 		// Verificamos permisos.
 		if ( ! Usuario::is_login())
 		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para editar tu cuenta.';
 			Request::redirect('/usuario/login');
 		}
 
@@ -249,7 +250,6 @@ class Base_Controller_Cuenta extends Controller {
 					}
 				}
 			}
-
 
 			$view->assign('error', $errors);
 		}
@@ -891,6 +891,10 @@ class Base_Controller_Cuenta extends Controller {
 							// Actualizamos.
 							$model_usuario->cambiar_nick($nick);
 
+							// Enviamos suceso.
+							//TODO: ver el suceso.
+
+							// Informamos resultado.
 							$view->assign('success', 'El nick se ha actualizado correctamente.');
 							$view->assign('nick', '');
 							$view->assign('nick_actual', $nick);

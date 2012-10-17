@@ -57,6 +57,7 @@ class Base_Controller_Perfil extends Controller {
 			// Verificamos si estamos logueados.
 			if ( ! Usuario::is_login())
 			{
+				$_SESSION['flash_error'] = 'El usuario del que quieres ver el perfil no está disponible.';
 				Request::redirect('/');
 			}
 			$model_usuario = Usuario::usuario();
@@ -76,6 +77,7 @@ class Base_Controller_Perfil extends Controller {
 				// Tratamos de cargar el usuario por su nick
 				if ( ! $model_usuario->load_by_nick($usuario))
 				{
+					$_SESSION['flash_error'] = 'El usuario del que quieres ver el perfil no está disponible.';
 					Request::redirect('/');
 				}
 			}
@@ -135,6 +137,14 @@ class Base_Controller_Perfil extends Controller {
 		$usuario['nombre'] = Utils::prop($this->usuario->perfil(), 'nombre');
 		$base_view->assign('usuario', $usuario);
 		unset($usuario);
+
+		// Si está bloqueado y/o lo sigo.
+		if (Usuario::$usuario_id !== $this->usuario->id)
+		{
+			//TODO: implementar bloqueos.
+			$base_view->assign('bloqueado', FALSE);
+			$base_view->assign('seguidor', $this->usuario->es_seguidor(Usuario::$usuario_id));
+		}
 
 		// Mensaje personal.
 		$base_view->assign('mensaje_personal', Utils::prop($this->usuario->perfil(), 'mensaje_personal'));
@@ -435,11 +445,15 @@ class Base_Controller_Perfil extends Controller {
 		// Verificamos no sea uno mismo.
 		if (Usuario::$usuario_id == $this->usuario->id)
 		{
-			$_SESSION['flash_error'] = 'No puedes denunciarte a vos mismo.';
+			$_SESSION['flash_error'] = 'El usuario al cual quieres denunciar no se encuentra disponible.';
 			Request::redirect('/perfil/index/'.$usuario->nick);
 		}
 
-		//TODO: verificar estado del usuario.
+		if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
+		{
+			$_SESSION['flash_error'] = 'El usuario al cual quieres denunciar no se encuentra disponible.';
+			Request::redirect('/perfil/index/'.$usuario->nick);
+		}
 
 		// Asignamos el título.
 		$this->template->assign('title', 'Denunciar usuario');
@@ -497,13 +511,15 @@ class Base_Controller_Perfil extends Controller {
 			if ( ! $error)
 			{
 				// Creo la denuncia.
-				$this->usuario->denunciar(Usuario::$usuario_id, $motivo, $comentario);
+				$id = $this->usuario->denunciar(Usuario::$usuario_id, $motivo, $comentario);
 
-				//TODO: crear suceso.
+				// Envio el suceso
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $this->usuario->id), 'usuario_denuncia_crear', $id);
 
-				// Seteamos mensaje flash y volvemos.
-				$_SESSION['flash_success'] = 'Denuncia enviada correctamente.';
-				Request::redirect('/perfil/index/'.$this->usuario->id);
+				// Informo el resultado.
+				$_SESSION['flash_success'] = 'El usuario ha sido denunciado correctamente.';
+				Request::redirect('/perfil/index/'.$this->usuario->nick);
 			}
 		}
 

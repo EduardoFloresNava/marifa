@@ -32,10 +32,16 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Favoritos extends Controller {
 
+	/**
+	 * Constructor de la clase.
+	 * Verificamos los permisos para acceder a la sección.
+	 */
 	public function __construct()
 	{
+		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
 		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a tus favoritos.';
 			Request::redirect('/usuario/login');
 		}
 		parent::__construct();
@@ -73,7 +79,7 @@ class Base_Controller_Favoritos extends Controller {
 		// Cargamos el listado de favoritos.
 		$favoritos = Usuario::usuario()->listado_posts_favoritos($pagina, $cantidad_por_pagina);
 
-		// Verifivo validez de la pñagina.
+		// Verifivo que la página seleccionada sea válida.
 		if (count($favoritos) == 0 && $pagina != 1)
 		{
 			Request::redirect('/favoritos/');
@@ -84,6 +90,7 @@ class Base_Controller_Favoritos extends Controller {
 		$vista->assign('paginacion', $paginador->get_view($pagina, '/favoritos/index/%i'));
 		unset($paginador);
 
+		// Obtengo información de los favoritos.
 		foreach ($favoritos as $k => $v)
 		{
 			$a = $v->as_array();
@@ -123,7 +130,7 @@ class Base_Controller_Favoritos extends Controller {
 		// Cargamos el listado de favoritos.
 		$favoritos = Usuario::usuario()->listado_fotos_favoritos($pagina, $cantidad_por_pagina);
 
-		// Verifivo validez de la pñagina.
+		// Verifivo que la página seleccionada sea válida.
 		if (count($favoritos) == 0 && $pagina != 1)
 		{
 			Request::redirect('/favoritos/fotos/');
@@ -134,6 +141,7 @@ class Base_Controller_Favoritos extends Controller {
 		$vista->assign('paginacion', $paginador->get_view($pagina, '/favoritos/fotos/%d'));
 		unset($paginador);
 
+		// Obtengo información de los favoritos.
 		foreach ($favoritos as $k => $v)
 		{
 			$a = $v->as_array();

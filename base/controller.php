@@ -131,10 +131,10 @@ class Base_Controller {
 		// Su carga va a ir por AJAX.
 		$vista->assign('sucesos', array());
 
-		/**
 		// Listado de mensajes.
 		$model_mensajes = new Model_Mensaje;
-		$msg_rst = $model_mensajes->recibidos(Usuario::$usuario_id);
+		$vista->assign('mensajes_nuevos', $model_mensajes->total_recibidos(Usuario::$usuario_id, Model_Mensaje::ESTADO_NUEVO));
+		$msg_rst = $model_mensajes->recibidos(Usuario::$usuario_id, 1, 5);
 
 		$msg_event = array();
 		foreach ($msg_rst as $v)
@@ -162,8 +162,7 @@ class Base_Controller {
 			$msg_event[] = $aux;
 		}
 		$vista->assign('mensajes', $msg_event);
-		unset($msg_event, $msg_rst);*/
-		$vista->assign('mensajes', array());
+		unset($msg_event, $msg_rst);
 
 		return $vista;
 	}

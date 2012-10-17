@@ -803,7 +803,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function denunciar($usuario_id, $motivo, $comentario)
 	{
-		$this->db->insert('INSERT INTO usuario_denuncia (denunciado_id, usuario_id, motivo, comentario, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)',
+		list($id,) = $this->db->insert('INSERT INTO usuario_denuncia (denunciado_id, usuario_id, motivo, comentario, fecha, estado) VALUES (?, ?, ?, ?, ?, ?)',
 			array(
 				$this->primary_key['id'],
 				$usuario_id,
@@ -812,6 +812,7 @@ class Base_Model_Usuario extends Model_Dataset {
 				date('Y/m/d H:i:s'),
 				Model_Usuario_Denuncia::ESTADO_PENDIENTE
 			));
+		return $id;
 	}
 
 	/**
@@ -850,5 +851,15 @@ class Base_Model_Usuario extends Model_Dataset {
 			$lst[] = new Model_Foto($v);
 		}
 		return $lst;
+	}
+
+	/**
+	 * Verifico si el usuario es seguidor.
+	 * @param type $usuario_id
+	 * @return type
+	 */
+	public function es_seguidor($usuario_id)
+	{
+		return $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE usuario_id = ? AND seguidor_id = ?', array($this->primary_key['id'], $usuario_id))->get_var(Database_Query::FIELD_INT) > 0;
 	}
 }

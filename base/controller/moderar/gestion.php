@@ -1,6 +1,6 @@
 <?php
 /**
- * home.php is part of Marifa.
+ * gestion.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,25 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Moderar_Gestion extends Controller {
 
+	/**
+	 * Constructor de la clase.
+	 * Verificamos que esté logueado para poder realizar las acciones.
+	 */
+	public function __construct()
+	{
+		// Verifico esté logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
+			Request::redirect('/usuario/login');
+		}
+		parent::__construct();
+	}
+
+	/**
+	 * Listado de suspensiones a usuarios.
+	 * @param int $pagina Número de página a mostrar.
+	 */
 	public function action_usuarios($pagina)
 	{
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
@@ -67,10 +86,8 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		$total = Model_Usuario_Suspension::cantidad();
 		$vista->assign('cantidad_pendientes', $total);
 		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/gestion/usuarios/%s/'));
+		unset($total);
 
 		// Obtenemos datos de las denuncias.
 		foreach ($lst as $k => $v)
@@ -119,20 +136,25 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario es incorrecto.';
+			$_SESSION['flash_error'] = 'El usuario del que desea terminar la suspención no se encuentra disponible.';
 			Request::redirect('/moderar/gestion/usuarios');
 		}
 
 		// Verifico el estado.
 		if ($model_usuario->estado !== Model_Usuario::ESTADO_SUSPENDIDA)
 		{
-			$_SESSION['flash_error'] = 'La cuenta no se encuentra suspendida.';
+			$_SESSION['flash_error'] = 'El usuario del que desea terminar la suspención no se encuentra disponible.';
 			Request::redirect('/moderar/gestion/usuarios');
 		}
 
 		// Borramos la suspensión.
 		$model_usuario->suspension()->anular();
 
+		// Creamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_usuario->id), 'usuario_fin_suspension', $model_usuario->id, Usuario::$usuario_id);
+
+		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'Suspensión anulada correctamente.';
 		Request::redirect('/moderar/gestion/usuarios');
 	}

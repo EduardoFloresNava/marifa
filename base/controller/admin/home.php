@@ -32,11 +32,16 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Admin_Home extends Controller {
 
+	/**
+	 * Constructor de la clase.
+	 * Verificamos los permisos para acceder a la sección.
+	 */
 	public function __construct()
 	{
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
 			Request::redirect('/usuario/login');
 		}
 
@@ -66,6 +71,11 @@ class Base_Controller_Admin_Home extends Controller {
 		return Usuario::permiso($permisos);
 	}
 
+	/**
+	 * Listado de menus activos.
+	 * @param string $activo Clave del listado de menus activa en la petición.
+	 * @return array
+	 */
 	public static function submenu($activo)
 	{
 		$listado = array();
@@ -78,7 +88,6 @@ class Base_Controller_Admin_Home extends Controller {
 			$listado['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuracion', 'active' => FALSE);
 			$listado['configuracion_temas'] = array('link' => '/admin/configuracion/temas/', 'caption' => 'Temas', 'active' => FALSE);
 			$listado['configuracion_plugins'] = array('link' => '/admin/configuracion/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
-			//$listado['configuracion_publicidad'] = array('link' => '/admin/configuracion/publicidad/', 'caption' => 'Publicidad', 'active' => FALSE);
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
@@ -106,6 +115,9 @@ class Base_Controller_Admin_Home extends Controller {
 		return $listado;
 	}
 
+	/**
+	 * Portada del panel de administración.
+	 */
 	public function action_index()
 	{
 		// Cargamos la portada.

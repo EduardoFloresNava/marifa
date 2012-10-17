@@ -1,6 +1,6 @@
 <?php
 /**
- * home.php is part of Marifa.
+ * denuncias.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,21 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @subpackage Controller\Moderar
  */
 class Base_Controller_Moderar_Denuncias extends Controller {
+
+	/**
+	 * Constructor de la clase.
+	 * Verificamos que el usuario esté logueado.
+	 */
+	public function __construct()
+	{
+		// Verifico que esté logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
+			Request::redirect('/usuario/login');
+		}
+		parent::__construct();
+	}
 
 	/**
 	 * Listado de posts con denuncias.
@@ -83,10 +98,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$total = Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE);
 		$vista->assign('cantidad_pendientes', $total);
 		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/denuncias/posts/%s/'.$tipo));
 
 		// Obtenemos datos de las denuncias.
 		foreach ($lst as $k => $v)
@@ -135,7 +147,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico exista.
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'Denuncia incorrecta.';
+			$_SESSION['flash_error'] = 'La denuncia que deseas visualizar no es correcta.';
 			Request::redirect('/modedar/denuncias/posts');
 		}
 
@@ -181,14 +193,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_denuncia = new Model_Post_Denuncia($denuncia);
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'La denuncia es incorrecta.';
+			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Post_Denuncia::ESTADO_PENDIENTE)
 		{
-			$_SESSION['flash_error'] = 'El estado de la denuncia no es correcto.';
+			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
@@ -197,8 +209,11 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			// Actualizo el estado.
 			$model_denuncia->actualizar_campo('estado', Model_Post_Denuncia::ESTADO_RECHAZADA);
 
-			//TODO: enviar suceso.
+			// Envio el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'post_denuncia_rechazar', $denuncia, Usuario::$usuario_id);
 
+			// Informo resultado.
 			$_SESSION['flash_success'] = 'Denuncia rechazada correctamente.';
 		}
 		else
@@ -206,8 +221,11 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			// Actualizo el estado.
 			$model_denuncia->actualizar_campo('estado', Model_Post_Denuncia::ESTADO_APLICADA);
 
-			//TODO: enviar suceso.
+			// Envio el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'post_denuncia_aceptar', $denuncia, Usuario::$usuario_id);
 
+			// Informo resultado.
 			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
 		}
 		Request::redirect('/moderar/denuncias/posts');
@@ -226,12 +244,6 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			Request::redirect('/');
 		}
 
-		// Verificamos esté logueado.
-		if ( ! Usuario::is_login())
-		{
-			Request::redirect('/usuario/login');
-		}
-
 		// Cargamos el post.
 		$post = (int) $post;
 		$model_post = new Model_Post($post);
@@ -239,7 +251,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico existencia del post.
 		if ( ! $model_post->existe())
 		{
-			$_SESSION['flash_error'] = 'Post erroneo.';
+			$_SESSION['flash_error'] = 'El post que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
@@ -253,15 +265,18 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico el estado.
 		if ($model_post->estado === Model_Post::ESTADO_BORRADO)
 		{
-			$_SESSION['flash_error'] = 'El estado es incorrecto.';
+			$_SESSION['flash_error'] = 'El post que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
 		// Actualizo el post.
 		$model_post->actualizar_campo('estado', Model_Post::ESTADO_BORRADO);
 
-		//TODO: generar suceso.
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $post, Usuario::$usuario_id);
 
+		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'Post eliminado correctamente.';
 		Request::redirect('/moderar/denuncias/posts');
 	}
@@ -317,10 +332,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$total = Model_Foto_Denuncia::cantidad(Model_Foto_Denuncia::ESTADO_PENDIENTE);
 		$vista->assign('cantidad_pendientes', $total);
 		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/denuncias/fotos/%s/'.$tipo));
 
 		// Obtenemos datos de las denuncias.
 		foreach ($lst as $k => $v)
@@ -369,7 +381,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico exista.
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'Denuncia incorrecta.';
+			$_SESSION['flash_error'] = 'La denuncia que deseas visualizar no se encuentra disponible.';
 			Request::redirect('/modedar/denuncias/fotos');
 		}
 
@@ -415,14 +427,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_denuncia = new Model_Foto_Denuncia($denuncia);
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'La denuncia es incorrecta.';
+			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Foto_Denuncia::ESTADO_PENDIENTE)
 		{
-			$_SESSION['flash_error'] = 'El estado de la denuncia no es correcto.';
+			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
@@ -431,17 +443,23 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			// Actualizo el estado.
 			$model_denuncia->actualizar_campo('estado', Model_Foto_Denuncia::ESTADO_RECHAZADA);
 
-			//TODO: enviar suceso.
+			// Enviamos el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'foto_denuncia_rechazar', $denuncia, Usuario::$usuario_id);
 
-			$_SESSION['flash_success'] = 'Denuncia rechazada correctamente.';
+			// Informamos el resultado.
+			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
 		}
 		else
 		{
 			// Actualizo el estado.
 			$model_denuncia->actualizar_campo('estado', Model_Foto_Denuncia::ESTADO_APLICADA);
 
-			//TODO: enviar suceso.
+			// Enviamos el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'foto_denuncia_aceptada', $denuncia, Usuario::$usuario_id);
 
+			// Informamos el resultado.
 			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
 		}
 		Request::redirect('/moderar/denuncias/fotos');
@@ -460,42 +478,39 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			Request::redirect('/');
 		}
 
-		// Verificamos esté logueado.
-		if ( ! Usuario::is_login())
-		{
-			Request::redirect('/usuario/login');
-		}
-
 		// Cargamos el post.
 		$foto = (int) $foto;
-		$model_foro = new Model_Foto($foto);
+		$model_foto = new Model_Foto($foto);
 
 		// Verifico existencia del post.
-		if ( ! $model_foro->existe())
+		if ( ! $model_foto->existe())
 		{
-			$_SESSION['flash_error'] = 'Foto erronea.';
+			$_SESSION['flash_error'] = 'La foto que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
 		// Verifico los permisos.
-		if (Usuario::$usuario_id !== $model_foro->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_FOTOS))
+		if (Usuario::$usuario_id !== $model_foto->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_FOTOS))
 		{
 			$_SESSION['flash_error'] = 'No tienes permisos para realizar esa acción.';
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
 		// Verifico el estado.
-		if ($model_foro->estado === Model_Foto::ESTADO_BORRADA)
+		if ($model_foto->estado === Model_Foto::ESTADO_BORRADA)
 		{
-			$_SESSION['flash_error'] = 'El estado es incorrecto.';
+			$_SESSION['flash_error'] = 'La foto que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
 		// Actualizo la foto
-		$model_foro->actualizar_campo('estado', Model_Foto::ESTADO_BORRADA);
+		$model_foto->actualizar_campo('estado', Model_Foto::ESTADO_BORRADA);
 
-		//TODO: generar suceso.
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_borrar', $model_foto->id, Usuario::$usuario_id);
 
+		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'Post eliminado correctamente.';
 		Request::redirect('/moderar/denuncias/fotos');
 	}
@@ -551,10 +566,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$total = Model_Usuario_Denuncia::cantidad(Model_Usuario_Denuncia::ESTADO_PENDIENTE);
 		$vista->assign('cantidad_pendientes', $total);
 		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/denuncias/usuarios/%s/'.$tipo));
 
 		// Obtenemos datos de las denuncias.
 		foreach ($lst as $k => $v)
@@ -603,7 +615,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico exista.
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'Denuncia incorrecta.';
+			$_SESSION['flash_error'] = 'La denuncia que deseas visualizar no se encuentra disponible.';
 			Request::redirect('/modedar/denuncias/usuarios');
 		}
 
@@ -649,14 +661,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_denuncia = new Model_Usuario_Denuncia($denuncia);
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'La denuncia es incorrecta.';
+			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/usuarios');
 		}
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Usuario_Denuncia::ESTADO_PENDIENTE)
 		{
-			$_SESSION['flash_error'] = 'El estado de la denuncia no es correcto.';
+			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/usuarios');
 		}
 
@@ -665,8 +677,11 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			// Actualizo el estado.
 			$model_denuncia->actualizar_campo('estado', Model_Usuario_Denuncia::ESTADO_RECHAZADA);
 
-			//TODO: enviar suceso.
+			// Enviamos el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'usuario_denuncia_rechazar', $denuncia, Usuario::$usuario_id);
 
+			// Informamos el resultado.
 			$_SESSION['flash_success'] = 'Denuncia rechazada correctamente.';
 		}
 		else
@@ -674,8 +689,11 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			// Actualizo el estado.
 			$model_denuncia->actualizar_campo('estado', Model_Usuario_Denuncia::ESTADO_APLICADA);
 
-			//TODO: enviar suceso.
+			// Enviamos el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'usuario_denuncia_aceptar', $denuncia, Usuario::$usuario_id);
 
+			// Informamos el resultado.
 			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
 		}
 		Request::redirect('/moderar/denuncias/usuarios');
@@ -697,7 +715,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = 'No puedes enviarte una advertencia a vos mismo.';
+			$_SESSION['flash_error'] = 'El usuario que deseas advertir no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -708,7 +726,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'Usuario incorrecto.';
+			$_SESSION['flash_error'] = 'El usuario que deseas advertir no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -759,13 +777,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 				// Evitamos XSS.
 				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
 
-				// Cargamos el modelo de advertencias.
+				// Creamos la advertencia.
 				$model_advertencia = new Model_Usuario_Aviso;
-				$model_advertencia->nueva($id, (int) $_SESSION['usuario_id'], $asunto, $contenido);
+				$model_advertencia->nueva($id, Usuario::$usuario_id, $asunto, $contenido);
 
-				//TODO: agregar el suceso.
+				// Agregamos el suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_advertir', $id);
 
-				// Seteamos mensaje flash y volvemos.
+				// Informamos el resultado.
 				$_SESSION['flash_success'] = 'Advertencia enviada correctamente.';
 				Request::redirect('/moderar/denuncias/usuarios/');
 			}
@@ -796,7 +816,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
 			Request::redirect('/');
 		}
-		
+
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
@@ -811,7 +831,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'Usuario incorrecto.';
+			$_SESSION['flash_error'] = 'El usuario que deseas suspender no se encuentra disponible.';
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -825,7 +845,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 			else
 			{
-				$_SESSION['flash_error'] = 'Usuario con suspensión en efecto.';
+				$_SESSION['flash_error'] = 'El usuario que deseas suspender no se encuentra disponible.';
 				Request::redirect('/moderar/denuncias/usuarios/');
 			}
 		}
@@ -888,9 +908,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 				// Evitamos XSS.
 				$motivo = htmlentities($motivo, ENT_NOQUOTES, 'UTF-8');
 
-				// Cargamos el modelo de suspensiones.
+				// Creamos la suspensión.
 				$model_suspension = new Model_Usuario_Suspension;
-				$model_suspension->nueva($id, (int) $_SESSION['usuario_id'], $motivo	, $fin);
+				$s_id = $model_suspension->nueva($id, Usuario::$usuario_id, $motivo, $fin);
+
+				// Enviamos el suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_suspender', $s_id);
 
 				// Seteamos mensaje flash y volvemos.
 				$_SESSION['flash_success'] = 'Usuario suspendido correctamente.';

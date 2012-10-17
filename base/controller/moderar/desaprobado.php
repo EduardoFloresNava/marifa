@@ -33,6 +33,21 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Moderar_Desaprobado extends Controller {
 
 	/**
+	 * Constructor de la clase.
+	 * Verificamos que el usuario esté logueado.
+	 */
+	public function __construct()
+	{
+		// Verifico que esté logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
+			Request::redirect('/usuario/login');
+		}
+		parent::__construct();
+	}
+
+	/**
 	 * Listado de posts que se encuentran desaprobados.
 	 * @param int $pagina Número de página a mostrar.
 	 * @param int $tipo Tipo de posts a mostrar.
@@ -99,7 +114,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$vista->assign('actual', $pagina);
 		$vista->assign('total', $total);
 		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/desaprobado/posts/%s/'.$tipo));
 
 		// Obtenemos datos de los posts.
 		foreach ($lst as $k => $v)
@@ -143,14 +158,14 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
+			$_SESSION['flash_error'] = 'El posts que deseas aprobar/rechazar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_VER_POSTS_DESAPROBADOS))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No tienes permisos para realizar esa acci&oacute;n.';
+			$_SESSION['flash_error'] ='El posts que deseas aprobar/rechazar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 
@@ -160,20 +175,24 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico el estado actual.
 		if ($tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_RECHAZADO))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No se puede realizar esa acci&oacute;n, el estado es incorrecto.';
+			$_SESSION['flash_error'] = 'El posts que deseas aprobar/rechazar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 		elseif ( ! $tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_ACTIVO))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> No se puede realizar esa acci&oacute;n, el estado es incorrecto.';
+			$_SESSION['flash_error'] = 'El posts que deseas aprobar/rechazar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_RECHAZADO);
 
-		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El estado se modific&oacute; correctamente.';
-		//TODO: agregar suceso.
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $post, Usuario::$usuario_id, (int) $tipo);
+
+		// Informamos el resultado.
+		$_SESSION['flash_success'] = 'El estado se modificó correctamente.';
 		Request::redirect('/moderar/desaprobado/posts');
 	}
 
@@ -199,22 +218,26 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
+			$_SESSION['flash_error'] = 'El post que deseas eliminar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
+			$_SESSION['flash_error'] = 'El post que deseas eliminar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
-		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
-		//TODO: agregar suceso.
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $post, Usuario::$usuario_id);
+
+		// Informamos el resultado.
+		$_SESSION['flash_success'] = 'El post fue eliminado correctamente.';
 		Request::redirect('/moderar/desaprobado/posts');
 	}
 
@@ -312,10 +335,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Paginación.
 		$total = $tipo == 0 ? $c_total : ($tipo == 1 ? $c_foto : $c_post);
 		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/desaprobado/comentario/%s/'.$tipo));
 
 		// Obtenemos datos de los comentarios.
 		foreach ($lst as $k => $v)
@@ -368,7 +388,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$tipo = (int) $tipo;
 		if ($tipo !== 1 && $tipo !== 2)
 		{
-			$_SESSION['flash_error'] = 'No se pudo encontrar el comentario.';
+			$_SESSION['flash_error'] = 'El comentario que deseas mostrar/ocultar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
@@ -386,22 +406,25 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico existencia.
 		if ( ! $model_comentario->existe())
 		{
-			$_SESSION['flash_error'] = 'No se pudo encontrar el comentario.';
+			$_SESSION['flash_error'] = 'El comentario que deseas mostrar/ocultar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
 		// Verifico el estado.
 		if ($model_comentario->estado !== Model_Comentario::ESTADO_OCULTO)
 		{
-			$_SESSION['flash_error'] = 'El comentario no tiene un estado válido.';
+			$_SESSION['flash_error'] = 'El comentario que deseas mostrar/ocultar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
 		// Actualizo.
 		$model_comentario->actualizar_campo('estado', Model_Comentario::ESTADO_VISIBLE);
 
-		//TODO: agregar suceso.
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id),	$tipo == 1 ? 'post_comentario_mostrar' : 'foto_comentario_mostrar', $model_comentario->id, Usuario::$usuario_id);
 
+		// Informamos resultado.
 		$_SESSION['flash_success'] = 'El comentario se ha aprobado correctamente.';
 		Request::redirect('/moderar/desaprobado/comentarios');
 	}
@@ -424,7 +447,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$tipo = (int) $tipo;
 		if ($tipo !== 1 && $tipo !== 2)
 		{
-			$_SESSION['flash_error'] = 'No se pudo encontrar el comentario.';
+			$_SESSION['flash_error'] = 'El comentario que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
@@ -442,22 +465,25 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico existencia.
 		if ( ! $model_comentario->existe())
 		{
-			$_SESSION['flash_error'] = 'No se pudo encontrar el comentario.';
+			$_SESSION['flash_error'] = 'El comentario que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
 		// Verifico el estado.
 		if ($model_comentario->estado !== Model_Comentario::ESTADO_OCULTO)
 		{
-			$_SESSION['flash_error'] = 'El comentario no tiene un estado válido.';
+			$_SESSION['flash_error'] = 'El comentario que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
 		// Actualizo.
 		$model_comentario->actualizar_campo('estado', Model_Comentario::ESTADO_BORRADO);
 
-		//TODO: agregar suceso.
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id), $tipo == 1 ? 'post_comentario_borrar' : 'foto_comentario_borrar', $model_comentario->id, Usuario::$usuario_id);
 
+		// Informo el resultado.
 		$_SESSION['flash_success'] = 'El comentario se ha eliminado correctamente.';
 		Request::redirect('/moderar/desaprobado/comentarios');
 	}

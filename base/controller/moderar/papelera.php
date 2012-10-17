@@ -1,6 +1,6 @@
 <?php
 /**
- * desaprobado.php is part of Marifa.
+ * papelera.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,21 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @subpackage Controller\Moderar
  */
 class Base_Controller_Moderar_Papelera extends Controller {
+
+	/**
+	 * Constructor de la clase.
+	 * Verificamos que esté logueado para poder realizar las acciones.
+	 */
+	public function __construct()
+	{
+		// Verifico esté logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
+			Request::redirect('/usuario/login');
+		}
+		parent::__construct();
+	}
 
 	/**
 	 * Listado de posts que se encuentran en la papelera.
@@ -66,12 +81,8 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		}
 
 		// Paginación.
-		$total = Model_Post::s_cantidad(Model_Post::ESTADO_PAPELERA);
-		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$paginador = new Paginator(Model_Post::s_cantidad(Model_Post::ESTADO_PAPELERA), $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/papelera/posts/$s/'));
 
 		// Obtenemos datos de los posts.
 		foreach ($lst as $k => $v)
@@ -107,7 +118,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			$_SESSION['flash_error'] = 'No tienes permiso para restaurar posts.';
 			Request::redirect('/');
 		}
 
@@ -120,22 +131,26 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
+			$_SESSION['flash_error'] = 'El posts que deseas restaurar no se encuentra disponible.';
 			Request::redirect('/moderar/papelera/posts');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
+			$_SESSION['flash_error'] = 'El posts que deseas restaurar no se encuentra disponible.';
 			Request::redirect('/moderar/papelera/posts');
 		}
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
 
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_restaurar', $post, Usuario::$usuario_id);
+
+		// Informamos el resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Post restaurado correctamente.';
-		//TODO: agregar suceso.
 		Request::redirect('/moderar/papelera/posts');
 	}
 
@@ -148,7 +163,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			$_SESSION['flash_error'] = 'No tienes permiso para borrar posts.';
 			Request::redirect('/');
 		}
 
@@ -161,22 +176,26 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Post incorrecto.';
+			$_SESSION['flash_error'] = 'El post que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/papelera/posts');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
+			$_SESSION['flash_error'] = 'El post que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/papelera/posts');
 		}
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $post, Usuario::$usuario_id);
+
+		// Informamos el resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Post borrado correctamente.';
-		//TODO: agregar suceso.
 		Request::redirect('/moderar/papelera/posts');
 	}
 
@@ -214,12 +233,8 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		}
 
 		// Paginación.
-		$total = Model_Foto::s_cantidad(Model_Foto::ESTADO_PAPELERA);
-		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$paginador = new Paginator(Model_Foto::s_cantidad(Model_Foto::ESTADO_PAPELERA), $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/papelera/fotos/%s/'));
 
 		// Obtenemos datos de los posts.
 		foreach ($lst as $k => $v)
@@ -255,7 +270,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			$_SESSION['flash_error'] = 'No tienes permiso para restaurar fotos.';
 			Request::redirect('/');
 		}
 
@@ -267,22 +282,26 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Foto incorrecta.';
+			$_SESSION['flash_error'] = 'La foto que deseas restaurar no se encuentra disponible.';
 			Request::redirect('/moderar/papelera/fotos');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_foto->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_FOTOS))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
+			$_SESSION['flash_error'] = 'La foto que deseas restaurar no se encuentra disponible.';
 			Request::redirect('/moderar/papelera/fotos');
 		}
 
 		// Actualizo el estado.
 		$model_foto->actualizar_campo('estado', Model_Foto::ESTADO_ACTIVA);
 
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_restaurar', $foto, Usuario::$usuario_id);
+
+		// Informamos resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Foto restaurada correctamente.';
-		//TODO: agregar suceso.
 		Request::redirect('/moderar/papelera/fotos');
 	}
 
@@ -295,10 +314,10 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			$_SESSION['flash_error'] = 'No tienes permiso para borrar fotos.';
 			Request::redirect('/');
 		}
-		
+
 		$foto = (int) $foto;
 
 		// Cargamos la foto.
@@ -307,22 +326,26 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Foto incorrecta.';
+			$_SESSION['flash_error'] = 'La foto que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/papelera/fotos');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_foto->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_FOTOS))
 		{
-			$_SESSION['flash_error'] = '<b>&iexcl;Error!</b> Permisos incorrectos.';
+			$_SESSION['flash_error'] = 'La foto que deseas borrar no se encuentra disponible.';
 			Request::redirect('/moderar/papelera/fotos');
 		}
 
 		// Actualizo el estado.
 		$model_foto->actualizar_campo('estado', Model_Foto::ESTADO_BORRADO);
 
+		// Enviamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_borrar', $foto, Usuario::$usuario_id);
+
+		// Informamos el resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Foto borrada correctamente.';
-		//TODO: agregar suceso.
 		Request::redirect('/moderar/papelera/fotos');
 	}
 }

@@ -37,6 +37,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		// Verifico esté logueado.
 		if ( ! Usuario::is_login())
 		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
 			Request::redirect('/usuario/login', TRUE);
 		}
 
@@ -66,7 +67,6 @@ class Base_Controller_Moderar_Home extends Controller {
 			Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA,
 			Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO,
 			Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO
-
 		);
 
 		return Usuario::permiso($permisos);

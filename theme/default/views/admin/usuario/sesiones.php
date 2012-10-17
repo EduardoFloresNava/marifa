@@ -6,8 +6,6 @@
 <div class="header">
 	<h2>Sessiones de los usuarios</h2>
 </div>
-{if="isset($success)"}<div class="alert alert-success">{$success}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
-{if="isset($error)"}<div class="alert">{$error}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
 <table class="table table-bordered">
 	<thead>
 		<tr>
@@ -36,16 +34,4 @@
 		{/loop}
 	</tbody>
 </table>
-{if="$total > $cpp"}
-<div class="pagination pagination-centered">
-	<ul>
-		{if="$paginacion.first != $actual"}<li><a href="/admin/usuario/sessiones/{$paginacion.first}">&laquo;</a></li>{/if}
-		{if="$paginacion.prev > 0"}<li><a href="/admin/usuario/sessiones/{$paginacion.prev}">{@Anterior@}</a></li>{/if}
-		{loop="$paginacion.pages"}
-		<li{if="$value == $actual"} class="active"{/if}}><a href="/admin/usuario/sessiones/{$value}">{$value}</a></li>
-		{/loop}
-		{if="$paginacion.next <= $paginacion.last && $paginacion.next > 0"}<li><a href="/admin/usuario/sessiones/{$paginacion.next}">{@Siguiente@}</a></li>{/if}
-		{if="$paginacion.last != $actual && $paginacion.last > 0"}<li><a href="/admin/usuario/sessiones/{$paginacion.last}">&raquo;</a></li>{/if}
-	</ul>
-</div>
-{/if}
+{$paginacion}

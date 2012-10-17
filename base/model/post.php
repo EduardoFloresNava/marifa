@@ -585,6 +585,7 @@ class Base_Model_Post extends Model_Dataset {
 		{
 			return Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE categoria = ?', $categoria)->get_var(Database_Query::FIELD_INT);
 		}
+		return Database::get_instance()->query('SELECT COUNT(*) FROM post')->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -1197,5 +1198,5 @@ class Base_Model_Post extends Model_Dataset {
 		}
 		return array($lst, $total);
 	}
-
+	
 }

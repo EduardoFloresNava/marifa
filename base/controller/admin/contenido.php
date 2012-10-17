@@ -32,11 +32,16 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Admin_Contenido extends Controller {
 
+	/**
+	 * Constructor de la clase.
+	 * Verifico los permisos para acceder a la sección.
+	 */
 	public function __construct()
 	{
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para acceder a esta sección.';
 			Request::redirect('/usuario/login');
 		}
 
@@ -50,6 +55,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 		parent::__construct();
 	}
 
+	/**
+	 * Portada de la administración de contenido.
+	 * Veo estadísticas sobre contenido en la comunidad.
+	 */
 	public function action_index()
 	{
 		// Cargamos la vista.
@@ -107,18 +116,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos el listado de posts.
 		$lst = $model_posts->listado($pagina, $cantidad_por_pagina);
 
+		// Verificamos páginas aleatorias sin elementos.
 		if (count($lst) == 0 && $pagina != 1)
 		{
 			Request::redirect('/admin/contenido/posts');
 		}
 
 		// Paginación.
-		$total = $model_posts->cantidad();
-		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$paginador = new Paginator($model_posts->cantidad(), $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/posts/%s'));
 
 		// Obtenemos datos de los posts.
 		foreach ($lst as $k => $v)
@@ -151,18 +157,20 @@ class Base_Controller_Admin_Contenido extends Controller {
 	 */
 	public function action_eliminar_post($id)
 	{
+		$id = (int) $id;
+
 		// Cargamos el modelo del post.
-		$model_post = new Model_Post( (int) $id);
+		$model_post = new Model_Post($id);
 		if ( ! $model_post->existe())
 		{
-			$_SESSION['flash_error'] = 'Post incorrecto.';
+			$_SESSION['flash_error'] = 'El post que deseas eliminar no se encuentra disponible.';
 			Request::redirect('/admin/contenido/posts/');
 		}
 
 		// Verifico cual es el estado actual.
 		if ($model_post->estado === Model_Post::ESTADO_BORRADO)
 		{
-			$_SESSION['flash_error'] = 'El post ya se encuentra moderado.';
+			$_SESSION['flash_error'] = 'El post que deseas eliminar no se encuentra disponible.';
 			Request::redirect('/admin/contenido/posts/');
 		}
 
@@ -221,7 +229,11 @@ class Base_Controller_Admin_Contenido extends Controller {
 				// Creo la moderación.
 				$model_post->moderar($model_post->id, $tipo, $razon, $borrador);
 
-				// Seteamos mensaje flash y volvemos.
+				// Enviamos el suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+
+				// Informamos el resultado.
 				$_SESSION['flash_success'] = 'Post borrado correctamente.';
 				Request::redirect('/admin/contenido/posts/');
 			}
@@ -247,13 +259,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 	 */
 	public function action_cambiar_estado_post($post, $estado)
 	{
+		$post = (int) $post;
+
 		// Cargo el post.
-		$model_post = new Model_Post( (int) $post);
+		$model_post = new Model_Post($post);
 
 		// Verifico que exista.
 		if ( ! $model_post->existe())
 		{
-			$_SESSION['flash_error'] = 'El post seleccionado es inválido.';
+			$_SESSION['flash_error'] = 'El post al cual le quiere cambiar el estado no se encuentra disponible.';
 			Request::redirect('/admin/contenido/posts');
 		}
 
@@ -263,29 +277,53 @@ class Base_Controller_Admin_Contenido extends Controller {
 			case 0: // Activo
 				if ($estado == 2) // Borrar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
-					//TODO: enviar suceso.
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+
+					// Informo el resultado
+					$_SESSION['flash_success'] = 'El post se a eliminado correctamente.';
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 4) // Ocultar
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(4);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_ocultar', $model_post->id, Usuario::$usuario_id, 0);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 5) // Rechazar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(5);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $model_post->id, Usuario::$usuario_id, 0);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 6) // Enviar a la papelera.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(6);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_papelera', $model_post->id, Usuario::$usuario_id);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
@@ -299,8 +337,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 			case 1: // Borrador
 				if ($estado == 2) // Borrar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
@@ -319,22 +363,40 @@ class Base_Controller_Admin_Contenido extends Controller {
 			case 3: // Pendiente
 				if ($estado == 0) // Aprobar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(0);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $model_post->id, Usuario::$usuario_id, 1);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 5) // Rechazar
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(5);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $model_post->id, Usuario::$usuario_id, 0);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 2) // Borrar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
@@ -348,15 +410,27 @@ class Base_Controller_Admin_Contenido extends Controller {
 			case 4: // Oculto
 				if ($estado == 0) // Mostrar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(0);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_ocultar', $model_post->id, Usuario::$usuario_id, 1);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 2) // Borrar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
@@ -370,15 +444,27 @@ class Base_Controller_Admin_Contenido extends Controller {
 			case 5: // Rechazado
 				if ($estado == 0) // Aprobar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(0);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $model_post->id, Usuario::$usuario_id, 1);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 2) // Borrar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
@@ -392,15 +478,27 @@ class Base_Controller_Admin_Contenido extends Controller {
 			case 6: // Papelera
 				if ($estado == 0) // Restaurar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(0);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_restaurar', $model_post->id, Usuario::$usuario_id);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 2) // Borrar.
 				{
+					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
-					//TODO: enviar suceso.
+
+					// Envio el suceso.
+					$model_suceso = new Model_Suceso;
+					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+
+					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
@@ -454,12 +552,8 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Paginación.
-		$total = $model_fotos->cantidad(TRUE);
-		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$paginador = new Paginator($model_fotos->cantidad(TRUE), $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/fotos/%s'));
 
 		// Obtenemos datos de las fotos.
 		foreach ($lst as $k => $v)
@@ -512,6 +606,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Ocultamos la foto.
 		$model_foto->actualizar_estado(Model_Foto::ESTADO_OCULTA);
 
+		// Envio el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_ocultar', $model_foto->id, Usuario::$usuario_id, 0);
+
 		// Informamos.
 		$_SESSION['flash_success'] = 'Foto ocultada correctamente.';
 		Request::redirect('/admin/contenido/fotos');
@@ -543,6 +641,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Mostramos la foto.
 		$model_foto->actualizar_estado(Model_Foto::ESTADO_ACTIVA);
 
+		// Envio el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_ocultar', $model_foto->id, Usuario::$usuario_id, 1);
+
 		// Informamos.
 		$_SESSION['flash_success'] = 'Foto seteada como visible correctamente.';
 		Request::redirect('/admin/contenido/fotos');
@@ -566,6 +668,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		// Borramos la foto.
 		$model_foto->borrar();
+
+		// Envio el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_borrar', $model_foto->id, Usuario::$usuario_id);
 
 		// Informamos.
 		$_SESSION['flash_success'] = 'Foto borrrada correctamente.';
@@ -888,6 +994,9 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
+	/**
+	 * Creamos una nueva noticia.
+	 */
 	public function action_nueva_noticia()
 	{
 		// Cargamos la vista.
