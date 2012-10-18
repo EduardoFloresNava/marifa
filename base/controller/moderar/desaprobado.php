@@ -107,13 +107,11 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$vista->assign('cantidad_pendientes', $c_pendientes);
 		$vista->assign('cantidad_rechazados', $c_rechazados);
 		$vista->assign('cantidad_total', $c_total);
+		$vista->assign('actual', $pagina);
 
 		// Paginación.
 		$total = $tipo == 0 ? $c_total : ($tipo == 1 ? $c_pendientes : $c_rechazados);
 		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
 		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/desaprobado/posts/%s/'.$tipo));
 
 		// Obtenemos datos de los posts.
@@ -331,6 +329,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$vista->assign('cantidad_fotos', $c_foto);
 		$vista->assign('cantidad_posts', $c_post);
 		$vista->assign('cantidad_total', $c_total);
+		$vista->assign('actual', $pagina);
 
 		// Paginación.
 		$total = $tipo == 0 ? $c_total : ($tipo == 1 ? $c_foto : $c_post);

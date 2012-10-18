@@ -5,11 +5,9 @@
 <div class="clearfix header">
 	<h2 class="pull-left">Rangos</h2>
 	<div class="btn-group pull-right">
-		<a href="/admin/usuario/nuevo_rango/" class="btn btn-success">Nuevo</a>
+		<a href="/admin/usuario/nuevo_rango/" class="btn btn-success"><i class="icon-white icon-plus"></i> Nuevo</a>
 	</div>
 </div>
-{if="isset($success)"}<div class="alert alert-success">{$success}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
-{if="isset($error)"}<div class="alert">{$error}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
 <table class="table table-bordered">
 	<thead>
 		<tr>

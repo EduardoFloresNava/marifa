@@ -395,6 +395,16 @@
     text-align: center;
 }
 
+ul.dropdown-menu {
+    li a {
+        position: relative;
+        span.badge {
+            position: absolute;
+            right: 10px;
+        }
+    }
+}
+
 #suceso-dropdown, #message-dropdown {
     padding: 0;
     min-width: 300px;
@@ -656,6 +666,10 @@
             .form-search .submit {
                 float: right;
                 border-left: 0;
+            }
+
+            .btn-toolbar {
+                margin: 0;
             }
         }
         .breadcrumb {

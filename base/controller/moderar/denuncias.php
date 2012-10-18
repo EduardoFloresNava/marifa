@@ -82,6 +82,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$vista->assign('tipo', $tipo);
 		$vista->assign('cantidad_rechazados', Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_RECHAZADA));
 		$vista->assign('cantidad_aprobados', Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_APLICADA));
+		$vista->assign('actual', $pagina);
 
 		// Modelo de posts.
 		$model_denuncias = new Model_Post_Denuncia;
@@ -316,6 +317,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$vista->assign('tipo', $tipo);
 		$vista->assign('cantidad_rechazados', Model_Foto_Denuncia::cantidad(Model_Foto_Denuncia::ESTADO_RECHAZADA));
 		$vista->assign('cantidad_aprobados', Model_Foto_Denuncia::cantidad(Model_Foto_Denuncia::ESTADO_APLICADA));
+		$vista->assign('actual', $pagina);
 
 		// Modelo de denuncias de fotos.
 		$model_denuncias = new Model_Foto_Denuncia;
@@ -550,6 +552,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$vista->assign('tipo', $tipo);
 		$vista->assign('cantidad_rechazados', Model_Usuario_Denuncia::cantidad(Model_Usuario_Denuncia::ESTADO_RECHAZADA));
 		$vista->assign('cantidad_aprobados', Model_Usuario_Denuncia::cantidad(Model_Usuario_Denuncia::ESTADO_APLICADA));
+		$vista->assign('actual', $pagina);
 
 		// Modelo de denuncias de usuarios.
 		$model_denuncias = new Model_Usuario_Denuncia;

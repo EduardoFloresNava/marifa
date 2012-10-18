@@ -3,8 +3,40 @@
     <li><a href="/admin/contenido/">Contenido</a> <span class="divider">/</span></li>
     <li class="active">Posts</li>
 </ul>
-<div class="header">
-	<h2>Posts</h2>
+<div class="header clearfix">
+	<h2 class="pull-left">Posts</h2>
+	<div class="pull-right btn-toolbar">
+		<div class="btn-group">
+			<button class="btn">
+				{if="$tipo == 0"}<i class="icon icon-ok-circle"></i> Activos{if="$cantidades.activo > 0"} ({$cantidades.activo}){/if}{/if}
+				{if="$tipo == 1"}<i class="icon icon-file"></i> Borradores{if="$cantidades.borrador > 0"} ({$cantidades.borrador}){/if}{/if}
+				{if="$tipo == 2"}<i class="icon icon-remove-circle"></i> Eliminados{if="$cantidades.borrado > 0"} ({$cantidades.borrado}){/if}{/if}
+				{if="$tipo == 3"}<i class="icon icon-time"></i> Pendientes{if="$cantidades.pendiente > 0"} ({$cantidades.pendiente}){/if}{/if}
+				{if="$tipo == 4"}<i class="icon icon-eye-close"></i> Ocultos{if="$cantidades.oculto > 0"} ({$cantidades.oculto}){/if}{/if}
+				{if="$tipo == 5"}<i class="icon icon-remove-circle"></i> Rechazados{if="$cantidades.rechazado > 0"} ({$cantidades.rechazado}){/if}{/if}
+				{if="$tipo == 6"}<i class="icon icon-trash"></i> Papelera{if="$cantidades.papelera > 0"} ({$cantidades.papelera}){/if}{/if}
+				{if="$tipo == 7"}<i class="icon icon-asterisk"></i> Todas{if="$cantidades.total > 0"} ({$cantidades.total}){/if}{/if}
+			</button>
+			<button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+			<ul class="dropdown-menu">
+				<li{if="$tipo == 0"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/0"><i class="icon{if="$tipo == 0"}-white{/if} icon-ok-circle"></i> Activos{if="$cantidades.activo > 0"}<span class="badge">{$cantidades.activo}</span>{/if}</a></li>
+				<li{if="$tipo == 1"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/1"><i class="icon{if="$tipo == 1"}-white{/if} icon-file"></i> Borradores{if="$cantidades.borrador > 0"}<span class="badge">{$cantidades.borrador}</span>{/if}</a></li>
+				<li{if="$tipo == 2"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/2"><i class="icon{if="$tipo == 2"}-white{/if} icon-remove-circle"></i> Eliminados{if="$cantidades.borrado > 0"}<span class="badge">{$cantidades.borrado}</span>{/if}</a></li>
+				<li{if="$tipo == 3"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/3"><i class="icon{if="$tipo == 3"}-white{/if} icon-time"></i> Pendientes{if="$cantidades.pendiente > 0"}<span class="badge">{$cantidades.pendiente}</span>{/if}</a></li>
+				<li{if="$tipo == 4"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/4"><i class="icon{if="$tipo == 4"}-white{/if} icon-eye-close"></i> Ocultos{if="$cantidades.oculto > 0"}<span class="badge">{$cantidades.oculto}</span>{/if}</a></li>
+				<li{if="$tipo == 5"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/5"><i class="icon{if="$tipo == 5"}-white{/if} icon-remove-circle"></i> Rechazados{if="$cantidades.rechazado > 0"}<span class="badge">{$cantidades.rechazado}</span>{/if}</a></li>
+				<li{if="$tipo == 6"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/6"><i class="icon{if="$tipo == 6"}-white{/if} icon-trash"></i> Papelera{if="$cantidades.papelera > 0"}<span class="badge">{$cantidades.papelera}</span>{/if}</a></li>
+				<li class="divider"></li>
+				<li{if="$tipo == 7"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/7"><i class="icon{if="$tipo == 7"}-white{/if} icon-asterisk"></i> Todas{if="$cantidades.total > 0"}<span class="badge">{$cantidades.total}</span>{/if}</a></li>
+			</ul>
+		</div>
+		<!--<form action="/admin/contenido/posts" class="form-search" method="POST">
+			<div class="input-append">
+				<input type="text" name="q" class="search-query" value="{if="isset($q)"}{$q}{/if}" placeholder="Buscar..." />
+				<button type="submit" class="btn submit"><i class="icon icon-search"></i></button>
+			</div>
+		</form>-->
+	</div>
 </div>
 <table class="table table-bordered">
 	<thead>

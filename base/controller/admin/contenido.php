@@ -98,8 +98,9 @@ class Base_Controller_Admin_Contenido extends Controller {
 	/**
 	 * Listado de posts existentes.
 	 * @param int $pagina Número de página a mostrar.
+	 * @param int $tipo Tipos de posts a mostrar.
 	 */
-	public function action_posts($pagina)
+	public function action_posts($pagina, $tipo)
 	{
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
@@ -107,14 +108,44 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cantidad de elementos por pagina.
 		$cantidad_por_pagina = 20;
 
+		// Verifico el tipo de fotos a mostrar.
+		switch ($tipo)
+		{
+			case 0: // Activo.
+				$tipo = array('activo', 0);
+				break;
+			case 1: // Borrador.
+				$tipo = array('borrador', 1);
+				break;
+			case 2: // Borrados.
+				$tipo = array('borrado', 2);
+				break;
+			case 3: // Pendientes.
+				$tipo = array('pendiente', 3);
+				break;
+			case 4: // Ocultos.
+				$tipo = array('oculto', 4);
+				break;
+			case 5: // Rechazados.
+				$tipo = array('rechazado', 5);
+				break;
+			case 6: // Papelera.
+				$tipo = array('papelera', 6);
+				break;
+			case 7: // Todos.
+			default: // Todos.
+				$tipo = array('total', NULL);
+		}
+
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/posts');
+		$vista->assign('tipo', $tipo[1] == NULL ? 7 : $tipo[1]);
 
 		// Modelo de posts.
 		$model_posts = new Model_Post;
 
 		// Cargamos el listado de posts.
-		$lst = $model_posts->listado($pagina, $cantidad_por_pagina);
+		$lst = $model_posts->listado($pagina, $cantidad_por_pagina, $tipo[1]);
 
 		// Verificamos páginas aleatorias sin elementos.
 		if (count($lst) == 0 && $pagina != 1)
@@ -122,9 +153,16 @@ class Base_Controller_Admin_Contenido extends Controller {
 			Request::redirect('/admin/contenido/posts');
 		}
 
+		// Calculo las cantidades.
+		$cantidades = Model_Post::cantidad_agrupados();
+
+		// Paso datos para barra.
+		$vista->assign('cantidades', $cantidades);
+		$vista->assign('actual', $pagina);
+
 		// Paginación.
-		$paginador = new Paginator($model_posts->cantidad(), $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/posts/%s'));
+		$paginador = new Paginator($cantidades[$tipo[0]], $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/posts/%s/'.$tipo[0]));
 
 		// Obtenemos datos de los posts.
 		foreach ($lst as $k => $v)
@@ -515,35 +553,45 @@ class Base_Controller_Admin_Contenido extends Controller {
 	/**
 	 * Listado de fotos existentes.
 	 * @param int $pagina Número de página a mostrar.
+	 * @param int $tipo Tipo de fotos a mostrar.
 	 */
-	public function action_fotos($pagina)
+	public function action_fotos($pagina, $tipo)
 	{
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
+		// Verifico el tipo de fotos a mostrar.
+		switch ($tipo)
+		{
+			case 0: // Activa.
+				$tipo = array('activa', 0);
+				break;
+			case 1: // Oculta.
+				$tipo = array('oculta', 1);
+				break;
+			case 2: // Papelera.
+				$tipo = array('papelera', 2);
+				break;
+			case 3: // Borrada.
+				$tipo = array('borrada', 3);
+				break;
+			case 4: // Todas.
+			default: // Todas.
+				$tipo = array('total', NULL);
+		}
 
 		// Cantidad de elementos por pagina.
 		$cantidad_por_pagina = 20;
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/fotos');
+		$vista->assign('tipo', $tipo[1] === NULL ? 4 : $tipo[1]);
 
 		// Modelo de fotos.
 		$model_fotos = new Model_Foto;
 
-		// Verifico busqueda.
-		if (Request::method() == 'POST')
-		{
-			$q = isset($_POST['q']) ? trim($_POST['q']) : NULL;
-
-			$vista->assign('q', $q);
-		}
-		else
-		{
-			$vista->assign('q', '');
-		}
-
 		// Cargamos el listado de fotos.
-		$lst = $model_fotos->listado($pagina, $cantidad_por_pagina, TRUE);
+		$lst = $model_fotos->listado($pagina, $cantidad_por_pagina, $tipo[1]);
 
 		// Si no hay elementos y no estamos en la inicial redireccionamos (Puso página incorrecta).
 		if (count($lst) == 0 && $pagina != 1)
@@ -551,9 +599,16 @@ class Base_Controller_Admin_Contenido extends Controller {
 			Request::redirect('/admin/contenido/fotos');
 		}
 
+		// Calculo las cantidades.
+		$cantidades = Model_Foto::cantidad_agrupados();
+
+		// Paso datos para barra.
+		$vista->assign('cantidades', $cantidades);
+		$vista->assign('actual', $pagina);
+
 		// Paginación.
-		$paginador = new Paginator($model_fotos->cantidad(TRUE), $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/fotos/%s'));
+		$paginador = new Paginator($cantidades[$tipo[0]], $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/fotos/%s/'.$tipo[0]));
 
 		// Obtenemos datos de las fotos.
 		foreach ($lst as $k => $v)
@@ -961,10 +1016,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Paginación.
 		$total = $model_noticias->total();
 		$paginador = new Paginator($total, $cantidad_por_pagina);
-		$vista->assign('actual', $pagina);
-		$vista->assign('total', $total);
-		$vista->assign('cpp', $cantidad_por_pagina);
-		$vista->assign('paginacion', $paginador->paginate($pagina));
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/noticias/%s/'));
 
 		// Obtenemos datos de las noticias.
 		foreach ($lst as $k => $v)

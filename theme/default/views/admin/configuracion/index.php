@@ -5,8 +5,6 @@
 <div class="header">
 	<h2>Configuración</h2>
 </div>
-{if="isset($success)"}<div class="alert alert-success">{$success}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
-{if="isset($error)"}<div class="alert">{$error}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
 <form method="POST" class="form-horizontal" action="">
 
 	{if="isset($success)"}<div class="alert alert-success">{$success}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}

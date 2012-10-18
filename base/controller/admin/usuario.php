@@ -100,6 +100,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('cantidad_suspendidas', $cantidad_suspendidas);
 		$vista->assign('cantidad_baneadas', $cantidad_baneadas);
 		$vista->assign('cantidad_total', $cantidad_total);
+		$vista->assign('actual', $pagina);
 
 		// Cargamos el listado de usuarios.
 		switch ($tipo)
