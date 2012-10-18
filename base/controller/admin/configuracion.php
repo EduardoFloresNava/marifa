@@ -62,6 +62,148 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/configuracion/index');
 
+		// Cargamos las configuraciones.
+		//TODO: Implementar sistema más flexible de carga y edición.
+		$model_configuracion = new Model_Configuracion;
+
+		// Cargamos los datos iniciales.
+		$vista->assign('nombre', $model_configuracion->get('nombre', 'Marifa'));
+		$vista->assign('error_nombre', FALSE);
+		$vista->assign('success_nombre', FALSE);
+		$vista->assign('descripcion', $model_configuracion->get('descripcion', 'Tu comunidad de forma simple'));
+		$vista->assign('error_descripcion', FALSE);
+		$vista->assign('success_descripcion', FALSE);
+		$vista->assign('registro', (int) $model_configuracion->get('registro', 1));
+		$vista->assign('error_registro', FALSE);
+		$vista->assign('success_registro', FALSE);
+		$vista->assign('activacion_usuario', (int) $model_configuracion->get('activacion_usuario', 1));
+		$vista->assign('error_activacion_usuario', FALSE);
+		$vista->assign('success_activacion_usuario', FALSE);
+		$vista->assign('elementos_pagina', (int) $model_configuracion->get('elementos_pagina', 20));
+		$vista->assign('error_elementos_pagina', FALSE);
+		$vista->assign('success_elementos_pagina', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Verifico el nombre.
+			if (isset($_POST['nombre']))
+			{
+				// Limpio el valor.
+				$nombre = preg_replace('/\s+/', ' ', trim($_POST['nombre']));
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('nombre', $nombre);
+
+				// Verifico el contenido.
+				if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{2,20}$/iD', $nombre))
+				{
+					$vista->assign('error_nombre', 'El nombre debe tener entre 2 y 20 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
+				}
+				else
+				{
+					if ($nombre !== $model_configuracion->get('nombre', NULL))
+					{
+						$model_configuracion->nombre = $nombre;
+						$vista->assign('success_nombre', 'El nombre se ha actualizado correctamente.');
+					}
+				}
+			}
+
+			// Verifico la descripción.
+			if (isset($_POST['descripcion']))
+			{
+				// Limpio el valor.
+				$descripcion = preg_replace('/\s+/', ' ', trim($_POST['descripcion']));
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('descripcion', $descripcion);
+
+				// Verifico el contenido.
+				if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{5,30}$/iD', $descripcion))
+				{
+					$vista->assign('error_descripcion', 'La descripción debe tener entre 5 y 30 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
+				}
+				else
+				{
+					if ($descripcion !== $model_configuracion->get('descripcion', NULL))
+					{
+						$model_configuracion->descripcion = $descripcion;
+						$vista->assign('success_descripcion', 'La descripción se ha actualizado correctamente.');
+					}
+				}
+			}
+
+			// Verifico el registro.
+			if (isset($_POST['registro']))
+			{
+				// Limpio el valor.
+				$registro = (bool) $_POST['registro'];
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('registro', $registro);
+
+				// Actualizo el valor.
+				$actual = $model_configuracion->get('registro', NULL);
+				if ($actual === NULL || $registro !== (bool) $actual)
+				{
+					$model_configuracion->registro = $registro;
+					$vista->assign('success_registro', 'El registro se ha editado correctamente.');
+				}
+			}
+
+			// Verifico como se activan los usuarios.
+			if (isset($_POST['activacion_usuario']))
+			{
+				// Limpio el valor.
+				$activacion_usuario = (int) $_POST['activacion_usuario'];
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('activacion_usuario', $activacion_usuario);
+
+				// Verifico el valor.
+				if ($registro == 0 || $registro == 1 || $registro == 0)
+				{
+					// Actualizo el valor.
+					$actual = $model_configuracion->get('activacion_usuario', NULL);
+					if ($actual === NULL || $activacion_usuario !== (int) $actual)
+					{
+						$model_configuracion->activacion_usuario = $activacion_usuario;
+						$vista->assign('success_activacion_usuario', 'El registro se ha editado correctamente.');
+					}
+				}
+				else
+				{
+					$vista->assign('error_activacion_usuario', 'La forma de activación seleccionada no es válida.');
+				}
+			}
+
+			// Verifico como se activan los usuarios.
+			if (isset($_POST['elementos_pagina']))
+			{
+				// Limpio el valor.
+				$elementos_pagina = (int) $_POST['elementos_pagina'];
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('elementos_pagina', $elementos_pagina);
+
+				// Verifico el valor.
+				if ($elementos_pagina < 5 || $elementos_pagina > 100)
+				{
+					$vista->assign('error_elementos_pagina', 'La cantidad de elementos por página ser un entero entre 5 y 100.');
+				}
+				else
+				{
+					// Actualizo el valor.
+					$actual = $model_configuracion->get('elementos_pagina', NULL);
+					if ($actual === NULL || $elementos_pagina !== (int) $actual)
+					{
+						$model_configuracion->elementos_pagina = $elementos_pagina;
+						$vista->assign('success_elementos_pagina', 'La cantidad de elementos por página se ha actualizado correctamente.');
+					}
+				}
+			}
+		}
+
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
@@ -73,6 +215,162 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Configuración del modo mantenimiento.
+	 */
+	public function action_mantenimiento()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/configuracion/mantenimiento');
+
+		// Cargo manejador del modo mantenimiento.
+		$mantenimiento = new Mantenimiento;
+
+		// Cargo listado de IP's que pueden acceder en modo mantenimiento.
+		$model_configuracion = new Model_Configuracion;
+		$ips_matenimiento = unserialize($model_configuracion->get('ip_mantenimiento', 'a:0:{}'));
+
+		// Verifico si está habilitado el bloqueo.
+		$vista->assign('is_locked', $mantenimiento->is_locked());
+		if ($mantenimiento->is_locked())
+		{
+			$locked_for_me = $mantenimiento->is_locked_for(IP::get_ip_addr());
+		}
+		else
+		{
+			$locked_for_me = TRUE;
+			$my_ip = IP::get_ip_addr();
+			foreach ($ips_matenimiento as $ip)
+			{
+				if ($my_ip == $ip || IP::ip_in_range($my_ip, $ip))
+				{
+					$locked_for_me = FALSE;
+					break;
+				}
+			}
+			unset($my_ip);
+		}
+		$vista->assign('is_locked_for_me', $locked_for_me);
+		unset($locked_for_me);
+
+		// Pasamos los datos a la vista.
+		$vista->assign('ip', implode(PHP_EOL, $ips_matenimiento));
+		$vista->assign('error_ip', FALSE);
+		$vista->assign('success_ip', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Obtengo el listado de IP's.
+			$ips = isset($_POST['ip']) ? explode(PHP_EOL, trim($_POST['ip'])) : array();
+
+			// Verifico cada uno de los IP's.
+			$error = FALSE;
+			foreach($ips as $k => $ip)
+			{
+				$ip = trim($ip);
+				$ips[$k] = $ip;
+
+				// Verifico IP.
+				if ($ip == long2ip(ip2long($ip)))
+				{
+					continue;
+				}
+
+				// Verifico rango del tipo a.b.c.d-a.b.c.d
+				if (strpos($ip, '-'))
+				{
+					list($a, $b) = explode('-', $ip);
+					if ($a != long2ip(ip2long($a)) || $b != long2ip(ip2long($b)))
+					{
+						$error = TRUE;
+						break;
+					}
+					else
+					{
+						continue;
+					}
+				}
+
+				$error = TRUE;
+				break;
+
+				//TODO: agregar soporte a rangos faltantes (CIFS /netmask,  *).
+			}
+
+			// Asigno valor a la vista.
+			$vista->assign('ip', implode(PHP_EOL, $ips));
+
+			if ($error)
+			{
+				$vista->assign('error_ip', 'Los IP\'s ingresados no son válidos.');
+			}
+			else
+			{
+				// Verifico si hay cambios.
+				if (count(array_diff($ips, $ips_matenimiento)) > 0)
+				{
+					// Actualizo los valores.
+					$model_configuracion->ip_mantenimiento = serialize($ips);
+
+					// Actualizo si es necesario.
+					if ($mantenimiento->is_locked())
+					{
+						$mantenimiento->lock($ips);
+					}
+
+					// Informo resultado.
+					$vista->assign('success_ip', 'Listado de IP\'s actualizada correctamente.');
+				}
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_mantenimiento'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Activo/Desactivo el modo mantenimiento.
+	 * @param bool $tipo 0 para deshabilitar, 1 para habilitar.
+	 */
+	public function action_habilitar_mantenimiento($tipo)
+	{
+		$tipo = (bool) $tipo;
+
+		$mantenimiento = new Mantenimiento;
+
+		// Verifico la acción.
+		if ($tipo == $mantenimiento->is_locked())
+		{
+			$_SESSION['flash_error'] = 'El modo mantenimiento ya posee ese estado.';
+		}
+		else
+		{
+			// Ejecuto la acción deseada.
+			if ($tipo)
+			{
+				$_SESSION['flash_success'] = 'Modo mantenimiento activado correctamente.';
+				$c = new Model_Configuracion;
+				//TODO: Verificar que alguien pueda acceder.
+				$mantenimiento->lock(unserialize($c->get('ip_mantenimiento', 'a:0:{}')));
+			}
+			else
+			{
+				$_SESSION['flash_success'] = 'Modo mantenimiento activado correctamente.';
+				$mantenimiento->unlock();
+			}
+		}
+		Request::redirect('/admin/configuracion/mantenimiento');
 	}
 
 	/**

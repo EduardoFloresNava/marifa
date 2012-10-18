@@ -127,5 +127,5 @@ class Base_Ip {
 			return $_SERVER['REMOTE_ADDR'];
 		}
 	}
-
+	
 }

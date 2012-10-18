@@ -85,7 +85,8 @@ class Base_Controller_Admin_Home extends Controller {
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
 		{
 			$listado['p_configuracion'] = array('caption' => 'Configuración');
-			$listado['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuracion', 'active' => FALSE);
+			$listado['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuración', 'active' => FALSE);
+			$listado['configuracion_mantenimiento'] = array('link' => '/admin/configuracion/mantenimiento/', 'caption' => 'Modo Mantenimiento', 'active' => FALSE);
 			$listado['configuracion_temas'] = array('link' => '/admin/configuracion/temas/', 'caption' => 'Temas', 'active' => FALSE);
 			$listado['configuracion_plugins'] = array('link' => '/admin/configuracion/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
 		}

@@ -67,13 +67,18 @@ class Base_Mantenimiento {
 	 */
 	public function is_locked_for($ip)
 	{
+		if ( ! $this->is_locked())
+		{
+			return FALSE;
+		}
+
 		// Cargamos los rangos.
 		$range_list = file($this->lock_file);
 
 		// Verificamos.
 		foreach ($range_list as $range)
 		{
-			if (IP::ip_in_range($ip, $range))
+			if ($ip == $range || IP::ip_in_range($ip, $range))
 			{
 				// Existe en el rango.
 				return FALSE;

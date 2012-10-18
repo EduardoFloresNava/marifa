@@ -111,6 +111,7 @@ if ($lock->is_locked())
 {
 	if ($lock->is_locked_for(IP::get_ip_addr()))
 	{
+		//TODO: utilizar vista para dar flexibilidad.
 		die("Modo mantenimiento activado.");
 	}
 }

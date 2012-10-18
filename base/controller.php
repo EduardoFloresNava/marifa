@@ -76,6 +76,11 @@ class Base_Controller {
 		{
 			$this->template->assign('flash_error', get_flash('flash_error'));
 		}
+
+		// Seteo si es mantenimiento.
+		$m = new Mantenimiento;
+		$this->template->assign('is_locked', $m->is_locked());
+		unset($m);
 	}
 
 	/**

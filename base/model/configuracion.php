@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * configuracion.php is part of Marifa.
  *
@@ -97,7 +97,23 @@ class Base_Model_Configuracion extends Model {
 		}
 		else
 		{
-			throw new Exception('No existe la clave.');
+			throw new UnexpectedValueException('No existe la clave.');
+		}
+	}
+
+	/**
+	 * Obtenemos un valor utilizando un resultado por defecto.
+	 * @param string $name
+	 * @param mixed $default
+	 */
+	public function get($name, $default = NULL)
+	{
+		try {
+			return $this->$name;
+		}
+		catch (UnexpectedValueException $e)
+		{
+			return $default;
 		}
 	}
 
