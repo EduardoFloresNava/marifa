@@ -96,16 +96,13 @@ class Base_Controller {
 		$vista->assign('usuario', Usuario::usuario()->as_array());
 
 		// Sucesos.
-		/**
-		$model_sucesos = new Model_Suceso;
-		$lst = $model_sucesos->obtener_by_usuario( (int) $_SESSION['usuario_id']);
-		unset($model_sucesos);
+		$lst = Suceso_Barra::obtener_listado(Usuario::$usuario_id, 1, 20);
 
 		$eventos = array();
 		foreach ($lst as $v)
 		{
 			// Obtengo información del suceso.
-			$s_data = $v->get_data();
+			$s_data = Suceso_Barra::procesar($v);
 
 			// Verifico su existencia.
 			if ($s_data === NULL)
@@ -117,7 +114,7 @@ class Base_Controller {
 			$tipo = $v->as_object()->tipo;
 
 			// Cargamos la vista.
-			$suceso_vista = View::factory('suceso/'.$tipo);
+			$suceso_vista = View::factory('suceso/barra/'.$tipo);
 
 			// Asigno los datos del usuario actual.
 			$suceso_vista->assign('actual', $usuario->as_array());
@@ -132,9 +129,7 @@ class Base_Controller {
 			$eventos[] = $suceso_vista->parse();
 		}
 		$vista->assign('sucesos', $eventos);
-		unset($lst, $eventos);*/
-		// Su carga va a ir por AJAX.
-		$vista->assign('sucesos', array());
+		unset($lst, $eventos);
 
 		// Listado de mensajes.
 		$model_mensajes = new Model_Mensaje;

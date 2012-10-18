@@ -1,6 +1,6 @@
 <?php
 /**
- * suceso.php is part of Marifa.
+ * administracion.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,14 +24,13 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Clase para el parseo de los sucesos.
- * Generamos un
+ * Clase para el parseo de los sucesos de la administración.
  *
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
  */
-class Base_Suceso {
+class Base_Suceso_Administracion extends Suceso {
 
 	/**
 	 * Obtenemos el listado de sucesos a procesar.
@@ -58,7 +57,7 @@ class Base_Suceso {
 		unset($rc, $ms);
 
 		// Cargamos el listado de sucesos.
-		$model_suceso = new Model_Suceso;
+		$model_suceso = new Model_Suceso_Administracion;
 		return $model_suceso->listado($usuario, $pagina, $cantidad, $methods);
 	}
 
@@ -70,54 +69,7 @@ class Base_Suceso {
 	 */
 	public static function procesar($informacion, $class = __CLASS__)
 	{
-		// Verifico que sea arreglo.
-		if ( ! is_array($informacion))
-		{
-			$informacion = $informacion->as_array();
-		}
-
-		// Limpio prefijos de la clase.
-		$class = substr($class, 5);
-
-		// Verificamos si existe.
-		if (is_callable($class.'::suceso_'.$informacion['tipo']))
-		{
-			// Procesamos el suceso.
-			$data = call_user_func($class.'::suceso_'.$informacion['tipo'], $informacion);
-		}
-		else
-		{
-			PRODUCTION OR Profiler_Profiler::get_instance()->log("No se puede parsear '{$informacion['tipo']}' en $class");
-			return NULL;
-		}
-
-		/**
-		// ID de la cache del suceso.
-		$cache_id = 'suceso_data.'.$informacion['id'];
-
-		// Obtenemos elemento a partir de la cache.
-		$data = Cache::get_instance()->get($cache_id);
-
-		// Verificamos si existe.
-		if ($data === FALSE)
-		{
-			// Verificamos si existe.
-			if (is_callable('self::suceso_'.$informacion['tipo']))
-			{
-				// Procesamos el suceso.
-				$data = call_user_func('self::suceso_'.$informacion['tipo'], $informacion);
-
-				// Guardamos en la cache.
-				Cache::get_instance()->save($cache_id, $data);
-			}
-			else
-			{
-				PRODUCTION OR Profiler_Profiler::get_instance()->log("No se puede parsear '{$informacion['tipo']}'");
-				return NULL;
-			}
-		}*/
-
-		return $data;
+		return parent::procesar($informacion, $class);
 	}
 
 }

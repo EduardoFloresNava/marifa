@@ -373,7 +373,7 @@ class Base_Controller_Perfil extends Controller {
 	 * Muro del usuario.
 	 * @param int $usuario ID del usuario.
 	 */
-	public function action_muro($usuario)
+	public function action_muro($usuario, $pagina = 1)
 	{
 		// Cargamos el usuario.
 		$usuario = $this->cargar_usuario($usuario);
@@ -384,16 +384,26 @@ class Base_Controller_Perfil extends Controller {
 		// Información del usuario actual.
 		$information_view->assign('usuario', $this->usuario->as_array());
 
-		// Listado de eventos.
-		$model_sucesos = new Model_Suceso;
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = 10;
 
-		$lst = $model_sucesos->obtener_by_usuario($this->usuario->as_object()->id);
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
+		// Listado de eventos.
+		$lst = Suceso_Perfil::obtener_listado($this->usuario->id, 1);;
+
+		// Que sea un número de página válido.
+		if (count($lst) == 0 && $pagina != 1)
+		{
+			Request::redirect('/perfil/muro/'.$usuario);
+		}
 
 		$eventos = array();
 		foreach ($lst as $v)
 		{
 			// Obtengo información del suceso.
-			$s_data = $v->get_data();
+			$s_data = Suceso_Perfil::procesar($v);
 
 			// Verifico su existencia.
 			if ($s_data === NULL)
@@ -405,7 +415,7 @@ class Base_Controller_Perfil extends Controller {
 			$tipo = $v->as_object()->tipo;
 
 			// Cargamos la vista.
-			$suceso_vista = View::factory('suceso/'.$tipo);
+			$suceso_vista = View::factory('suceso/barra/'.$tipo);
 
 			// Asigno los datos del usuario actual.
 			$suceso_vista->assign('actual', $this->usuario->as_array());
