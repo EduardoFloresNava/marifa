@@ -124,42 +124,6 @@ class Base_Controller_Admin_Home extends Controller {
 		// Cargamos la portada.
 		$vista = View::factory('admin/home/index');
 
-		// Cargamos los eventos de administración.
-		$lst = Suceso_Administracion::obtener_listado(Usuario::$usuario_id, 1, 20);
-
-		$eventos = array();
-		foreach ($lst as $v)
-		{
-			// Obtengo información del suceso.
-			$s_data = Suceso_Administracion::procesar($v);
-
-			// Verifico su existencia.
-			if ($s_data === NULL)
-			{
-				continue;
-			}
-
-			// Obtenemos el tipo de suceso.
-			$tipo = $v->as_object()->tipo;
-
-			// Cargamos la vista.
-			$suceso_vista = View::factory('suceso/administracion/'.$tipo);
-
-			// Asigno los datos del usuario actual.
-			$suceso_vista->assign('actual', $usuario->as_array());
-
-			// Asigno información del suceso.
-			$suceso_vista->assign('suceso', $s_data);
-
-			// Datos del suceso.
-			$suceso_vista->assign('fecha', $v->fecha);
-
-			// Agregamos el evento.
-			$eventos[] = $suceso_vista->parse();
-		}
-		$vista->assign('sucesos', $eventos);
-		unset($lst, $eventos);
-
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
