@@ -192,6 +192,18 @@
  * **usuario_advertir** (*advertencia_id*): Se envía una advertencia al usuario.
  * * **advertencia_id*: ID de la advertencia que se ha creado.
 
+ * **usuario_seguir** (*usuario_id*, *seguidor_id*): *seguidor_id* sigue a *usuario_id*
+ * * **usuario_id**: ID del usuario a quien se sigue.
+ * * **seguidor_id**: ID del usuario que sigue.
+
+ * **usuario_bloquear** (*usuario_id*, *bloqueado_id*): *usuario_id* bloquea a *bloqueado_id* para que evitar que vea su perfil.
+ * * **usuario_id**: ID del usuario que realiza el bloqueo.
+ * * **bloqueado_id**: ID del usuario que es bloqueado.
+
+ * **usuario_desbloquear** (*usuario_id*, *bloqueado_id*): *usuario_id* desbloquea a *bloqueado_id* para que vea su perfil.
+ * * **usuario_id**: ID del usuario que realiza el desbloqueo.
+ * * **bloqueado_id**: ID del usuario que es desbloqueado.
+
 ### Denuncias a usuarios:
 
  * **usuario_denuncia_crear** (*denuncia_id*): Se denuncia un usuario. Implica la creación que luego debe ser verificada por un moderador/administrador para tomar una acción.

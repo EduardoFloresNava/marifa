@@ -414,6 +414,15 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * El usuario comiensa a ser seguidor por $usuario.
+	 * @param int $usuario Quien empieza a seguir al usuario.
+	 */
+	public function seguir($usuario)
+	{
+		$this->db->query('INSERT INTO usuario_seguidor (usuario_id, seguidor_id, fecha) VALUES (?, ?, ?)', array($this->primary_key['id'], $usuario, date('Y/m/d H:i:s')));
+	}
+
+	/**
 	 * Obtenemos la lista de usuarios que sigue.
 	 * @return array
 	 */
@@ -861,5 +870,33 @@ class Base_Model_Usuario extends Model_Dataset {
 	public function es_seguidor($usuario_id)
 	{
 		return $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE usuario_id = ? AND seguidor_id = ?', array($this->primary_key['id'], $usuario_id))->get_var(Database_Query::FIELD_INT) > 0;
+	}
+
+	/**
+	 * Bloqueo el acceso del usuario.
+	 * @param int $usuario_id ID del usuario al que bloqueamos.
+	 */
+	public function bloquear($usuario_id)
+	{
+		$this->db->query('INSERT INTO usuario_bloqueo (usuario_id, bloqueado_id) VALUES (?, ?)', array($this->primary_key['id'], $usuario_id));
+	}
+
+	/**
+	 * Desbloqueo el acceso del usuario.
+	 * @param int $usuario_id ID del usuario al que desbloqueamos.
+	 */
+	public function desbloquear($usuario_id)
+	{
+		$this->db->query('DELETE FROM usuario_bloqueo WHERE usuario_id = ? AND bloqueado_id = ?', array($this->primary_key['id'], $usuario_id));
+	}
+
+	/**
+	 * Verificamos si se encuentra bloqueado.
+	 * @param int $usuario_id ID del usuario del que verificamos el bloqueo.
+	 * @return bool
+	 */
+	public function esta_bloqueado($usuario_id)
+	{
+		return $this->db->query('SELECT * FROM usuario_bloqueo WHERE usuario_id = ? AND bloqueado_id = ? LIMIT 1', array($this->primary_key['id'], $usuario_id))->num_rows() > 0;
 	}
 }

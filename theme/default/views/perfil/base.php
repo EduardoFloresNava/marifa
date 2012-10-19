@@ -5,9 +5,9 @@
 	<div class="span6">
 		<h1 class="title">{$usuario.nick}{if="isset($usuario.nombre)"} <small>{$usuario.nombre}</small>{/if}</h1>
 		{if="isset($mensaje_personal)"}<div class="mensaje-personal">{$mensaje_personal|nl2br}</div>{/if}
-		{if="$usuario.id !== Usuario::$usuario_id"}<a href="/perfil/denunciar/{$usuario.nick}" class="btn btn-danger">Denunciar</a>
-		{if="!$bloqueado"}<a href="#" class="btn btn-danger">Bloquear</a>{/if}
-		{if="!$seguidor"}<a href="#" class="btn btn-primary">Seguir</a>{/if}{/if}
+		{if="Usuario::is_login() && $usuario.id !== Usuario::$usuario_id"}<a href="/perfil/denunciar/{$usuario.nick}" class="btn btn-danger">Denunciar</a>
+		{if="Usuario::is_login()"}{if="!$bloqueado"}<a href="/perfil/bloquear/{$usuario.nick}/" class="btn btn-danger">Bloquear</a>{else}<a href="/perfil/desbloquear/{$usuario.nick}/" class="btn btn-success">Desbloquear</a>{/if}
+		{if="!$seguidor"}<a href="/perfil/seguir/{$usuario.nick}/" class="btn btn-primary">Seguir</a>{/if}{/if}{/if}
 	</div>
 	<div class="span4 profile-statistics">
 		<div class="row-fluid">
