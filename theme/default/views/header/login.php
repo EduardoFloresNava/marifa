@@ -2,14 +2,14 @@
     <div class="btn-group pull-right">
         <button class="btn dropdown-toggle" data-toggle="dropdown"><img height="16" width="16" src="{function="Utils::get_gravatar($usuario.email, 32, 32)"}" /> {$usuario.nick}&nbsp;<span class="caret"></span></button>
         <ul class="dropdown-menu">
-			<li><a href="/favoritos/">Favoritos</a></li>
-			<li><a href="/borradores/">Borradores</a></li>
-			<li><a href="/cuenta/">Cuenta</a></li>
-			<li><a href="/notificaciones/">Notificaciones</a></li>
-            <li><a href="/mensaje/">Mensajes</a></li>
-            <li><a href="/perfil/">Perfil</a></li>
+			<li><a href="/favoritos/"><i class="icon icon-heart"></i> Favoritos</a></li>
+			<li><a href="/borradores/"><i class="icon icon-file"></i> Borradores</a></li>
+			<li><a href="/mensaje/"><i class="icon icon-envelope"></i> Mensajes</a></li>
+			<li class="divider"></li>
+			<li><a href="/notificaciones/"><i class="icon icon-bullhorn"></i> Notificaciones</a></li>
+			<li><a href="/cuenta/"><i class="icon icon-user"></i> Cuenta</a></li>
             <li class="divider"></li>
-            <li><a href="/usuario/logout">Salir</a></li>
+            <li><a href="/usuario/logout"><i class="icon icon-off"></i> Salir</a></li>
         </ul>
     </div>
     <div class="btn-group pull-right">
@@ -21,8 +21,8 @@
 				{/loop}
 			</ul>
 			<div class="actions">
-				<a href="/perfil/">Ver todos</a>
-				<a href="/notificaciones/">Marcar como le&iacute;dos</a>
+				<a href="/notificaciones/">Ver todos</a>
+				<a href="/notificaciones/leidas/">Marcar como le&iacute;dos</a>
 			</div>
         </div>
     </div>

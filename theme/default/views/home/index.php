@@ -84,18 +84,5 @@
 			</a>
 			{/if}
 		</div>
-		<div>
-			<h3 class="title">Afiliados</h3>
-			<div class="thumbnail">
-				<img src="http://placehold.it/170x50" />
-			</div>
-			<div class="thumbnail">
-				<img src="http://placehold.it/170x50" />
-			</div>
-			<div class="thumbnail">
-				<img src="http://placehold.it/170x50" />
-			</div>
-			<a href="#">Afiliate a Marifa</a>
-		</div>
 	</div>
 </div>
