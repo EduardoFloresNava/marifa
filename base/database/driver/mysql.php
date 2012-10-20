@@ -174,8 +174,8 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	{
 		if ($this->is_connected() === FALSE)
 		{
-			$this->conn = @mysql_connect($this->host, $this->user, $this->pass);
-			if ($this->conn === FALSE)
+			$this->conn = @mysql_connect($this->host, $this->user, $this->pass) OR $error = mysql_error();
+			if ($this->conn === FALSE || isset($error))
 			{
 				$e = new Database_Exception(mysql_error(), mysql_errno());
 				throw new Database_Exception('No se ha podido conectar al servidor de base de datos.', 100, $e);

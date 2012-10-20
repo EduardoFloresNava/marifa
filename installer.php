@@ -65,14 +65,9 @@ define('CONFIG_PATH', APP_BASE.DS.'config');
 define('FILE_EXT', 'php');
 
 /**
- * Directorio de plugins.
- */
-define('PLUGINS_PATH', 'plugin');
-
-/**
  * Directorio de las vistas.
  */
-define('VIEW_PATH', 'theme'.DS);
+define('VIEW_PATH', 'installer'.DS);
 
 /**
  * Directorio de la cache.
@@ -83,6 +78,7 @@ define('CACHE_PATH', APP_BASE.DS.'cache');
 require_once (APP_BASE.DS.'function.php');
 
 // Iniciamos el proceso de carga automatica de librerias.
+spl_autoload_register('installer_loader_load');
 spl_autoload_register('loader_load');
 
 /**
@@ -90,60 +86,13 @@ spl_autoload_register('loader_load');
  */
 define('SITE_URL', get_site_url());
 
-// Verifico MCrypt.
-extension_loaded('mcrypt') OR die('Marifa necesita MCrypt para funcionar.');
-
-// Iniciamos las cookies.
-Cookie::start('secret_cookie_key');
-
-// Iniciamos el usuario.
-Usuario::start();
-
 // Cargo el tema actual.
-define('THEME', Theme::actual());
+define('THEME', 'theme');
+
+define('THEME_URL', SITE_URL.VIEW_PATH.THEME);
 
 // Iniciamos el manejo de errores.
 Error::get_instance()->start(DEBUG);
-
-// Verificamos bloqueos.
-$lock = new Mantenimiento();
-if ($lock->is_locked())
-{
-	if ($lock->is_locked_for(IP::get_ip_addr()))
-	{
-		//TODO: utilizar vista para dar flexibilidad.
-		die("Modo mantenimiento activado.");
-	}
-}
-
-// Definimos el directorio temporal. Puede definir uno manualmente.
-define('TMP_PATH', Update_Utils::sys_get_temp_dir().DS);
-
-// Comprobamos que exista la configuración de la base de datos.
-if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
-{
-	//TODO: lo mandamos al instalador.
-	die("Falta configurar la base de datos");
-}
-
-// Forzamos una cache inexistente. Comente esta linea para habilitar la cache.
-//Configuraciones::set('cache.type', NULL);
-
-// Cargamos la cache.
-Cache::get_instance();
-
-// Cargamos las configuraciones del gestor de actualizaciones.
-if (file_exists(CONFIG_PATH.DS.'update.php'))
-{
-	//Configuraciones::load(CONFIG_PATH.DS.'update.php', TRUE);
-}
-
-// Comprobamos que existe la lista de plugins.
-if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
-{
-	// Generamos la lista de plugins.
-	Plugin_Manager::get_instance()->regenerar_lista();
-}
 
 // Database profiler.
 PRODUCTION OR Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
@@ -151,6 +100,6 @@ PRODUCTION OR Profiler_Profiler::get_instance()->set_query_explain_callback('Dat
 PRODUCTION OR Profiler_Profiler::get_instance()->log_memory('Framework memory');
 
 // Cargamos el despachador y damos el control al controlador correspondiente.
-Dispatcher::dispatch();
+Installer_Dispatcher::dispatch();
 
 PRODUCTION OR Profiler_Profiler::get_instance()->display();

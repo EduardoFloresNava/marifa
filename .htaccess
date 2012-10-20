@@ -7,6 +7,9 @@ RewriteBase /
 # Ponemos el entorno en modo depuracion. Para ponerlo en produccion cambiar a 0.
 SetEnv MARIFA_DEBUG 1
 
+# Instalador.
+RewriteRule ^installer/.* installer.php/$0 [PT]
+
 # Permitimos archivos y directorios mostrarse directamente.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

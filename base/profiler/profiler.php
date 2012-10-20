@@ -246,7 +246,7 @@ class Base_Profiler_Profiler {
 
 		foreach ($files as $file)
 		{
-			$size = filesize($file);
+			$size = file_exists($file) ? filesize($file) : 0;
 			$file_list[] = array(
 				'name' => $file,
 				'size' => $this->_get_readable_file_size($size)
