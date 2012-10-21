@@ -85,10 +85,28 @@ require_once (APP_BASE.DS.'function.php');
 // Iniciamos el proceso de carga automatica de librerias.
 spl_autoload_register('loader_load');
 
-/**
- * Defino la URL del sitio.
- */
+//Defino la URL del sitio.
 define('SITE_URL', get_site_url());
+
+// Verifico que no exista el instalador.
+if (file_exists(APP_BASE.DS.'installer') || file_exists(APP_BASE.DS.'installer.php'))
+{
+	if (isset($_GET['finish']) && $_GET['finish'] == 1)
+	{
+		session_start();
+		if (isset($_SESSION['step']) && $_SESSION['step'] >= 5)
+		{
+			// Intento eliminar.
+			@unlink('installer.php');
+			Update_Utils::unlink('installer');
+
+			// Redirecciono.
+			Request::redirect('/');
+		}
+	}
+
+	die('Debes eliminar el instalador para poder acceder al sitio. Para intentar de forma autom&aacute;tica has click <a href="/?finish=1">aqu&iacute;</a>.');
+}
 
 // Verifico MCrypt.
 extension_loaded('mcrypt') OR die('Marifa necesita MCrypt para funcionar.');

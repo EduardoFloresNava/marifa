@@ -42,7 +42,7 @@ else
 define('PRODUCTION', ! DEBUG);
 
 // Información de rendimiento para depuración.
-PRODUCTION OR define('START_MEMORY', memory_get_peak_usage());
+define('START_MEMORY', memory_get_peak_usage());
 
 /**
  * Separador de directorios

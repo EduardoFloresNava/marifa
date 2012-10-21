@@ -208,24 +208,8 @@ class Installer_Dispatcher {
 		// Obtenemos los segmentos de la URL
 		$segmentos = explode('/', $url);
 
-		// Obtenemos el controlador
-		$controller = empty($segmentos[0]) ? 'home' : strtolower($segmentos[0]);
-
-		if (preg_match('/^[a-z0-9_]+$/D', $controller) < 1)
-		{
-			if ( ! $throw)
-			{
-				Error::show_error('Petición inválida', 404);
-			}
-			else
-			{
-				throw new Exception('Petición inválida', 404);
-			}
-			return FALSE;
-		}
-
 		// Obtenemos la acción.
-		$accion = empty($segmentos[1]) ? 'index' : strtolower($segmentos[1]);
+		$accion = empty($segmentos[0]) ? 'index' : strtolower($segmentos[0]);
 
 		if (preg_match('/^[a-z0-9_]+$/D', $accion) < 1)
 		{
@@ -241,51 +225,32 @@ class Installer_Dispatcher {
 		}
 
 		// Obtenemos los argumentos.
-		if (is_array($segmentos) && count($segmentos) > 2)
+		if (is_array($segmentos) && count($segmentos) > 1)
 		{
-			$args = array_slice($segmentos, 2);
+			$args = array_slice($segmentos, 1);
 		}
 		else
 		{
 			$args = array();
 		}
 
-		// Normalizamos el nombre del controlador para usar en las clases.
-		$controller_name = 'Installer_Controller_'.ucfirst($controller);
-
-		//Instanciamos el controllador
-		if ( ! class_exists($controller_name))
+		// Verificamos exista método.
+		$r_c = new ReflectionClass('Installer_Controller');
+		if ( ! $r_c->hasMethod('action_'.$accion))
 		{
 			if ( ! $throw)
 			{
-				Error::show_error("No existe el controlador: '$controller_name'", 404);
+				Error::show_error("No existe la acción '$accion'", 404);
 			}
 			else
 			{
-				throw new Exception("No existe el controlador: '$controller_name'", 404);
+				throw new Exception("No existe la acción '$accion'", 404);
 			}
 		}
 		else
 		{
-			// Verificamos exista método.
-			$r_c = new ReflectionClass($controller_name);
-			if ( ! $r_c->hasMethod('action_'.$accion))
-			{
-				if ( ! $throw)
-				{
-					Error::show_error("No existe la acción '$accion' para el controlador '$controller_name'", 404);
-				}
-				else
-				{
-					throw new Exception("No existe la acción '$accion' para el controlador '$controller_name'", 404);
-				}
-			}
-			else
-			{
-				// Agrego al stack para tener la llamada.
-				Request::add_stack(NULL, $controller, $accion, $args, NULL);
-				$cont = new $controller_name;
-			}
+			// Agrego al stack para tener la llamada.
+			$cont = new Installer_Controller;
 		}
 
 		// Obtenemos la cantidad de parámetros necesaria.
@@ -303,7 +268,6 @@ class Installer_Dispatcher {
 				$cont,
 				'action_'.$accion
 		), $args);
-		Request::pop_stack();
 		return $rst;
 	}
 }

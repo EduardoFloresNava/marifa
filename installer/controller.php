@@ -23,7 +23,7 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Controlador base del instalador.
+ * Controlador del instalador.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.1
@@ -88,7 +88,7 @@ class Installer_Controller {
 	{
 		if (is_object($this->template) && ! Request::is_ajax() && error_get_last() === NULL)
 		{
-			PRODUCTION OR $this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
+			$this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
 			$this->template->show();
 		}
 	}
@@ -110,12 +110,16 @@ class Installer_Controller {
 		// Base de datos.
 		$steps[] = array('caption' => 'BD');
 		$steps[] = array('caption' => 'BD install');
+		$steps[] = array('caption' => 'Configuraciones');
 
 		// Cache.
-		$steps[] = array('caption' => 'Cache');
+		//$steps[] = array('caption' => 'Cache');
 
 		// Imagenes.
-		$steps[] = array('caption' => 'Imagenes');
+		//$steps[] = array('caption' => 'Imagenes');
+
+		// Final.
+		$steps[] = array('caption' => 'Terminación');
 
 		// Seteo los estados.
 		foreach ($steps as $k => $v)
@@ -187,5 +191,584 @@ class Installer_Controller {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Portada del instalador.
+	 */
+	public function action_index()
+	{
+		// Cargo la vista.
+		$vista = View::factory('index');
+
+		// Seteo el menu.
+		$this->template->assign('steps', $this->steps(0));
+
+		// Seteo el paso como terminado.
+		if ($_SESSION['step'] < 1)
+		{
+			$_SESSION['step'] = 1;
+		}
+
+		// Seteo la vista.
+		$this->template->assign('contenido', $vista->parse());
+	}
+
+	/**
+	 * Requerimientos del sistema.
+	 */
+	public function action_requerimientos()
+	{
+		// Cargo la vista.
+		$vista = View::factory('requerimientos');
+
+		// Listado de requerimientos.
+		$reqs = array(
+			array('titulo' => 'Versión PHP', 'requerido' => '> 5.2', 'actual' => phpversion(), 'estado' => version_compare(PHP_VERSION, '5.2.0', '>=')),
+			array('titulo' => 'MCrypt', 'requerido' => 'ON', 'actual' => extension_loaded('mcrypt') ? 'ON' : 'OFF', 'estado' => extension_loaded('mcrypt')),
+			'Base de Datos', // Separador.
+			array('titulo' => 'MySQL', 'requerido' => 'ON', 'actual' => function_exists('mysql_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysql_connect'), 'opcional' => function_exists('mysqli_connect') || class_exists('pdo')),
+			array('titulo' => 'MySQLi', 'requerido' => 'ON', 'actual' => function_exists('mysqli_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysqli_connect'), 'opcional' => function_exists('mysql_connect') || class_exists('pdo')),
+			array('titulo' => 'PDO', 'requerido' => 'ON', 'actual' => class_exists('pdo') ? 'ON' : 'OFF', 'estado' => class_exists('pdo'), 'opcional' => function_exists('mysql_connect') || function_exists('mysqli_connect')),
+			'Cache',
+			array('titulo' => 'File', 'requerido' => 'ON', 'actual' => 'ON', 'estado' => TRUE, 'opcional' => TRUE),
+			array('titulo' => 'APC', 'requerido' => 'ON', 'actual' => (extension_loaded('apc') && function_exists('apc_store')) ? 'ON' : 'OFF', 'estado' => (extension_loaded('apc') && function_exists('apc_store')), 'opcional' => TRUE),
+			array('titulo' => 'Memcached', 'requerido' => 'ON', 'actual' => extension_loaded('memcached') ? 'ON' : 'OFF', 'estado' => extension_loaded('memcached'), 'opcional' => TRUE),
+			'Sistema de actualizaciones',
+			array('titulo' => 'CUrl', 'requerido' => 'ON', 'actual' => function_exists('curl_init') ? 'ON' : 'OFF', 'estado' => function_exists('curl_init'), 'opcional' => TRUE),
+			array('titulo' => 'External open', 'requerido' => 'ON', 'actual' => ini_get('allow_url_fopen') ? 'ON' : 'OFF', 'estado' => ini_get('allow_url_fopen'), 'opcional' => TRUE),
+		);
+
+		//TODO: verificar cache FILE.
+
+		// Seteo el listado de requerimientos.
+		$vista->assign('requerimientos', $reqs);
+
+		// Verifico si puedo seguir.
+		$is_ok = TRUE;
+		foreach ($reqs as $v)
+		{
+			// Separador.
+			if ( ! is_array($v))
+			{
+				continue;
+			}
+
+			// Verifico si no es correcto.
+			if ( ! $v['estado'])
+			{
+				// Verifico si es opcional.
+				if (isset($v['opcional']) && $v['opcional'])
+				{
+					continue;
+				}
+
+				// No se encuentra disponible.
+				$is_ok = FALSE;
+				break;
+			}
+		}
+
+		// Seteo paso.
+		if ($is_ok)
+		{
+			// Seteo el paso como terminado.
+			if ($_SESSION['step'] < 2)
+			{
+				$_SESSION['step'] = 2;
+			}
+		}
+		else
+		{
+			$_SESSION['step'] = 1;
+		}
+
+		// Paso estado a la vista.
+		$vista->assign('can_continue', $is_ok);
+
+		// Seteo el menu.
+		$this->template->assign('steps', $this->steps(1));
+
+		// Seteo la vista.
+		$this->template->assign('contenido', $vista->parse());
+	}
+
+	/**
+	 * Configuración de la base de datos.
+	 */
+	public function action_bd()
+	{
+		// Verifico estado de la base de datos.
+		if ($this->check_database())
+		{
+			// Seteo el paso como terminado.
+			if ($_SESSION['step'] < 3)
+			{
+				$_SESSION['step'] = 3;
+			}
+			Request::redirect('/installer/bd_install/');
+		}
+
+		// Cargo la vista.
+		$vista = View::factory('bd');
+
+		// Listado de drivers.
+		$drivers = array();
+
+		if (function_exists('mysql_connect'))
+		{
+			$drivers['mysql'] = 'MySQL';
+		}
+
+		if (function_exists('mysqli_connect'))
+		{
+			$drivers['mysqli'] = 'MySQLi';
+		}
+
+		if (class_exists('pdo'))
+		{
+			$drivers['pdo'] = 'PDO';
+		}
+
+		$vista->assign('drivers', $drivers);
+
+		// Información por defecto.
+		$vista->assign('driver', isset($drivers['mysql']) ? 'mysql' : (isset($drivers['mysqli']) ? 'mysqli' : 'pdo'));
+		$vista->assign('error_driver', FALSE);
+		$vista->assign('host', '');
+		$vista->assign('error_host', FALSE);
+		$vista->assign('db_name', '');
+		$vista->assign('error_db_name', FALSE);
+		$vista->assign('usuario', '');
+		$vista->assign('error_usuario', FALSE);
+		$vista->assign('password', '');
+		$vista->assign('error_password', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Obtengo los datos.
+			foreach (array('driver', 'host', 'db_name', 'usuario', 'password') as $v)
+			{
+				$$v = isset($_POST[$v]) ? trim($_POST[$v]) : NULL;
+				$vista->assign($v, $$v);
+			}
+
+			$error = FALSE;
+
+			// Verifico driver.
+			if ( ! isset($drivers[$driver]))
+			{
+				$error = TRUE;
+				$vista->assign('error_driver', 'El driver seleccionado es incorrecto.');
+			}
+
+			// Verifico lo datos.
+			if ($driver == 'mysql' || $driver == 'mysqli')
+			{
+				if (empty($host))
+				{
+					$error = TRUE;
+					$vista->assign('error_host', 'Debes ingresar un host válido.');
+				}
+
+				if (empty($db_name))
+				{
+					$error = TRUE;
+					$vista->assign('error_db_name', 'Debes ingresar una base de datos válida.');
+				}
+			}
+
+			if ( ! $error)
+			{
+				if ($driver == 'pdo')
+				{
+					// Genero arreglo de configuraciones.
+					$config = array(
+						'type' => $driver,
+						'dsn' => $host,
+						'username' => $usuario,
+						'password' => $password
+					);
+				}
+				else
+				{
+					// Genero arreglo de configuraciones.
+					$config = array(
+						'type' => $driver,
+						'host' => $host,
+						'db_name' => $db_name,
+						'username' => $usuario,
+						'password' => $password
+					);
+				}
+
+				//FIXME: Puede generar una falla de inyección de código PHP.
+				//FIXME: Verificar presencia de ' y escaparlos.
+
+				// Genero template.
+				$tmp = '<?php defined(\'APP_BASE\') || die(\'No direct access allowed.\');'.PHP_EOL.'return '.$this->value_to_php($config).';';
+
+				// Guardo la configuración.
+				file_put_contents(CONFIG_PATH.DS.'database.php', $tmp);
+
+				// Intento conectar.
+				if($this->check_database())
+				{
+					// Seteo el paso como terminado.
+					if ($_SESSION['step'] < 3)
+					{
+						$_SESSION['step'] = 3;
+					}
+					Request::redirect('/installer/bd_install/');
+				}
+				else
+				{
+					// Borro archivo de configuración.
+					if (file_exists(CONFIG_PATH.DS.'database.php'))
+					{
+						unlink(CONFIG_PATH.DS.'database.php');
+					}
+
+					// Informo resultado.
+					$vista->assign('error', 'No se pudo conectar a la base de datos. Verifique los datos ingresados.');
+				}
+			}
+		}
+
+		// Seteo el menu.
+		$this->template->assign('steps', $this->steps(2));
+
+		// Seteo la vista.
+		$this->template->assign('contenido', $vista->parse());
+	}
+
+	/**
+	 * Verificamos si la conección es correcta.
+	 * @return bool
+	 */
+	private function check_database()
+	{
+		// Verifico archivo de configuración.
+		if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
+		{
+			return FALSE;
+		}
+
+		// Verifico los datos de conección.
+		try {
+			Database::get_instance(TRUE);
+			return TRUE;
+		}
+		catch (Database_Exception $e)
+		{
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Obtenemos la representación PHP de una variable.
+	 * @param mixed $value Variable a representar.
+	 * @return string
+	 */
+	private function value_to_php($value)
+	{
+		if ($value === TRUE || $value === FALSE)
+		{
+			return $value ? 'TRUE' : 'FALSE';
+		}
+		elseif (is_int($value) || is_float($value))
+		{
+			return "$value";
+		}
+		elseif (is_string($value))
+		{
+			return "'$value'";
+		}
+		elseif (is_array($value))
+		{
+			$rst = array();
+			foreach ($value as $k => $v)
+			{
+				if (is_int($k))
+				{
+					$rst[] = $this->value_to_php($v);
+				}
+				else
+				{
+					$rst[] = "'$k' => ".$this->value_to_php($v);
+				}
+			}
+
+			return 'array('.implode(', ', $rst).')';
+		}
+		return 'NULL';
+	}
+
+	/**
+	 * Instalamos la base de datos.
+	 */
+	public function action_bd_install()
+	{
+		// Verifico estado de la base de datos.
+		if ( ! $this->check_database())
+		{
+			// Vuelvo para atrás.
+			$_SESSION['step'] = 2;
+			Request::redirect('/installer/bd');
+		}
+
+		// Cargo la vista.
+		$vista = View::factory('bd_installer');
+
+		// Cargo las tablas.
+		$database_list = require(APP_BASE.DS.'installer'.DS.'database.'.FILE_EXT);
+
+		// Armo listado para las vistas.
+		$lst = array();
+		foreach ($database_list as $k => $v)
+		{
+			$lst[$k] = array('titulo' => $v[0]);
+		}
+
+		// Ejecuto el listado de consultas.
+		if (Request::method() == 'POST')
+		{
+			// Cargo la base de datos.
+			$db = Database::get_instance();
+
+			// Error global. Permite saber si todo fue correcto para continuar.
+			$error_global = FALSE;
+
+			// Ejecuto las consultas.
+			foreach ($database_list as $k => $v)
+			{
+				// Ejecuto las consultas.
+				$error = FALSE;
+				foreach ($v[1] as $query)
+				{
+					try {
+						switch ($query[0])
+						{
+							case 'INSERT':
+								list(, $c) = $db->insert($query[1], isset($query[2]) ? $query[2] : NULL);
+								if ($c <= 0)
+								{
+									throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
+								}
+								break;
+							case 'DELETE':
+								if ($db->delete($query[1], isset($query[2]) ? $query[2] : NULL) <= 0)
+								{
+									throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
+								}
+								break;
+							case 'UPDATE':
+							case 'ALTER':
+								if ($db->update($query[1], isset($query[2]) ? $query[2] : NULL) <= 0)
+								{
+									throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
+								}
+								break;
+							case 'QUERY':
+								if ($db->query($query[1], isset($query[2]) ? $query[2] : NULL) <= 0)
+								{
+									throw new Exception("El resultado de la consulta: {$query[1]}' es incorrecto.");
+								}
+								break;
+						}
+					}
+					catch (Exception $e)
+					{
+						if (isset($query[3]) && isset($query[3]['error_no']))
+						{
+							if ($query[3]['error_no'] == $e->getCode())
+							{
+								continue;
+							}
+						}
+
+						$error = '['.$e->getCode().'] '.$e->getMessage();
+						break;
+					}
+				}
+
+				// Agrego el resultado.
+				if ($error === FALSE)
+				{
+					$lst[$k]['success'] = TRUE;
+				}
+				else
+				{
+					$lst[$k]['error'] = $error;
+					$error_global = TRUE;
+				}
+			}
+
+			if ( ! $error_global)
+			{
+				// Seteo el paso como terminado.
+				if ($_SESSION['step'] < 4)
+				{
+					$_SESSION['step'] = 4;
+				}
+				$vista->assign('execute', TRUE);
+			}
+		}
+
+		// Paso listado resultado.
+		$vista->assign('consultas', $lst);
+
+		// Seteo el menu.
+		$this->template->assign('steps', $this->steps(3));
+
+		// Seteo la vista.
+		$this->template->assign('contenido', $vista->parse());
+	}
+
+	/**
+	 * Configuramos parámetros del sistema.
+	 */
+	public function action_configuracion()
+	{
+		// Cargo la vista.
+		$vista = View::factory('configuracion');
+
+		// Seteo el menu.
+		$this->template->assign('steps', $this->steps(4));
+
+		// Cargamos las configuraciones.
+		$model_configuracion = new Model_Configuracion;
+
+		// Datos por defecto.
+		foreach(array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
+		{
+			$vista->assign($v, '');
+			$vista->assign('error_'.$v, FALSE);
+		}
+
+		if (Request::method() == 'POST')
+		{
+			// Cargo los valores.
+			foreach(array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
+			{
+				$$v = isset($_POST[$v]) ? trim($_POST[$v]) : '';
+			}
+
+			// Limpio los valores.
+			$nombre = preg_replace('/\s+/', ' ', $_POST['nombre']);
+			$descripcion = preg_replace('/\s+/', ' ', $_POST['descripcion']);
+
+			// Seteo nuevos valores a las vistas.
+			foreach(array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
+			{
+				$vista->assign($v, $$v);
+			}
+
+			$error = FALSE;
+
+			// Verifico el nombre.
+			if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{2,20}$/iD', $nombre))
+			{
+				$error = TRUE;
+				$vista->assign('error_nombre', 'El nombre debe tener entre 2 y 20 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
+			}
+
+			// Verifico el contenido.
+			if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{5,30}$/iD', $descripcion))
+			{
+				$error = TRUE;
+				$vista->assign('error_descripcion', 'La descripción debe tener entre 5 y 30 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
+			}
+
+			// Verifico usuario.
+			if ( ! preg_match('/^[a-zA-Z0-9]{4,16}$/D', $usuario))
+			{
+				$error = TRUE;
+				$vista->assign('error_usuario', 'El usuario debe tener entren 4 y 16 caracteres alphanumericos.');
+			}
+
+			// Verifico email.
+			if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $email))
+			{
+				$error = TRUE;
+				$vista->assign('error_usuario', 'El E-Mail ingresado no es válido.');
+			}
+
+			// Verifico contraseña.
+			if ( ! isset($password{6}) || isset($password{21}))
+			{
+				$error = TRUE;
+				$vista->assign('error_password', 'La contraseña debe tener entre 6 y 20 caracteres.');
+			}
+
+			// Verifico contraseña repetida válida.
+			if ($password !== $cpassword)
+			{
+				$error = TRUE;
+				$vista->assign('error_cpassword', 'Las contraseñas ingresadas no coinciden.');
+			}
+
+			// Actualizo los valores.
+			if ( ! $error)
+			{
+				// Actualizo las configuraciones.
+				$model_configuracion->nombre = $nombre;
+				$model_configuracion->descripcion = $descripcion;
+
+				// Cargo modelo de usuarios.
+				$model_usuario = new Model_Usuario;
+
+				// Verifico no exista la cuenta.
+				if ($model_usuario->exists_nick($usuario))
+				{
+					// Actualizo los datos.
+					$model_usuario->load_by_nick($usuario);
+					$model_usuario->actualizar_contrasena($password);
+					$model_usuario->actualizar_campo('rango', 1);
+					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
+					$model_usuario->actualizar_campo('email', $email);
+				}
+				else
+				{
+					// Creo la cuenta.
+					$model_usuario->register($usuario, $email, $password);
+					$model_usuario->actualizar_campo('rango', 1);
+					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
+				}
+
+				// Seteo el paso como terminado.
+				if ($_SESSION['step'] < 4)
+				{
+					$_SESSION['step'] = 4;
+				}
+
+				// Redirecciono al siguiente.
+				Request::redirect('/installer/finalizacion/');
+			}
+		}
+
+		// Seteo la vista.
+		$this->template->assign('contenido', $vista->parse());
+	}
+
+	/**
+	 * Configuración de la cache del sitio.
+	 */
+	public function action_finalizacion()
+	{
+		// Cargo la vista.
+		$vista = View::factory('finalizacion');
+
+		// Seteo el paso como terminado.
+		if ($_SESSION['step'] < 6)
+		{
+			$_SESSION['step'] = 6;
+		}
+
+		// Seteo el menu.
+		$this->template->assign('steps', $this->steps(6));
+
+		// Seteo la vista.
+		$this->template->assign('contenido', $vista->parse());
 	}
 }
