@@ -557,20 +557,20 @@ class Installer_Controller {
 								}
 								break;
 							case 'DELETE':
-								if ($db->delete($query[1], isset($query[2]) ? $query[2] : NULL) <= 0)
+								if ($db->delete($query[1], isset($query[2]) ? $query[2] : NULL) !== FALSE)
 								{
 									throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
 								}
 								break;
 							case 'UPDATE':
 							case 'ALTER':
-								if ($db->update($query[1], isset($query[2]) ? $query[2] : NULL) <= 0)
+								if ($db->update($query[1], isset($query[2]) ? $query[2] : NULL) !== FALSE)
 								{
 									throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
 								}
 								break;
 							case 'QUERY':
-								if ($db->query($query[1], isset($query[2]) ? $query[2] : NULL) <= 0)
+								if ($db->query($query[1], isset($query[2]) ? $query[2] : NULL) !== FALSE)
 								{
 									throw new Exception("El resultado de la consulta: {$query[1]}' es incorrecto.");
 								}

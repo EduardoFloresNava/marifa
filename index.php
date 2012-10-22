@@ -91,6 +91,11 @@ define('SITE_URL', get_site_url());
 // Verifico que no exista el instalador.
 if (file_exists(APP_BASE.DS.'installer') || file_exists(APP_BASE.DS.'installer.php'))
 {
+	if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
+	{
+		Request::redirect('/installer/');
+	}
+
 	if (isset($_GET['finish']) && $_GET['finish'] == 1)
 	{
 		session_start();
@@ -143,9 +148,6 @@ if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
 	//TODO: lo mandamos al instalador.
 	die("Falta configurar la base de datos");
 }
-
-// Forzamos una cache inexistente. Comente esta linea para habilitar la cache.
-//Configuraciones::set('cache.type', NULL);
 
 // Cargamos la cache.
 Cache::get_instance();
