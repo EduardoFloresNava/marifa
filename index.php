@@ -89,28 +89,31 @@ spl_autoload_register('loader_load');
 define('SITE_URL', get_site_url());
 
 // Verifico que no exista el instalador.
-if (file_exists(APP_BASE.DS.'installer') || file_exists(APP_BASE.DS.'installer.php'))
+if (PRODUCTION)
 {
-	if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
+	if (file_exists(APP_BASE.DS.'installer') || file_exists(APP_BASE.DS.'installer.php'))
 	{
-		Request::redirect('/installer/');
-	}
-
-	if (isset($_GET['finish']) && $_GET['finish'] == 1)
-	{
-		session_start();
-		if (isset($_SESSION['step']) && $_SESSION['step'] >= 5)
+		if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
 		{
-			// Intento eliminar.
-			@unlink('installer.php');
-			Update_Utils::unlink('installer');
-
-			// Redirecciono.
-			Request::redirect('/');
+			Request::redirect('/installer/');
 		}
-	}
 
-	die('Debes eliminar el instalador para poder acceder al sitio. Para intentar de forma autom&aacute;tica has click <a href="/?finish=1">aqu&iacute;</a>.');
+		if (isset($_GET['finish']) && $_GET['finish'] == 1)
+		{
+			session_start();
+			if (isset($_SESSION['step']) && $_SESSION['step'] >= 5)
+			{
+				// Intento eliminar.
+				@unlink('installer.php');
+				Update_Utils::unlink('installer');
+
+				// Redirecciono.
+				Request::redirect('/');
+			}
+		}
+
+		die('Debes eliminar el instalador para poder acceder al sitio. Para intentar de forma autom&aacute;tica has click <a href="/?finish=1">aqu&iacute;</a>.');
+	}
 }
 
 // Verifico MCrypt.

@@ -463,7 +463,7 @@ $consultas[] = array(
 		array('ALTER', 'CREATE TABLE  `usuario` (
 				`id` int(11) NOT NULL AUTO_INCREMENT,
 				`nick` varchar(16) NOT NULL,
-				`password` varchar(60) NOT NULL,
+				`password` varchar(64) NOT NULL,
 				`email` varchar(50) NOT NULL,
 				`rango` int(11) NOT NULL DEFAULT 1,
 				`puntos` int(11) NOT NULL DEFAULT 10,
