@@ -52,17 +52,16 @@ class Base_Cache {
 	{
 		if ( ! isset(self::$instance))
 		{
-			// Verificamos si tenemos información de la cache.
-			$data = configuracion_obtener(CONFIG_PATH.DS.'cache.php');
-
-			//if ( ! is_array($data))
-			//{
-				// Tratamos de cargarlo.
-			//	Configuraciones::load(CONFIG_PATH.DS.'cache.php', TRUE);
-
-				// Volvemos a cargar.
-			//	$data = Configuraciones::get('cache');
-			//}
+			if (file_exists(CONFIG_PATH.DS.'cache.php'))
+			{
+				// Verificamos si tenemos información de la cache.
+				$data = configuracion_obtener(CONFIG_PATH.DS.'cache.php');
+			}
+			else
+			{
+				// Cargamos dummy.
+				$data = array('type' => 'dummy');
+			}
 
 			// Comprobamos el tipo de cache.
 			if ( ! array_key_exists('type', $data))

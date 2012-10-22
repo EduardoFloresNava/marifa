@@ -70,6 +70,31 @@ function configuracion_obtener($file, $prepend_name = FALSE)
 }
 
 /**
+ * Funcion para la carga de una clase del instalador.
+ * Usada por spl_autoload_register.
+ * @param string $class Nombre de la clase a cargar.
+ * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
+ */
+function installer_loader_load($class)
+{
+	// Verifico si es instalador.
+	if (substr($class, 0, 10) != 'Installer_')
+	{
+		return FALSE;
+	}
+
+	// Tranformamos el nombre de la clase a un path equivalente.
+	$class = strtolower(preg_replace('/\/+/', DS, preg_replace('/\_/', DS, $class)));
+
+	// Comprobamos que exista el archivo de la clase.
+	if (file_exists(APP_BASE.DS.$class.'.'.FILE_EXT))
+	{
+		// Incluimos el archivo.
+		require(APP_BASE.DS.$class.'.'.FILE_EXT);
+	}
+}
+
+/**
  * Funcion para la carga de una clase.
  * Usada por spl_autoload_register.
  * @param string $class Nombre de la clase a cargar.

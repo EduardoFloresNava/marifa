@@ -193,7 +193,7 @@ class Base_Controller_Usuario extends Controller {
 				$error = FALSE;
 
 				// Verificamos el nick.
-				if ( ! preg_match('/^[a-zA-Z0-9áéíóúAÉÍÓÚÑñ ]{4,16}$/D', $_POST['nick']))
+				if ( ! preg_match('/^[a-zA-Z0-9]{4,16}$/D', $_POST['nick']))
 				{
 					$view_usuario->assign('error_nombre', TRUE);
 					$error = TRUE;

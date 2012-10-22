@@ -45,6 +45,11 @@ class Base_Request {
 	 */
 	public static function add_stack($method , $controller, $action, $params, $plugin)
 	{
+		if ( ! is_array(self::$request))
+		{
+			self::$request = array();
+		}
+
 		// Obtenemos metodo.
 		$method = ($method === NULL) ? (self::method()) : $method;
 
