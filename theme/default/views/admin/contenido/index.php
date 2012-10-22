@@ -28,11 +28,15 @@
 	</div>
 	<div class="span4">
 		<h2 class="title">Posts categoría</h2>
+		{if="count($posts_categorias) > 0"}
 		<ul>
 			{loop="$posts_categorias"}
 			<li>{$key}: <span class="badge pull-right">{$value}</span></li>
 			{/loop}
 		</ul>
+		{else}
+		<div class="alert">No hay posts aún.</div>
+		{/if}
 	</div>
 </div>
 <div class="row-fluid statistics">
@@ -57,10 +61,14 @@
 	</div>
 	<div class="span4">
 		<h2 class="title">Fotos por categoría</h2>
+		{if="count($fotos_categorias) > 0"}
 		<ul>
 			{loop="$fotos_categorias"}
 			<li>{$key}: <span class="badge pull-right">{$value}</span></li>
 			{/loop}
 		</ul>
+		{else}
+		<div class="alert">No hay fotos aún.</div>
+		{/if}
 	</div>
 </div>

@@ -1,4 +1,5 @@
 <div class="fotos">
+	{if="count($fotos) > 0"}
 	<ul class="thumbnails">
 		{loop="$fotos"}<li class="span4">
 			<div class="thumbnail">
@@ -33,4 +34,7 @@
 			</div>
 		</li>{/loop}
 	</ul>
+	{else}
+	<div class="alert">No hay fotos disponibles</div>
+	{/if}
 </div>

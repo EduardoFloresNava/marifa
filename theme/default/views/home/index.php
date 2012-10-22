@@ -15,17 +15,20 @@
 	</div>
 	<div class="span3">
 		<div class="home-search">
-			<ul class="nav nav-tabs">
+			<!--<ul class="nav nav-tabs">
 				<li class="active"><a href="#">Posts</a></li>
 				<li><a href="#">Temas</a></li>
-			</ul>
+			</ul>-->
+			<div class="row-fluid titulo">
+				<h3>Buscador</h3>
+			</div>
 			<div class="row-fluid contenido">
-				<form>
-					<input type="text" class="span8">
-					<button type="submit" class="btn span4">Search</button>
+				<form action="/buscador/q/" method="POST" enctype="multipart/form-data">
+					<input type="text" class="span8" name="q" id="q" placeholder="Contenido a buscar...">
+					<button type="submit" class="btn span4">Buscar</button>
 				</form>
 			</div>
-			<a class="more-options" href="#">Opciones</a>
+			<a class="more-options" href="/buscador/">Opciones</a>
 		</div>
 		<div class="home-statistics">
 			<div class="row-fluid">
@@ -43,25 +46,30 @@
 		</div>
 		<div>
 			<h3 class="title">&Uacute;ltimos comentarios</h3>
+			{if="count($ultimos_comentarios) > 0"}
 			<ol>
 			{loop="$ultimos_comentarios"}
 				<li>
 					<b><a href="/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="/post/index/{$value.post.id}">{$value.post.titulo}</a>
 				</li>
-			{else}
-				<li><div class="alert">No hay comentarios</div></li>
 			{/loop}
 			</ol>
+			{else}
+			<div class="alert">No hay comentarios</div>
+			{/if}
 		</div>
 		<div>
 			<h3 class="title">TOPs posts</h3>
+			{if="count($top_posts) > 0"}
 			<ol>
 			{loop="$top_posts"}
 				<li><a href="/post/index/{$value.id}">{$value.titulo}<span class="badge pull-right">{$value.puntos}</a></li>
-			{else}
-				<li><div class="alert">No hay puntos</div></li>
+
 			{/loop}
 			</ol>
+			{else}
+			<div class="alert">No hay puntos</div>
+			{/if}
 		</div>
 		<div>
 			<h3 class="title">TOPs usuarios</h3>
@@ -82,6 +90,8 @@
 					<img src="{$ultimas_fotos.0.url}" />
 				</div>
 			</a>
+			{else}
+			<div class="alert">No hay fotos para mostrar</div>
 			{/if}
 		</div>
 	</div>

@@ -1,5 +1,6 @@
 <ul class="breadcrumb">
     <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
+    <li><a href="/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
     <li class="active">Rangos</li>
 </ul>
 <div class="clearfix header">
@@ -11,7 +12,6 @@
 <table class="table table-bordered">
 	<thead>
 		<tr>
-			<th>Id</th>
 			<th>Orden</th>
 			<th>Nombre</th>
 			<th>Color</th>
@@ -22,7 +22,6 @@
 	<tbody>
 		{loop="$rangos"}
 		<tr>
-			<td>{$value.id}</td>
 			<td>#{$value.orden}</td>
 			<td>{$value.nombre}</td>
 			<td><span style="color: #{function="dechex($value.color)"}; background-color: #{function="Utils::getContrastYIQ(dechex($value.color))"};">{function="strtoupper(dechex($value.color))"}</span></td>

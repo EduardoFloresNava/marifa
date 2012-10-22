@@ -155,16 +155,15 @@ $consultas[] = array(
 $consultas[] = array(
 	'Tabla de denuncias a fotos',
 	array(
-		array('ALTER', 'CREATE TABLE `foto_comentario` (
-				`id` int(11) NOT NULL AUTO_INCREMENT,
-				`foto_id` int(11) NOT NULL,
-				`usuario_id` int(11) NOT NULL,
-				`comentario` mediumtext NOT NULL,
-				`fecha` datetime NOT NULL,
-				`estado` int(11) NOT NULL,
-				PRIMARY KEY (`id`),
-				KEY `foto_id` (`foto_id`),
-				KEY `usuario_id` (`usuario_id`)
+		array('ALTER', 'CREATE TABLE `foto_denuncia` (
+				`id` INTEGER NOT NULL AUTO_INCREMENT,
+				`foto_id` INTEGER NOT NULL,
+				`usuario_id` INTEGER NOT NULL,
+				`motivo` INTEGER NOT NULL,
+				`comentario` MEDIUMTEXT NULL DEFAULT NULL,
+				`fecha` DATETIME NOT NULL,
+				`estado` INTEGER NOT NULL DEFAULT 0,
+				PRIMARY KEY (`id`)
 			);', NULL, array('error_no' => 1050)
 		)
 	)

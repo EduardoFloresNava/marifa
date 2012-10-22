@@ -573,19 +573,19 @@ class Base_Model_Post extends Model_Dataset {
 	{
 		if ($estado !== NULL && $categoria !== NULL)
 		{
-			return Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE estado = ? AND categoria = ?', array($estado, $categoria))->get_var(Database_Query::FIELD_INT);
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE estado = ? AND categoria = ?', array($estado, $categoria))->get_var(Database_Query::FIELD_INT);
 		}
 
 		if ($estado !== NULL)
 		{
-			return Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
 		}
 
 		if ($categoria !== NULL)
 		{
-			return Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE categoria = ?', $categoria)->get_var(Database_Query::FIELD_INT);
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE categoria = ?', $categoria)->get_var(Database_Query::FIELD_INT);
 		}
-		return Database::get_instance()->query('SELECT COUNT(*) FROM post')->get_var(Database_Query::FIELD_INT);
+		return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post')->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -623,7 +623,7 @@ class Base_Model_Post extends Model_Dataset {
 		$lst = array();
 		foreach ($categorias as $k => $v)
 		{
-			$lst[$v] = isset($rst[$k]) ? $rst[$k] : 0;
+			$lst[$v] = isset($rst[$k]) ? (int) $rst[$k] : 0;
 		}
 
 		// Calculo total.
@@ -638,7 +638,7 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function cantidad_correccion()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post_moderado INNER JOIN post ON post_moderado.padre_id = post.id WHERE post.estado = 1')->get_var(Database_Query::FIELD_INT);
+		return (int) $this->db->query('SELECT COUNT(*) FROM post_moderado INNER JOIN post ON post_moderado.padre_id = post.id WHERE post.estado = 1')->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -659,11 +659,11 @@ class Base_Model_Post extends Model_Dataset {
 	{
 		if ($this->primary_key['id'] !== NULL)
 		{
-			return $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+			return (int) $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 		}
 		else
 		{
-			return $this->db->query('SELECT COUNT(*) FROM post_comentario')->get_var(Database_Query::FIELD_INT);
+			return (int) $this->db->query('SELECT COUNT(*) FROM post_comentario')->get_var(Database_Query::FIELD_INT);
 		}
 	}
 
@@ -1198,5 +1198,5 @@ class Base_Model_Post extends Model_Dataset {
 		}
 		return array($lst, $total);
 	}
-	
+
 }

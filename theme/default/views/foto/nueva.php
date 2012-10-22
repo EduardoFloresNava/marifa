@@ -94,7 +94,7 @@
 			<div class="control-group{if="$error_categoria"} error{/if}">
 				<label class="control-label" for="categoria">Categor&iacute;a</label>
 				<div class="controls">
-					<select class="span12" name="categoria" id="categoria" size="10">
+					<select class="span10" name="categoria" id="categoria" size="10">
 						{loop="$categorias"}
 						<option value="{$value.seo}"{if="$categoria == $value.seo"}selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
 					</select>

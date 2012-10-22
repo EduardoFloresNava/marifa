@@ -5,7 +5,7 @@
 				<legend>Inicio de Sessi&oacute;n</legend>
 
 				{if="isset($error)"}
-				<div class="alert">
+				<div class="alert alert-danger">
 					<a class="close" data-dismiss="alert">×</a>
 					<strong>Error: </strong>{$error}
 				</div>

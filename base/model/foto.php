@@ -347,11 +347,11 @@ class Base_Model_Foto extends Model_Dataset {
 	{
 		if ($estado !== NULL)
 		{
-			return Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
 		}
 		else
 		{
-			return Database::get_instance()->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
 		}
 	}
 
@@ -376,7 +376,7 @@ class Base_Model_Foto extends Model_Dataset {
 		$lst = array();
 		foreach ($categorias as $k => $v)
 		{
-			$lst[$v] = isset($rst[$k]) ? $rst[$k] : 0;
+			$lst[$v] = isset($rst[$k]) ? (int) $rst[$k] : 0;
 		}
 
 		// Calculo total.
@@ -412,11 +412,11 @@ class Base_Model_Foto extends Model_Dataset {
 	{
 		if (isset($this->primary_key['id']) && $this->primary_key['id'] !== NULL)
 		{
-			return $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+			return (int) $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 		}
 		else
 		{
-			return $this->db->query('SELECT COUNT(*) FROM foto_comentario')->get_var(Database_Query::FIELD_INT);
+			return (int) $this->db->query('SELECT COUNT(*) FROM foto_comentario')->get_var(Database_Query::FIELD_INT);
 		}
 	}
 

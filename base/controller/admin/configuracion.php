@@ -232,29 +232,6 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$model_configuracion = new Model_Configuracion;
 		$ips_matenimiento = unserialize($model_configuracion->get('ip_mantenimiento', 'a:0:{}'));
 
-		// Verifico si está habilitado el bloqueo.
-		$vista->assign('is_locked', $mantenimiento->is_locked());
-		if ($mantenimiento->is_locked())
-		{
-			$locked_for_me = $mantenimiento->is_locked_for(IP::get_ip_addr());
-		}
-		else
-		{
-			$locked_for_me = TRUE;
-			$my_ip = IP::get_ip_addr();
-			foreach ($ips_matenimiento as $ip)
-			{
-				if ($my_ip == $ip || IP::ip_in_range($my_ip, $ip))
-				{
-					$locked_for_me = FALSE;
-					break;
-				}
-			}
-			unset($my_ip);
-		}
-		$vista->assign('is_locked_for_me', $locked_for_me);
-		unset($locked_for_me);
-
 		// Pasamos los datos a la vista.
 		$vista->assign('ip', implode(PHP_EOL, $ips_matenimiento));
 		$vista->assign('error_ip', FALSE);
@@ -313,6 +290,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				{
 					// Actualizo los valores.
 					$model_configuracion->ip_mantenimiento = serialize($ips);
+					$ips_matenimiento = $ips;
 
 					// Actualizo si es necesario.
 					if ($mantenimiento->is_locked())
@@ -325,6 +303,29 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				}
 			}
 		}
+
+		// Verifico si está habilitado el bloqueo.
+		$vista->assign('is_locked', $mantenimiento->is_locked());
+		if ($mantenimiento->is_locked())
+		{
+			$locked_for_me = $mantenimiento->is_locked_for(IP::get_ip_addr());
+		}
+		else
+		{
+			$locked_for_me = TRUE;
+			$my_ip = IP::get_ip_addr();
+			foreach ($ips_matenimiento as $ip)
+			{
+				if ($my_ip == $ip || IP::ip_in_range($my_ip, $ip))
+				{
+					$locked_for_me = FALSE;
+					break;
+				}
+			}
+			unset($my_ip);
+		}
+		$vista->assign('is_locked_for_me', $locked_for_me);
+		unset($locked_for_me);
 
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));

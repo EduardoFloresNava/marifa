@@ -1,5 +1,6 @@
 <ul class="breadcrumb">
     <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
+	<li><a href="/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
     <li><a href="/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
     <li class="active">Nuevo</li>
 </ul>
