@@ -18,7 +18,17 @@
 	</tr>
 </table>
 {if="isset($success)"}<div class="alert alert-success">{$success}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
-<form method="POST" action="">
+<form method="POST" action="" name="permisos">
+	<div class="btn-toolbar">
+		<div class="btn-group">
+			<a href="#" id="permiso-tipo-usuario" class="btn btn-info">Usuario</a>
+			<a href="#" id="permiso-tipo-moderador" class="btn btn-info">Moderador</a>
+			<a href="#" id="permiso-tipo-administrador" class="btn btn-info">Administrador</a>
+		</div>
+		<div class="btn-group pull-right">
+			<button type="submit" class="btn btn-primary">Actualizar</button>
+		</div>
+	</div>
 	<table class="table table-bordered">
 		<thead>
 			<tr>

@@ -1,4 +1,4 @@
-<h2 class="title">Favoritos - Posts</h2>
+<h2 class="title">Favoritos - Fotos</h2>
 {if="count($favoritos)"}
 <table class="table table-bordered">
 	<thead>

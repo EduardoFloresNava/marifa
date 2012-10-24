@@ -490,7 +490,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	 */
 	public function listado()
 	{
-		$rst = $this->db->query('SELECT id FROM usuario_rango ORDER BY orden DESC')->get_pairs(Database_Query::FIELD_INT);
+		$rst = $this->db->query('SELECT id FROM usuario_rango ORDER BY orden ASC')->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
 		foreach ($rst as $v)

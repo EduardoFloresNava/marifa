@@ -66,7 +66,7 @@ class Base_Controller_Post extends Controller {
 				}
 				break;
 			case Model_Post::ESTADO_BORRADOR:
-				if ($model_post->usuario_id !== Usuario::$usuario_id)
+				if ($model_post->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
 				{
 					$_SESSION['flash_error'] = 'El post al que intentas acceder no se encuentra disponible.';
 					Request::redirect('/');
@@ -180,13 +180,18 @@ class Base_Controller_Post extends Controller {
 			// Etiquetas.
 			$view->assign('etiquetas', $model_post->etiquetas());
 
+			// Acciones posibles sobre comentarios.
+			$view->assign('comentario_eliminar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_ELIMINAR));
+			$view->assign('comentario_ocultar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR));
+			$view->assign('comentario_editar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_EDITAR));
+
 			// Comentarios del post.
 			$cmts = $model_post->comentarios(NULL);
 			$l_cmt = array();
 			foreach ($cmts as $cmt)
 			{
 				// Verifico omito los no visibles si el usuario no puede verlos.
-				if ($cmt->estado !== Model_Comentario::ESTADO_VISIBLE &&  ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
+				if ($cmt->estado !== Model_Comentario::ESTADO_VISIBLE && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
 				{
 					continue;
 				}
@@ -759,20 +764,81 @@ class Base_Controller_Post extends Controller {
 	/**
 	 * Ocultamos un comentario.
 	 * @param int $comentario ID del comentario a ocultar.
+	 * @param bool $tipo 0 para ocultar, 1 para mostrar.
 	 */
-	public function action_ocultar_comentario($comentario)
+	public function action_ocultar_comentario($comentario, $tipo)
 	{
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder ocultar comentarios en posts.';
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder ocultar/mostrar comentarios en posts.';
+			Request::redirect('/usuario/login');
+		}
+
+		$comentario = (int) $comentario;
+
+		// Cargamos el comentario.
+		$model_comentario = new Model_Post_Comentario($comentario);
+
+		// Verificamos existencia.
+		if ( ! is_array($model_comentario->as_array()))
+		{
+			$_SESSION['flash_error'] = 'El comentario que deseas ocultar/mostrar no se encuentra disponible.';
+			Request::redirect('/');
+		}
+
+		// Valido el tipo.
+		$tipo = (bool) $tipo;
+
+		// Verifico el estado.
+		if (($tipo && $model_comentario->estado !== 1) || ( ! $tipo && $model_comentario->estado !== 0))
+		{
+			$_SESSION['flash_error'] = 'El comentario que deseas ocultar/mostrar no se encuentra disponible.';
+			Request::redirect('/post/index/'.$model_comentario->post_id);
+		}
+
+		// Verifico los permisos.
+		if ($model_comentario->estado == 0 && Usuario::$usuario_id !== $model_comentario->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
+		{
+			$_SESSION['flash_error'] = 'No tienes los permisos para ocultar/mostrar comentarios.';
+			Request::redirect('/post/index/'.$model_comentario->post_id);
+		}
+		elseif ($model_comentario->estado == 1 && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
+		{
+			$_SESSION['flash_error'] = 'No tienes los permisos para ocultar/mostrar comentarios.';
+			Request::redirect('/post/index/'.$model_comentario->post_id);
+		}
+
+		//TODO: agregar otro estado para diferenciar usuario de moderador.
+
+		// Actualizo el estado.
+		$model_comentario->actualizar_estado($tipo ? Model_Post_Comentario::ESTADO_VISIBLE : Model_Post_Comentario::ESTADO_OCULTO);
+
+		// Envio el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->post()->usuario_id), $tipo ? 'post_comentario_mostrar' : 'post_comentario_ocultar', $comentario, Usuario::$usuario_id);
+
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.';
+		Request::redirect('/post/index/'.$model_comentario->post_id);
+	}
+
+	/**
+	 * Eliminamos un comentario en un post.
+	 * @param int $comentario ID del comentario a eliminar.
+	 */
+	public function action_eliminar_comentario($comentario)
+	{
+		// Verificamos usuario logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder borrar comentarios en posts.';
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico los permisos.
-		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_ELIMINAR))
 		{
-			$_SESSION['flash_error'] = 'No tienes los permisos para ocultar comentarios.';
+			$_SESSION['flash_error'] = 'No tienes los permisos para borrar comentarios.';
 			Request::redirect('/');
 		}
 
@@ -784,26 +850,110 @@ class Base_Controller_Post extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
 		{
-			$_SESSION['flash_error'] = 'El comentario que deseas ocultar no se encuentra disponible.';
+			$_SESSION['flash_error'] = 'El comentario que deseas borrar no se encuentra disponible.';
 			Request::redirect('/');
 		}
 
 		// Verifico el estado.
-		if ( ! $model_comentario->estado !== Model_Post_Comentario::ESTADO_VISIBLE)
+		if ($model_comentario->estado === 2)
 		{
-			$_SESSION['flash_error'] = 'El comentario que deseas ocultar no se encuentra disponible.';
-			Request::redirect('/');
+			$_SESSION['flash_error'] = 'El comentario que deseas borrar no se encuentra disponible.';
+			Request::redirect('/post/index/'.$model_comentario->post_id);
 		}
 
 		// Actualizo el estado.
-		$model_comentario->actualizar_estado(Model_Post_Comentario::ESTADO_OCULTO);
+		$model_comentario->actualizar_estado(Model_Post_Comentario::ESTADO_BORRADO);
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->post()->usuario_id), 'post_comentario_ocultar', $comentario, Usuario::$usuario_id);
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->post()->usuario_id), 'post_comentario_borrar', $comentario, Usuario::$usuario_id);
 
-		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&ocute;n realizada correctamente.';
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha borrado correctamente.';
 		Request::redirect('/post/index/'.$model_comentario->post_id);
+	}
+
+	public function action_editar_comentario($comentario)
+	{
+		// Verificamos usuario logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder editar comentarios en posts.';
+			Request::redirect('/usuario/login');
+		}
+
+		$comentario = (int) $comentario;
+
+		// Cargamos el comentario.
+		$model_comentario = new Model_Post_Comentario($comentario);
+
+		// Verificamos existencia.
+		if ( ! is_array($model_comentario->as_array()))
+		{
+			$_SESSION['flash_error'] = 'El comentario que deseas editar no se encuentra disponible.';
+			Request::redirect('/');
+		}
+
+		// Verifico el estado.
+		if ($model_comentario->estado === 2)
+		{
+			$_SESSION['flash_error'] = 'El comentario que deseas editar no se encuentra disponible.';
+			Request::redirect('/post/index/'.$model_comentario->post_id);
+		}
+
+		// Verifico permisos estado.
+		if ($model_comentario->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_EDITAR))
+		{
+			$_SESSION['flash_error'] = 'No tienes los permisos para editar el comentario.';
+			Request::redirect('/post/index/'.$model_comentario->post_id);
+		}
+
+		// Cargo la vista.
+		$vista = View::factory('/post/editar_comentario');
+
+		// Seteo información del comentario.
+		$vista->assign('contenido', $model_comentario->contenido);
+		$vista->assign('error_contenido', FALSE);
+		$vista->assign('usuario', $model_comentario->usuario()->as_array());
+		$vista->assign('post', $model_comentario->post()->as_array());
+		$vista->assign('comentario', $model_comentario->as_array());
+
+		if (Request::method() === 'POST')
+		{
+			// Cargo el comentario.
+			$contenido = isset($_POST['contenido']) ? $_POST['contenido'] : '';
+
+			// Seteo enviado.
+			$vista->assign('contenido', $contenido);
+
+			// Verificamos el formato.
+			$comentario_clean = preg_replace('/\[.*\]/', '', $contenido);
+			if ( ! isset($comentario_clean{20}) || isset($contenido{400}))
+			{
+				$vista->assign('error_contenido', 'El comentario debe tener entre 20 y 400 caracteres.');
+			}
+			else
+			{
+				// Transformamos entidades HTML.
+				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
+
+				// Insertamos el comentario.
+				$model_comentario->actualizar_campo('contenido', $contenido);
+
+				// Envio el suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->post()->usuario_id), 'post_comentario_editar', $comentario, Usuario::$usuario_id);
+
+				$_SESSION['post_comentario_success'] = 'El comentario se ha actualizado correctamente.';
+				Request::redirect('/post/index/'.$model_comentario->post_id);
+			}
+		}
+
+		// Menu.
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', Controller_Home::submenu());
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $vista->parse());
 	}
 
 	/**
@@ -1265,7 +1415,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Actualizo el estado.
-		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_REVISAR_POST))
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_REVISAR_CONTENIDO))
 		{
 			$model_post->actualizar_estado(Model_Post::ESTADO_PENDIENTE);
 			$model_post->actualizar_fecha();
@@ -1473,19 +1623,12 @@ class Base_Controller_Post extends Controller {
 			// Verificamos las etiquetas.
 			if ( ! preg_match('/^[a-zA-Z0-9áéíóúñÑÁÉÍÓÚ, ]{0,}$/D', $tags))
 			{
-				$view->assign('error_tags', 'Las etiquetas ingresadas con son alphanuméricas..');
+				$view->assign('error_tags', 'Las etiquetas ingresadas con son alphanuméricas.');
 				$error = TRUE;
 			}
 
-			// Procedemos a crear el post.
 			if ( ! $error)
 			{
-				// Evitamos XSS.
-				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
-
-				// Formateamos los campos.
-				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
-
 				// Obtengo el listado de etiquetas.
 				$tags = explode(',', $tags);
 				foreach ($tags as $k => $v)
@@ -1496,6 +1639,23 @@ class Base_Controller_Post extends Controller {
 						unset($tags[$k]);
 					}
 				}
+
+				// Verifico la cantidad.
+				if (count($tags) < 3)
+				{
+					$view->assign('error_tags', 'Debes insertar un mínimo de 3 etiquetas.');
+					$error = TRUE;
+				}
+			}
+
+			// Procedemos a crear el post.
+			if ( ! $error)
+			{
+				// Evitamos XSS.
+				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
+
+				// Formateamos los campos.
+				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
 
 				// Verifico si es borrador.
 				$borrador = isset($_POST['submit']) ? $_POST['submit'] == 'borrador' : FALSE;

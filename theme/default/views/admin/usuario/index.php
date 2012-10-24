@@ -18,6 +18,7 @@
 		<tr>
 			<th>Nick</th>
 			<th>E-Mail</th>
+			<th>Rango</th>
 			<th>Ultima vez activo</th>
 			<th>Estado</th>
 			<th>Acciones</th>
@@ -28,6 +29,7 @@
 		<tr>
 			<td>{$value.nick}</td>
 			<td>{$value.email}</td>
+			<td>{$value.rango}</td>
 			<td>{$value.lastactive->fuzzy()}</td>
 			<td><span class="label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span></td>
 			<td style="text-align: center;">
@@ -37,6 +39,7 @@
 					{if="$value.estado == 1"}<a href="/admin/usuario/advertir_usuario/{$value.id}" class="btn btn-mini btn-warning">Advertir</a>{/if}
 					{if="$value.estado == 0 || $value.estado == 1 || $value.estado == 2"}<a href="/admin/usuario/banear_usuario/{$value.id}" class="btn btn-mini btn-danger">Banear</a>{/if}
 					{if="$value.estado == 3"}<a href="/admin/usuario/desbanear_usuario/{$value.id}" class="btn btn-mini btn-danger">Desbanear</a>{/if}
+					<a href="/admin/usuario/cambiar_rango/{$value.id}" class="btn btn-mini btn-primary">Cambiar rango</a>
 				</div>
 			</td>
 		</tr>

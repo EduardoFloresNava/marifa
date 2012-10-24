@@ -124,23 +124,23 @@ abstract class Base_Database_Query implements Iterator {
 	{
 		if ($cast === self::FIELD_INT)
 		{
-			return ($field == NULL) ? NULL : ( (int) $field);
+			return ($field === NULL) ? NULL : ( (int) $field);
 		}
 		elseif ($cast === self::FIELD_FLOAT)
 		{
-			return ($field == NULL) ? NULL : ( (float) $field);
+			return ($field === NULL) ? NULL : ( (float) $field);
 		}
 		elseif ($cast === self::FIELD_STRING)
 		{
-			return ($field == NULL) ? NULL : ( (string) $field);
+			return ($field === NULL) ? NULL : ( (string) $field);
 		}
 		elseif ($cast === self::FIELD_DATE || $cast === self::FIELD_DATETIME)
 		{
-			return ($field == NULL) ? NULL : new Fechahora($field);
+			return ($field === NULL) ? NULL : new Fechahora($field);
 		}
 		elseif ($cast === self::FIELD_BOOL)
 		{
-			return ($field == NULL) ? NULL : ( (bool) $field);
+			return ($field === NULL) ? NULL : ( (bool) $field);
 		}
 		else
 		{

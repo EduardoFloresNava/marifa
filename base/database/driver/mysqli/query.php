@@ -86,7 +86,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 	 */
 	public function get_record($type = Database_Query::FETCH_ASSOC, $cast = NULL)
 	{
-		$this->next();
+		//$this->next();
 		switch ($type)
 		{
 			case Database_Query::FETCH_NUM:
@@ -180,7 +180,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 	 */
 	public function current()
 	{
-		$this->query->field_seek($this->position);
+		$this->query->data_seek($this->position);
 		return $this->get_record($this->fetch_type, $this->cast);
 	}
 

@@ -91,7 +91,7 @@ class Base_Controller_Home extends Controller {
 			$a = $v->as_array();
 			$a['usuario'] = $v->usuario()->as_array();
 			$a['puntos'] = $v->puntos();
-			$a['comentarios'] = $v->cantidad_comentarios();
+			$a['comentarios'] = $v->cantidad_comentarios(Model_Post_Comentario::ESTADO_VISIBLE);
 			$a['categoria'] = $v->categoria()->as_array();
 
 			$post_list[$k] = $a;

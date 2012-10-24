@@ -74,7 +74,7 @@ class Base_Model_Post_Comentario extends Model_Dataset {
 		'usuario_id' => Database_Query::FIELD_INT,
 		'fecha' => Database_Query::FIELD_DATETIME,
 		'contenido' => Database_Query::FIELD_STRING,
-		'estado' => Database_Query::FIELD_INT,
+		'estado' => Database_Query::FIELD_INT
 	);
 
 	/**

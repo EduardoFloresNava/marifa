@@ -131,7 +131,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		foreach ($lst as $k => $v)
 		{
 			$a = $v->as_array();
-			//$a['rango'] = $v->rango()->nombre;
+			$a['rango'] = $v->rango()->nombre;
 			//$a['contenido'] = Decoda::procesar($a['contenido']);
 			//$a['usuario'] = $v->usuario()->as_array();
 
@@ -718,7 +718,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Valores por defecto y errores.
 		$vista->assign('nombre', $model_rango->nombre);
 		$vista->assign('error_nombre', FALSE);
-		$vista->assign('color', strtoupper(dechex($model_rango->color)));
+		$vista->assign('color', strtoupper(sprintf('%06s', dechex($model_rango->color))));
 		$vista->assign('error_color', FALSE);
 		$vista->assign('imagen', $model_rango->imagen);
 		$vista->assign('error_imagen', FALSE);

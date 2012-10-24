@@ -653,17 +653,32 @@ class Base_Model_Post extends Model_Dataset {
 	/**
 	 * Cantidad de comentarios en posts que hay.
 	 * Si hay una clave primaria es la cantidad que hay en un post.
+	 * @param int $estado Estado de los comentarios a contar.
 	 * @return int
 	 */
-	public function cantidad_comentarios()
+	public function cantidad_comentarios($estado = NULL)
 	{
 		if ($this->primary_key['id'] !== NULL)
 		{
-			return (int) $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+			if ($estado === NULL)
+			{
+				return (int) $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				return (int) $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE post_id = ? AND estado = ?', array($this->primary_key['id'], $estado))->get_var(Database_Query::FIELD_INT);
+			}
 		}
 		else
 		{
-			return (int) $this->db->query('SELECT COUNT(*) FROM post_comentario')->get_var(Database_Query::FIELD_INT);
+			if ($estado === NULL)
+			{
+				return (int) $this->db->query('SELECT COUNT(*) FROM post_comentario')->get_var(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				return (int) $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
+			}
 		}
 	}
 
@@ -1180,9 +1195,9 @@ class Base_Model_Post extends Model_Dataset {
 		$start = ($pagina - 1) * $cantidad;
 
 		// Calculo el total de elementos.
-		$total = $this->db->query('SELECT COUNT(*) FROM post WHERE estado = 1 AND usuario_id = ?', $usuario)->get_var(Database_Query::FIELD_INT);
+		$total = $this->db->query('SELECT COUNT(*) FROM post WHERE (estado = 1 OR estado = 3) AND usuario_id = ?', $usuario)->get_var(Database_Query::FIELD_INT);
 
-		$rst = $this->db->query('SELECT post.id, post_moderado.post_id FROM `post` LEFT JOIN `post_moderado` ON post.id = post_moderado.padre_id WHERE post.estado = 1 AND post.usuario_id = ? ORDER BY fecha LIMIT '.$start.','.$cantidad, $usuario)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+		$rst = $this->db->query('SELECT post.id, post_moderado.post_id FROM `post` LEFT JOIN `post_moderado` ON post.id = post_moderado.padre_id WHERE (post.estado = 1 OR post.estado = 3) AND post.usuario_id = ? ORDER BY fecha LIMIT '.$start.','.$cantidad, $usuario)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
 
 		$lst = array();
 		foreach ($rst as $k => $v)

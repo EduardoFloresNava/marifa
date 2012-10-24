@@ -109,32 +109,38 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$cantidad_por_pagina = 20;
 
 		// Verifico el tipo de fotos a mostrar.
-		switch ($tipo)
+		$tipo = $tipo === NULL ? NULL : (int) $tipo;
+		if ($tipo === 0)
 		{
-			case 0: // Activo.
-				$tipo = array('activo', 0);
-				break;
-			case 1: // Borrador.
-				$tipo = array('borrador', 1);
-				break;
-			case 2: // Borrados.
-				$tipo = array('borrado', 2);
-				break;
-			case 3: // Pendientes.
-				$tipo = array('pendiente', 3);
-				break;
-			case 4: // Ocultos.
-				$tipo = array('oculto', 4);
-				break;
-			case 5: // Rechazados.
-				$tipo = array('rechazado', 5);
-				break;
-			case 6: // Papelera.
-				$tipo = array('papelera', 6);
-				break;
-			case 7: // Todos.
-			default: // Todos.
-				$tipo = array('total', NULL);
+			$tipo = array('activo', 0);
+		}
+		elseif ($tipo === 1)
+		{
+			$tipo = array('borrador', 1);
+		}
+		elseif ($tipo === 2)
+		{
+			$tipo = array('borrado', 2);
+		}
+		elseif ($tipo === 3)
+		{
+			$tipo = array('pendiente', 3);
+		}
+		elseif ($tipo === 4)
+		{
+			$tipo = array('oculto', 4);
+		}
+		elseif ($tipo === 5)
+		{
+			$tipo = array('rechazado', 5);
+		}
+		elseif ($tipo === 6)
+		{
+			$tipo = array('papelera', 6);
+		}
+		else
+		{
+			$tipo = array('total', NULL);
 		}
 
 		// Cargamos la vista.

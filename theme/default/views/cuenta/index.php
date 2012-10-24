@@ -103,7 +103,7 @@
 						<option value="11"{if="isset($nacimiento.1) && $nacimiento.1 == 11"} selected="selected"{/if}>Noviembre</option>
 						<option value="12"{if="isset($nacimiento.1) && $nacimiento.1 == 12"} selected="selected"{/if}>Diciembre</option>
 					</select>
-					<input type="text" class="span1" id="ano" name="ano" value="{if="isset($nacimiento.0)"}{$nacimiento.0}{/if}" />
+					<input type="text" class="span1" id="ano" name="ano" placeholder="A&ntilde;o..." value="{if="isset($nacimiento.0)"}{$nacimiento.0}{/if}" />
 					<p class="help-inline">Su apellido, se permiten caracteres alphanuméricos, espacios y '.</p>
 				</div>
 			</div>

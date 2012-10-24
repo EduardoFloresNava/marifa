@@ -92,6 +92,10 @@
  * * **comentario_id**: ID del comentario a eliminar.
  * * **usuario_id**: ID del usuario que elimina el comentario.
 
+ * **post_comentario_editar** (*comentario_id*, *usuario_id*): Se edita un comentario.
+ * * **comentario_id**: ID del comentario editado.
+ * * **usuario_id*: ID del usuario que edita el comentario.
+
 ## Fotos:
 
  * **foto_votar** (*foto_id*, *usuario_id*, *tipo*): Votamos una foto.

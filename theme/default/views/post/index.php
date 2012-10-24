@@ -1,7 +1,7 @@
 <div class="row post">
 	<div class="span2 usuario-perfil-lateral">
 		<h3 class="title">Posteado por:</h3>
-		<a href="/perfil/index/{$usuario.nick}" class="thumbnail">
+		<a href="/perfil/index/{$usuario.nick}" class="thumbnail user-icon">
 			<img src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
 			<h4 class="nick">{$usuario.nick}</h4>
 		</a>
@@ -32,36 +32,36 @@
 						{if="$post.sticky"}<a href="/post/fijar_post/{$post.id}/-1" class="btn btn-info">Quitar fijo</a>{else}<a href="/post/fijar_post/{$post.id}/1" class="btn btn-info">Fijar</a>{/if}
 						{if="$post.sponsored"}<a href="/post/patrocinar_post/{$post.id}/-1" class="btn btn-info">Quitar patrocinio</a>{else}<a href="/post/patrocinar_post/{$post.id}/1" class="btn btn-info">Patrocinar</a>{/if}
 					{/if}
-					{if="$modificar_editar"}<a href="/post/editar/{$post.id}" class="btn btn-success"><i class="icon-white icon-pencil"></i> Editar</a>{/if}
+					{if="$modificar_editar"}<a href="/post/editar/{$post.id}" class="btn btn-success" rel="tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
 					{if="$post.estado == 0"}
-						{if="$modificar_ocultar"}<a href="/post/ocultar_post/{$post.id}/-1" class="btn btn-inverse"><i class="icon-white icon-eye-close"></i> Ocultar</a>{/if}
-						{if="$modificar_aprobar"}<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning"><i class="icon-white icon-hand-down"></i> Rechazar</a>{/if}
-						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>
-						<a href="/post/borrar_post/{$post.id}/-1" class="btn btn-danger"><i class="icon-white icon-trash"></i> Enviar a la papelera</a>{/if}
+						{if="$modificar_ocultar"}<a href="/post/ocultar_post/{$post.id}/-1" class="btn btn-inverse" rel="tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
+						{if="$modificar_aprobar"}<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning" rel="tooltip" title="Rechazar"><i class="icon-white icon-hand-down"></i></a>{/if}
+						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger" rel="tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>
+						<a href="/post/borrar_post/{$post.id}/-1" class="btn btn-danger" rel="tooltip" title="Enviar a la papelera"><i class="icon-white icon-trash"></i></a>{/if}
 					{/if}
 					{if="$post.estado == 1"}
-						{if="$me == $usuario.id"}<a href="/post/publicar_post/{$post.id}/" class="btn btn-success"><i class="icon-white icon-ok"></i> Publicar</a>{/if}
-						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>{/if}
+						{if="$me == $usuario.id"}<a href="/post/publicar_post/{$post.id}/" class="btn btn-success" rel="tooltip" title="Publicar"><i class="icon-white icon-ok"></i></a>{/if}
+						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger" rel="tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
 					{/if}
 					{if="$post.estado == 3"}
-						{if="$modificar_aprobar"}<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-hand-up"></i> Aprobar</a>
-						<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning"><i class="icon-white icon-hand-down"></i> Rechazar</a>{/if}
-						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>{/if}
+						{if="$modificar_aprobar"}<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success" rel="tooltip" title="Aprobar"><i class="icon-white icon-hand-up"></i></a>
+						<a href="/post/aprobar_post/{$post.id}/-1" class="btn btn-warning"><i class="icon-white icon-hand-down" rel="tooltip" title="Rechazar"></i> </a>{/if}
+						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger" rel="tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
 					{/if}
 					{if="$post.estado == 4"}
-						{if="$modificar_ocultar"}<a href="/post/ocultar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-eye-open"></i> Mostrar</a>{/if}
-						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>{/if}
+						{if="$modificar_ocultar"}<a href="/post/ocultar_post/{$post.id}/1" class="btn btn-success" rel="tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{/if}
+						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger" rel="tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
 					{/if}
 					{if="$post.estado == 5"}
-						{if="$modificar_aprobar"}<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success"><i class="icon-white icon-hand-up"></i> Aprobar</a>{/if}
-						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar</a>{/if}
+						{if="$modificar_aprobar"}<a href="/post/aprobar_post/{$post.id}/1" class="btn btn-success" rel="tooltip" title="Aprobar"><i class="icon-white icon-hand-up"></i></a>{/if}
+						{if="$modificar_borrar"}<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger" rel="tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
 					{/if}
 					{if="$post.estado == 6"}
-						{if="$modificar_borrar"}<a href="/post/restaurar_post/{$post.id}/" class="btn btn-success"><i class="icon-white icon-refresh"></i> Restaurar</a>
-						<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger"></i><i class="icon-white icon-remove"></i> Borrar</a>{/if}
+						{if="$modificar_borrar"}<a href="/post/restaurar_post/{$post.id}/" class="btn btn-success" rel="tooltip" title="Restaurar"><i class="icon-white icon-refresh"></i></a>
+						<a href="/post/borrar_post/{$post.id}/" class="btn btn-danger" rel="tooltip" title="Borrar"></i><i class="icon-white icon-remove"></i></a>{/if}
 					{/if}
-					{if="$me != NULL && !$sigo_post"}<a href="/post/seguir_post/{$post.id}" class="btn">Seguir Post</a>{/if}
-					{if="$me != NULL && !$es_favorito"}<a href="/post/favorito/{$post.id}" class="btn">Agregar a favoritos</a>{/if}
+					{if="$me != NULL && !$sigo_post"}<a href="/post/seguir_post/{$post.id}" class="btn" rel="tooltip" title="Seguir Post">Seguir Post</a>{/if}
+					{if="$me != NULL && !$es_favorito"}<a href="/post/favorito/{$post.id}" class="btn" rel="tooltip" title="Agregar a favoritos"><i class="icon icon-star"></i></a>{/if}
 					{if="$me != NULL && $me != $usuario.id && $post.estado == 0"}<a href="/post/denunciar/{$post.id}" class="btn btn-danger">Denunciar</a>{/if}
 				</div>
 				<div class="pull-right btn-group">
@@ -107,17 +107,25 @@
 								<a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a>
 								<small>{function="$value.fecha->fuzzy()"}</small>
 								{if="$value.votos != 0"}<span class="badge badge-{if="$value.votos > 0"}success{else}important{/if}">{$value.votos|abs}</span>{/if}
-								{if="$value.estado == 1"}<span class="label label-important">OCULTO</span>{elseif="$value.estado == 2"}<span class="label label-info">EN REVISION</span>{/if}
+								{if="$value.estado == 1"}<span class="label label-warning">OCULTO</span>{elseif="$value.estado == 2"}<span class="label label-important">BORRADO</span>{/if}
 							</span>
-							<div class="btn-group pull-right acciones">
-								{if="$me != NULL && !$value.vote && $podemos_votar_comentarios"}
-								<a href="/post/voto_comentario/{$value.id}/1" class="btn btn-mini btn-success"><i class="icon-white icon-thumbs-up"></i></a>
-								<a href="/post/voto_comentario/{$value.id}/-1" class="btn btn-mini btn-danger"><i class="icon-white icon-thumbs-down"></i></a>
+							{if="$me != NULL"}
+							<div class="btn-toolbar pull-right acciones">
+								{if="!$value.vote && $podemos_votar_comentarios"}
+								<div class="btn-group">
+									<a href="/post/voto_comentario/{$value.id}/1" class="btn btn-mini btn-success"><i class="icon-white icon-thumbs-up"></i></a>
+									<a href="/post/voto_comentario/{$value.id}/-1" class="btn btn-mini btn-danger"><i class="icon-white icon-thumbs-down"></i></a>
+								</div>
 								{/if}
-								{if="$me != NULL"}<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}"><i class="icon icon-comment"></i></a>{/if}
-								{if="$me != NULL && $me == $value.usuario.id"}<a href="#" class="btn btn-mini"><i class="icon icon-pencil"></i></a>{/if}
-								{if="$me != NULL && $me == $value.usuario.id && $value.estado != 1"}<a href="/post/ocultar_post/{$value.id}" class="btn btn-mini btn-danger"><i class="icon-white icon-remove"></i></a>{/if}
+								<div class="btn-group">
+									<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}"><i class="icon icon-comment"></i></a>
+									{if="($me == $value.usuario.id || $comentario_editar) && $value.estado != 2"}<a href="/post/editar_comentario/{$value.id}" class="btn btn-mini btn-primary" rel="tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
+									{if="($me == $value.usuario.id || $comentario_ocultar) && $value.estado == 0"}<a href="/post/ocultar_comentario/{$value.id}/0" class="btn btn-mini btn-inverse" rel="tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
+									{if="$value.estado == 1 && $comentario_ocultar"}<a href="/post/ocultar_comentario/{$value.id}/1" class="btn btn-mini btn-info" rel="tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{/if}
+									{if="$comentario_eliminar && $value.estado != 2"}<a href="/post/eliminar_comentario/{$value.id}" class="btn btn-mini btn-danger" rel="tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
+								</div>
 							</div>
+							{/if}
 						</div>
 						<div class="comentario-body">{$value.contenido}</div>
 					</div>

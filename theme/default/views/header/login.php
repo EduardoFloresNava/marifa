@@ -15,11 +15,15 @@
     <div class="btn-group pull-right">
         <button class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-bullhorn"></i>&nbsp;</button><!--SUCESOS GENERALES-->
         <div class="dropdown-menu" id="suceso-dropdown">
+			{if="count($sucesos) > 0"}
 			<ul>
 				{loop="$sucesos"}
 				<li>{$value}</li>
 				{/loop}
 			</ul>
+			{else}
+			<div class="alert alert-info">No tienes sucesos.</div>
+			{/if}
 			<div class="actions">
 				<a href="/notificaciones/">Ver todos</a>
 				<a href="/notificaciones/leidas/">Marcar como le&iacute;dos</a>
@@ -29,6 +33,7 @@
     <div class="btn-group pull-right">
         <a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-inbox"></i>{if="$mensajes_nuevos > 0"}&nbsp;<span class="badge badge-info">{$mensajes_nuevos}</span>{/if}</a><!--MENSAJES-->
         <div class="dropdown-menu" id="message-dropdown">
+			{if="count($mensajes) > 0"}
 			<ul>
 				{loop="$mensajes"}
 				<li class="estado-{$value.estado_string}">
@@ -44,6 +49,9 @@
 					<a class="usuario" href="/perfil/index/{$value.emisor.nick}/">{$value.emisor.nick}</a> <a href="/mensaje/ver/{$value.id}">{$value.asunto|Texto::limit_chars:20,'...', TRUE}</a> <span class="fecha">{$value.fecha->fuzzy()}</span></li>
 				{/loop}
 			</ul>
+			{else}
+			<div class="alert alert-info">No tienes mensajes esperando.</div>
+			{/if}
 			<div class="actions">
 				<a href="/mensaje/">Bandeja de entrada</a>
 			</div>

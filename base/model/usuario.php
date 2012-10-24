@@ -320,6 +320,33 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * Obtenemos el listado de nick's del usuario.
+	 * @return array
+	 */
+	public function nicks()
+	{
+		return $this->db->query('SELECT nick FROM usuario_nick WHERE usuario_id = ?', $this->primary_key['id'])->get_pairs();
+	}
+
+	/**
+	 * Eliminamos un nick del usuario.
+	 * @param string $nick
+	 */
+	public function eliminar_nick($nick)
+	{
+		$this->db->delete('DELETE FROM usuario_nick WHERE usuario_id = ? AND nick = ?', array($this->primary_key['id'], $nick));
+	}
+
+	/**
+	 * Obtenemos la fecha del ultimo cambio de nick.
+	 * @return type
+	 */
+	public function ultimo_cambio_nick()
+	{
+		return $this->db->query('SELECT MAX(fecha) FROM usuario_nick WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_DATETIME);
+	}
+
+	/**
 	 * Creamos una nueva cuenta de usuario.
 	 * @param string $nick Nick del usuario
 	 * @param string $email E-Mail del usuario.
@@ -394,7 +421,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_seguidores()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return (int) $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -444,7 +471,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_posts()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return (int) $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -453,7 +480,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_fotos()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return (int) $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -525,7 +552,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_favoritos_posts()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM post_favorito INNER JOIN post ON post_favorito.post_id = post.id WHERE post_favorito.usuario_id = ? AND post.estado = ?', array($this->primary_key['id'], Model_Post::ESTADO_ACTIVO))->get_var(Database_Query::FIELD_INT);
+		return (int) $this->db->query('SELECT COUNT(*) FROM post_favorito INNER JOIN post ON post_favorito.post_id = post.id WHERE post_favorito.usuario_id = ? AND post.estado = ?', array($this->primary_key['id'], Model_Post::ESTADO_ACTIVO))->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -534,7 +561,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_favoritos_fotos()
 	{
-		return $this->db->query('SELECT COUNT(*) FROM foto_favorito INNER JOIN foto ON foto_favorito.foto_id = foto.id WHERE foto_favorito.usuario_id = ? AND foto.estado = ?', array($this->primary_key['id'], Model_Foto::ESTADO_ACTIVA))->get_var(Database_Query::FIELD_INT);
+		return (int) $this->db->query('SELECT COUNT(*) FROM foto_favorito INNER JOIN foto ON foto_favorito.foto_id = foto.id WHERE foto_favorito.usuario_id = ? AND foto.estado = ?', array($this->primary_key['id'], Model_Foto::ESTADO_ACTIVA))->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -898,5 +925,22 @@ class Base_Model_Usuario extends Model_Dataset {
 	public function esta_bloqueado($usuario_id)
 	{
 		return $this->db->query('SELECT * FROM usuario_bloqueo WHERE usuario_id = ? AND bloqueado_id = ? LIMIT 1', array($this->primary_key['id'], $usuario_id))->num_rows() > 0;
+	}
+
+	/**
+	 * Obtenemos el listado de usuario que ha bloqueado.
+	 * @return array
+	 */
+	public function bloqueos()
+	{
+		$rst = $this->db->query('SELECT bloqueado_id FROM usuario_bloqueo WHERE usuario_id = ?', $this->primary_key['id']);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Usuario( (int) $v[0]);
+		}
+
+		return $lst;
 	}
 }

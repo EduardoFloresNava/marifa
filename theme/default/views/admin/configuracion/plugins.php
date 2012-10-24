@@ -28,13 +28,17 @@
 			<td>{$value.autor}</td>
 			<td>{$value.descripcion}</td>
 			<td>{$value.version}</td>
-			<td>{if="$value.estado"}
-				<a href="/admin/configuracion/buscar_actualizaciones_plugins/{$key}" class="btn btn-mini btn-success">Buscar actualizaciones</a>
-				<a href="/admin/configuracion/desactivar_plugin/{$key}" class="btn btn-mini btn-danger">Desinstalar</a>
+			<td>
+				<div class="btn-group">
+				{if="$value.estado"}
+					<a href="/admin/configuracion/buscar_actualizaciones_plugins/{$key}" class="btn btn-mini btn-success" rel="tooltip" title="Buscar actualizaciones"><i class="icon-white icon-globe"></i></a>
+					<a href="/admin/configuracion/desactivar_plugin/{$key}" class="btn btn-mini btn-danger" rel="tooltip" title="Desinstalar"><i class="icon-white icon-remove"></i></a>
 				{else}
-				<a href="/admin/configuracion/activar_plugin/{$key}" class="btn btn-mini btn-success">Instalar</a>
-				<a href="/admin/configuracion/borrar_plugin/{$key}" class="btn btn-mini btn-danger">Borrar</a>
-			{/if}</td>
+					<a href="/admin/configuracion/activar_plugin/{$key}" class="btn btn-mini btn-success">Instalar</a>
+					<a href="/admin/configuracion/borrar_plugin/{$key}" class="btn btn-mini btn-danger">Borrar</a>
+				{/if}
+				</div>
+			</td>
 		</tr>
 {else}
 		<tr>

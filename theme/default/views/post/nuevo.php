@@ -91,6 +91,7 @@
 			<div class="row-fluid">
 				<div class="span6">
 					<h3 class="title">Categor&iacute;a</h3>
+					{if="$error_categoria"}<div class="alert alert-danger">{$error_categoria}</div>{/if}
 					<select class="span12" name="categoria" id="categoria" size="10">
 						{loop="$categorias"}
 						<option value="{$value.seo}"{if="$categoria == $value.seo"} selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}

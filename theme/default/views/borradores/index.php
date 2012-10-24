@@ -4,6 +4,7 @@
 	<thead>
 		<tr>
 			<th>Titulo</th>
+			<th>Estado</th>
 			<th>Fecha</th>
 		</tr>
 	</thead>
@@ -11,6 +12,7 @@
 	{loop="$borradores"}
 		<tr>
 			<td><a href="/post/index/{$value.id}" class="title"><img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" /> {$value.titulo}</a></td>
+			<td>{if="$value.estado == 1"}<span class="badge badge-info">BORRADOR</span>{else}<span class="badge badge-info">PENDIENTE</span>{/if}</td>
 			<td>{$value.fecha->fuzzy()}</td>
 		</tr>
 	{/loop}

@@ -715,6 +715,96 @@ class Base_Controller_Cuenta extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('cuenta/bloqueos');
 
+		// Seteo parametros.
+		$view->assign('usuario', '');
+		$view->assign('error_usuario', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Obtengo el usuario.
+			$usuario = isset($_POST['usuario']) ? trim($_POST['usuario']) : '';
+
+			// Seteo a la vista.
+			$view->assign('usuario', $usuario);
+
+			$error = FALSE;
+
+			// Verifico el nick
+			if ( ! preg_match('/^[a-zA-Z0-9]{4,16}$/D', $usuario))
+			{
+				$view->assign('error_usuario', 'El usuario ingresado no es válido.');
+				$error = TRUE;
+			}
+
+			if ( ! $error)
+			{
+				// Verifico exista.
+				$model_usuario = new Model_Usuario;
+				if ( ! $model_usuario->exists_nick($usuario))
+				{
+					$view->assign('error_usuario', 'El usuario ingresado no es válido.');
+					$error = TRUE;
+				}
+				else
+				{
+					$model_usuario->load_by_nick($usuario);
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Verifico no sea uno mismo.
+				if ($model_usuario->id === Usuario::$usuario_id)
+				{
+					$view->assign('error_usuario', 'El usuario ingresado no es válido.');
+					$error = TRUE;
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Verifico estado.
+				if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
+				{
+					$view->assign('error_usuario', 'El usuario ingresado no es válido.');
+					$error = TRUE;
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Verifico no se encuentre bloqueado.
+				if (Usuario::usuario()->esta_bloqueado($model_usuario->id))
+				{
+					$view->assign('error_usuario', 'El usuario ingresado no es válido.');
+					$error = TRUE;
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Bloqueo el usuario.
+				Usuario::usuario()->bloquear($model_usuario->id);
+
+				// Envio el suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $model_usuario->id), 'usuario_bloqueo', Usuario::$usuario_id, $model_usuario->id, 0);
+
+				// Envio notificación.
+				$_SESSION['flash_success'] = 'El usuario fue bloqueado correctamente.';
+				Request::redirect('/cuenta/bloqueados');
+			}
+		}
+
+		// Cargo los bloqueos.
+		$bloqueos = Usuario::usuario()->bloqueos();
+
+		foreach ($bloqueos as $k => $v)
+		{
+			$bloqueos[$k] = $v->as_array();
+		}
+		$view->assign('bloqueos', $bloqueos);
+
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('bloqueados'));
@@ -835,9 +925,25 @@ class Base_Controller_Cuenta extends Controller {
 		$view->assign('error_nick', NULL);
 		$view->assign('error_password', NULL);
 
-		//TODO: Listado de nicks para elegir uno anterior.
-		//TODO: Limitar la cantidad de nicks reservados.
+		// Listado de nick's reservados.
+		$nicks_reservados = $model_usuario->nicks();
+
+		//TODO: Mantener nick's para evitar borrar y poder cambiar.
 		//TODO: Mantener nicks por un tiempo limitado.
+
+		// Calculo cuanto hace que cambio su nick.
+		if (count($nicks_reservados) !== 0)
+		{
+			$fecha_cambio = Usuario::usuario()->ultimo_cambio_nick()->format('U');
+		}
+		else
+		{
+			// Obtengo fecha de refgistro.
+			$fecha_cambio = Usuario::usuario()->registro->format('U');
+		}
+
+		// 5184000 === 2 meses.
+		$view->assign('tiempo_cambio', $fecha_cambio + 5184000 - date('U'));
 
 		if (Request::method() == 'POST')
 		{
@@ -888,21 +994,43 @@ class Base_Controller_Cuenta extends Controller {
 						}
 						else
 						{
-							// Actualizamos.
-							$model_usuario->cambiar_nick($nick);
+							// Verifico la cantidad de nick's.
+							if (count($nicks_reservados) >= 3)
+							{
+								$view->assign('error_nick', 'Has superado el máximo de nick\'s utilizados.');
+							}
+							else
+							{
+								// Verifico tiempo de cambio.
+								if ($fecha_cambio + 5184000 - date('U') <= 0)
+								{
+									// Actualizamos.
+									$model_usuario->cambiar_nick($nick);
 
-							// Enviamos suceso.
-							//TODO: ver el suceso.
+									// Recargo los nick's reservados.
+									$nicks_reservados = $model_usuario->nicks();
 
-							// Informamos resultado.
-							$view->assign('success', 'El nick se ha actualizado correctamente.');
-							$view->assign('nick', '');
-							$view->assign('nick_actual', $nick);
+									// Enviamos suceso.
+									//TODO: ver el suceso.
+
+									// Informamos resultado.
+									$view->assign('success', 'El nick se ha actualizado correctamente.');
+									$view->assign('nick', '');
+									$view->assign('nick_actual', $nick);
+								}
+								else
+								{
+									$view->assign('error_nick', 'Solo puedes cambiar tu nick cada 2 meses.');
+								}
+							}
 						}
 					}
 				}
 			}
 		}
+
+		// Cargo listado de nicks.
+		$view->assign('nicks', $nicks_reservados);
 
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
@@ -910,6 +1038,59 @@ class Base_Controller_Cuenta extends Controller {
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
+	 * Liberamos el nick del usuario.
+	 * @param string $nick Nick a liberar
+	 */
+	public function action_eliminar_nick($nick)
+	{
+		// Verifico el formato.
+		if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/D', $nick))
+		{
+			$_SESSION['flash_error'] = 'El nick que desea liberar no es correcto.';
+			Request::redirect('/cuenta/nick');
+		}
+
+		// Verifico si es del usuario.
+		if ( ! in_array($nick, Usuario::usuario()->nicks()))
+		{
+			$_SESSION['flash_error'] = 'El nick que desea liberar no es correcto.';
+			Request::redirect('/cuenta/nick');
+		}
+
+		// Elimino el nick.
+		Usuario::usuario()->eliminar_nick($nick);
+
+		// Informo el resultado.
+		$_SESSION['flash_success'] = 'El nick se ha liberado correctamente.';
+		Request::redirect('/cuenta/nick');
+	}
+
+	public function action_utilizar_nick($nick)
+	{
+		// Verifico el formato.
+		if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/D', $nick))
+		{
+			$_SESSION['flash_error'] = 'El nick que desea liberar no es correcto.';
+			Request::redirect('/cuenta/nick');
+		}
+
+		// Verifico si es del usuario.
+		if ( ! in_array($nick, Usuario::usuario()->nicks()))
+		{
+			$_SESSION['flash_error'] = 'El nick que desea liberar no es correcto.';
+			Request::redirect('/cuenta/nick');
+		}
+
+		// Elimino el nick y lo asigno nuevamente.
+		Usuario::usuario()->eliminar_nick($nick);
+		Usuario::usuario()->cambiar_nick($nick);
+
+		// Informo el resultado.
+		$_SESSION['flash_success'] = 'El nick se ha actualizado correctamente.';
+		Request::redirect('/cuenta/nick');
 	}
 
 }

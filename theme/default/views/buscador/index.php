@@ -12,13 +12,13 @@
 					<button type="submit"><i class="icon icon-search"></i></button>
 				</div>
 				<div class="search-options row-fluid">
-					<div class="span4">
+					<!--<div class="span4">
 						<div class="btn-group" data-toggle="buttons-radio">
 							<button type="button" class="btn">Google</button>
 							<button type="button" class="btn active">Marifa</button>
 						</div>
-					</div>
-					<div class="span4">
+					</div>-->
+					<div class="span6">
 						Categorias:
 						<select name="categoria">
 							<option value="todos"{if="$categoria == 'todos'"} selected="selected"{/if}>Todas</option>
@@ -27,8 +27,10 @@
 							{/loop}
 						</select>
 					</div>
-					<div class="span4">
-						Usuario: <input name="usuario" value="{$usuario}" type="text" />
+					<div class="span6">
+						<div class="pull-right">
+							Usuario: <input name="usuario" value="{$usuario}" type="text" />
+						</div>
 					</div>
 				</div>
 			</form>

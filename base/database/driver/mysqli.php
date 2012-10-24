@@ -104,6 +104,86 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		}
 	}
 
+	public function explain_query($sql)
+	{
+		// Creamos la consulta.
+		if ( ! $sth = $this->dbh->prepare($sql))
+		{
+			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
+		}
+
+		// Ejecutamos la consulta.
+		if ($sth->execute())
+		{
+			$rst = new Database_Driver_Mysqli_Query($sth->get_result());
+		}
+		else
+		{
+			// Error ejecutando la consulta.
+			throw new Database_Exception("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
+		}
+
+		// Armamos el resultado.
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			// Posibles keys
+			if (isset($v->possible_keys) && $v->possible_keys != NULL)
+			{
+				if ( ! isset($lst['posibles_keys']))
+				{
+					$lst['posibles_keys'] = array();
+				}
+
+				$lst['posibles_keys'][] = $v->possible_keys;
+			}
+
+			// Key
+			if (isset($v->key) && $v->key != NULL)
+			{
+				if ( ! isset($lst['key']))
+				{
+					$lst['key'] = array();
+				}
+				$ks = $v->key;
+
+				if (isset($v->key_len) && $v->key_len != NULL)
+				{
+					$ks = $ks.'('.$v->key_len.')';
+				}
+				$lst['key'][] = $ks;
+			}
+
+			// Type
+			if (isset($v->type) && $v->type != NULL)
+			{
+				if ( ! isset($lst['type']))
+				{
+					$lst['type'] = array();
+				}
+				$lst['type'][] = $v->type;
+			}
+
+			// Rows
+			if (isset($v->rows) && $v->rows != NULL)
+			{
+				$lst['rows'] = (int) $v->rows;
+			}
+		}
+
+		// Tranformamos elemento a string.
+		foreach ($lst as $k => $v)
+		{
+			if (is_array($v))
+			{
+				$lst[$k] = implode(', ', $v);
+			}
+		}
+
+		// Devolvemos el resultado.
+		return $lst;
+	}
+
 	/**
 	 * Verifica si es una cadena de caracteres o un objeto a parsear en una
 	 * consulta SQL. Realizando el pertinente parseo para obtener el SQL a
