@@ -57,7 +57,8 @@ class Base_Controller_Borradores extends Controller {
 		$vista = View::factory('borradores/index');
 
 		// Cantidad de elementos por pagina.
-		$cantidad_por_pagina = 10;
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Cargamos datos de posts.
 		$model_post = new Model_Post;

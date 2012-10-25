@@ -63,7 +63,8 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
 		// Cantidad de elementos por pagina.
-		$cantidad_por_pagina = 20;
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('moderar/gestion/usuarios');

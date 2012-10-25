@@ -53,20 +53,7 @@
 				No hay resultados para <strong>'{$q}'</strong>.
 			</div>
 			{/loop}
-			{if="count($resultados) > 0"}
-			<div class="pagination pagination-centered">
-				<ul>
-					{if="$paginacion.first != $actual"}<li><a href="/buscador/q/{$q|urlencode}/{$paginacion.first}">&laquo;</a></li>{/if}
-					{if="$paginacion.prev > 0"}<li><a href="/buscador/q/{$q|urlencode}/{$paginacion.prev}">{@Anterior@}</a></li>{/if}
-					{loop="$paginacion.pages"}
-					<li{if="$value == $actual"} class="active"{/if}}><a href="/buscador/q/{$q|urlencode}/{$value}">{$value}</a></li>
-					{/loop}
-					{if="$paginacion.next <= $paginacion.last && $paginacion.next > 0"}<li><a href="/buscador/q/{$q|urlencode}/{$paginacion.next}">{@Siguiente@}</a></li>{/if}
-					{if="$paginacion.last != $actual && $paginacion.last > 0"}<li><a href="/buscador/q/{$q|urlencode}/{$paginacion.last}">&raquo;</a></li>{/if}
-				</ul>
-			</div>
-			<span>{@Mostrando@} {$cantidad} {@de@} {$total}</span>
-			{/if}
+			{$paginacion}{if="count($resultados) > 0"}<span>{@Mostrando@} {function="count($resultados)"} {@de@} {$total}</span>{/if}
 		</div>
 	</div>
 	{/if}

@@ -50,8 +50,9 @@ class Base_Controller_Foto extends Controller {
 
 	/**
 	 * Mostramos listado de fotos.
+	 * @param int $pagina Número de página a mostrar.
 	 */
-	public function action_index()
+	public function action_index($pagina)
 	{
 		// Asignamos el título.
 		$this->template->assign('title', 'Fotos');
@@ -59,9 +60,27 @@ class Base_Controller_Foto extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('foto/index');
 
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
 		// Cargamos el listado de fotos.
 		$model_fotos = new Model_Foto;
-		$fotos = $model_fotos->obtener_ultimas();
+		$fotos = $model_fotos->obtener_ultimas($pagina, $cantidad_por_pagina);
+
+		// Verifivo validez de la pagina.
+		if (count($fotos) == 0 && $pagina != 1)
+		{
+			Request::redirect('/foto/');
+		}
+
+		// Paginación.
+		$paginador = new Paginator($model_fotos->cantidad(Model_Foto::ESTADO_ACTIVA), $cantidad_por_pagina);
+		$view->assign('paginacion', $paginador->get_view($pagina, '/foto/index/%d'));
+		unset($paginador);
 
 		// Procesamos información relevante.
 		foreach ($fotos as $key => $value)
@@ -112,8 +131,9 @@ class Base_Controller_Foto extends Controller {
 
 	/**
 	 * Mostramos listado de fotos del usuario conectado
+	 * @param int $pagina Número de página a mostrar.
 	 */
-	public function action_mis_fotos()
+	public function action_mis_fotos($pagina)
 	{
 		// Verificamos si esta conectado.
 		if ( ! isset($_SESSION['usuario_id']))
@@ -128,9 +148,27 @@ class Base_Controller_Foto extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('foto/index');
 
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
 		// Cargamos el listado de fotos.
 		$model_fotos = new Model_Foto;
-		$fotos = $model_fotos->obtener_ultimas_usuario(Usuario::$usuario_id);
+		$fotos = $model_fotos->obtener_ultimas_usuario(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
+
+		// Verifivo validez de la pagina.
+		if (count($fotos) == 0 && $pagina != 1)
+		{
+			Request::redirect('/foto/');
+		}
+
+		// Paginación.
+		$paginador = new Paginator($model_fotos->cantidad(Model_Foto::ESTADO_ACTIVA, Usuario::$usuario_id), $cantidad_por_pagina);
+		$view->assign('paginacion', $paginador->get_view($pagina, '/foto/mis_fotos/%d'));
+		unset($paginador);
 
 		// Procesamos información relevante.
 		foreach ($fotos as $key => $value)

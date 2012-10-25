@@ -123,27 +123,28 @@ class Base_Controller_Buscador extends Controller {
 		// Verificamos si hay consulta.
 		if ( ! empty($query))
 		{
-			// Formateamos la pagina.
-			$pagina = abs( (int) $pagina);
+			// Cantidad de elementos por pagina.
+			$model_configuracion = new Model_Configuracion;
+			$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
-			// Cantidad por pagina.
-			$cpp = 20;
+			// Formato de la página.
+			$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
 			// Realizamos la busqueda.
 			$model_post = new Model_Post;
-			list($listado, $cantidad) = $model_post->buscar($query, ($pagina > 0) ? $pagina : 1, $cpp, isset($model_categoria) ? $model_categoria->id : NULL, isset($model_usuario) ? $model_usuario->id : NULL);
+			list($listado, $cantidad) = $model_post->buscar($query, $pagina, $cantidad_por_pagina, isset($model_categoria) ? $model_categoria->id : NULL, isset($model_usuario) ? $model_usuario->id : NULL);
 
-			// Armamos paginacion.
-			$paginacion = new Paginator($cantidad, $cpp);
+			// Verifivo que la página seleccionada sea válida.
+			if (count($listado) == 0 && $pagina != 1)
+			{
+				Request::redirect(sprintf('/buscador/q/%s/1/%s/%s', $query, isset($model_categoria) ? $model_categoria->seo : '', isset($model_usuario) ? $model_usuario->id : ''));
+			}
 
-			// Setamos paginador.
-			$vista->assign('paginacion', $paginacion->paginate($pagina));
+			// Paginación.
+			$paginador = new Paginator($cantidad, $cantidad_por_pagina);
+			$vista->assign('paginacion', $paginador->get_view($pagina, "/buscador/q/$query/%s/".(isset($model_categoria) ? $model_categoria->seo : '').'/'.(isset($model_usuario) ? $model_usuario->id : '')));
+			unset($paginador);
 			$vista->assign('total', $cantidad);
-			$vista->assign('cantidad', ($cpp < $cantidad) ? $cpp : $cantidad);
-			$vista->assign('actual', ($pagina > 0) ? $pagina : 1);
-
-			// Limpieza de sobrantes.
-			unset($paginacion);
 
 			// Procesamos listado de post.
 			foreach ($listado as $k => $v)
@@ -201,26 +202,27 @@ class Base_Controller_Buscador extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('buscador/index');
 
-		// Formateamos la pagina.
-		$pagina = abs( (int) $pagina);
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
-		// Cantidad por pagina.
-		$cpp = 20;
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Realizamos la busqueda.
-		list($listado, $cantidad) = $model_post->buscar_relacionados(($pagina > 0) ? $pagina : 1, $cpp);
+		list($listado, $cantidad) = $model_post->buscar_relacionados($pagina, $cantidad_por_pagina);
 
-		// Armamos paginacion.
-		$paginacion = new Paginator($cantidad, $cpp);
+		// Verifivo que la página seleccionada sea válida.
+		if (count($listado) == 0 && $pagina != 1)
+		{
+			Request::redirect('/buscador/relacionados/'.$post);
+		}
 
-		// Setamos paginador.
-		$vista->assign('paginacion', $paginacion->paginate($pagina));
+		// Paginación.
+		$paginador = new Paginator($cantidad, $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, "/buscador/relacionados/$post/%s/"));
+		unset($paginador);
 		$vista->assign('total', $cantidad);
-		$vista->assign('cantidad', ($cpp < $cantidad) ? $cpp : $cantidad);
-		$vista->assign('actual', ($pagina > 0) ? $pagina : 1);
-
-		// Limpieza de sobrantes.
-		unset($paginacion);
 
 		// Procesamos listado de post.
 		foreach ($listado as $k => $v)
@@ -242,6 +244,13 @@ class Base_Controller_Buscador extends Controller {
 		$view_relacionado->assign('post', $model_post->as_array());
 		$vista->assign('relacionado', $view_relacionado->parse());
 		unset($view_relacionado);
+
+		// Listado de categorias.
+		$mc = new Model_Categoria;
+		$vista->assign('categorias', $mc->lista());
+		unset($mc);
+		$vista->assign('categoria', 'todos');
+		$vista->assign('usuario', '');
 
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu());

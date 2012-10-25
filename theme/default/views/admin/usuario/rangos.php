@@ -22,11 +22,22 @@
 	<tbody>
 		{loop="$rangos"}
 		<tr>
-			<td>#{$value.orden}</td>
+			<td><div class="btn-toolbar">
+					<div class="btn-group">
+						#{$value.orden}
+					</div>
+					<div class="btn-group">
+						{if="$value.orden !== 1"}<a class="btn btn-mini" href="/admin/usuario/mover_rango/{$value.id}/1" rel="tooltip" title="Colocar primero"><i class="icon icon-arrow-up"></i></a>{/if}
+						{if="$value.orden !== 1"}<a class="btn btn-mini" href="/admin/usuario/mover_rango/{$value.id}/{$value.orden - 1}" rel="tooltip" title="Subir 1 posición"><i class="icon icon-chevron-up"></i></a>{/if}
+						{if="$value.orden !== count($rangos)"}<a class="btn btn-mini" href="/admin/usuario/mover_rango/{$value.id}/{$value.orden + 1}" rel="tooltip" title="Bajar 1 posición"><i class="icon icon-chevron-down"></i></a>{/if}
+						{if="$value.orden !== count($rangos)"}<a class="btn btn-mini" href="/admin/usuario/mover_rango/{$value.id}/{function="count($rangos)"}" rel="tooltip" title="Colocar último"><i class="icon icon-arrow-down"></i></a>{/if}
+					</div>
+				</div>
+			</td>
 			<td>{$value.nombre}</td>
 			<td><span style="color: #{function="sprintf('%06s', dechex($value.color))"}; background-color: #{function="Utils::getContrastYIQ(sprintf('%06s', dechex($value.color)))"};">#{function="strtoupper(sprintf('%06s', dechex($value.color)))"}</span></td>
 			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /></td>
-			<td style="text-align: center;">
+			<td>
 				<div class="btn-group">
 					<a href="/admin/usuario/ver_rango/{$value.id}" class="btn btn-mini" title="Permisos" rel="tooltip"><i class="icon icon-lock"></i></a>
 					<a href="/admin/usuario/editar_rango/{$value.id}" class="btn btn-mini btn-info" title="Editar" rel="tooltip"><i class="icon-white icon-pencil"></i></a>

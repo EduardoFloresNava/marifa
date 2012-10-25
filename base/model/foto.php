@@ -341,17 +341,32 @@ class Base_Model_Foto extends Model_Dataset {
 	/**
 	 * Cantidad total de fotos.
 	 * @param int $estado Estado de la categoria a contar. NULL para todas.
+	 * @param int $usuario ID del usuario dueño de las fotos. NULL para todos.
 	 * @return int
 	 */
-	public static function s_cantidad($estado = NULL)
+	public static function s_cantidad($estado = NULL, $usuario = NULL)
 	{
 		if ($estado !== NULL)
 		{
-			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
+			if ($usuario !== NULL)
+			{
+				return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE estado = ? AND WHERE usuario_id = ?', array($estado, $usuario))->get_var(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
+			}
 		}
 		else
 		{
-			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
+			if ($usuario !== NULL)
+			{
+				return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $usuario)->get_var(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
+			}
 		}
 	}
 

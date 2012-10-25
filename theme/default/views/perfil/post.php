@@ -2,7 +2,7 @@
 {if="isset($post) && count($post) > 0"}
 <table class="table table-striped table-bordered">
 	<tbody>
-	{loop="$posts"}
+	{loop="$post"}
 		<tr>
 			<td><a href="/post/index/{$value.id}">{$value.titulo}<span class="pull-right">{$value.puntos} {@puntos@}</span></a></td>
 		</tr>
@@ -12,3 +12,4 @@
 {else}
 <div class="alert"><strong>{$usuario.nick}</strong> {@no tiene posts a&uacute;n.@}</div>
 {/if}
+{$paginacion}

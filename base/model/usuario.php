@@ -425,12 +425,24 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * Cantidad de usuario que sigue.
+	 * @return int
+	 */
+	public function cantidad_sigue()
+	{
+		return (int) $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE seguidor_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
 	 * Obtenemos los seguidores del usuario.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de elementos por página.
 	 * @return array
 	 */
-	public function seguidores()
+	public function seguidores($pagina, $cantidad = 10)
 	{
-		$lista = $this->db->query('SELECT seguidor_id FROM usuario_seguidor WHERE usuario_id = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+		$start = ($pagina - 1) * $cantidad;
+		$lista = $this->db->query('SELECT seguidor_id FROM usuario_seguidor WHERE usuario_id = ? LIMIT '.$start.','.$cantidad, $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
 		foreach ($lista as $l)
@@ -451,11 +463,14 @@ class Base_Model_Usuario extends Model_Dataset {
 
 	/**
 	 * Obtenemos la lista de usuarios que sigue.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de elementos por página.
 	 * @return array
 	 */
-	public function sigue()
+	public function sigue($pagina, $cantidad = 10)
 	{
-		$lista = $this->db->query('SELECT usuario_id FROM usuario_seguidor WHERE seguidor_id = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+		$start = ($pagina - 1) * $cantidad;
+		$lista = $this->db->query('SELECT usuario_id FROM usuario_seguidor WHERE seguidor_id = ? LIMIT '.$start.','.$cantidad, $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
 		foreach ($lista as $l)
@@ -506,13 +521,14 @@ class Base_Model_Usuario extends Model_Dataset {
 
 	/**
 	 * Obtenemos el listado de posts del usuario ordenados por fecha.
+	 * @param int $pagina Número de página.
 	 * @param int $cantidad Cantidad de posts a devolver por página.
-	 * @param int $pagina Número de página empezando por 0.
 	 * @return array
 	 */
-	public function posts_perfil_by_fecha($cantidad, $pagina = 0)
+	public function posts_perfil_by_fecha($pagina, $cantidad = 10)
 	{
-		$posts = $this->db->query('SELECT id FROM post WHERE usuario_id = ? ORDER BY fecha DESC LIMIT '.$pagina*$cantidad.','.$cantidad, $this->primary_key['id'])->get_pairs();
+		$start = ($pagina - 1) * $cantidad;
+		$posts = $this->db->query('SELECT id FROM post WHERE usuario_id = ? ORDER BY fecha DESC LIMIT '.$start.','.$cantidad, $this->primary_key['id'])->get_pairs();
 
 		$lst = array();
 		foreach ($posts as $p)
@@ -623,7 +639,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	/**
 	 * Listado de usuarios existentes.
 	 * @param int $pagina Número de página a mostrar.
-	 * @param int $cantidad Cantidad de noticias por página.
+	 * @param int $cantidad Cantidad de elementos por página.
 	 * @return array
 	 */
 	public function listado($pagina, $cantidad = 10, $estado = NULL)

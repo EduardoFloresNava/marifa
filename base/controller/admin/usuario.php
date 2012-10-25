@@ -75,7 +75,8 @@ class Base_Controller_Admin_Usuario extends Controller {
 		}
 
 		// Cantidad de elementos por pagina.
-		$cantidad_por_pagina = 20;
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/usuario/index');
@@ -133,9 +134,6 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$a = $v->as_array();
 			$a['rango_id'] = $v->rango;
 			$a['rango'] = $v->rango()->nombre;
-			//$a['contenido'] = Decoda::procesar($a['contenido']);
-			//$a['usuario'] = $v->usuario()->as_array();
-
 			$lst[$k] = $a;
 		}
 
@@ -685,6 +683,46 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Cambiamos el orden de un rango.
+	 * @param int $rango ID del rango al que cambiar su orden.
+	 * @param int $posicion Posición que debe adoptar el nuevo rango. Empieza en 1.
+	 */
+	public function action_mover_rango($rango, $posicion)
+	{
+		// Verifico la posición.
+		$posicion = (int) $posicion;
+		if ($posicion <= 0)
+		{
+			$_SESSION['flash_error'] = 'La posición que deseas asignar no es correcta.';
+			Request::redirect('/admin/usuario/rangos');
+		}
+
+		$rango = (int) $rango;
+
+		// Verifico existencia del rango.
+		$model_rango = new Model_Usuario_Rango($rango);
+		if ( ! $model_rango->existe())
+		{
+			$_SESSION['flash_error'] = 'El rango que deseas mover no se encuentra disponible.';
+			Request::redirect('/admin/usuario/rangos');
+		}
+
+		// Verifico la posición.
+		if ($model_rango->orden === $posicion || $posicion > $model_rango->cantidad())
+		{
+			$_SESSION['flash_error'] = 'La posición que deseas asignar no es correcta.';
+			Request::redirect('/admin/usuario/rangos');
+		}
+
+		// Asignamos la posición.
+		$model_rango->posicionar($posicion);
+
+		// Informamos.
+		$_SESSION['flash_success'] = 'El rango se ha movido correctamente.';
+		Request::redirect('/admin/usuario/rangos');
 	}
 
 	/**

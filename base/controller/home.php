@@ -65,8 +65,9 @@ class Base_Controller_Home extends Controller {
 
 	/**
 	 * Portada del sitio.
+	 * @param int $pagina Número de página para lo últimos posts.
 	 */
-	public function action_index()
+	public function action_index($pagina)
 	{
 		// Cargamos la portada.
 		$portada = View::factory('home/index');
@@ -82,8 +83,26 @@ class Base_Controller_Home extends Controller {
 		$portada->assign('cantidad_posts', $model_post->cantidad());
 		$portada->assign('cantidad_comentarios_posts', $model_post->cantidad_comentarios());
 
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+
 		// Ultimos posts
-		$post_list = $model_post->obtener_ultimos();
+		$post_list = $model_post->obtener_ultimos($pagina, $cantidad_por_pagina);
+
+		// Verifivo validez de la pagina.
+		if (count($post_list) == 0 && $pagina != 1)
+		{
+			Request::redirect('/');
+		}
+
+		// Paginación.
+		$paginador = new Paginator($model_post->cantidad(Model_Post::ESTADO_ACTIVO), $cantidad_por_pagina);
+		$portada->assign('paginacion', $paginador->get_view($pagina, '/home/index/%d'));
+		unset($paginador);
 
 		// Extendemos la información de los posts.
 		foreach ($post_list as $k => $v)

@@ -106,7 +106,8 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
 		// Cantidad de elementos por pagina.
-		$cantidad_por_pagina = 20;
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Verifico el tipo de fotos a mostrar.
 		$tipo = $tipo === NULL ? NULL : (int) $tipo;
@@ -587,7 +588,8 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Cantidad de elementos por pagina.
-		$cantidad_por_pagina = 20;
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/fotos');
@@ -1008,7 +1010,8 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
 		// Cantidad de elementos por pagina.
-		$cantidad_por_pagina = 20;
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/noticias');

@@ -249,6 +249,15 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	}
 
 	/**
+	 * Obtenemos la cantidad de rangos.
+	 * @return int
+	 */
+	public function cantidad()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM usuario_rango_permiso')->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
 	 * Listado de permisos del rango.
 	 * @return array
 	 */

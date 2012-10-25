@@ -34,6 +34,7 @@
 			</div>
 		</li>{/loop}
 	</ul>
+	{$paginacion}
 	{else}
 	<div class="alert">No hay fotos disponibles</div>
 	{/if}

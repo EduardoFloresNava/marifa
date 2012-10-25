@@ -12,6 +12,7 @@
 		{else}
 		<div class="alert">No hay posts aún.</div>
 		{/loop}
+		{$paginacion}
 	</div>
 	<div class="span3">
 		<div class="home-search">

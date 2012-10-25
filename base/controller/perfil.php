@@ -303,11 +303,19 @@ class Base_Controller_Perfil extends Controller {
 	/**
 	 * Perfiles del usuario.
 	 * @param string $usuario ID o nick del usuario.
+	 * @param int $pagina Número de página a mostrar.
 	 */
-	public function action_posts($usuario)
+	public function action_posts($usuario, $pagina)
 	{
 		// Cargamos el usuario.
 		$this->cargar_usuario($usuario);
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Formato de la página.
+		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
 		// Cargamos la vista de información.
 		$information_view = View::factory('perfil/post');
@@ -316,7 +324,18 @@ class Base_Controller_Perfil extends Controller {
 		$information_view->assign('usuario', $this->usuario->as_array());
 
 		// Cargamos listado de posts.
-		$post_list = $this->usuario->posts_perfil_by_fecha(10);
+		$post_list = $this->usuario->posts_perfil_by_fecha($pagina, $cantidad_por_pagina);
+
+		// Verifico validez de la pagina.
+		if (count($post_list) == 0 && $pagina != 1)
+		{
+			Request::redirect('/perfil/posts/'.$usuario);
+		}
+
+		// Paginación.
+		$paginador = new Paginator($this->usuario->cantidad_posts(), $cantidad_por_pagina);
+		$information_view->assign('paginacion', $paginador->get_view($pagina, '/perfil/posts/'.$usuario.'/%d/'));
+		unset($paginador);
 
 		// Transformamos a arreglo.
 		foreach ($post_list as $k => $v)
@@ -324,7 +343,7 @@ class Base_Controller_Perfil extends Controller {
 			$post_list[$k] = array_merge($v->as_array(), array('puntos' => $v->puntos()));
 		}
 
-		$information_view->assign('posts', $post_list);
+		$information_view->assign('post', $post_list);
 		unset($post_list);
 
 		// Asignamos la vista a la plantilla base.
@@ -338,11 +357,21 @@ class Base_Controller_Perfil extends Controller {
 	/**
 	 * A quien sigue y quienes lo siguen del usuario.
 	 * @param string $usuario ID o nick del usuario.
+	 * @param int $pagina_sigo Número de página de quienes estoy siguiendo.
+	 * @param int $pagina_siguen Número de página de quienes me siguen.
 	 */
-	public function action_seguidores($usuario)
+	public function action_seguidores($usuario, $pagina_sigo, $pagina_siguen)
 	{
 		// Cargamos el usuario.
 		$this->cargar_usuario($usuario);
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Formato de la página.
+		$pagina_sigo = (int) $pagina_sigo > 0 ? (int) $pagina_sigo : 1;
+		$pagina_siguen = (int) $pagina_siguen > 0 ? (int) $pagina_siguen : 1;
 
 		// Cargamos la vista de información.
 		$information_view = View::factory('perfil/seguidores');
@@ -351,7 +380,18 @@ class Base_Controller_Perfil extends Controller {
 		$information_view->assign('usuario', $this->usuario->as_array());
 
 		// Seguidores.
-		$seguidores = $this->usuario->seguidores();
+		$seguidores = $this->usuario->seguidores($pagina_sigo, $cantidad_por_pagina);
+
+		// Verifico validez de la pagina.
+		if (count($seguidores) == 0 && $pagina_sigo != 1)
+		{
+			Request::redirect('/perfil/seguidores/'.$usuario.'/1/'.$pagina_siguen);
+		}
+
+		// Paginación.
+		$paginador = new Paginator($this->usuario->cantidad_seguidores(), $cantidad_por_pagina);
+		$information_view->assign('paginacion_seguidores', $paginador->get_view($pagina_sigo, '/perfil/seguidores/'.$usuario.'/%d/'.$pagina_siguen));
+		unset($paginador);
 
 		// Transformamos a arreglo.
 		foreach ($seguidores as $k => $v)
@@ -362,7 +402,18 @@ class Base_Controller_Perfil extends Controller {
 		unset($seguidores);
 
 		// A quienes sigue.
-		$sigue = $this->usuario->sigue();
+		$sigue = $this->usuario->sigue($pagina_siguen, $cantidad_por_pagina);
+
+		// Verifico validez de la pagina.
+		if (count($sigue) == 0 && $pagina_siguen != 1)
+		{
+			Request::redirect('/perfil/seguidores/'.$usuario.'/'.$pagina_sigo.'/1');
+		}
+
+		// Paginación.
+		$paginador = new Paginator($this->usuario->cantidad_sigue(), $cantidad_por_pagina);
+		$information_view->assign('paginacion_sigo', $paginador->get_view($pagina_siguen, '/perfil/seguidores/'.$usuario.'/'.$pagina_sigo.'/%d/'));
+		unset($paginador);
 
 		// Transformamos a arreglo.
 		foreach ($sigue as $k => $v)

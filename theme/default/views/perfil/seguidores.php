@@ -9,6 +9,7 @@
 	{/loop}
 	</tbody>
 </table>
+{$paginacion_seguidores}
 {else}
 	<div class="alert">{@No tiene seguidores a&uacute;n@}.</div>
 {/if}
@@ -23,6 +24,7 @@
 	{/loop}
 	</tbody>
 </table>
+{$paginacion_sigue}
 {else}
 	<div class="alert">{@No sigue ning&uacute;n usuario a&uacute;n@}.</div>
 {/if}

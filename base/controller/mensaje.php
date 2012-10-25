@@ -70,7 +70,8 @@ class Base_Controller_Mensaje extends Controller {
 		$this->template->assign('title', 'Mensajes - Bandeja de entrada');
 
 		// Cantidad de elementos por pagina.
-		$cantidad_por_pagina = 10;
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$view = View::factory('mensaje/index');
@@ -124,7 +125,8 @@ class Base_Controller_Mensaje extends Controller {
 		$this->template->assign('title', 'Mensajes - Bandeja de salida');
 
 		// Cantidad de elementos por pagina.
-		$cantidad_por_pagina = 10;
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$view = View::factory('mensaje/enviados');

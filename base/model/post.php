@@ -749,7 +749,7 @@ class Base_Model_Post extends Model_Dataset {
 	public function buscar_relacionados($pagina = 1, $cantidad = 10)
 	{
 		// Cantidad de elementos.
-		$total = $this->db->query('SELECT COUNT(*) FROM post INNER JOIN post_tag ON post.id = post_tag.post_id WHERE post.estado = 0 AND post_tag.nombre IN (SELECT nombre FROM post_tag WHERE post_id = ?) AND post.id != ? GROUP BY post.id', array($this->primary_key['id'], $this->primary_key['id']))->get_var(Database_Query::FIELD_INT);
+		$total = $this->db->query('SELECT * FROM post INNER JOIN post_tag ON post.id = post_tag.post_id WHERE post.estado = 0 AND post_tag.nombre IN (SELECT nombre FROM post_tag WHERE post_id = ?) AND post.id != ? GROUP BY post.id', array($this->primary_key['id'], $this->primary_key['id']))->num_rows();
 
 		// Verificamos que existan resultados.
 		if ($total == 0)
