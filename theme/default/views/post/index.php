@@ -1,7 +1,7 @@
 <div class="row post">
 	<div class="span2 usuario-perfil-lateral">
 		<h3 class="title">Posteado por:</h3>
-		<a href="/perfil/index/{$usuario.nick}" class="thumbnail user-icon">
+			<a href="/perfil/index/{$usuario.nick}" class="thumbnail user-icon">
 			<img src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
 			<h4 class="nick">{$usuario.nick}</h4>
 		</a>

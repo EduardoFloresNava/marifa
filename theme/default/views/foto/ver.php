@@ -1,7 +1,7 @@
 <div class="row">
 	<div class="span2 usuario-perfil-lateral">
 		<h3 class="title">{@Autor@}:</h3>
-				<a href="/perfil/index/{$usuario.nick}" class="thumbnail">
+			<a href="/perfil/index/{$usuario.nick}" class="thumbnail user-icon">
 			<img src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
 			<h4 class="nick">{$usuario.nick}</h4>
 		</a>
@@ -73,17 +73,24 @@
 					<div class="span1">
 						<img class="thumbnail" src="{function="Utils::get_gravatar($value.usuario.email, 48, 48)"}" />
 					</div>
-					<div class="span11">
+					<div class="span11 comentario-data">
 						<div class="clearfix head">
-							<span>
-								<a href="#">{$value.usuario.nick}</a>
-								<small>{$value.fecha->fuzzy()}</small>
+							<span class="informacion">
+								<a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a>
+								<small>{function="$value.fecha->fuzzy()"}</small>
+								{if="$value.estado == 1"}<span class="label label-warning">OCULTO</span>{elseif="$value.estado == 2"}<span class="label label-important">BORRADO</span>{/if}
 							</span>
-							<div class="btn-group pull-right">
-								{if="$me != NULL"}<a href="#" class="btn-quote-comment btn btn-mini btn" data-user="{$value.usuario.nick}"><i class="icon icon-comment"></i></a>{/if}
-								{if="$me != NULL && $me == $value.usuario.id"}<a href="#" class="btn btn-mini"><i class="icon icon-pencil"></i></a>{/if}
-								{if="$me != NULL && $me == $value.usuario.id"}<a href="#" class="btn btn-mini btn-danger"><i class="icon-white icon-remove"></i></a>{/if}
+							{if="$me != NULL"}
+							<div class="btn-toolbar pull-right acciones">
+								<div class="btn-group">
+									<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}"><i class="icon icon-comment"></i></a>
+									{if="($me == $value.usuario.id || $comentario_editar) && $value.estado != 2"}<a href="/foto/editar_comentario/{$value.id}" class="btn btn-mini btn-primary" rel="tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
+									{if="($me == $value.usuario.id || $comentario_ocultar) && $value.estado == 0"}<a href="/foto/ocultar_comentario/{$value.id}/0" class="btn btn-mini btn-inverse" rel="tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
+									{if="$value.estado == 1 && $comentario_ocultar"}<a href="/foto/ocultar_comentario/{$value.id}/1" class="btn btn-mini btn-info" rel="tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{/if}
+									{if="$comentario_eliminar && $value.estado != 2"}<a href="/foto/eliminar_comentario/{$value.id}" class="btn btn-mini btn-danger" rel="tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
+								</div>
 							</div>
+							{/if}
 						</div>
 						<div class="comentario-body">{$value.comentario}</div>
 					</div>

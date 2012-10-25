@@ -267,7 +267,7 @@ class Base_Model_Foto extends Model_Dataset {
 	public function crear($usuario_id, $titulo, $descripcion, $url, $categoria, $visitas = TRUE, $comentarios = TRUE, $estado = self::ESTADO_ACTIVA)
 	{
 		$visitas = $visitas ? 0 : NULL;
-		list ($id, $c) = $this->db->insert('INSERT INTO foto (usuario_id, creacion, titulo, descripcion, url, estado, ultima_visita, visitas, categoria_id, comentar, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array($usuario_id, date('Y/m/d H:i:s'), $titulo, $descripcion, $url, self::ESTADO_ACTIVA,  NULL, $visitas, $categoria, $comentarios, $estado));
+		list ($id, $c) = $this->db->insert('INSERT INTO foto (usuario_id, creacion, titulo, descripcion, url, ultima_visita, visitas, categoria_id, comentar, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array($usuario_id, date('Y/m/d H:i:s'), $titulo, $descripcion, $url, NULL, $visitas, $categoria, $comentarios, $estado));
 
 		if ($c > 0)
 		{
@@ -406,17 +406,32 @@ class Base_Model_Foto extends Model_Dataset {
 
 	/**
 	 * Cantidad de comentarios en fotos que hay.
+	 * @param int $estado Estado de las fotos a contar.
 	 * @return int
 	 */
-	public function cantidad_comentarios()
+	public function cantidad_comentarios($estado = NULL)
 	{
 		if (isset($this->primary_key['id']) && $this->primary_key['id'] !== NULL)
 		{
-			return (int) $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+			if ($estado === NULL)
+			{
+				return (int) $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				return (int) $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE foto_id = ? AND estado = ?', array($this->primary_key['id'], $estado))->get_var(Database_Query::FIELD_INT);
+			}
 		}
 		else
 		{
-			return (int) $this->db->query('SELECT COUNT(*) FROM foto_comentario')->get_var(Database_Query::FIELD_INT);
+			if ($estado === NULL)
+			{
+				return (int) $this->db->query('SELECT COUNT(*) FROM foto_comentario')->get_var(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				return (int) $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
+			}
 		}
 	}
 

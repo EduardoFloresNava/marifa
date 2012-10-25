@@ -73,7 +73,8 @@ class Base_Model_Foto_Comentario extends Model_Dataset {
 		'foto_id' => Database_Query::FIELD_INT,
 		'usuario_id' => Database_Query::FIELD_INT,
 		'comentario' => Database_Query::FIELD_STRING,
-		'fecha' => Database_Query::FIELD_DATETIME
+		'fecha' => Database_Query::FIELD_DATETIME,
+		'estado' => Database_Query::FIELD_INT
 	);
 
 	/**

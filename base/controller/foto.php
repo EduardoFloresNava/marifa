@@ -71,7 +71,7 @@ class Base_Controller_Foto extends Controller {
 			$d['categoria'] = $value->categoria()->as_array();
 			$d['votos'] = $value->votos();
 			$d['favoritos'] = $value->favoritos();
-			$d['comentarios'] = $value->cantidad_comentarios();
+			$d['comentarios'] = $value->cantidad_comentarios(Model_Foto::ESTADO_ACTIVA);
 			$d['usuario'] = $value->usuario()->as_array();
 
 			// Acciones.
@@ -140,7 +140,7 @@ class Base_Controller_Foto extends Controller {
 			$d['categoria'] = $value->categoria()->as_array();
 			$d['votos'] = $value->votos();
 			$d['favoritos'] = $value->favoritos();
-			$d['comentarios'] = $value->cantidad_comentarios();
+			$d['comentarios'] = $value->cantidad_comentarios(Model_Foto::ESTADO_ACTIVA);
 			$d['usuario'] = $value->usuario()->as_array();
 
 			// Acciones. Como son nuestras fotos no hacen falta acciones.
@@ -238,6 +238,9 @@ class Base_Controller_Foto extends Controller {
 
 		// Verifico si soporta comentarios.
 		$view->assign('puedo_comentar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR_CERRADO) || ($model_foto->soporta_comentarios() && Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR)));
+		$view->assign('comentario_eliminar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_ELIMINAR));
+		$view->assign('comentario_ocultar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR));
+		$view->assign('comentario_editar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_EDITAR));
 
 		// Comentarios del post.
 		$cmts = $model_foto->comentarios();
@@ -459,6 +462,205 @@ class Base_Controller_Foto extends Controller {
 			$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
 			Request::redirect('/foto/ver/'.$foto);
 		}
+	}
+
+	/**
+	 * Ocultamos un comentario.
+	 * @param int $comentario ID del comentario a ocultar.
+	 * @param bool $tipo 0 para ocultar, 1 para mostrar.
+	 */
+	public function action_ocultar_comentario($comentario, $tipo)
+	{
+		// Verificamos usuario logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder ocultar/mostrar comentarios en fotos.';
+			Request::redirect('/usuario/login');
+		}
+
+		$comentario = (int) $comentario;
+
+		// Cargamos el comentario.
+		$model_comentario = new Model_Foto_Comentario($comentario);
+
+		// Verificamos existencia.
+		if ( ! is_array($model_comentario->as_array()))
+		{
+			$_SESSION['flash_error'] = 'El comentario que deseas ocultar/mostrar no se encuentra disponible.';
+			Request::redirect('/');
+		}
+
+		// Valido el tipo.
+		$tipo = (bool) $tipo;
+
+		// Verifico el estado.
+		if (($tipo && $model_comentario->estado !== 1) || ( ! $tipo && $model_comentario->estado !== 0))
+		{
+			$_SESSION['flash_error'] = 'El comentario que deseas ocultar/mostrar no se encuentra disponible.';
+			Request::redirect('/foto/ver/'.$model_comentario->foto_id);
+		}
+
+		// Verifico los permisos.
+		if ($model_comentario->estado == 0 && Usuario::$usuario_id !== $model_comentario->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
+		{
+			$_SESSION['flash_error'] = 'No tienes los permisos para ocultar/mostrar comentarios.';
+			Request::redirect('/foto/ver/'.$model_comentario->foto_id);
+		}
+		elseif ($model_comentario->estado == 1 && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
+		{
+			$_SESSION['flash_error'] = 'No tienes los permisos para ocultar/mostrar comentarios.';
+			Request::redirect('/foto/ver/'.$model_comentario->foto_id);
+		}
+
+		//TODO: agregar otro estado para diferenciar usuario de moderador.
+
+		// Actualizo el estado.
+		$model_comentario->actualizar_campo('estado', $tipo ? Model_Foto_Comentario::ESTADO_VISIBLE : Model_Foto_Comentario::ESTADO_OCULTO);
+
+		// Envio el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->foto()->usuario_id), $tipo ? 'foto_comentario_mostrar' : 'foto_comentario_ocultar', $comentario, Usuario::$usuario_id);
+
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.';
+		Request::redirect('/foto/ver/'.$model_comentario->foto_id);
+	}
+
+	/**
+	 * Eliminamos un comentario en una foto.
+	 * @param int $comentario ID del comentario a eliminar.
+	 */
+	public function action_eliminar_comentario($comentario)
+	{
+		// Verificamos usuario logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder borrar comentarios en fotos.';
+			Request::redirect('/usuario/login');
+		}
+
+		// Verifico los permisos.
+		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_ELIMINAR))
+		{
+			$_SESSION['flash_error'] = 'No tienes los permisos para borrar comentarios.';
+			Request::redirect('/');
+		}
+
+		$comentario = (int) $comentario;
+
+		// Cargamos el comentario.
+		$model_comentario = new Model_Foto_Comentario($comentario);
+
+		// Verificamos existencia.
+		if ( ! is_array($model_comentario->as_array()))
+		{
+			$_SESSION['flash_error'] = 'El comentario que deseas borrar no se encuentra disponible.';
+			Request::redirect('/');
+		}
+
+		// Verifico el estado.
+		if ($model_comentario->estado === 2)
+		{
+			$_SESSION['flash_error'] = 'El comentario que deseas borrar no se encuentra disponible.';
+			Request::redirect('/foto/ver/'.$model_comentario->foto_id);
+		}
+
+		// Actualizo el estado.
+		$model_comentario->actualizar_campo('estado', Model_Foto_Comentario::ESTADO_BORRADO);
+
+		// Envio el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->foto()->usuario_id), 'foto_comentario_borrar', $comentario, Usuario::$usuario_id);
+
+		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha borrado correctamente.';
+		Request::redirect('/foto/ver/'.$model_comentario->foto_id);
+	}
+
+	/**
+	 * Editamos un comentario.
+	 * @param int $comentario ID del comentario a editar.
+	 */
+	public function action_editar_comentario($comentario)
+	{
+		// Verificamos usuario logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder editar comentarios en fotos.';
+			Request::redirect('/usuario/login');
+		}
+
+		$comentario = (int) $comentario;
+
+		// Cargamos el comentario.
+		$model_comentario = new Model_Foto_Comentario($comentario);
+
+		// Verificamos existencia.
+		if ( ! is_array($model_comentario->as_array()))
+		{
+			$_SESSION['flash_error'] = 'El comentario que deseas editar no se encuentra disponible.';
+			Request::redirect('/');
+		}
+
+		// Verifico el estado.
+		if ($model_comentario->estado === 2)
+		{
+			$_SESSION['flash_error'] = 'El comentario que deseas editar no se encuentra disponible.';
+			Request::redirect('/foto/ver/'.$model_comentario->foto_id);
+		}
+
+		// Verifico permisos estado.
+		if ($model_comentario->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_EDITAR))
+		{
+			$_SESSION['flash_error'] = 'No tienes los permisos para editar el comentario.';
+			Request::redirect('/foto/ver/'.$model_comentario->foto_id);
+		}
+
+		// Cargo la vista.
+		$vista = View::factory('/foto/editar_comentario');
+
+		// Seteo información del comentario.
+		$vista->assign('contenido', $model_comentario->comentario);
+		$vista->assign('error_contenido', FALSE);
+		$vista->assign('usuario', $model_comentario->usuario()->as_array());
+		$vista->assign('foto', $model_comentario->foto()->as_array());
+		$vista->assign('comentario', $model_comentario->as_array());
+
+		if (Request::method() === 'POST')
+		{
+			// Cargo el comentario.
+			$contenido = isset($_POST['contenido']) ? $_POST['contenido'] : '';
+
+			// Seteo enviado.
+			$vista->assign('contenido', $contenido);
+
+			// Verificamos el formato.
+			$comentario_clean = preg_replace('/\[.*\]/', '', $contenido);
+			if ( ! isset($comentario_clean{20}) || isset($contenido{400}))
+			{
+				$vista->assign('error_contenido', 'El comentario debe tener entre 20 y 400 caracteres.');
+			}
+			else
+			{
+				// Transformamos entidades HTML.
+				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
+
+				// Insertamos el comentario.
+				$model_comentario->actualizar_campo('comentario', $contenido);
+
+				// Envio el suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->foto()->usuario_id), 'foto_comentario_editar', $comentario, Usuario::$usuario_id);
+
+				$_SESSION['post_comentario_success'] = 'El comentario se ha actualizado correctamente.';
+				Request::redirect('/foto/ver/'.$model_comentario->foto_id);
+			}
+		}
+
+		// Menu.
+		$this->template->assign('master_bar', parent::base_menu('foto'));
+		$this->template->assign('top_bar', Controller_Home::submenu());
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $vista->parse());
 	}
 
 	/**
