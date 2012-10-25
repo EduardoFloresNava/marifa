@@ -32,14 +32,26 @@
 			<td>{$value.rango}</td>
 			<td>{$value.lastactive->fuzzy()}</td>
 			<td><span class="label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span></td>
-			<td style="text-align: center;">
-				<div class="btn-group">
-					{if="$value.estado == 0 || $value.estado == 1"}<a href="/admin/usuario/suspender_usuario/{$value.id}" class="btn btn-mini btn-info">Suspender</a>{/if}
-					{if="$value.estado == 2"}<a href="/admin/usuario/quitar_suspension_usuario/{$value.id}" class="btn btn-mini btn-info">Quitar suspensión</a>{/if}
-					{if="$value.estado == 1"}<a href="/admin/usuario/advertir_usuario/{$value.id}" class="btn btn-mini btn-warning">Advertir</a>{/if}
-					{if="$value.estado == 0 || $value.estado == 1 || $value.estado == 2"}<a href="/admin/usuario/banear_usuario/{$value.id}" class="btn btn-mini btn-danger">Banear</a>{/if}
-					{if="$value.estado == 3"}<a href="/admin/usuario/desbanear_usuario/{$value.id}" class="btn btn-mini btn-danger">Desbanear</a>{/if}
-					<a href="/admin/usuario/cambiar_rango/{$value.id}" class="btn btn-mini btn-primary">Cambiar rango</a>
+			<td>
+				<div class="btn-toolbar">
+					<div class="btn-group">
+						{if="$value.estado == 0 || $value.estado == 1"}<a href="/admin/usuario/suspender_usuario/{$value.id}" class="btn btn-mini btn-info">Suspender</a>{/if}
+						{if="$value.estado == 2"}<a href="/admin/usuario/quitar_suspension_usuario/{$value.id}" class="btn btn-mini btn-info">Quitar suspensión</a>{/if}
+						{if="$value.estado == 1"}<a href="/admin/usuario/advertir_usuario/{$value.id}" class="btn btn-mini btn-warning">Advertir</a>{/if}
+						{if="$value.estado == 0 || $value.estado == 1 || $value.estado == 2"}<a href="/admin/usuario/banear_usuario/{$value.id}" class="btn btn-mini btn-danger">Banear</a>{/if}
+						{if="$value.estado == 3"}<a href="/admin/usuario/desbanear_usuario/{$value.id}" class="btn btn-mini btn-danger">Desbanear</a>{/if}
+					</div>
+					<div class="btn-group">
+						<a href="/admin/usuario/cambiar_rango/{$value.id}" class="btn btn-mini btn-primary">Cambiar rango</a>
+						<button class="btn btn-mini btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+						<ul class="dropdown-menu">
+							{$uid_aux=$value.id}
+							{$rango_aux=$value.rango_id}
+							{loop="$rangos"}
+							{if="$rango_aux !== $value.id"}<li><a href="/admin/usuario/cambiar_rango/{$uid_aux}/{$value.id}/">{$value.nombre}</a></li>{/if}
+							{/loop}
+						</ul>
+					</div>
 				</div>
 			</td>
 		</tr>

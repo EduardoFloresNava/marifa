@@ -179,6 +179,11 @@
  * * **nick_inicial_id**: ID del nick anterior del usuario.
  * * **nick_final_id**: ID del nick nuevo del usuario.
 
+ * **usuario_cambio_rango** (*usuario_id*, *rango_nuevo*, *moderador_id*): Un usuario cambia su rango.
+ * * **usuario_id**: ID del usuario al que se le cambia el rango.
+ * * **rango_anterior**: ID del rango nuevo del usuario.
+ * * **moderador_id**: ID del moderador que realiza el cambio de rango.
+
  * **usuario_suspender** (*suspension_id*): El usuario es suspendido.
  * * **suspension_id**: ID de la suspensión.
 

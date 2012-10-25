@@ -131,6 +131,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		foreach ($lst as $k => $v)
 		{
 			$a = $v->as_array();
+			$a['rango_id'] = $v->rango;
 			$a['rango'] = $v->rango()->nombre;
 			//$a['contenido'] = Decoda::procesar($a['contenido']);
 			//$a['usuario'] = $v->usuario()->as_array();
@@ -138,9 +139,17 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de noticias.
+		// Seteamos listado de usuarios.
 		$vista->assign('usuarios', $lst);
 		unset($lst);
+
+		// Cargamos listado de rangos que podemos asignar.
+		$lst = Usuario::usuario()->rango()->listado(Usuario::usuario()->rango()->orden);
+		foreach ($lst as $k => $v)
+		{
+			$lst[$k] = $v->as_array();
+		}
+		$vista->assign('rangos', $lst);
 
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
@@ -559,6 +568,86 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Informo el resultado.
 		$_SESSION['flash_success'] = 'El baneo fue anulado correctamente.';
 		Request::redirect('/admin/usuario');
+	}
+
+	/**
+	 * Cambiamos el rango de un usuario.
+	 * @param int $usuario ID del usuario al que se le cambia el rango.
+	 * @param int $rango ID del rango a setear.
+	 */
+	public function action_cambiar_rango($usuario, $rango)
+	{
+		$usuario = (int) $usuario;
+
+		// Verificamos no sea actual.
+		if ($usuario == Usuario::$usuario_id)
+		{
+			$_SESSION['flash_error'] = 'El usuario que deseas cambiarle el rango no se encuentra disponible.';
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Cargamos el modelo del usuario.
+		$model_usuario = new Model_Usuario($usuario);
+		if ( ! $model_usuario->existe())
+		{
+			$_SESSION['flash_error'] = 'El usuario que deseas cambiarle el rango no se encuentra disponible.';
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Verifico su orden.
+		if ($model_usuario->rango()->es_superior(Usuario::usuario()->rango))
+		{
+			$_SESSION['flash_error'] = 'El usuario que deseas cambiarle el rango no se encuentra disponible.';
+			Request::redirect('/admin/usuario/');
+		}
+
+		$rango = (int) $rango;
+
+		// Verifico el rango.
+		$model_rango = new Model_Usuario_Rango($rango);
+		if ($model_rango->existe())
+		{
+			// Verifico el nivel.
+			if ($rango == Usuario::usuario()->rango || $model_rango->es_superior(Usuario::usuario()->rango))
+			{
+				$_SESSION['flash_error'] = 'Rango que deseas asignar no se encuentra disponible.';
+				Request::redirect('/admin/usuario/');
+			}
+
+			// Actualizo el rango.
+			$model_usuario->actualizar_campo('rango', $rango);
+
+			// Envio el suceso.
+			$model_suceso = new Model_Suceso;
+			$model_suceso->crear(array(Usuario::$usuario_id, $model_usuario->id), 'usuario_cambio_rango	', $model_usuario->id, $rango, Usuario::$usuario_id);
+
+			// Informo el resultado.
+			$_SESSION['flash_success'] = 'El rango fue cambiado correctamente correctamente.';
+			Request::redirect('/admin/usuario');
+		}
+
+		// Cargo la vista.
+		$vista = View::factory('admin/usuario/cambiar_rango');
+
+		// Seteo la información.
+		$vista->assign('usuario', $model_usuario->as_array());
+
+		// Cargamos los rangos.
+		$lst = $model_rango->listado(Usuario::usuario()->rango()->orden);
+		foreach ($lst as $k => $v)
+		{
+			$lst[$k] = $v->as_array();
+		}
+		$vista->assign('rangos', $lst);
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**

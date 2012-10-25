@@ -36,6 +36,11 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
+ * @property-read int $id ID del rango.
+ * @property-read int $orden Orden que ocupa el rango.
+ * @property-read string $nombre Nombre del rango.
+ * @property-read int $color Color que representa al rango.
+ * @property-read string $imagen Imagen del rango.
  */
 class Base_Model_Usuario_Rango extends Model_Dataset {
 
@@ -486,11 +491,19 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 
 	/**
 	 * Listado de rangos.
+	 * @param int $orden Orden máximo a mostrar. Si no se especifica devolvemos todos.
 	 * @return array
 	 */
-	public function listado()
+	public function listado($orden = NULL)
 	{
-		$rst = $this->db->query('SELECT id FROM usuario_rango ORDER BY orden ASC')->get_pairs(Database_Query::FIELD_INT);
+		if ($orden === NULL)
+		{
+			$rst = $this->db->query('SELECT id FROM usuario_rango ORDER BY orden ASC')->get_pairs(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			$rst = $this->db->query('SELECT id FROM usuario_rango WHERE orden > ? ORDER BY orden ASC', $orden)->get_pairs(Database_Query::FIELD_INT);
+		}
 
 		$lst = array();
 		foreach ($rst as $v)
