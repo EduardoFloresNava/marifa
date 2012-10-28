@@ -30,19 +30,22 @@
 			<div class="contenido-foto">{$foto.descripcion}</div>
 		</div>
 		<div class="btn-toolbar">
-			{if="$foto.estado == 0 && ($permiso_ocultar || $permiso_papelera || $permiso_borrar)"}
+			{if="$foto.estado == 0 && ($permiso_ocultar || $permiso_papelera || $permiso_borrar || $permiso_editar)"}
 			<div class="btn-group">
+				{if="$permiso_editar"}<a href="/foto/editar/{$foto.id}/" class="btn btn-primary" rel="tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
 				{if="$permiso_ocultar"}<a href="/foto/ocultar_foto/{$foto.id}/" class="btn btn-inverse" rel="tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
 				{if="$permiso_papelera"}<a href="/foto/borrar_foto/{$foto.id}/1" class="btn btn-warning" rel="tooltip" title="Enviar a la papelera"><i class="icon-white icon-trash"></i></a>{/if}
 				{if="$permiso_borrar"}<a href="/foto/borrar_foto/{$foto.id}/" class="btn btn-danger" rel="tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
 			</div>
-			{elseif="$foto.estado == 1 && ($permiso_ocultar || $permiso_borrar)"}
+			{elseif="$foto.estado == 1 && ($permiso_ocultar || $permiso_borrar || $permiso_editar)"}
 			<div class="btn-group">
+				{if="$permiso_editar"}<a href="/foto/editar/{$foto.id}/" class="btn btn-primary" rel="tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
 				{if="$permiso_ocultar"}<a href="/foto/ocultar_foto/{$foto.id}/" class="btn btn-success" rel="tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{/if}
 				{if="$permiso_borrar"}<a href="/foto/borrar_foto/{$foto.id}/" class="btn btn-danger" rel="tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
 			</div>
-			{elseif="$foto.estado == 2 && ($permiso_papelera || $permiso_borrar)"}
+			{elseif="$foto.estado == 2 && ($permiso_papelera || $permiso_borrar || $permiso_editar)"}
 			<div class="btn-group">
+				{if="$permiso_editar"}<a href="/foto/editar/{$foto.id}/" class="btn btn-primary" rel="tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
 				{if="$permiso_papelera"}<a href="/foto/restaurar_foto/{$foto.id}/" class="btn btn-success" rel="tooltip" title="Restaurar"><i class="icon-white icon-refresh"></i></a>{/if}
 				{if="$permiso_borrar"}<a href="/foto/borrar_foto/{$foto.id}/" class="btn btn-danger" rel="tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
 			</div>

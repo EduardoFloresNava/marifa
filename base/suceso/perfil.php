@@ -45,6 +45,11 @@ class Base_Suceso_Perfil extends Suceso {
 		return parent::obtener_listado($usuario, $pagina, $cantidad, $class);
 	}
 
+	public static function cantidad($usuario, $class = __CLASS__)
+	{
+		return parent::cantidad($usuario, $class);
+	}
+
 	/**
 	 * Obtenemos los datos para visualizar un suceso.
 	 * @param array|Model_Suceso $informacion Información de un suceso.
@@ -64,149 +69,337 @@ class Base_Suceso_Perfil extends Suceso {
 	protected static function suceso_post_nuevo($suceso)
 	{
 		// Cargo datos del post.
-		$model_post = new Model_Post( (int) $suceso['object_id']);
-		$rst = $model_post->as_array();
-		$rst['usuario'] = $model_post->usuario()->as_array();
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
-		return $rst;
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array());
 	}
 
 	/**
-	 * Suceso producido cuando se agrega a favoritos un post.
+	 * Suceso producido cuando se edita un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_editado($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+
+		// Cargo editor.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'editor' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Un usuario ha agregado un post como favorito.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_favorito($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+
+		// Cargo datos de quien lo agregó como favorito.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'favorito' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Un usuario comienza a seguir un post.
 	 * @param array $suceso Datos del suceso.
 	 * @return array
 	 */
 	protected static function suceso_post_seguir($suceso)
 	{
 		// Cargo datos del post.
-		$model_post = new Model_Post( (int) $suceso['object_id']);
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
-		$rst = array();
-		$rst['post'] = $model_post->as_array();
-		$rst['post']['usuario'] = $model_post->usuario()->as_array();
-		unset($model_post);
+		// Cargo datos de quien lo sigue.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		// Cargo datos del usuario que agregó el post a favoritos.
-		$model_usuario = new Model_Usuario( (int) $suceso['object_id1']);
-		$rst['usuario'] = $model_usuario->as_array();
-
-		return $rst;
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'seguidor' => $model_usuario->as_array());
 	}
 
+	/**
+	 * Un usuario da puntos a un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_puntuar($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
-/**
- * **post_seguir** (*post_id*, *usuario_id*): El usuario comienza a seguir un post.
- * * **post_id**: ID del post que se está por seguir.
- * * **usuario_id**: ID del usuario que comienza a seguir el post.
+		// Cargo datos de quien da los puntos.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
- * **post_puntuar** (*post_id*, *usuario_id*, *puntos*): Un usuario da puntos a un post.
- * * **post_id**: ID del post al cual se le dan puntos.
- * * **usuario_id**: ID del usuario que da los puntos.
- * * **puntos**: Cantidad de puntos que dio el usuario. Estos puntos se pueden calcular directamente de la entrada pero se pasan de igual forma.
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'puntua' => $model_usuario->as_array(), 'puntos' => (int) $suceso['objeto_id2']);
+	}
 
- * **post_borrar** (*post_id*, *usuario_id*): Eliminamos un post.
- * * **post_id**: ID del post a eliminar.
- * * **usuario_id**: ID del usuario que elimina el post.
+	/**
+	 * Un usuario fija un post en la portada.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_fijar($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
- * **post_papelera** (*post_id*, *usuario_id*): Enviamos un post a la papelera de posts.
- * * **post_id**: ID del post que se envia a la papelera.
- * * **usuario_id**: ID del usuario que envia el post a la papelera.
+		// Cargo datos de quien fija el post.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
- * **post_restaurar** (*post_id*, *usuario_id*): Restauramos un post que se encuentra en la papelera.
- * * **post_id**: ID del post a restaurar.
- * * **usuario_id**: ID del usuario que restaura el post.
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'fija' => $model_usuario->as_array(), 'tipo' => (bool) $suceso['objeto_id2']);
+	}
 
- * **post_publicar** (*post_id*, *usuario_id*): Publicamos un post que se encuentra pendiente o como borrador.
- * * **post_id**: ID del post a publicar.
- * * **usuario_id**: ID del usuario que publica el post.
+	/**
+	 * Un usuario patrocina un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_patrocinar($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
-### Comentarios en Posts:
- * **post_comentario_crear** (*comentario_id*): Creamos un comentario en un post.
- * * **comentario_id**: ID del comentario que se crea.
+		// Cargo datos de quien patrocina el post.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
- * **post_comentario_voto** (*comentario_id*, *usuario_id*, *voto*): Votamos el comentario de un post.
- * * **comentario_id**: ID del comentario a votar.
- * * **usuario_id**: ID del usuario que realiza la votación.
- * * **voto**: Si el voto es positivo o negativo. 0 voto negativo, 1 voto positivo.
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'patrocina' => $model_usuario->as_array(), 'tipo' => (bool) $suceso['objeto_id2']);
+	}
 
- * **post_comentario_ocultar** (*comentario_id*, *usuario_id*): El moderador/administrador oculta el comentario de un post.
- * * **comentario_id**: ID del comentario a ocultar.
- * * **usuario_id**: ID del usuario que realiza la acción de ocultar. Puede ser un moderador/administrador.
+	/**
+	 * Suceso producido cuando se publica un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_publicar($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
- * **post_comentario_mostrar** (*comentario_id*, *usuario_id*): El moderador/administrador muestra el comentario de un post.
- * * **comentario_id**: ID del comentario a mostrar.
- * * **usuario_id**: ID del usuario que realiza la acción de mostrar. Puede ser un moderador/administrador.
+		// Cargo datos de quien publica el post.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
- * **post_comentario_borrar** (*comentario_id*, *usuario_id*): Se elimina un comentario.
- * * **comentario_id**: ID del comentario a eliminar.
- * * **usuario_id**: ID del usuario que elimina el comentario.
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'publica' => $model_usuario->as_array());
+	}
 
-## Fotos:
+	/**
+	 * Suceso producido cuando se publica un comentario en un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_comentario_crear($suceso)
+	{
+		// Cargo el comentario.
+		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
 
- * **foto_votar** (*foto_id*, *usuario_id*, *tipo*): Votamos una foto.
- * * **foto_id**: ID de la foto a votar.
- * * **usuario_id**: ID del usuario que realiza la votación.
- * * **tipo**: Tipo de voto. 0 negativo, 1 positivo.
+		// Post donde se crea el comentario.
+		$model_post = $model_comentario->post();
 
- * **foto_favorito** (*foto_id*, *usuario_id*): Agregamos una foto a favoritos.
- * * **foto_id**: ID de la foto que se agrega a favoritos.
- * * **usuario_id**: ID del usuario que agrega la foto a favoritos.
+		// Usuario que crea el post.
+		$model_usuario = $model_comentario->usuario();
 
- * **foto_nueva** (*foto_id*): Creamos una nueva foto.
- * * **foto_id**: ID de la foto creada.
+		return array('comentario' => $model_comentario->as_array(), 'post' => $model_post->as_array(), 'post_usuario' => $model_post->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+	}
 
- * **foto_editar** (*foto_id*, *usuario_id*): Un usuario edita una foto. Puede ser el dueño o un administrador/moderador.
- * * **foto_id**: ID de la foto que fue editada.
- * * **usuario_id**: ID del usuario que edita la foto. Puede ser un administrador/moderador o el creador.
+	/**
+	 * Suceso producido cuando se vota el comentario de un usuario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_comentario_voto($suceso)
+	{
+		// Cargo el comentario.
+		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
 
- * **foto_ocultar** (*foto_id*, *usuario_id*, *tipo*): Ocultamos/Mostramos una foto.
- * * **foto_id**: ID de la foto a ocultar/mostrar.
- * * **usuario_id**: ID del usuario que oculta/muestra la foto.
- * * **tipo**: Tipo de modificación. 0 oculta, 1 muestra.
+		// Cargo el usuario que vota.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
- * **foto_borrar** (*foto_id*, *usuario_id*): Eliminamos una foto.
- * * **foto_id**: ID de la foto a eliminar.
- * * **usuario_id**: ID del usuario que elimina la foto.
+		// Cargo el voto.
+		$voto = (bool) $suceso['objeto_id2'];
 
- * **foto_papelera** (*foto_id*, *usuario_id*): Enviamos una foto a la papelera de fotos.
- * * **foto_id**: ID de la foto que se envia a la papelera.
- * * **usuario_id**: ID del usuario que envia la foto a la papelera.
+		return array('post' => $model_comentario->post()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
+	}
 
- * **foto_restaurar** (*foto_id*, *usuario_id*): Restauramos una foto que se encuentra en la papelera.
- * * **foto_id**: ID de la foto a restaurar.
- * * **usuario_id**: ID del usuario que restaura la foto.
+	/**
+	 * Suceso producido cuando se edita el comentario de un usuario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_comentario_editar($suceso)
+	{
+		// Cargo el comentario.
+		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
 
-### Comentarios en Fotos:
- * **foto_comentario_crear** (*comentario_id*): Creamos un comentario en una foto.
- * * **comentario_id**: ID del comentario que se crea.
+		// Cargo el usuario que edita.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
- * **foto_comentario_voto** (*comentario_id*, *usuario_id*, *voto*): Votamos el comentario de una foto.
- * * **comentario_id**: ID del comentario a votar.
- * * **usuario_id**: ID del usuario que realiza la votación.
- * * **voto**: Si el voto es positivo o negativo. 0 voto negativo, 1 voto positivo.
+		return array('post' => $model_comentario->post()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+	}
 
-## Usuarios:
- * **usuario_nuevo** (*usuario_id*): Se crea una cuenta de usuario nueva.
- * * **usuario_id**: ID del usuario que ha sido creado.
+	/**
+	 * Suceso producido cuando se crea una nueva foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_nueva($suceso)
+	{
+		// Cargo la foto.
+		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
 
- * **usuario_cambio_nick** (*usuario_id*, *nick_inicial_id*, *nick_final_id*): Un usuario cambia su nick.
- * * **usuario_id**: ID del usuario que cambia el nick.
- * * **nick_inicial_id**: ID del nick anterior del usuario.
- * * **nick_final_id**: ID del nick nuevo del usuario.
+		return array('foto' => $model_foto->as_array(), 'usuario' => $model_foto->usuario()->as_array());
+	}
 
- * **usuario_suspender** (*suspension_id*): El usuario es suspendido.
- * * **suspension_id**: ID de la suspensión.
+	/**
+	 * Suceso producido cuando se vota una foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_votar($suceso)
+	{
+		// Cargo la foto.
+		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
 
- * **usuario_fin_suspension** (*usuario_id*, [*moderador_id*]): Suspensión del usuario finalizada. Puede ser de forma automática (terminada la suspensión) o por acción de un usuario.
- * * **usuario_id**: ID del usuario del que se quitó(o finalizo) la suspensión.
- * * **moderador_id**: ID del moderador que termina la suspensión. En caso de ser NULO es porque finalizó el periodo de forma automática.
+		// Cargo quien vota.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
- * **usuario_baneo** (*baneo_id*): Un usuario es baneado.
- * * **baneo_id**: ID del baneo al usuario.
+		// Tipo de voto.
+		$voto = (bool) $suceso['objeto_id2'];
 
- * **usuario_fin_baneo** (*usuario_id*, *moderador_id*): Se cancela el baneo del usuario.
- * * **usuario_id:**: ID del usuario al que se le quita el baneo.
- * * **moderador_id**: ID del usuario (moderador o administrador) que ha quitado el baneo al usuario.
-*/
+		return array('foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
+	}
+
+	/**
+	 * Suceso producido cuando se agrega a favoritos una foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_favorito($suceso)
+	{
+		// Cargo la foto.
+		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+
+		// Cargo quien agrega a favoritos.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se agrega a favoritos una foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_editar($suceso)
+	{
+		// Cargo la foto.
+		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+
+		// Cargo quien edita la foto.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('foto' => $model_foto->as_array(), 'usuario' => $model_foto->usuario()->as_array(), 'editor' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se publica un comentario en una foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_comentario_crear($suceso)
+	{
+		// Cargo el comentario.
+		$model_comentario = new Model_Foto_Comentario( (int) $suceso['objeto_id']);
+
+		// Foto en donde se crea el comentario.
+		$model_foto = $model_comentario->foto();
+
+		// Usuario que crea el foto.
+		$model_usuario = $model_comentario->usuario();
+
+		return array('comentario' => $model_comentario->as_array(), 'foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se edita el comentario de un usuario en una foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_comentario_editar($suceso)
+	{
+		// Cargo el comentario.
+		$model_comentario = new Model_Foto_Comentario( (int) $suceso['objeto_id']);
+
+		// Cargo el usuario que edita.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('foto' => $model_comentario->foto()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se crea un usuario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_nuevo($suceso)
+	{
+		// Cargo datos del usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
+
+		return array('usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando el usuario cambia su nick.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_cambio_nick($suceso)
+	{
+		// Cargo datos del usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
+
+		//TODO: Cargar los nicks.
+
+		return array('usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando el usuario cambia de rango.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_cambio_rango($suceso)
+	{
+		// Cargo datos del usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
+
+		// Cargo el rango nuevo.
+		$model_rango = new Model_Usuario_Rango( (int) $suceso['objeto_id1']);
+
+		// Cargo el moderador.
+		$model_moderador = new Model_Usuario( (int) $suceso['objeto_id2']);
+
+		return array('usuario' => $model_usuario->as_array(), 'rango' => $model_rango->as_array(), 'moderador' => $model_moderador->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando el usuario cambia de rango.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_seguir($suceso)
+	{
+		// Cargo datos del usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
+
+		// Cargo datos del seguidor.
+		$model_seguidor = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('usuario' => $model_usuario->as_array(), 'seguidor' => $model_seguidor->as_array());
+	}
 
 }

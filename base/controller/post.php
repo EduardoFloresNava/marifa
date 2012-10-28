@@ -744,7 +744,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico si ya votó.
-		if ($model_comentario->ya_voto($usuario_id))
+		if ($model_comentario->ya_voto(Usuario::$usuario_id))
 		{
 			$_SESSION['flash_error'] = 'El comentario que deseas votar no se encuentra disponible.';
 			Request::redirect('/post/index/'.$model_comentario->post_id);
@@ -755,7 +755,7 @@ class Base_Controller_Post extends Controller {
 
 		// Agrego el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id), 'post_comentario_voto',$comentario, Usuario::$usuario_id, $usuario_id, (int) $voto);
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id), 'post_comentario_voto', $comentario, Usuario::$usuario_id, (int) $voto);
 
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha votado correctamente.';
 		Request::redirect('/post/index/'.$model_comentario->post_id);
@@ -990,11 +990,13 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico si ya lo sigue.
-		if ( ! $model_post->es_seguidor($usuario_id))
+		if ($model_post->es_seguidor(Usuario::$usuario_id))
 		{
 			$_SESSION['flash_error'] = 'Ya eres seguidor de ese post.';
 			Request::redirect('/post/index/'.$post);
 		}
+
+		$model_post->seguir(Usuario::$usuario_id);
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
@@ -1499,7 +1501,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verificamos si ya dio puntos.
-		if ( ! $model_post->dio_puntos(Usuario::$usuario_id))
+		if ($model_post->dio_puntos(Usuario::$usuario_id))
 		{
 			$_SESSION['flash_error'] = 'El post que desea puntuar ya ha sido puntuado por usted.';
 			Request::redirect('/post/index/'.$post);

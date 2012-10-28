@@ -129,6 +129,59 @@ td .btn-toolbar {
     }
 }
 
+.ultimo-post {
+    margin: 5px 0px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 0px;
+
+
+    .categoria {
+        display: inline-block;
+        background: rgba(0, 0, 0, 0.05);
+        border-right: 1px solid rgba(0, 0, 0, 0.15);
+        padding: 10px;
+        float: left;
+    }
+
+    .contenido {
+        display: inline-block;
+        margin: 0 10px;
+
+        .titulo {
+            font-size: 16px;
+            line-height: 23px;
+        }
+
+        .info {
+            font-size: 11px;
+            line-height: 12px;
+        }
+    }
+
+    .fecha {
+        line-height: 38px;
+        float: right;
+        margin: 0 10px 0 5px;
+    }
+
+    &.patrocinado {
+        border-color: #0088CC;
+
+        .categoria {
+            border-color: #0088CC;
+        }
+    }
+
+    &.fijo {
+        border-color: #D28C00;
+
+        .categoria {
+            border-color: #D28C00;
+        }
+    }
+}
+
 .sucesos {
     .suceso {
         margin: 5px 0px;

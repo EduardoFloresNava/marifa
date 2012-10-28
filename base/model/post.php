@@ -527,7 +527,26 @@ class Base_Model_Post extends Model_Dataset {
 		$inicio = $cantidad * ($pagina - 1);
 
 		// Obtenemos el listado.
-		$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+		$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 0 ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+
+		// Armamos la lista.
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Post($v);
+		}
+
+		return $lst;
+	}
+
+	/**
+	 * Obtenemos el listado de los posts fijos.
+	 * @return array
+	 */
+	public function sticky()
+	{
+		// Obtenemos el listado.
+		$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 1 ORDER BY fecha DESC')->get_pairs(Database_Query::FIELD_INT);
 
 		// Armamos la lista.
 		$lst = array();

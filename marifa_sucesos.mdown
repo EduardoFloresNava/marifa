@@ -148,11 +148,6 @@
  * **foto_comentario_crear** (*comentario_id*): Creamos un comentario en una foto.
  * * **comentario_id**: ID del comentario que se crea.
 
- * **foto_comentario_voto** (*comentario_id*, *usuario_id*, *voto*): Votamos el comentario de una foto.
- * * **comentario_id**: ID del comentario a votar.
- * * **usuario_id**: ID del usuario que realiza la votación.
- * * **voto**: Si el voto es positivo o negativo. 0 voto negativo, 1 voto positivo.
-
  * **foto_comentario_ocultar** (*comentario_id*, *usuario_id*): El moderador/administrador oculta el comentario de  una foto.
  * * **comentario_id**: ID del comentario a ocultar.
  * * **usuario_id**: ID del usuario que realiza la acción de ocultar. Puede ser un moderador/administrador.
@@ -164,6 +159,10 @@
  * **foto_comentario_borrar** (*comentario_id*, *usuario_id*): Se elimina un comentario.
  * * **comentario_id**: ID del comentario a eliminar.
  * * **usuario_id**: ID del usuario que elimina el comentario.
+
+ * **foto_comentario_editar** (*comentario_id*, *usuario_id*): Se edita un comentario.
+ * * **comentario_id**: ID del comentario editado.
+ * * **usuario_id*: ID del usuario que edita el comentario.
 
 ## Usuarios:
  * **usuario_nuevo** (*usuario_id*): Se crea una cuenta de usuario nueva.

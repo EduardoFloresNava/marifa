@@ -236,7 +236,8 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('me', Usuario::$usuario_id);
 
 		// Informamos los permisos a la vista.
-		$view->assign('permiso_borrar', Usuario::$usuario_id === $model_foto || Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR));
+		$view->assign('permiso_borrar', Usuario::$usuario_id === $model_foto->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR));
+		$view->assign('permiso_editar', Usuario::$usuario_id === $model_foto->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_EDITAR));
 		$view->assign('permiso_ocultar', Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_OCULTAR) || Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DESAPROBADO) || Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS));
 		$view->assign('permiso_papelera', Usuario::$usuario_id === $model_foto->usuario_id);
 
@@ -1110,14 +1111,15 @@ class Base_Controller_Foto extends Controller {
 				);
 
 				// Actualizo los datos.
-				if ($model_foto->actualizar_campos($campos) && Usuario::$usuario_id !== $model_foto->usuario_id)
+				if ($model_foto->actualizar_campos($campos))
 				{
 					// Agregamos el suceso.
 					$model_suceso = new Model_Suceso;
 					$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_editar', $model_foto->id, Usuario::$usuario_id);
-				}
 
-				$view->assign('flash_success', 'Actualización correcta');
+					$_SESSION['flash_success'] = 'La foto se ha actualizado correctamente.';
+					Request::redirect('/foto/ver/'.$model_foto->id);
+				}
 			}
 		}
 

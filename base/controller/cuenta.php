@@ -1010,8 +1010,10 @@ class Base_Controller_Cuenta extends Controller {
 									// Recargo los nick's reservados.
 									$nicks_reservados = $model_usuario->nicks();
 
-									// Enviamos suceso.
-									//TODO: ver el suceso.
+									// Envio el suceso.
+									$model_suceso = new Model_Suceso;
+									//TODO: Implementar campos alphanumericos.
+									$model_suceso->crear(Usuario::$usuario_id, 'usuario_cambio_nick', Usuario::$usuario_id);
 
 									// Informamos resultado.
 									$view->assign('success', 'El nick se ha actualizado correctamente.');
@@ -1087,6 +1089,11 @@ class Base_Controller_Cuenta extends Controller {
 		// Elimino el nick y lo asigno nuevamente.
 		Usuario::usuario()->eliminar_nick($nick);
 		Usuario::usuario()->cambiar_nick($nick);
+
+		// Envio el suceso.
+		$model_suceso = new Model_Suceso;
+		//TODO: Implementar campos alphanumericos.
+		$model_suceso->crear(Usuario::$usuario_id, 'usuario_cambio_nick', Usuario::$usuario_id);
 
 		// Informo el resultado.
 		$_SESSION['flash_success'] = 'El nick se ha actualizado correctamente.';

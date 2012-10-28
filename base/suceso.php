@@ -63,6 +63,32 @@ class Base_Suceso {
 	}
 
 	/**
+	 * Obtenemos la cantidad de sucesos que hay disponibles.
+	 * @param int $usuario ID del usuario dueño de los posts.
+	 * @param string $class Nombre de la clase. No debe ser pasado, solo es a fines de compatibilidad de herencias estáticas.
+	 */
+	public static function cantidad($usuario, $class = __CLASS__)
+	{
+		// Obtenemos la lista de sucesos que puede procesar.
+		$rc = new ReflectionClass(substr($class, 5));
+		$ms = $rc->getMethods(ReflectionMethod::IS_STATIC);
+
+		$methods = array();
+		foreach ($ms as $method)
+		{
+			if (substr($method->name, 0, 7) == 'suceso_')
+			{
+				$methods[] = substr($method->name, 7);
+			}
+		}
+		unset($rc, $ms);
+
+		// Obtenemos la cantidad.
+		$model_suceso = new Model_Suceso;
+		return $model_suceso->cantidad($usuario, $methods);
+	}
+
+	/**
 	 * Obtenemos los datos para visualizar un suceso.
 	 * @param array|Model_Suceso $informacion Información de un suceso.
 	 * @param string $class Clase para procesar. No debe ser pasado, solo es a fines de compatibilidad de herencias estáticas.

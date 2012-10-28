@@ -617,7 +617,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $model_usuario->id), 'usuario_cambio_rango	', $model_usuario->id, $rango, Usuario::$usuario_id);
+			$model_suceso->crear(array(Usuario::$usuario_id, $model_usuario->id), 'usuario_cambio_rango', $model_usuario->id, $rango, Usuario::$usuario_id);
 
 			// Informo el resultado.
 			$_SESSION['flash_success'] = 'El rango fue cambiado correctamente correctamente.';

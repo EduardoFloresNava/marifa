@@ -144,6 +144,53 @@ class Base_Model_Suceso extends Model_Dataset {
 	}
 
 	/**
+	 * Obtenemos la cantidad de sucesos segun su dueño y tipo.
+	 * @param int $usaurio ID del usuario a dueño de los sucesos. NULL para todos.
+	 * @param array $tipo Arreglo de tipos, NULL para todos.
+	 */
+	public function cantidad($usuario = NULL, $tipo = NULL)
+	{
+		if ($usuario === NULL)
+		{
+			if ($tipo === NULL)
+			{
+				return $this->db->query('SELECT COUNT(*) FROM suceso')->get_var(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				// Armo la lista de estados.
+				$kk = array();
+				$c = count($tipo);
+				for ($i = 0; $i < $c; $i++)
+				{
+					$kk[] = '?';
+				}
+
+				return $this->db->query('SELECT COUNT(*) FROM suceso WHERE tipo IN ('.implode(', ', $kk).')', $tipo)->get_var(Database_Query::FIELD_INT);
+			}
+		}
+		else
+		{
+			if ($tipo === NULL)
+			{
+				return $this->db->query('SELECT COUNT(*) FROM suceso WHERE usuario_id = ?', $usuario)->get_var(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				// Armo la lista de estados.
+				$kk = array();
+				$c = count($tipo);
+				for ($i = 0; $i < $c; $i++)
+				{
+					$kk[] = '?';
+				}
+
+				return $this->db->query('SELECT COUNT(*) FROM suceso WHERE usuario_id = ? AND tipo IN ('.implode(', ', $kk).')', array_merge(array($usuario), $tipo))->get_var(Database_Query::FIELD_INT);
+			}
+		}
+	}
+
+	/**
 	 * Listado de sucesos.
 	 * @param int $usuario ID del usuario dueño de los sucesos.
 	 * @param int $pagina Número de página a mostrar.
@@ -158,7 +205,7 @@ class Base_Model_Suceso extends Model_Dataset {
 
 		if ($estado === NULL || count($tipo) <= 0)
 		{
-			$rst = $this->db->query('SELECT id FROM suceso WHERE usuario_id = ? ORDER BY fecha LIMIT '.$start.','.$cantidad, $usuario)->get_pairs(Database_Query::FIELD_INT);
+			$rst = $this->db->query('SELECT id FROM suceso WHERE usuario_id = ? ORDER BY fecha DESC LIMIT '.$start.','.$cantidad, $usuario)->get_pairs(Database_Query::FIELD_INT);
 		}
 		else
 		{
@@ -170,7 +217,7 @@ class Base_Model_Suceso extends Model_Dataset {
 				$kk[] = '?';
 			}
 
-			$rst = $this->db->query('SELECT id FROM suceso WHERE usuario_id = ? AND tipo IN ('.implode(', ', $kk).') ORDER BY fecha LIMIT '.$start.','.$cantidad, array_merge(array($usuario), $tipo))->get_pairs(Database_Query::FIELD_INT);
+			$rst = $this->db->query('SELECT id FROM suceso WHERE usuario_id = ? AND tipo IN ('.implode(', ', $kk).') ORDER BY fecha DESC LIMIT '.$start.','.$cantidad, array_merge(array($usuario), $tipo))->get_pairs(Database_Query::FIELD_INT);
 		}
 
 		$lst = array();

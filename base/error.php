@@ -328,7 +328,7 @@ class Base_Error {
 		$end = $line + $lines;
 
 		// Validamos el rango.
-		if ($start < 0)
+		if ($start <= 0)
 		{
 			$start = 1;
 		}

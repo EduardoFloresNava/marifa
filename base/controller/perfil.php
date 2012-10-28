@@ -447,19 +447,25 @@ class Base_Controller_Perfil extends Controller {
 		$information_view->assign('usuario', $this->usuario->as_array());
 
 		// Cantidad de elementos por pagina.
-		$cantidad_por_pagina = 10;
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
 		// Listado de eventos.
-		$lst = Suceso_Perfil::obtener_listado($this->usuario->id, 1, $cantidad_por_pagina);
+		$lst = Suceso_Perfil::obtener_listado($this->usuario->id, $pagina, $cantidad_por_pagina);
 
 		// Que sea un número de página válido.
 		if (count($lst) == 0 && $pagina != 1)
 		{
 			Request::redirect('/perfil/muro/'.$usuario);
 		}
+
+		// Paginación.
+		$paginador = new Paginator(Suceso_Perfil::cantidad($this->usuario->id), $cantidad_por_pagina);
+		$information_view->assign('paginacion', $paginador->get_view($pagina, '/perfil/muro/'.$usuario.'/%d'));
+		unset($paginador);
 
 		$eventos = array();
 		foreach ($lst as $v)
@@ -477,7 +483,7 @@ class Base_Controller_Perfil extends Controller {
 			$tipo = $v->as_object()->tipo;
 
 			// Cargamos la vista.
-			$suceso_vista = View::factory('suceso/barra/'.$tipo);
+			$suceso_vista = View::factory('/suceso/perfil/'.$tipo);
 
 			// Asigno los datos del usuario actual.
 			$suceso_vista->assign('actual', $this->usuario->as_array());

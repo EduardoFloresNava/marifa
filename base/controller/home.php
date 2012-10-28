@@ -90,6 +90,28 @@ class Base_Controller_Home extends Controller {
 		// Formato de la página.
 		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
 
+		if ($pagina == 1)
+		{
+			// Cargo fijos.
+			$post_sticky = $model_post->sticky();
+
+			// Extendemos la información de los posts.
+			foreach ($post_sticky as $k => $v)
+			{
+				$a = $v->as_array();
+				$a['usuario'] = $v->usuario()->as_array();
+				$a['puntos'] = $v->puntos();
+				$a['comentarios'] = $v->cantidad_comentarios(Model_Post_Comentario::ESTADO_VISIBLE);
+				$a['categoria'] = $v->categoria()->as_array();
+
+				$post_sticky[$k] = $a;
+			}
+
+			// Seteo y limpio.
+			$portada->assign('sticky', $post_sticky);
+			unset($post_sticky);
+		}
+
 		// Ultimos posts
 		$post_list = $model_post->obtener_ultimos($pagina, $cantidad_por_pagina);
 

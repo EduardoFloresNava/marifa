@@ -1,16 +1,41 @@
 <div class="row">
 	<div class="span7">
 		<h3 class="title">&Uacute;ltimos posts</h3>
+		{loop="$sticky"}
+		<div class="ultimo-post fijo">
+			<div class="categoria hidden-phone">
+				<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
+			</div>
+			<div class="contenido">
+				<a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
+				<div class="info">
+					{@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
+				</div>
+			</div>
+			<div class="fecha visible-desktop">
+				{$value.fecha->fuzzy()}
+			</div>
+		</div>
+		{/loop}
 		{loop="$ultimos_posts"}
-		<div>
-			<img style="float: left;" src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
-			<div style="margin-left: 30px;">
-				<p><a href="/post/index/{$value.id}/">{$value.titulo}</a></p>
-				<p>{$value.fecha->fuzzy()} - <a href="/perfil/informacion/{$value.usuario.nick}">@{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios}<span class="pull-right">{$value.categoria.nombre}</span></p>
+		<div class="ultimo-post{if="$value.sponsored"} patrocinado{/if}">
+			<div class="categoria hidden-phone">
+				<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
+			</div>
+			<div class="contenido">
+				<a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
+				<div class="info">
+					{@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
+				</div>
+			</div>
+			<div class="fecha visible-desktop">
+				{$value.fecha->fuzzy()}
 			</div>
 		</div>
 		{else}
+			{if="count($sticky) == 0"}
 		<div class="alert">No hay posts aún.</div>
+			{/if}
 		{/loop}
 		{$paginacion}
 	</div>
