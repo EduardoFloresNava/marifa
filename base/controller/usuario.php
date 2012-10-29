@@ -103,7 +103,7 @@ class Base_Controller_Usuario extends Controller {
 						Request::redirect('/', FALSE, TRUE);
 						break;
 					case Model_Usuario::ESTADO_PENDIENTE:  // Cuenta por activar.
-						$view_usuario->assign('error', 'La cuenta no ha sido validada a&uacute;n.');
+						$view_usuario->assign('error', 'La cuenta no ha sido validada a&uacute;n. Si no recibiste el correo de activación haz click <a href="/usuario/pedir_activacion/">aqui</a>');
 						break;
 					case Model_Usuario::ESTADO_SUSPENDIDA: // Cuenta suspendida.
 						// Obtenemos la suspensión.
@@ -249,31 +249,32 @@ class Base_Controller_Usuario extends Controller {
 
 					if ($id)
 					{
+						// Genero el token de activacion.
+						$model_activar = new Model_Usuario_Recuperacion;
+						$token = $model_activar->crear($id, $email, Model_Usuario_Recuperacion::TIPO_ACTIVACION);
+
+						// Configuraciones del sitio.
+						$model_config = new Model_Configuracion;
+
+						// Creo el mensaje de correo.
+						$message = Email::get_message();
+						$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
+						$message->setFrom('areslepra@gmail.com', 'Ares');
+						$message->setTo($email, $nick);
+
+						// Cargo la vista.
+						$message_view = View::factory('emails/register');
+						$message_view->assign('codigo', $token);
+						$message_view->assign('titulo', $model_config->get('nombre', 'Marifa'));
+						$message->setBody($message_view->parse());
+						unset($message_view);
+
+						// Envio el email.
+						$mailer = Email::get_mailer();
+						$mailer->send($message);
+
 						// Registro completo.
 						$view_usuario = View::factory('usuario/register_complete');
-
-						/**
-						// Cargamos el usuario.
-						$model_usuario->load($email);
-
-						// Creamos token de activación.
-						$code = $model_usuario->crear_codigo_activacion();
-
-						// Creamos información para el trabajo.
-						$data = array(
-							'template' => 'usuario/email/activate',
-							'template_data' => array(
-								'code' => $code,
-								'usuario' => $model_usuario->as_array(),
-							),
-							'email' => $email,
-							'nombre' => $nombre.' '.$apellido,
-							'uid' => (int) $model_usuario->as_object()->id,
-							'asunto' => 'Activación cuenta',
-						);
-
-						// Agregamos el trabajo.
-						Api_Job::sCreate(Api_Job::TIPO_EMAIL, $data, LittleDB::get_instance());*/
 					}
 					else
 					{
@@ -288,6 +289,159 @@ class Base_Controller_Usuario extends Controller {
 		// Agregamos el la vista a la plantilla.
 		$this->template->assign('contenido', $view_usuario->parse());
 		unset($view_usuario);
+	}
+
+	/**
+	 * Tratamos de activa una cuenta de usuario.
+	 * @param string $token Token para utilizar en validación.
+	 */
+	public function action_activar($token)
+	{
+		// Verificamos si el usuario está conectado.
+		if (Usuario::is_login())
+		{
+			// Lo enviamos a la portada.
+			$_SESSION['flash_error'] = 'No puedes registrarte si ya estás logueado.';
+			Request::redirect('/');
+		}
+
+		// Verifico formato del token.
+		if ( ! preg_match('/^[a-zA-Z0-9]{32}$/D', $token))
+		{
+			$_SESSION['flash_error'] = 'La clave de activación no es correcta.';
+			Request::redirect('/');
+		}
+
+		// Verifico existencia del token.
+		$model_recuperacion = new Model_Usuario_Recuperacion;
+		if ( ! $model_recuperacion->es_valido($token, Model_Usuario_Recuperacion::TIPO_ACTIVACION))
+		{
+			$_SESSION['flash_error'] = 'La clave de activación ha caducado.';
+			Request::redirect('/');
+		}
+
+		// Cargo el token.
+		$model_recuperacion->load_by_hash($token);
+
+		// Activo la cuenta del usuario.
+		$model_usuario = $model_recuperacion->usuario();
+
+		// Actualizamos el estado.
+		if ($model_usuario->estado === Model_Usuario::ESTADO_PENDIENTE)
+		{
+			$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
+		}
+
+		// Borramos el token.
+		$model_recuperacion->borrar();
+
+		$_SESSION['flash_success'] = 'La cuenta se ha activado correctamente.';
+		Request::redirect('/usuario/login');
+	}
+
+	/**
+	 * Pido el envio de una nueva clave de activación.
+	 */
+	public function action_pedir_activacion()
+	{
+		// Verificamos si el usuario está conectado.
+		if (Usuario::is_login())
+		{
+			// Lo enviamos a la portada.
+			$_SESSION['flash_error'] = 'No puedes registrarte si ya estás logueado.';
+			Request::redirect('/');
+		}
+
+		// Asignamos el título.
+		$this->template->assign('title', 'Activar cuenta');
+
+		// Cargamos la vista del usuario.
+		$view_usuario = View::factory('usuario/activar');
+
+		// Cargo datos.
+		$view_usuario->assign('email', '');
+		$view_usuario->assign('error_email', '');
+
+		// Verificamos si se han enviado los datos.
+		if (Request::method() == 'POST')
+		{
+			$error = FALSE;
+
+			// Verificamos los datos enviados.
+			$email = isset($_POST['email']) ? trim($_POST['email']) : '';
+
+			if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $email))
+			{
+				$view_usuario->assign('error_email', 'La casilla de correo ingresada no es válida.');
+				$error = TRUE;
+			}
+
+			if ( ! $error)
+			{
+				// Verfico existencia del correo.
+				$model_usuario = new Model_Usuario;
+				if ( ! $model_usuario->exists_email($email))
+				{
+					$view_usuario->assign('error_email', 'La casilla de correo ingresada no se ha encontrado en nuestra base de datos.');
+					$error = TRUE;
+				}
+				else
+				{
+					$error = FALSE;
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Verifico estado.
+				$model_usuario->load_by_email($email);
+				if ($model_usuario->estado !== Model_Usuario::ESTADO_PENDIENTE)
+				{
+					$view_usuario->assign('error_email', 'La casilla de correo ingresada no se ha encontrado en nuestra base de datos.');
+					$error = TRUE;
+				}
+				else
+				{
+					$error = FALSE;
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Elimino posibles tokens del usuario.
+				$model_recuperacion = new Model_Usuario_Recuperacion;
+				$model_recuperacion->borrar_por_usuario($model_usuario->id);
+
+				// Genero un nuevo token.
+				$token = $model_recuperacion->crear($model_usuario->id, $email, Model_Usuario_Recuperacion::TIPO_ACTIVACION);
+
+				// Configuraciones del sitio.
+				$model_config = new Model_Configuracion;
+
+				// Creo el mensaje de correo.
+				$message = Email::get_message();
+				$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
+				$message->setFrom('areslepra@gmail.com', 'Ares');
+				$message->setTo($email, $model_usuario->nick);
+
+				// Cargo la vista.
+				$message_view = View::factory('emails/register');
+				$message_view->assign('codigo', $token);
+				$message_view->assign('titulo', $model_config->get('nombre', 'Marifa'));
+				$message->setBody($message_view->parse());
+				unset($message_view);
+
+				// Envio el email.
+				$mailer = Email::get_mailer();
+				$mailer->send($message);
+
+				// Registro completo.
+				$view_usuario = View::factory('usuario/perdir_activacion_completo');
+			}
+		}
+
+		// Agregamos el la vista a la plantilla.
+		$this->template->assign('contenido', $view_usuario->parse());
 	}
 
 	/**
