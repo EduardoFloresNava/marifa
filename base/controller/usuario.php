@@ -326,9 +326,6 @@ class Base_Controller_Usuario extends Controller {
 			Request::redirect('/');
 		}
 
-		// Configuraciones del sitio.
-		$model_config = new Model_Configuracion;
-
 		// Verifico formato del token.
 		if ( ! preg_match('/^[a-zA-Z0-9]{32}$/D', $token))
 		{
@@ -470,12 +467,188 @@ class Base_Controller_Usuario extends Controller {
 				$mailer->send($message);
 
 				// Registro completo.
-				$view_usuario = View::factory('usuario/perdir_activacion_completo');
+				$view_usuario = View::factory('usuario/pedir_activacion_completo');
 			}
 		}
 
 		// Agregamos el la vista a la plantilla.
 		$this->template->assign('contenido', $view_usuario->parse());
+	}
+
+	/**
+	 * Enviamos un correo para recuperar la contraseña.
+	 */
+	public function action_recuperar()
+	{
+		// Verificamos si el usuario está conectado.
+		if (Usuario::is_login())
+		{
+			// Lo enviamos a la portada.
+			Request::redirect('/');
+		}
+
+		// Asignamos el título.
+		$this->template->assign('title', 'Recuperar clave.');
+
+		// Cargamos la vista del usuario.
+		$view_usuario = View::factory('usuario/recuperar');
+
+		// Cargo datos.
+		$view_usuario->assign('email', '');
+		$view_usuario->assign('error_email', '');
+
+		// Verificamos si se han enviado los datos.
+		if (Request::method() == 'POST')
+		{
+			$error = FALSE;
+
+			// Verificamos los datos enviados.
+			$email = isset($_POST['email']) ? trim($_POST['email']) : '';
+
+			if ( ! $error)
+			{
+				// Verfico existencia del correo.
+				$model_usuario = new Model_Usuario;
+				if ( ! $model_usuario->exists_email($email))
+				{
+					// Verifico existencia de nick.
+					if ( ! $model_usuario->exists_nick($email))
+					{
+						$view_usuario->assign('error_email', 'El nick o correo ingresado no existe.');
+						$error = TRUE;
+					}
+					else
+					{
+						$model_usuario->load_by_nick($email);
+						$error = FALSE;
+					}
+				}
+				else
+				{
+					$model_usuario->load_by_email($email);
+					$error = FALSE;
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Elimino posibles tokens del usuario.
+				$model_recuperacion = new Model_Usuario_Recuperacion;
+				$model_recuperacion->borrar_por_usuario($model_usuario->id);
+
+				// Genero un nuevo token.
+				$token = $model_recuperacion->crear($model_usuario->id, $model_usuario->email, Model_Usuario_Recuperacion::TIPO_RECUPERACION);
+
+				// Configuraciones del sitio.
+				$model_config = new Model_Configuracion;
+
+				// Creo el mensaje de correo.
+				$message = Email::get_message();
+				$message->setSubject('Restaurar contraseña de '.$model_config->get('nombre', 'Marifa'));
+				$message->setFrom('areslepra@gmail.com', 'Ares');
+				$message->setTo($email, $model_usuario->nick);
+
+				// Cargo la vista.
+				$message_view = View::factory('emails/recuperar');
+				$message_view->assign('codigo', $token);
+				$message_view->assign('titulo', $model_config->get('nombre', 'Marifa'));
+				$message->setBody($message_view->parse());
+				unset($message_view);
+
+				// Envio el email.
+				$mailer = Email::get_mailer();
+				$mailer->send($message);
+
+				// Registro completo.
+				$view_usuario = View::factory('usuario/recuperar_completo');
+			}
+		}
+
+		// Agregamos el la vista a la plantilla.
+		$this->template->assign('contenido', $view_usuario->parse());
+	}
+
+	/**
+	 * Tratamos de activa una cuenta de usuario.
+	 * @param string $token Token para utilizar en validación.
+	 */
+	public function action_restaurar($token)
+	{
+		// Verificamos si el usuario está conectado.
+		if (Usuario::is_login())
+		{
+			// Lo enviamos a la portada.
+			Request::redirect('/');
+		}
+
+		// Verifico formato del token.
+		if ( ! preg_match('/^[a-zA-Z0-9]{32}$/D', $token))
+		{
+			$_SESSION['flash_error'] = 'La clave de restauración no es correcta.';
+			Request::redirect('/usuario/recuperar/');
+		}
+
+		// Verifico existencia del token.
+		$model_recuperacion = new Model_Usuario_Recuperacion;
+		if ( ! $model_recuperacion->es_valido($token, Model_Usuario_Recuperacion::TIPO_RECUPERACION))
+		{
+			$_SESSION['flash_error'] = 'La clave de restauración ha caducado.';
+			Request::redirect('/usuario/recuperar/');
+		}
+
+		// Cargo el token.
+		$model_recuperacion->load_by_hash($token);
+
+		// Cargo la vista.
+		$view = View::factory('/usuario/restaurar/');
+
+		// Seteo valores por defecto.
+		$view->assign('error_password', FALSE);
+		$view->assign('error_cpassword', FALSE);
+
+		if (Request::method() === 'POST')
+		{
+			// Obtengo lo datos.
+			$password = isset($_POST['password']) ? trim($_POST['password']) : '';
+			$cpassword = isset($_POST['cpassword']) ? trim($_POST['cpassword']) : '';
+
+			$error = FALSE;
+
+			// Verificamos contraseña.
+			if ( ! preg_match('/^[a-zA-Z0-9\-_@\*\+\/#$%]{6,20}$/D', $password))
+			{
+				$view_usuario->assign('error_password', TRUE);
+				$error = TRUE;
+			}
+			else
+			{
+				// Verificamos que concuerden.
+				if ($password != $cpassword)
+				{
+					$view_usuario->assign('error_cpassword', TRUE);
+					$error = TRUE;
+				}
+			}
+
+			if ( ! $error)
+			{
+				// Cargo el usuario.
+				$model_usuario = $model_recuperacion->usuario();
+
+				// Actualizo la contraseña.
+				$model_usuario->actualizar_contrasena($password);
+
+				// Borro el token.
+				$model_recuperacion->borrar();
+
+				// Notifico y envio al login.
+				$_SESSION['flash_success'] = 'La contraseña se ha restaurado correctamente.';
+				Request::redirect('/usuario/login/');
+			}
+		}
+
+		// Agregamos el la vista a la plantilla.
+		$this->template->assign('contenido', $view->parse());
 	}
 
 	/**

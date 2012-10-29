@@ -30,8 +30,8 @@
 				<div class="form-actions">
 					<button class="btn btn-primary">Ingresar</button>
 					o
-					<a href="/usuario/register">&iquest;Necesitas una cuenta?</a>
-					<a href="/usuario/recovery">&iquest;Perdio su contrase&ntilde;a?</a>
+					<a href="/usuario/register/">&iquest;Necesitas una cuenta?</a>
+					<a href="/usuario/recuperar/">&iquest;Perdio su contrase&ntilde;a?</a>
 				</div>
 
 			</fieldset>

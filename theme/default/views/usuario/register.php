@@ -43,7 +43,7 @@
         <div class="form-actions">
             <button class="btn btn-primary">Registrarse</button>
             o
-            <a href="/usuario/login">&iquest;Iniciar session?</a>
+            <a href="/usuario/login/">&iquest;Iniciar session?</a>
         </div>
     </fieldset>
 </form>
