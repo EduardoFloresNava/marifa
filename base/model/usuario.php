@@ -127,6 +127,24 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * Cargamos un usuario con su nick actual.
+	 * @param string $email E-Mail del usuario a cargar.
+	 * @return bool
+	 */
+	public function load_by_email($email)
+	{
+		if ($this->load(array('email' => $email)))
+		{
+			$this->primary_key['id'] = $this->get('id');
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+	/**
 	 * Actualizamos el estado del usuario.
 	 * @param int $estado Estado a setear.
 	 */

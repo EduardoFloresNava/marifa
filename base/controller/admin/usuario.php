@@ -69,7 +69,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		// TIPO, 0->todos, 1->activos, 2->suspendidos, 3->baneados
 		$tipo = (int) $tipo;
-		if ($tipo !== 0 && $tipo !== 1 && $tipo !== 2 && $tipo !== 3)
+		if ($tipo !== 0 && $tipo !== 1 && $tipo !== 2 && $tipo !== 3 && $tipo !== 4)
 		{
 			Request::redirect('/admin/usuario/');
 		}
@@ -94,12 +94,14 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$cantidad_activas = $model_usuarios->cantidad(Model_Usuario::ESTADO_ACTIVA);
 		$cantidad_suspendidas = $model_usuarios->cantidad(Model_Usuario::ESTADO_SUSPENDIDA);
 		$cantidad_baneadas = $model_usuarios->cantidad(Model_Usuario::ESTADO_BANEADA);
+		$cantidad_pendientes = $model_usuarios->cantidad(Model_Usuario::ESTADO_PENDIENTE);
 		$cantidad_total = $cantidad_activas + $cantidad_suspendidas + $cantidad_baneadas;
 
 		// Seteo las cantidad.
 		$vista->assign('cantidad_activas', $cantidad_activas);
 		$vista->assign('cantidad_suspendidas', $cantidad_suspendidas);
 		$vista->assign('cantidad_baneadas', $cantidad_baneadas);
+		$vista->assign('cantidad_pendientes', $cantidad_pendientes);
 		$vista->assign('cantidad_total', $cantidad_total);
 		$vista->assign('actual', $pagina);
 
@@ -121,6 +123,10 @@ class Base_Controller_Admin_Usuario extends Controller {
 			case 3:
 				$lst = $model_usuarios->listado($pagina, $cantidad_por_pagina, Model_Usuario::ESTADO_BANEADA);
 				$total = $cantidad_baneadas;
+				break;
+			case 4:
+				$lst = $model_usuarios->listado($pagina, $cantidad_por_pagina, Model_Usuario::ESTADO_PENDIENTE);
+				$total = $cantidad_pendientes;
 				break;
 		}
 
@@ -160,6 +166,63 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Activamos la cuenta del usuario.
+	 * @param type $id
+	 */
+	public function action_activar_usuario($id)
+	{
+		$id = (int) $id;
+
+		// Verificamos no sea actual.
+		if ($id == Usuario::$usuario_id)
+		{
+			$_SESSION['flash_error'] = 'El usuario que quieres activar no se encuentra disponible.';
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Cargamos el modelo del usuario.
+		$model_usuario = new Model_Usuario($id);
+		if ( ! $model_usuario->existe())
+		{
+			$_SESSION['flash_error'] = 'El usuario que quieres activar no se encuentra disponible.';
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Su estado.
+		if ($model_usuario->estado !== Model_Usuario::ESTADO_PENDIENTE)
+		{
+			$_SESSION['flash_error'] = 'El usuario que quieres activar no se encuentra disponible.';
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Configuraciones del sitio.
+		$model_config = new Model_Configuracion;
+
+		// Creo el mensaje de correo.
+		$message = Email::get_message();
+		$message->setSubject('Cuenta de '.$model_config->get('nombre', 'Marifa').' activada');
+		$message->setFrom('areslepra@gmail.com', 'Ares');
+		$message->setTo($model_usuario->email, $model_usuario->nick);
+
+		// Cargo la vista.
+		$message_view = View::factory('emails/activada');
+		$message_view->assign('titulo', $model_config->get('nombre', 'Marifa'));
+		$message->setBody($message_view->parse());
+		unset($message_view);
+
+		// Envio el email.
+		$mailer = Email::get_mailer();
+		$mailer->send($message);
+
+		// Actualizo es estado.
+		$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
+
+		// Informamos el resultado.
+		$_SESSION['flash_success'] = 'La cuenta del usuario ha sido activada correctamente.';
+		Request::redirect('/admin/usuario');
 	}
 
 	/**
