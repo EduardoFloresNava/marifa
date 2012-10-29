@@ -1,0 +1,1 @@
+Su cuenta de usuario de {$titulo} ha sido activada correctamente. Ahora puedes visitarnos.

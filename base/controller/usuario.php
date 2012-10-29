@@ -150,6 +150,16 @@ class Base_Controller_Usuario extends Controller {
 			Request::redirect('/');
 		}
 
+		// Configuraciones del sitio.
+		$model_config = new Model_Configuracion;
+
+		// Verifico si está abierto el registro.
+		if ( ! (bool)$model_config->get('registro', TRUE))
+		{
+			$_SESSION['flash_error'] = 'El registro se encuentra cerrado, no se pueden crear nuevas cuentas.';
+			Request::redirect('/usuario/login/');
+		}
+
 		// Asignamos el título.
 		$this->template->assign('title', 'Registrarse');
 
@@ -249,32 +259,43 @@ class Base_Controller_Usuario extends Controller {
 
 					if ($id)
 					{
-						// Genero el token de activacion.
-						$model_activar = new Model_Usuario_Recuperacion;
-						$token = $model_activar->crear($id, $email, Model_Usuario_Recuperacion::TIPO_ACTIVACION);
+						// Verifico tipo de activación del usuario.
+						$t_act = (int) $model_config->get('activacion_usuario', 1);
 
-						// Configuraciones del sitio.
-						$model_config = new Model_Configuracion;
+						if ($t_act == 1)
+						{
+							// Genero el token de activacion.
+							$model_activar = new Model_Usuario_Recuperacion;
+							$token = $model_activar->crear($id, $email, Model_Usuario_Recuperacion::TIPO_ACTIVACION);
 
-						// Creo el mensaje de correo.
-						$message = Email::get_message();
-						$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
-						$message->setFrom('areslepra@gmail.com', 'Ares');
-						$message->setTo($email, $nick);
+							// Configuraciones del sitio.
+							$model_config = new Model_Configuracion;
 
-						// Cargo la vista.
-						$message_view = View::factory('emails/register');
-						$message_view->assign('codigo', $token);
-						$message_view->assign('titulo', $model_config->get('nombre', 'Marifa'));
-						$message->setBody($message_view->parse());
-						unset($message_view);
+							// Creo el mensaje de correo.
+							$message = Email::get_message();
+							$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
+							$message->setFrom('areslepra@gmail.com', 'Ares');
+							$message->setTo($email, $nick);
 
-						// Envio el email.
-						$mailer = Email::get_mailer();
-						$mailer->send($message);
+							// Cargo la vista.
+							$message_view = View::factory('emails/register');
+							$message_view->assign('codigo', $token);
+							$message_view->assign('titulo', $model_config->get('nombre', 'Marifa'));
+							$message->setBody($message_view->parse());
+							unset($message_view);
+
+							// Envio el email.
+							$mailer = Email::get_mailer();
+							$mailer->send($message);
+						}
+						elseif ($t_act == 2)
+						{
+							$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
+						}
 
 						// Registro completo.
 						$view_usuario = View::factory('usuario/register_complete');
+						$view_usuario->assign('tipo_activacion', $t_act);
 					}
 					else
 					{
@@ -304,6 +325,9 @@ class Base_Controller_Usuario extends Controller {
 			$_SESSION['flash_error'] = 'No puedes registrarte si ya estás logueado.';
 			Request::redirect('/');
 		}
+
+		// Configuraciones del sitio.
+		$model_config = new Model_Configuracion;
 
 		// Verifico formato del token.
 		if ( ! preg_match('/^[a-zA-Z0-9]{32}$/D', $token))
@@ -350,6 +374,16 @@ class Base_Controller_Usuario extends Controller {
 			// Lo enviamos a la portada.
 			$_SESSION['flash_error'] = 'No puedes registrarte si ya estás logueado.';
 			Request::redirect('/');
+		}
+
+		// Configuraciones del sitio.
+		$model_config = new Model_Configuracion;
+
+		// Verifico el tipo de activación.
+		if ( (int) $model_config->get('activacion_usuario', 1) !== 1)
+		{
+			$_SESSION['flash_error'] = 'No se pueden pedir correos de activación, este método no es correcto.';
+			Request::redirect('/usuario/login/');
 		}
 
 		// Asignamos el título.
