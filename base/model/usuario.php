@@ -369,11 +369,12 @@ class Base_Model_Usuario extends Model_Dataset {
 	 * @param string $nick Nick del usuario
 	 * @param string $email E-Mail del usuario.
 	 * @param string $password Contraseña del usuario.
+	 * @param int $rango Rango por defecto.
 	 * @return int|bool FALSE si no se pudo crear. En caso de ser correcto el ID
 	 * del usuario insertado o NULL si no es soportado por el motor.
 	 * @throws Exception
 	 */
-	public function register($nick, $email, $password)
+	public function register($nick, $email, $password, $rango)
 	{
 		// Verificamos el email.
 		if ($this->exists_email($email))
@@ -393,8 +394,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		unset($enc);
 
 		// Creamos arreglo con los datos.
-		//TODO: Agregar rango.
-		$info = array($nick, $enc_password, $email, 0, 10, 10, date('Y/m/d H:i:s'), 0);
+		$info = array($nick, $enc_password, $email, $rango, 10, 10, date('Y/m/d H:i:s'), 0);
 
 		// Creamos la cuenta.
 		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, puntos_disponibles, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', array_values($info));

@@ -51,6 +51,17 @@
 				<span class="help-inline">{if="$error_activacion_usuario"}{$error_activacion_usuario}{elseif="$success_activacion_usuario"}{$success_activacion_usuario}{else}La forma de activar las cuentas de los usuarios. Directa: no requiere ningún tipo de validación. E-Mail: se debe activar por medio de un código enviado por E-Mail. Manual: la cuenta debe ser activada de forma manual por un administrador.{/if}</span>
 			</div>
 		</div>
+
+		<div class="control-group{if="$error_rango_defecto"} error{elseif="$success_rango_defecto"} success{/if}">
+			<label class="control-label" for="rango_defecto">Activación usuarios:</label>
+			<div class="controls">
+				<select name="rango_defecto" id="rango_defecto">
+					{loop="$rangos_permitidos"}
+					<option value="{$key}"{if="$rango_defecto == $key"} selected="selected"{/if}>{$value}</option>{/loop}
+				</select>
+				<span class="help-inline">{if="$error_rango_defecto"}{$error_rango_defecto}{elseif="$success_rango_defecto"}{$success_rango_defecto}{else}La forma de activar las cuentas de los usuarios. Directa: no requiere ningún tipo de validación. E-Mail: se debe activar por medio de un código enviado por E-Mail. Manual: la cuenta debe ser activada de forma manual por un administrador.{/if}</span>
+			</div>
+		</div>
 	</fieldset>
 
 	<fieldset>

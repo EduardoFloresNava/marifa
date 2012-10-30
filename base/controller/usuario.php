@@ -248,7 +248,7 @@ class Base_Controller_Usuario extends Controller {
 
 					// Realizamos el registro.
 					try {
-						$id = $model_usuario->register($nick, $email, $password);
+						$id = $model_usuario->register($nick, $email, $password, (int) $model_config->get('rango_defecto', 1));
 					}
 					catch (Exception $e)
 					{

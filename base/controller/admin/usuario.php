@@ -735,6 +735,10 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('rangos', $lst);
 		unset($lst);
 
+		// Rango por defecto para nuevos usuario, evitamos que se borre.
+		$model_config = new Model_Configuracion;
+		$vista->assign('rango_defecto', (int) $model_config->get('rango_defecto', 1));
+
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
@@ -1126,9 +1130,18 @@ class Base_Controller_Admin_Usuario extends Controller {
 				Request::redirect('/admin/usuario/rangos');
 			}
 
-			if (count($model_rango->listado()) < 2)
+			// Verifico que no sea el único.
+			if ($model_rango->cantidad() < 2)
 			{
 				$_SESSION['flash_error'] = 'No se puede eliminar al único rango existente.';
+				Request::redirect('/admin/usuario/rangos');
+			}
+
+			// Verifico no sea por defecto.
+			$model_config = new Model_Configuracion;
+			if ($id == (int) $model_config->get('rango_defecto', 1))
+			{
+				$_SESSION['flash_error'] = 'No se puede eliminar al rango por defecto para los nuevos usuarios.';
 				Request::redirect('/admin/usuario/rangos');
 			}
 

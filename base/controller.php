@@ -117,7 +117,7 @@ class Base_Controller {
 			$suceso_vista = View::factory('suceso/barra/'.$tipo);
 
 			// Asigno los datos del usuario actual.
-			$suceso_vista->assign('actual', $usuario->as_array());
+			$suceso_vista->assign('actual', Usuario::usuario()->as_array());
 
 			// Asigno información del suceso.
 			$suceso_vista->assign('suceso', $s_data);

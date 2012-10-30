@@ -56,4 +56,345 @@ class Base_Suceso_Barra extends Suceso {
 		return parent::procesar($informacion, $class);
 	}
 
+	/**
+	 * Suceso producido cuando se crea un nuevo post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_nuevo($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se edita un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_editado($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+
+		// Cargo editor.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'editor' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Un usuario ha agregado un post como favorito.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_favorito($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+
+		// Cargo datos de quien lo agregó como favorito.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'favorito' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Un usuario comienza a seguir un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_seguir($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+
+		// Cargo datos de quien lo sigue.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'seguidor' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Un usuario da puntos a un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_puntuar($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+
+		// Cargo datos de quien da los puntos.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'puntua' => $model_usuario->as_array(), 'puntos' => (int) $suceso['objeto_id2']);
+	}
+
+	/**
+	 * Un usuario fija un post en la portada.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_fijar($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+
+		// Cargo datos de quien fija el post.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'fija' => $model_usuario->as_array(), 'tipo' => (bool) $suceso['objeto_id2']);
+	}
+
+	/**
+	 * Un usuario patrocina un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_patrocinar($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+
+		// Cargo datos de quien patrocina el post.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'patrocina' => $model_usuario->as_array(), 'tipo' => (bool) $suceso['objeto_id2']);
+	}
+
+	/**
+	 * Suceso producido cuando se publica un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_publicar($suceso)
+	{
+		// Cargo datos del post.
+		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+
+		// Cargo datos de quien publica el post.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'publica' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se publica un comentario en un post.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_comentario_crear($suceso)
+	{
+		// Cargo el comentario.
+		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
+
+		// Post donde se crea el comentario.
+		$model_post = $model_comentario->post();
+
+		// Usuario que crea el post.
+		$model_usuario = $model_comentario->usuario();
+
+		return array('comentario' => $model_comentario->as_array(), 'post' => $model_post->as_array(), 'post_usuario' => $model_post->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se vota el comentario de un usuario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_comentario_voto($suceso)
+	{
+		// Cargo el comentario.
+		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
+
+		// Cargo el usuario que vota.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		// Cargo el voto.
+		$voto = (bool) $suceso['objeto_id2'];
+
+		return array('post' => $model_comentario->post()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
+	}
+
+	/**
+	 * Suceso producido cuando se edita el comentario de un usuario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_post_comentario_editar($suceso)
+	{
+		// Cargo el comentario.
+		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
+
+		// Cargo el usuario que edita.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('post' => $model_comentario->post()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se crea una nueva foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_nueva($suceso)
+	{
+		// Cargo la foto.
+		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+
+		return array('foto' => $model_foto->as_array(), 'usuario' => $model_foto->usuario()->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se vota una foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_votar($suceso)
+	{
+		// Cargo la foto.
+		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+
+		// Cargo quien vota.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		// Tipo de voto.
+		$voto = (bool) $suceso['objeto_id2'];
+
+		return array('foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
+	}
+
+	/**
+	 * Suceso producido cuando se agrega a favoritos una foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_favorito($suceso)
+	{
+		// Cargo la foto.
+		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+
+		// Cargo quien agrega a favoritos.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se agrega a favoritos una foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_editar($suceso)
+	{
+		// Cargo la foto.
+		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+
+		// Cargo quien edita la foto.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('foto' => $model_foto->as_array(), 'usuario' => $model_foto->usuario()->as_array(), 'editor' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se publica un comentario en una foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_comentario_crear($suceso)
+	{
+		// Cargo el comentario.
+		$model_comentario = new Model_Foto_Comentario( (int) $suceso['objeto_id']);
+
+		// Foto en donde se crea el comentario.
+		$model_foto = $model_comentario->foto();
+
+		// Usuario que crea el foto.
+		$model_usuario = $model_comentario->usuario();
+
+		return array('comentario' => $model_comentario->as_array(), 'foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se edita el comentario de un usuario en una foto.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_foto_comentario_editar($suceso)
+	{
+		// Cargo el comentario.
+		$model_comentario = new Model_Foto_Comentario( (int) $suceso['objeto_id']);
+
+		// Cargo el usuario que edita.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('foto' => $model_comentario->foto()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se crea un usuario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_nuevo($suceso)
+	{
+		// Cargo datos del usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
+
+		return array('usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando el usuario cambia su nick.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_cambio_nick($suceso)
+	{
+		// Cargo datos del usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
+
+		//TODO: Cargar los nicks.
+
+		return array('usuario' => $model_usuario->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando el usuario cambia de rango.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_cambio_rango($suceso)
+	{
+		// Cargo datos del usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
+
+		// Cargo el rango nuevo.
+		$model_rango = new Model_Usuario_Rango( (int) $suceso['objeto_id1']);
+
+		// Cargo el moderador.
+		$model_moderador = new Model_Usuario( (int) $suceso['objeto_id2']);
+
+		return array('usuario' => $model_usuario->as_array(), 'rango' => $model_rango->as_array(), 'moderador' => $model_moderador->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando el usuario cambia de rango.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_seguir($suceso)
+	{
+		// Cargo datos del usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
+
+		// Cargo datos del seguidor.
+		$model_seguidor = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('usuario' => $model_usuario->as_array(), 'seguidor' => $model_seguidor->as_array());
+	}
+
 }

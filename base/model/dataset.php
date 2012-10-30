@@ -54,6 +54,12 @@ class Base_Model_Dataset extends Model {
 	protected $fields = array();
 
 	/**
+	 * Campos utilizados para obtener un listado de campos.
+	 * @var array
+	 */
+	protected $list = array('key' => NULL, 'value' => NULL);
+
+	/**
 	 * Listado de campos cargados.
 	 * @var array|null
 	 */
@@ -68,6 +74,16 @@ class Base_Model_Dataset extends Model {
 	{
 		$this->load($this->primary_key);
 		return isset($this->data[$field]) ? $this->data[$field] : NULL;
+	}
+
+	/**
+	 * Obtenemos listado de clave-valor para utilizar en listados.
+	 * @return array
+	 */
+	public function to_list()
+	{
+		//TODO: Add order by.
+		return $this->db->query("SELECT {$this->list['key']}, {$this->list['value']} FROM {$this->table}")->get_pairs(array($this->list['key'] => $this->fields[$this->list['key']], $this->list['value'] => $this->fields[$this->list['value']]));
 	}
 
 	/**

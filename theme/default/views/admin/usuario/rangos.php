@@ -41,7 +41,7 @@
 				<div class="btn-group">
 					<a href="/admin/usuario/ver_rango/{$value.id}" class="btn btn-mini" title="Permisos" rel="tooltip"><i class="icon icon-lock"></i></a>
 					<a href="/admin/usuario/editar_rango/{$value.id}" class="btn btn-mini btn-info" title="Editar" rel="tooltip"><i class="icon-white icon-pencil"></i></a>
-					<a href="/admin/usuario/borrar_rango/{$value.id}" class="btn btn-mini btn-danger" title="Borrar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
+					{if="$value.id !== $rango_defecto && count($rangos) > 1"}<a href="/admin/usuario/borrar_rango/{$value.id}" class="btn btn-mini btn-danger" title="Borrar" rel="tooltip"><i class="icon-white icon-remove"></i></a>{/if}
 				</div>
 			</td>
 		</tr>

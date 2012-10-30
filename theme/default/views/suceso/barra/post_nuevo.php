@@ -1,0 +1,1 @@
+<i class="icon icon-book"></i><a href="/perfil/index/{$suceso.usuario.nick}">{$suceso.usuario.nick}</a> {@cre&oacute; el post titulado@} <a href="/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a>.

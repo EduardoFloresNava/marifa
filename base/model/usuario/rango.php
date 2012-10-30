@@ -226,7 +226,14 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	protected $primary_key = array('id' => NULL);
 
 	/**
+	 * Elementos para el arreglo de rangos.
+	 * @var array
+	 */
+	protected $list = array('key' => 'id', 'value' => 'nombre');
+
+	/**
 	 * Listado de campos y sus tipos.
+	 * @var array
 	 */
 	protected $fields = array(
 		'id' => Database_Query::FIELD_INT,
@@ -314,12 +321,23 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	 */
 	public function posicionar($posicion)
 	{
+		//TODO: Mejorar con viejo método de desplazamiento
+
+		// Obtengo la lista de rangos y su posición.
+		//$lista = $this->db->query('SELECT id, orden FROM usuario_rango ORDER BY orden ASC')->get_pairs(array('id' => Database_Query::FIELD_INT, 'orden' => Database_Query::FIELD_INT));
+
+
 		$actual = $this->get('orden');
 
 		// Verificamos posición actual.
 		if ($posicion != $actual)
 		{
 			// Movemos todos para abajo.
+			//$lst = $this->db->query('SELECT id FROM usuario_rango WHERE orden >= ? ORDER BY orden DESC', $posicion);
+			//foreach ($lst as $v)
+			//{
+			//	$this->db->query('UPDATE usuario_rango SET orden = orden + 1 WHERE id = ?', (int) $v);
+			//}
 			$this->db->update('UPDATE usuario_rango SET orden = orden + 1 WHERE orden >= ?', $posicion);
 
 			// Me coloco en la posicion.
@@ -333,10 +351,11 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 			else
 			{
 				// Corrijo los siguientes.
-				$this->db->update('UPDATE usuario_rango SET orden = orden - 1 WHERE orden > ?', $posicion);
+				$this->db->update('UPDATE usuario_rango SET orden = orden - 2 WHERE orden > ? LIMIT 1', $posicion);
 			}
+
+			$this->update_value('orden', $posicion);
 		}
-		$this->update_value('orden', $posicion);
 	}
 
 	/**

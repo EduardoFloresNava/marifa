@@ -79,9 +79,16 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista->assign('activacion_usuario', (int) $model_configuracion->get('activacion_usuario', 1));
 		$vista->assign('error_activacion_usuario', FALSE);
 		$vista->assign('success_activacion_usuario', FALSE);
+		$vista->assign('rango_defecto', (int) $model_configuracion->get('rango_defecto', 3));
+		$vista->assign('error_rango_defecto', FALSE);
+		$vista->assign('success_rango_defecto', FALSE);
 		$vista->assign('elementos_pagina', (int) $model_configuracion->get('elementos_pagina', 20));
 		$vista->assign('error_elementos_pagina', FALSE);
 		$vista->assign('success_elementos_pagina', FALSE);
+
+		// Cargo listado rangos.
+		$model_rangos = new Model_Usuario_Rango;
+		$vista->assign('rangos_permitidos', $model_rangos->to_list());
 
 		if (Request::method() == 'POST')
 		{
@@ -168,12 +175,38 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					if ($actual === NULL || $activacion_usuario !== (int) $actual)
 					{
 						$model_configuracion->activacion_usuario = $activacion_usuario;
-						$vista->assign('success_activacion_usuario', 'El registro se ha editado correctamente.');
+						$vista->assign('success_activacion_usuario', 'La forma de activación se ha actualizado correctamente.');
 					}
 				}
 				else
 				{
 					$vista->assign('error_activacion_usuario', 'La forma de activación seleccionada no es válida.');
+				}
+			}
+
+			// Verifico rango por defecto.
+			if (isset($_POST['rango_defecto']))
+			{
+				// Limpio el valor.
+				$rango_defecto = (int) $_POST['rango_defecto'];
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('rango_defecto', $rango_defecto);
+
+				// Verifico el valor.
+				if (in_array($rango_defecto, array_keys($model_rangos->to_list())))
+				{
+					// Actualizo el valor.
+					$actual = $model_configuracion->get('rango_defecto', NULL);
+					if ($actual === NULL || $rango_defecto !== (int) $actual)
+					{
+						$model_configuracion->rango_defecto = $rango_defecto;
+						$vista->assign('success_rango_defecto', 'Se ha actualizado el rango para los usuarios por defecto.');
+					}
+				}
+				else
+				{
+					$vista->assign('error_rango_defecto', 'El rango seleccionado no es correcto.');
 				}
 			}
 
