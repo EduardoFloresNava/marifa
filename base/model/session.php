@@ -104,6 +104,14 @@ class Base_Model_Session extends Model_Dataset {
 		return $this->db->delete('DELETE FROM session WHERE id = ? OR expira < ?', array($this->primary_key['id'], date('Y/m/d H:i:s')));
 	}
 
+	/**
+	 * Agregamos una nueva sessión en la base de datos. Si existe actualizo parámetros.
+	 * @param string $id ID de la sessión.
+	 * @param int $usuario ID del usuario dueño de la sessión.
+	 * @param int $ip IP del usuario actual.
+	 * @param int $expira Fecha en la cual expira la sessión.
+	 * @return mixed
+	 */
 	public function crear($id, $usuario, $ip, $expira)
 	{
 		// Verifico existencia.

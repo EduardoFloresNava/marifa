@@ -38,6 +38,9 @@ class Base_Controller_Perfil extends Controller {
 	 */
 	protected $usuario;
 
+	/**
+	 * Constructor de la clase. Seteamos el elemento del menu actual.
+	 */
 	public function __construct()
 	{
 		parent::__construct();
@@ -434,6 +437,7 @@ class Base_Controller_Perfil extends Controller {
 	/**
 	 * Muro del usuario.
 	 * @param int $usuario ID del usuario.
+	 * @param int $pagina Número de página a mostrar.
 	 */
 	public function action_muro($usuario, $pagina = 1)
 	{
@@ -508,6 +512,10 @@ class Base_Controller_Perfil extends Controller {
 		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
 	}
 
+	/**
+	 * Denunciamos a un usuario.
+	 * @param int $usuario ID del usuario a denunciar.
+	 */
 	public function action_denunciar($usuario)
 	{
 		// Cargamos el usuario.

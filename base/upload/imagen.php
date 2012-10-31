@@ -39,6 +39,10 @@ class Base_Upload_Imagen {
 	 */
 	private $config;
 
+	/**
+	 * Contructor de la clase.
+	 * Obtenemos las configuraciones de la carga de imagenes.
+	 */
 	public function __construct()
 	{
 		// Cargamos la configuracion.
@@ -109,6 +113,11 @@ class Base_Upload_Imagen {
 		}
 	}
 
+	/**
+	 * Guardamos una imagen en disco.
+	 * @param string $img URL de la imagen a guardar.
+	 * @param string $fullpath Donde guardar la imagen.
+	 */
 	private function save_image($img, $fullpath)
 	{
 		$ch = curl_init ($img);

@@ -119,6 +119,11 @@ class Base_RainTPL extends Lib_RainTPL {
 		$this->draw(NULL, FALSE);
 	}
 
+	/**
+	 * Reduce a path, eg. www/library/../filepath//file => www/filepath/file
+	 * @param mixed $path Path.
+	 * @return mixed
+	 */
 	protected function reduce_path($path)
 	{
 		return self::$base_url;

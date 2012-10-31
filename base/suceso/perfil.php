@@ -45,6 +45,11 @@ class Base_Suceso_Perfil extends Suceso {
 		return parent::obtener_listado($usuario, $pagina, $cantidad, $class);
 	}
 
+	/**
+	 * Obtenemos la cantidad de sucesos que hay disponibles.
+	 * @param int $usuario ID del usuario dueño de los posts.
+	 * @param string $class Nombre de la clase. No debe ser pasado, solo es a fines de compatibilidad de herencias estáticas.
+	 */
 	public static function cantidad($usuario, $class = __CLASS__)
 	{
 		return parent::cantidad($usuario, $class);

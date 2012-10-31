@@ -92,14 +92,19 @@ class Base_Database {
 		return self::$instance;
 	}
 
-	public static function explain_profiler($query)
+	/**
+	 * Obtenemos la explicación de una consulta SQL.
+	 * @param string $sql Consulta a explicar.
+	 * @return array
+	 */
+	public static function explain_profiler($sql)
 	{
 		// Obtenemos la base de datos.
 		$db = self::get_instance();
 
 		if (method_exists($db, 'explain_query'))
 		{
-			return $db->explain_query($query);
+			return $db->explain_query($sql);
 		}
 		else
 		{

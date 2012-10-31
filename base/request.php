@@ -39,11 +39,14 @@ class Base_Request {
 	private static $request = array();
 
 	/**
-	 * Agregamos una llamada al stack
-	 * @param string $call Url llamada.
-	 * @param string $method
+	 * Agregamos una llamada al stack.
+	 * @param string $method Método llamado.
+	 * @param string $controller Controllador llamado.
+	 * @param string $action Acción llamada.
+	 * @param array $params Parametros de la llamada.
+	 * @param string $plugin Plugin si corresponde.
 	 */
-	public static function add_stack($method , $controller, $action, $params, $plugin)
+	public static function add_stack($method, $controller, $action, $params, $plugin)
 	{
 		if ( ! is_array(self::$request))
 		{

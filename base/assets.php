@@ -59,6 +59,12 @@ class Base_Assets {
 		'coffee' => self::ASSET_COFFEESCRIPT
 	);
 
+	/**
+	 * Realizamos la compilación de un asset.
+	 * @param string $file Archivo a compilar.
+	 * @param string $cache Archivo donde colocar la cache.
+	 * @return mixed
+	 */
 	public static function reverse_compile($file, $cache = FALSE)
 	{
 		// Partes de la url.
@@ -179,6 +185,13 @@ class Base_Assets {
 	 */
 	protected static function compile_less($file, $target = NULL)
 	{
+		// Cargo lessc.
+		if ( ! class_exists('lessc'))
+		{
+			include(VENDOR_PATH.'lessc.php');
+		}
+
+		// Realizo la compilación.
 		if ($target !== NULL)
 		{
 			$less = new Lessc;

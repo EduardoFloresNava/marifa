@@ -120,7 +120,7 @@ class Base_Model_Usuario_Suspension extends Model_Dataset {
 	}
 
 	/**
-	 *
+	 * Creamos una nueva suspensión para un usuario.
 	 * @param int $usuario ID del usuario a suspender.
 	 * @param int $moderador ID del moderador que realiza la suspensión.
 	 * @param string $asunto Motivo de la suspensión.

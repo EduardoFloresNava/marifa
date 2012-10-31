@@ -165,7 +165,7 @@ class Base_Cookie {
 	/**
 	 * Send a secure cookie
 	 *
-	 * @param string $name cookie name
+	 * @param string $cookiename cookie name
 	 * @param string $value cookie value
 	 * @param string $username user name (or ID)
 	 * @param integer $expire expiration time
@@ -249,7 +249,7 @@ class Base_Cookie {
 	/**
 	 * Send a classic (unsecure) cookie
 	 *
-	 * @param string $name cookie name
+	 * @param string $cookiename cookie name
 	 * @param string $value cookie value
 	 * @param integer $expire expiration time
 	 * @param string $path cookie path

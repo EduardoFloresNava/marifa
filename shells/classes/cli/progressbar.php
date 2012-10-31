@@ -1,28 +1,44 @@
 <?php
+/**
+ * ayuda.php is part of Marifa.
+ *
+ * Marifa is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Marifa is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
+ * @since		Versión 0.1
+ * @filesource
+ * @package		Marifa\Shell
+ */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * PHP CLI Progress bar
  *
- * PHP 5
- *
- * Licensed under The MIT License
- * Redistributions of files must retain the above copyright notice.
+ * Static wrapper class for generating progress bars for cli tasks
  *
  * @copyright Copyright 2011, Andy Dawson
  * @link http://ad7six.com
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
- */
-
-/**
- * ProgressBar
  *
- * Static wrapper class for generating progress bars for cli tasks
- *
+ * @since      Versión 0.1
+ * @package    Marifa\Shell
  */
 class Shell_Cli_ProgressBar {
 
 	/**
 	 * Merged with options passed in start function
+	 * @var array
 	 */
 	protected static $defaults = array(
 		'format' => "\r:message::padding:%.01f%% %2\$d/%3\$d ETC: %4\$s. Elapsed: %5\$s [%6\$s]",
@@ -33,42 +49,50 @@ class Shell_Cli_ProgressBar {
 
 	/**
 	 * Runtime options
+	 * @var array
 	 */
 	protected static $options = array();
 
 	/**
 	 * How much have we done already
+	 * @var int
 	 */
 	protected static $done = 0;
 
 	/**
 	 * The format string used for the rendered status bar - see $defaults
+	 * @var string
 	 */
 	protected static $format;
 
 	/**
 	 * message to display prefixing the progress bar text
+	 * @var string
 	 */
 	protected static $message;
 
 	/**
 	 * How many chars to use for the progress bar itself. Not to be confused with $width
+	 * @var int
 	 */
 	protected static $size = 30;
 
 	/**
 	 * When did we start (timestamp)
+	 * @var int
 	 */
 	protected static $start;
 
 	/**
 	 * The width in characters the whole rendered string must fit in. defaults to the width of the
 	 * terminal window
+	 * @var int
 	 */
 	protected static $width;
 
 	/**
 	 * What's the total number of times we're going to call set
+	 * @var int
 	 */
 	protected static $total;
 

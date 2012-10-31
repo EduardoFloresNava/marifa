@@ -18,7 +18,7 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa\Base
+ * @package		Marifa\Installer
  */
 defined('APP_BASE') || die('No direct access allowed.');
 

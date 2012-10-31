@@ -145,8 +145,9 @@ class Base_Model_Suceso extends Model_Dataset {
 
 	/**
 	 * Obtenemos la cantidad de sucesos segun su dueño y tipo.
-	 * @param int $usaurio ID del usuario a dueño de los sucesos. NULL para todos.
+	 * @param int $usuario ID del usuario a dueño de los sucesos. NULL para todos.
 	 * @param array $tipo Arreglo de tipos, NULL para todos.
+	 * @return int
 	 */
 	public function cantidad($usuario = NULL, $tipo = NULL)
 	{

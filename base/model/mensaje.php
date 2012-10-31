@@ -160,6 +160,7 @@ class Base_Model_Mensaje extends Model_Dataset {
 	/**
 	 * Cantidad de mensaje recibidos por el usuario.
 	 * @param int $usuario_id ID del usuario del cual contar los mensajes.
+	 * @param int $estado Estado de los mensajes a obtener. NULL para cualquier estado.
 	 * @return int
 	 */
 	public function total_recibidos($usuario_id, $estado = NULL)

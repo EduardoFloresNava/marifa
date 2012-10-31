@@ -1,6 +1,6 @@
 <?php
 /**
- * matenimiento.php is part of Marifa.
+ * fechahora.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,10 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Fechahora extends DateTime {
 
+	/**
+	 * Obtenemos una fecha en formato amigable.
+	 * @return string
+	 */
 	public function fuzzy()
 	{
 		// Obtenemos diferencia de tiempo.

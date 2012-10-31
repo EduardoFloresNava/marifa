@@ -259,16 +259,58 @@ if ( ! function_exists('date_diff'))
 	/**
 	 * Clase fallback para el manejo de intervalos de fechas.
 	 * Es para mantener compatibilidad con PHP < 5.3
+	 * @since      Versión 0.1
+	 * @package    Marifa
 	 */
 	class DateInterval {
+
+		/**
+		 * Años
+		 * @var int
+		 */
 		public $y;
+
+		/**
+		 * Meses
+		 * @var int
+		 */
 		public $m;
+
+		/**
+		 * Dias
+		 * @var int
+		 */
 		public $d;
+
+		/**
+		 * Horas
+		 * @var int
+		 */
 		public $h;
+
+		/**
+		 * Minutos
+		 * @var int
+		 */
 		public $i;
+
+		/**
+		 * Segundos
+		 * @var int
+		 */
 		public $s;
+
+		/**
+		 * Inverso
+		 * @var int
+		 */
 		public $invert;
 
+		/**
+		 * Formats the interval
+		 * @param string $format Format
+		 * @return string
+		 */
 		public function format($format)
 		{
 			$format = str_replace('%R%y', ($this->invert ? '-' : '+').$this->y, $format);

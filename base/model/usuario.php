@@ -658,6 +658,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 * Listado de usuarios existentes.
 	 * @param int $pagina Número de página a mostrar.
 	 * @param int $cantidad Cantidad de elementos por página.
+	 * @param int $estado Estado de los usuario a obtener. NULL para todos los posibles.
 	 * @return array
 	 */
 	public function listado($pagina, $cantidad = 10, $estado = NULL)

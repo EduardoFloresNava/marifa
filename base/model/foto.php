@@ -147,6 +147,7 @@ class Base_Model_Foto extends Model_Dataset {
 
 	/**
 	 * Tipo de voto dado.
+	 * @param int $usuario_id ID del usuario del cual obtener el voto.
 	 * @return int
 	 */
 	public function votos_dados($usuario_id)
@@ -454,7 +455,7 @@ class Base_Model_Foto extends Model_Dataset {
 	 * Listado de fotos existentes.
 	 * @param int $pagina Número de página a mostrar.
 	 * @param int $cantidad Cantidad de fotos por página.
-	 * @param boll $ocultas Si incluir o no las ocultas.
+	 * @param int $estado Estado de las fotos a mostrar. NULL para todos los estados.
 	 * @return array
 	 */
 	public function listado($pagina, $cantidad = 10, $estado = NULL)

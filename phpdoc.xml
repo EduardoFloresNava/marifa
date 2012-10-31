@@ -14,12 +14,16 @@
   </transformer>
   <files>
     <directory>.</directory>
+    <ignore>shells/Kohana/*</ignore>
+    <ignore>*/decoda/*</ignore>
     <ignore>assets/*</ignore>
     <ignore>cache/*</ignore>
     <ignore>config/*</ignore>
     <ignore>plugin/*</ignore>
     <ignore>theme/*</ignore>
+    <ignore>vendor/*</ignore>
     <ignore>base/view/*</ignore>
+    <ignore>shells/migraciones/*</ignore>
     <ignore>router.php</ignore>
   </files>
 </phpdocumentor>

@@ -50,6 +50,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	/**
 	 * Listado de posts con denuncias.
 	 * @param int $pagina Número de página a mostrar.
+	 * @param int $tipo Tipo de denuncias a mostrar.
 	 */
 	public function action_posts($pagina, $tipo)
 	{
@@ -130,6 +131,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 	/**
 	 * Vermos los detalles de una denuncia.
+	 * @param int $denuncia ID de la denuncia a ver.
 	 */
 	public function action_detalle_post($denuncia)
 	{
@@ -286,6 +288,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	/**
 	 * Listado de fotos con denuncias.
 	 * @param int $pagina Número de página a mostrar.
+	 * @param int $tipo Tipo de denuncias a fotos a mostar.
 	 */
 	public function action_fotos($pagina, $tipo)
 	{
@@ -365,6 +368,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 	/**
 	 * Vermos los detalles de una denuncia a una foto.
+	 * @param int $denuncia ID de la denuncia de la cual se quiere ver.
 	 */
 	public function action_detalle_foto($denuncia)
 	{
@@ -470,7 +474,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 	/**
 	 * Borramos una foto.
-	 * @param int $post ID de la foto a borrar.
+	 * @param int $foto ID de la foto a borrar.
 	 */
 	public function action_borrar_foto($foto)
 	{
@@ -521,6 +525,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	/**
 	 * Listado de usuarios con denuncias.
 	 * @param int $pagina Número de página a mostrar.
+	 * @param int $tipo Tipo de denuncias a usuario a mostrar.
 	 */
 	public function action_usuarios($pagina, $tipo)
 	{
@@ -599,7 +604,8 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	}
 
 	/**
-	 * Vermos los detalles de una denuncia a una foto.
+	 * Vermos los detalles de una denuncia a un usuario.
+	 * @param int $denuncia ID de la denuncia a ver lo detalles.
 	 */
 	public function action_detalle_usuario($denuncia)
 	{

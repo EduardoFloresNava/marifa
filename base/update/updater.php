@@ -47,6 +47,8 @@ class Base_Update_Updater {
 
 	/**
 	 * Creamos una instancia del servidor de actualizaciones.
+	 * @param string $server Servidor de actualizaciones.
+	 * @param string $token Token para autenticar al API.
 	 */
     public function __construct($server, $token)
     {

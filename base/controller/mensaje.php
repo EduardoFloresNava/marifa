@@ -170,6 +170,11 @@ class Base_Controller_Mensaje extends Controller {
 		$this->template->assign('contenido', $view->parse());
 	}
 
+	/**
+	 * Enviamos un mensaje.
+	 * @param int $tipo Tipo de acción a tomar. 1 Responder, 2 Reenviar, NULL nuevo mensaje.
+	 * @param int $mensaje_id ID del mensaje a tomar para las acciones especiales. NULL para nuevo.
+	 */
 	public function action_nuevo($tipo, $mensaje_id)
 	{
 		// Verificamos si es reenvio o respuesta.

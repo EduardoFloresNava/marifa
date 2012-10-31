@@ -53,7 +53,9 @@ class Base_Controller_Tops extends Controller {
 	}
 
 	/**
-	 * Portada de las estadisticas.
+	 * Mostramos tops de posts.
+	 * @param string $categoria Categoria para filtar los tops de post.
+	 * @param int $periodo Período para filtar post.
 	 */
 	public function action_index($categoria, $periodo)
 	{
@@ -123,6 +125,12 @@ class Base_Controller_Tops extends Controller {
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());
 	}
+
+	/**
+	 * Mostramos tops de usuarios.
+	 * @param string $categoria Categoria para filtar los tops de usuario.
+	 * @param int $periodo Período para filtar usuarios.
+	 */
 
 	public function action_usuarios($categoria, $periodo)
 	{

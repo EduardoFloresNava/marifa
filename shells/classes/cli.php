@@ -1,10 +1,40 @@
 <?php
+/**
+ * cli.php is part of Marifa.
+ *
+ * Marifa is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Marifa is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
+ * @since		Versión 0.1
+ * @filesource
+ * @package		Marifa\Shell
+ */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase para el manejo de la linea de comandos.
+ *
+ * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
+ * @since      Versión 0.1
+ * @package    Marifa\Shell
  */
 class Shell_Cli {
 
+	/**
+	 * Colores para el texto.
+	 * @var array
+	 */
 	private static $foreground_colors = array(
 		'black' => '0;30',
 		'dark_gray' => '1;30',
@@ -24,6 +54,10 @@ class Shell_Cli {
 		'white' => '1;37'
 	);
 
+	/**
+	 * Listado de colores de fondo.
+	 * @var array
+	 */
 	private static $background_colors = array(
 		'black' => '40',
 		'red' => '41',
@@ -35,21 +69,40 @@ class Shell_Cli {
 		'light_gray' => '47'
 	);
 
+	/**
+	 * Leemos una linea por teclado. No se aplica ningún filtro.
+	 * @return string
+	 */
 	public static function read_line()
 	{
 		return trim(fgets(STDIN));
 	}
 
+	/**
+	 * Imprimimos una salida por pantalla agregando un salto de linea al final.
+	 * @param string $line Cadena a imprimir.
+	 */
 	public static function write_line($line)
 	{
-		self::write($line."\n");
+		self::write($line.PHP_EOL);
 	}
 
+	/**
+	 * Imprimimos una cadena por pantalla.
+	 * @param string $line Cadena a imprimir.
+	 */
 	public static function write($line)
 	{
 		fwrite(STDOUT, $line);
 	}
 
+	/**
+	 * Pedimos un valor al usuario para que ingrese por teclado.
+	 * @param string $name Nombre del dato a pedir.
+	 * @param mixed $default Valor por defecto.
+	 * @param array $options Listado de posibles opciones.
+	 * @return mixed
+	 */
 	public static function read_value($name, $default = NULL, $options = NULL)
 	{
 		self::write("$name");
@@ -119,6 +172,12 @@ class Shell_Cli {
 		return $v;
 	}
 
+	/**
+	 * Imprimimos una barra de correo.
+	 * @param int $current Cantidad realizada.
+	 * @param int $total Cantidad total.
+	 * @param string $label Etiqueta de descripción del progreso.
+	 */
 	public static function progressBar($current, $total, $label)
 	{
 	    $percent = round($current / $total * 100);
@@ -159,6 +218,13 @@ class Shell_Cli {
 		}
 	}
 
+	/**
+	 * Imprimimos menu para seleccionar opciones.
+	 * @param array $options Listado de opciones.
+	 * @param string $title Titulo del menu.
+	 * @param string $option_text Texto de encabezado para las opciones.
+	 * @return mixed Opcion seleccionada.
+	 */
 	public static function option($options, $title = 'Seleccione una opción:', $option_text = 'Opción')
 	{
 	    self::write_line($title);
@@ -184,8 +250,7 @@ class Shell_Cli {
 	 *     // Get the values of "username" and "password"
 	 *     $auth = CLI::options('username', 'password');
 	 *
-	 * @param   string  option name
-	 * @param   ...
+	 * @param string $options,... option name
 	 * @return  array
 	 */
 	public static function options($options)
@@ -239,6 +304,7 @@ class Shell_Cli {
 
 	/**
 	 * Realizamos el parseado de argumentos.
+	 * @param array $argv Cadena a parsear.
 	 */
 	public static function parseArgs($argv)
 	{
@@ -308,7 +374,13 @@ class Shell_Cli {
 		return FALSE;
 	}
 
-	// Returns colored string
+	/**
+	 * Returns colored string
+	 * @param string $string Cadena a colorear
+	 * @param string $foreground_color Color del texto.
+	 * @param string $background_color Color de fondo.
+	 * @return string
+	 */
 	public static function getColoredString($string, $foreground_color = null, $background_color = null)
 	{
 		$colored_string = "";
@@ -328,13 +400,19 @@ class Shell_Cli {
 		return $colored_string;
 	}
 
-	// Returns all foreground color names
+	/**
+	 * Returns all foreground color names
+	 * @return array
+	 */
 	public static function getForegroundColors()
 	{
 		return array_keys(self::$foreground_colors);
 	}
 
-	// Returns all background color names
+	/**
+	 * Returns all background color names
+	 * @return array
+	 */
 	public static function getBackgroundColors()
 	{
 		return array_keys(self::$background_colors);

@@ -32,6 +32,9 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Moderar_Home extends Controller {
 
+	/**
+	 * Constructor de la clase. Verificamos permisos.
+	 */
 	public function __construct()
 	{
 		// Verifico esté logueado.
@@ -72,6 +75,11 @@ class Base_Controller_Moderar_Home extends Controller {
 		return Usuario::permiso($permisos);
 	}
 
+	/**
+	 * Submenu de la moderación.
+	 * @param string $activo Sección actual.
+	 * @return array
+	 */
 	public static function submenu($activo)
 	{
 		$listado = array();
@@ -159,6 +167,10 @@ class Base_Controller_Moderar_Home extends Controller {
 		return $listado;
 	}
 
+	/**
+	 * Portada de la moderación.
+	 * Mostramos elementos relevantes y un resumen de los que sucede.
+	 */
 	public function action_index()
 	{
 		// Cargamos la portada.

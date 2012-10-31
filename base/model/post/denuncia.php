@@ -177,6 +177,7 @@ class Base_Model_Post_Denuncia extends Model_Dataset {
 	 * Listado de denuncias de posts existentes.
 	 * @param int $pagina Número de página a mostrar.
 	 * @param int $cantidad Cantidad de denuncias por página.
+	 * @param int $estado Estado de las denuncias a obtener. NULL para todos los estados.
 	 * @return array
 	 */
 	public function listado($pagina, $cantidad = 10, $estado = NULL)

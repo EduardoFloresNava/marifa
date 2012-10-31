@@ -1070,6 +1070,10 @@ class Base_Controller_Cuenta extends Controller {
 		Request::redirect('/cuenta/nick');
 	}
 
+	/**
+	 * Seleccionamos un nick a utilizar de nuestra lista.
+	 * @param string $nick Nick que vamos a utilizar.
+	 */
 	public function action_utilizar_nick($nick)
 	{
 		// Verifico el formato.

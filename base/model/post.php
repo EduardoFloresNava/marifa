@@ -797,6 +797,7 @@ class Base_Model_Post extends Model_Dataset {
 	 * Listado de posts existentes.
 	 * @param int $pagina Número de página a mostrar.
 	 * @param int $cantidad Cantidad de posts por página.
+	 * @param int $estado Estado de los posts a obtener. NULL para todos los posibles.
 	 * @return array
 	 */
 	public function listado($pagina, $cantidad = 10, $estado = NULL)

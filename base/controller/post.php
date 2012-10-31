@@ -231,6 +231,7 @@ class Base_Controller_Post extends Controller {
 
 	/**
 	 * Creamos un nuevo post.
+	 * @param int $post ID del post a editar.
 	 */
 	public function action_editar($post)
 	{
@@ -872,6 +873,10 @@ class Base_Controller_Post extends Controller {
 		Request::redirect('/post/index/'.$model_comentario->post_id);
 	}
 
+	/**
+	 * Editamos un comentario.
+	 * @param int $comentario ID del comentario a editar.
+	 */
 	public function action_editar_comentario($comentario)
 	{
 		// Verificamos usuario logueado.

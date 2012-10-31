@@ -76,6 +76,11 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		$this->connect();
 	}
 
+	/**
+	 * Obtenemos la explicación de una consulta SQL.
+	 * @param string $sql Consulta a explicar.
+	 * @return array
+	 */
 	public function explain_query($sql)
 	{
 		// Realizamos la ejecución.

@@ -1160,8 +1160,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 	/**
 	 * Activamos o desactivamos una noticia.
-	 * @param int $id
-	 * @param int $estado
+	 * @param int $id ID de la noticia a borrar.
 	 */
 	public function action_borrar_noticia($id)
 	{

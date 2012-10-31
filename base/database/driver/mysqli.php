@@ -104,6 +104,11 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		}
 	}
 
+	/**
+	 * Obtenemos la explicación de una consulta SQL.
+	 * @param string $sql Consulta a explicar.
+	 * @return array
+	 */
 	public function explain_query($sql)
 	{
 		// Creamos la consulta.

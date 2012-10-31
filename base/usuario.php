@@ -208,6 +208,9 @@ class Base_Usuario {
 		self::$usuario_id = arr_get($_SESSION, 'usuario_id', NULL);
 	}
 
+	/**
+	 * Inicio la sessión de forma segura.
+	 */
 	private static function start_session()
 	{
 		// Fuerzo inicio de la sessión

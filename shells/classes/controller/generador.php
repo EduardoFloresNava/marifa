@@ -1,9 +1,33 @@
 <?php
+/**
+ * generador.php is part of Marifa.
+ *
+ * Marifa is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Marifa is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
+ * @since		Versión 0.1
+ * @filesource
+ * @package		Marifa\Shell
+ */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Controlador encargador de generar las clases de redundancia de forma automática.
  *
  * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
+ * @since      Versión 0.1
+ * @package    Marifa\Shell
  */
 class Shell_Controller_Generador extends Shell_Controller {
 
@@ -27,6 +51,9 @@ class Shell_Controller_Generador extends Shell_Controller {
 	 */
 	protected $class = __CLASS__;
 
+	/**
+	 * Acción de inicio del controlador.
+	 */
 	public function start()
 	{
 		// Acciones del padre (ayuda y demás).
@@ -80,6 +107,14 @@ class Shell_Controller_Generador extends Shell_Controller {
 		}
 	}
 
+	/**
+	 * Obtenemos el código PHP del archivo a parsear.
+	 * @param string $file Nombre del archivo.
+	 * @param string $class Clase a extender.
+	 * @param string $subpackage Subpaquete del bloque phpdoc.
+	 * @param string $alias Alias de la clase.
+	 * @return bool Resultado de la ejecución.
+	 */
 	protected function make_template($file, $class, $subpackage, $alias)
 	{
 		$t = "<?php
@@ -129,7 +164,6 @@ defined('APP_BASE') || die('No direct access allowed.');
 		{
 			if ( ! file_put_contents($file, $t))
 			{
-				var_dump($file, $t);
 				Shell_Cli::write_line(Shell_Cli::getColoredString("ERROR: $file", 'red'));
 				return FALSE;
 			}
@@ -137,6 +171,11 @@ defined('APP_BASE') || die('No direct access allowed.');
 		return TRUE;
 	}
 
+	/**
+	 * Busqueda recursiva de archivos php a procesar.
+	 * @param string $path Directorio a procesar.
+	 * @return array
+	 */
 	protected function recursive_search($path)
 	{
 		$rst = array(0, 0, 0, 0, 0, 0);
@@ -222,6 +261,11 @@ defined('APP_BASE') || die('No direct access allowed.');
 		return $rst;
 	}
 
+	/**
+	 * Porcesamos un archivo en busca de clases e interfaces.
+	 * @param string $f Archivo a procesar.
+	 * @return array
+	 */
     protected function parse_file($f)
 	{
 		// Buscamos clases en ese archivo.
@@ -395,11 +439,20 @@ defined('APP_BASE') || die('No direct access allowed.');
 		return $class;
 	}
 
+	/**
+	 * Inflector reverso de clases.
+	 * @param string $class Nombre de clasea  transformar.
+	 * @return string
+	 */
 	protected function r_inflector($class)
 	{
 		return strtolower(preg_replace('/\/+/', '/', preg_replace('/\_/', '/', $class)));
 	}
 
+	/**
+	 * Obtenemos un listado de archivos existentes.
+	 * @param string $path Path del que se quieren enumerar los archivos.
+	 */
 	protected function listado_archivos($path)
 	{
 		$lst = scandir($path);

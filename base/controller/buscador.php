@@ -34,7 +34,10 @@ class Base_Controller_Buscador extends Controller {
 
 	/**
 	 * Alias de action_q
-	 * @param string $query Valores a buscar.
+	 * @param string $query Cadena a buscar.
+	 * @param int $pagina Numero de página a mostrar.
+	 * @param string $categoria Nombre de la categoria a utilizar.
+	 * @param string $usuario Nombre del usuario a utilizar.
 	 * @see action_q
 	 * @return mixed
 	 */
@@ -184,6 +187,8 @@ class Base_Controller_Buscador extends Controller {
 
 	/**
 	 * Post con las mismas etiquetas que el selecionado.
+	 * @param int $post ID del post a mostrar relacionados.
+	 * @param int $pagina Número de página a mostrar.
 	 */
 	public function action_relacionados($post, $pagina)
 	{

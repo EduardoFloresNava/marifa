@@ -33,6 +33,11 @@ include(APP_BASE.DS.'base'.DS.'decoda'.DS.'Decoda.'.FILE_EXT);
  */
 class Base_Decoda extends Decoda_Decoda {
 
+	/**
+	 * Contructor de la clase.
+	 * Configuramos Decoda para homogeneizar su comportamiento.
+	 * @param string $string Cadena a procesar.
+	 */
 	public function __construct($string = '')
 	{
 		// Llamamos constructor.
