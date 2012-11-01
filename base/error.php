@@ -249,7 +249,7 @@ class Base_Error {
 	public static function show_error($description, $number = 500, $extended = NULL)
 	{
 		// Cargamos la vista.
-		$view = View::factory();
+		$view = View::factory('internal/error/'.$number);
 
 		// Seteamos entorno
 		$view->assign('debug', self::$debug);
@@ -294,8 +294,15 @@ class Base_Error {
 			$view->assign('descripcion', $description);
 		}
 
+		// Cargo template.
+		$template = View::factory('internal/template');
+
+		// Asigno datos.
+		$template->assign('contenido', $view->parse());
+		$template->assign('number', $number);
+
 		// Mostramos la pantalla de error.
-		$view->draw('internal/error/'.$number);
+		$template->draw();
 
 		// Terminamos la ejecución
 		exit;
@@ -525,18 +532,18 @@ class Base_Error {
 		switch ($error_number)
 		{
 			case E_USER_ERROR:
-				return 'FATAL ERROR: A fatal error has occurred. Please notify the '.'Administrator if it continues.';
+				return 'ERROR FATAL: Se ha producido un error fatal. Informe al administrador para que pueda ser solucionado cuento antes.';
 				break;
 			case E_WARNING:
 			case E_USER_WARNING:
-				return 'WARNING: There is a problem and this program may not work correctly'.' until it is fixed. Please notify the Adminstrator if it continues.';
+				return 'ADVERTENCIA: Se ha producido una falla, el sitio puede no estar funcionando de forma correcta. Si el problema continua, por favor contacte al administrador.';
 				break;
 			case E_NOTICE:
 			case E_USER_NOTICE:
-				return 'NOTICE: There\'s a small issue with the script. Please let the '.'Administrator know about it.';
+				return 'NOTICE: Se ha producido una pequeña falla al procesar la petición, si el problema persiste contacte al administrador.';
 				break;
 			default:
-				return 'An unknown error has occurred. Please notify Administrator of this.';
+				return 'Se ha producido un error al procesar la petición. El administrador del sitio ya ha sido informado del problema.';
 				break;
 		}
 	}

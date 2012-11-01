@@ -174,7 +174,7 @@ class Base_Controller {
 	{
 		if (is_object($this->template) && ! Request::is_ajax() && error_get_last() === NULL)
 		{
-			PRODUCTION || $this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
+			DEBUG || $this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
 			$this->template->show();
 		}
 	}
