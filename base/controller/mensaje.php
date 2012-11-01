@@ -77,7 +77,7 @@ class Base_Controller_Mensaje extends Controller {
 		$view = View::factory('mensaje/index');
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cargamos el listado de mensajes.
 		$model_mensajes = new Model_Mensaje;
@@ -132,7 +132,7 @@ class Base_Controller_Mensaje extends Controller {
 		$view = View::factory('mensaje/enviados');
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cargamos el listado de mensajes.
 		$model_mensajes = new Model_Mensaje;

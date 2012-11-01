@@ -62,7 +62,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		}
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Verifico el tipo de denuncias a mostrar.
 		if ($tipo == 0 || $tipo == 1 || $tipo == 2)
@@ -300,7 +300,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		}
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Verifico el tipo de denuncias a mostrar.
 		if ($tipo == 0 || $tipo == 1 || $tipo == 2)
@@ -537,7 +537,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		}
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Verifico el tipo de denuncias a mostrar.
 		if ($tipo == 0 || $tipo == 1 || $tipo == 2)

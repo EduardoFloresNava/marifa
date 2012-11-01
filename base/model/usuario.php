@@ -640,7 +640,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	{
 		$m_s = new Model_Session;
 		return $m_s->cantidad_usuarios();
-		//return $this->db->query('SELECT COUNT(*) FROM usuario WHERE UNIX_TIMESTAMP(lastactive) > ?', (time() - 60))->get_var(Database_Query::FIELD_INT);
+		// return $this->db->query('SELECT COUNT(*) FROM usuario WHERE UNIX_TIMESTAMP(lastactive) > ?', (time() - 60))->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -650,7 +650,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_mensajes_nuevos()
 	{
-		$m = new Model_Mensaje();
+		$m = new Model_Mensaje;
 		return $m->total_recibidos($this->primary_key['id'], Model_Mensaje::ESTADO_NUEVO);
 	}
 

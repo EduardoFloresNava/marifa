@@ -115,7 +115,8 @@ class Shell_Cli {
 			self::write(": ");
 		}
 
-		while(true) {
+		while (TRUE)
+		{
 			$v = self::read_line();
 
 			if (empty($v))
@@ -136,8 +137,10 @@ class Shell_Cli {
 			{
 				if (is_array($options))
 				{
-					foreach($options as $o) {
-						if ($o == $v) {
+					foreach ($options as $o)
+					{
+						if ($o == $v)
+						{
 							return $v;
 						}
 					}
@@ -145,7 +148,8 @@ class Shell_Cli {
 				}
 				else
 				{
-					if ($options == $v) {
+					if ($options == $v)
+					{
 						return $v;
 					}
 					else
@@ -178,7 +182,7 @@ class Shell_Cli {
 	 * @param int $total Cantidad total.
 	 * @param string $label Etiqueta de descripción del progreso.
 	 */
-	public static function progressBar($current, $total, $label)
+	public static function progress_bar($current, $total, $label)
 	{
 	    $percent = round($current / $total * 100);
 	    if ($current == 0)
@@ -187,7 +191,7 @@ class Shell_Cli {
 			{
 				self::write_line("Progress: ");
 			}
-	    	else if ($label != "none")
+	    	elseif ($label != "none")
 			{
 	        	self::write_line($label);
 			}
@@ -231,7 +235,7 @@ class Shell_Cli {
 
 	    $opts = array_map(create_function('$str', 'return chr(ord("a")+$str);'), array_keys($options));
 
-        foreach($options as $k => $m)
+        foreach ($options as $k => $m)
         {
             $l = chr(ord('a')+$k);
             self::write("\t$l - $m\n");
@@ -306,7 +310,7 @@ class Shell_Cli {
 	 * Realizamos el parseado de argumentos.
 	 * @param array $argv Cadena a parsear.
 	 */
-	public static function parseArgs($argv)
+	public static function parse_args($argv)
 	{
 		array_shift($argv);
 		$o = array();
@@ -315,7 +319,7 @@ class Shell_Cli {
 			if (substr($a,0,2) == '--')
 			{
 				$eq = strpos($a,'=');
-				if ($eq !== false)
+				if ($eq !== FALSE)
 				{
 					$o[substr($a,2,$eq-2)] = substr($a,$eq+1);
 				}
@@ -324,11 +328,11 @@ class Shell_Cli {
 					$k = substr($a,2);
 					if ( ! isset($o[$k]))
 					{
-						$o[$k] = true;
+						$o[$k] = TRUE;
 					}
 				}
 			}
-			else if (substr($a,0,1) == '-')
+			elseif (substr($a,0,1) == '-')
 			{
 				if (substr($a,2,1) == '=')
 				{
@@ -340,7 +344,7 @@ class Shell_Cli {
 					{
 						if ( ! isset($o[$k]))
 						{
-							$o[$k] = true;
+							$o[$k] = TRUE;
 						}
 					}
 				}
@@ -358,15 +362,15 @@ class Shell_Cli {
 	 * @param array $argv Arreglo con la lista de parámetros.
 	 * @return int|bool Falso si no esta presente o un entero con la cantidad.
 	 */
-	public function getDebugMode($argv)
+	public function get_debug_mode($argv)
 	{
 		// Quitamos el primer valor.
 		array_shift($argv);
 
 		// Procesamos la lista.
-		foreach($argv as $arg)
+		foreach ($argv as $arg)
 		{
-			if (preg_match('/^[\-]{1,2}[v]+$/', $arg))
+			if (preg_match('/^[\-]{1,2}[v]+$/D', $arg))
 			{
 				return strlen(trim($arg, '-'));
 			}
@@ -381,21 +385,23 @@ class Shell_Cli {
 	 * @param string $background_color Color de fondo.
 	 * @return string
 	 */
-	public static function getColoredString($string, $foreground_color = null, $background_color = null)
+	public static function get_colored_string($string, $foreground_color = NULL, $background_color = NULL)
 	{
 		$colored_string = "";
 
 		// Check if given foreground color found
-		if (isset(self::$foreground_colors[$foreground_color])) {
-			$colored_string .= "\033[" . self::$foreground_colors[$foreground_color] . "m";
+		if (isset(self::$foreground_colors[$foreground_color]))
+		{
+			$colored_string .= "\033[".self::$foreground_colors[$foreground_color]."m";
 		}
 		// Check if given background color found
-		if (isset(self::$background_colors[$background_color])) {
-			$colored_string .= "\033[" . self::$background_colors[$background_color] . "m";
+		if (isset(self::$background_colors[$background_color]))
+		{
+			$colored_string .= "\033[".self::$background_colors[$background_color]."m";
 		}
 
 		// Add string and end coloring
-		$colored_string .=  $string . "\033[0m";
+		$colored_string .=  $string."\033[0m";
 
 		return $colored_string;
 	}
@@ -404,7 +410,7 @@ class Shell_Cli {
 	 * Returns all foreground color names
 	 * @return array
 	 */
-	public static function getForegroundColors()
+	public static function get_foreground_colors()
 	{
 		return array_keys(self::$foreground_colors);
 	}
@@ -413,7 +419,7 @@ class Shell_Cli {
 	 * Returns all background color names
 	 * @return array
 	 */
-	public static function getBackgroundColors()
+	public static function get_background_colors()
 	{
 		return array_keys(self::$background_colors);
 	}

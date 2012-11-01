@@ -93,8 +93,8 @@ class Shell_Controller_Generador extends Shell_Controller {
 				$tail = "CORRECTAMENTE\n{$rst[1+$v]} $n CON ERRORES\n";
 			}
 
-			$p = $rst[2+$v] > 1 ? 'PROCESADAS' : 'PROCESADA';
-			$nn = $rst[2+$v] > 1 ? $n : substr($n, 0, -1);
+			$p = ($rst[2+$v] > 1) ? 'PROCESADAS' : 'PROCESADA';
+			$nn = ($rst[2+$v] > 1) ? $n : substr($n, 0, -1);
 
 			if ($rst[0+$v] == 0)
 			{
@@ -149,8 +149,8 @@ defined('APP_BASE') || die('No direct access allowed.');
 
 		$t = str_replace('{{DECLARACION}}', $class, $t);
 		$t = str_replace('{{BASE_CLASS_NAME}}', $alias, $t);
-		$t = str_replace('{{SUBPACKAGE1}}', trim($subpackage) == '' ? '' : "\n * @subpackage  $subpackage", $t);
-		$t = str_replace('{{SUBPACKAGE2}}', trim($subpackage) == '' ? '' : "\n * @subpackage $subpackage", $t);
+		$t = str_replace('{{SUBPACKAGE1}}', (trim($subpackage) == '') ? '' : "\n * @subpackage  $subpackage", $t);
+		$t = str_replace('{{SUBPACKAGE2}}', (trim($subpackage) == '') ? '' : "\n * @subpackage $subpackage", $t);
 		$t = str_replace('{{FILE}}', basename($file), $t);
 
 		// Creamos el path.
@@ -164,7 +164,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 		{
 			if ( ! file_put_contents($file, $t))
 			{
-				Shell_Cli::write_line(Shell_Cli::getColoredString("ERROR: $file", 'red'));
+				Shell_Cli::write_line(Shell_Cli::get_colored_string("ERROR: $file", 'red'));
 				return FALSE;
 			}
 		}
@@ -181,7 +181,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 		$rst = array(0, 0, 0, 0, 0, 0);
 
 		$dirs = scandir($path);
-		foreach($dirs as $dir)
+		foreach ($dirs as $dir)
 		{
 			if ($dir == '.' || $dir == '..')
 			{
@@ -203,7 +203,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 			if (is_dir($path.DS.$dir))
 			{
 				$r = $this->recursive_search($path.DS.$dir);
-				foreach($r as $k => $v)
+				foreach ($r as $k => $v)
 				{
 					$rst[$k] += $v;
 				}
@@ -216,7 +216,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 			}
 
 			$r = $this->parse_file($path.DS.$dir);
-			foreach($r as $k => $v)
+			foreach ($r as $k => $v)
 			{
 				$rst[$k] += $v;
 			}
@@ -235,7 +235,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 
 		$rst = TRUE;
 
-		foreach($lst as $file)
+		foreach ($lst as $file)
 		{
 			if ($file === '.' || $file === '..')
 			{
@@ -269,13 +269,13 @@ defined('APP_BASE') || die('No direct access allowed.');
     protected function parse_file($f)
 	{
 		// Buscamos clases en ese archivo.
-		//echo "BUSCANDO CLASES EN: $f:\n";
+		// echo "BUSCANDO CLASES EN: $f:\n";
 		$cl = $this->find_clases($f);
 
 		$rst = array(0, 0, 0, 0, 0, 0);
 
 		// Procesamos las clases.
-		foreach($cl['clases'] as $c)
+		foreach ($cl['clases'] as $c)
 		{
 			// Nombre y tipo de la clase.
 			if (is_array($c))
@@ -302,7 +302,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 			else
 			{
 				$s_p = substr(dirname($class_name), strlen($this->p_dir));
-				$s_p = preg_replace('/([\/])\s*(\w)/e', "strtoupper('\\1\\2')", ucfirst(strtolower($s_p)));
+				$s_p = preg_replace('/([\/])\s*(\w)/e', 'strtoupper($1$2)', ucfirst(strtolower($s_p)));
 				$s_p = preg_replace('/[\/]+/', '\\', $s_p);
 			}
 
@@ -329,14 +329,14 @@ defined('APP_BASE') || die('No direct access allowed.');
 
 
 		// Procesamos las interfaces.
-		foreach($cl['interfaces'] as $c)
+		foreach ($cl['interfaces'] as $c)
 		{
 			// Generamos el nombre del archivo.
 			$class_name = $this->p_dir.$this->r_inflector($c).'.php';
 
 			// Subpackage.
 			$s_p = substr(dirname($class_name), strlen($this->p_dir));
-			$s_p = preg_replace('/([\/])\s*(\w)/e', "strtoupper('\\1\\2')", ucfirst(strtolower($s_p)));
+			$s_p = preg_replace('/([\/])\s*(\w)/e', 'strtoupper($1$2)', ucfirst(strtolower($s_p)));
 			$s_p = preg_replace('/[\/]+/', '\\', $s_p);
 
 			$l = "interface $c extends Base_$c {}";
@@ -423,10 +423,10 @@ defined('APP_BASE') || die('No direct access allowed.');
 		$class = str_replace('.php', '', $class);
 
 		// Aplicamos CamelCase
-		for($i = 0; $i < strlen($class); $i++)
+		for ($i = 0; $i < strlen($class); $i++)
 		{
 			// Despues de _ Mayuscula.
-			if($class{$i} == '_')
+			if ($class{$i} == '_')
 			{
 				$class{$i+1} = strtoupper($class{$i+1});
 			}
@@ -457,7 +457,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 	{
 		$lst = scandir($path);
 
-		foreach($lst as $file)
+		foreach ($lst as $file)
 		{
 			if ($file === '.' || $file === '..')
 			{

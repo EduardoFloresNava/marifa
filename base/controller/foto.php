@@ -65,7 +65,7 @@ class Base_Controller_Foto extends Controller {
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cargamos el listado de fotos.
 		$model_fotos = new Model_Foto;
@@ -153,7 +153,7 @@ class Base_Controller_Foto extends Controller {
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cargamos el listado de fotos.
 		$model_fotos = new Model_Foto;
@@ -445,7 +445,7 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Verifico esté conectado.
-		if( ! Usuario::is_login())
+		if ( ! Usuario::is_login())
 		{
 			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder realizar comentarios.';
 			Request::redirect('/usuario/login');
@@ -861,7 +861,7 @@ class Base_Controller_Foto extends Controller {
 				$model_categorias->load_by_seo($categoria);
 
 				//TODO: implementar en revisión.
-				//$estado = Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_REVISAR_CONTENIDO) ? Model_Foto::ESTADO_OCULTA : Model_Foto::ESTADO_ACTIVA;
+				// $estado = Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_REVISAR_CONTENIDO) ? Model_Foto::ESTADO_OCULTA : Model_Foto::ESTADO_ACTIVA;
 				$estado = Model_Foto::ESTADO_ACTIVA;
 
 				$model_foto = new Model_Foto;
@@ -1107,7 +1107,7 @@ class Base_Controller_Foto extends Controller {
 					'titulo' => $titulo,
 					'descripcion' => $descripcion,
 					'comentar' => $comentarios,
-					'visitas' => $visitantes ? ($model_foto->visitas !== NULL ? $model_foto->visitas : 0) : NULL,
+					'visitas' => $visitantes ? (($model_foto->visitas !== NULL) ? ($model_foto->visitas) : 0) : NULL,
 				);
 
 				// Actualizo los datos.
@@ -1178,7 +1178,7 @@ class Base_Controller_Foto extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_ocultar', $foto, Usuario::$usuario_id, $n_estado == Model_Foto::ESTADO_OCULTA ? 0 : 1);
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_ocultar', $foto, Usuario::$usuario_id, ($n_estado == Model_Foto::ESTADO_OCULTA) ? 0 : 1);
 
 		// Informo el resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';

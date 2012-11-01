@@ -75,7 +75,7 @@ class Base_Controller_Favoritos extends Controller {
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cargamos el listado de favoritos.
 		$favoritos = Usuario::usuario()->listado_posts_favoritos($pagina, $cantidad_por_pagina);
@@ -127,7 +127,7 @@ class Base_Controller_Favoritos extends Controller {
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cargamos el listado de favoritos.
 		$favoritos = Usuario::usuario()->listado_fotos_favoritos($pagina, $cantidad_por_pagina);

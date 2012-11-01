@@ -113,10 +113,10 @@ class Installer_Controller {
 		$steps[] = array('caption' => 'Configuraciones');
 
 		// Cache.
-		//$steps[] = array('caption' => 'Cache');
+		// $steps[] = array('caption' => 'Cache');
 
 		// Imagenes.
-		//$steps[] = array('caption' => 'Imagenes');
+		// $steps[] = array('caption' => 'Imagenes');
 
 		// Final.
 		$steps[] = array('caption' => 'Terminación');
@@ -412,7 +412,7 @@ class Installer_Controller {
 				file_put_contents(CONFIG_PATH.DS.'database.php', $tmp);
 
 				// Intento conectar.
-				if($this->check_database())
+				if ($this->check_database())
 				{
 					// Seteo el paso como terminado.
 					if ($_SESSION['step'] < 3)
@@ -640,7 +640,7 @@ class Installer_Controller {
 		$model_configuracion = new Model_Configuracion;
 
 		// Datos por defecto.
-		foreach(array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
+		foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
 		{
 			$vista->assign($v, '');
 			$vista->assign('error_'.$v, FALSE);
@@ -649,7 +649,7 @@ class Installer_Controller {
 		if (Request::method() == 'POST')
 		{
 			// Cargo los valores.
-			foreach(array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
+			foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
 			{
 				$$v = isset($_POST[$v]) ? trim($_POST[$v]) : '';
 			}
@@ -659,7 +659,7 @@ class Installer_Controller {
 			$descripcion = preg_replace('/\s+/', ' ', $_POST['descripcion']);
 
 			// Seteo nuevos valores a las vistas.
-			foreach(array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
+			foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
 			{
 				$vista->assign($v, $$v);
 			}

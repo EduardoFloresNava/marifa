@@ -80,7 +80,7 @@ class Base_Controller_Tops extends Controller {
 		}
 
 		// Verifico si existe la categoria.
-		$categoria = trim($categoria) == '' ? NULL : trim($categoria);
+		$categoria = (trim($categoria) == '') ? NULL : trim($categoria);
 		if ($categoria !== NULL && $categoria != 'todas')
 		{
 			if ( ! $model_categorias->load_by_seo($categoria))
@@ -155,7 +155,7 @@ class Base_Controller_Tops extends Controller {
 		}
 
 		// Verifico si existe la categoria.
-		$categoria = trim($categoria) == '' ? NULL : trim($categoria);
+		$categoria = (trim($categoria) == '') ? NULL : trim($categoria);
 		if ($categoria !== NULL && $categoria != 'todas')
 		{
 			if ( ! $model_categorias->load_by_seo($categoria))

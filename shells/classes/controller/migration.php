@@ -81,7 +81,7 @@ class Shell_Controller_Migration extends Shell_Controller {
 				}
 				catch (Database_Exception $e)
 				{
-					Shell_Cli::write_line(Shell_Cli::getColoredString('Error ', 'red').$e->getCode().': '.$e->getMessage());
+					Shell_Cli::write_line(Shell_Cli::get_colored_string('Error ', 'red').$e->getCode().': '.$e->getMessage());
 				}
 
 				// Obtenemos las faltantes.
@@ -95,18 +95,18 @@ class Shell_Controller_Migration extends Shell_Controller {
 						Shell_Cli::write('Aplicando migracion '.$f.'... ');
 						if (Shell_Migraciones::migrar($f))
 						{
-							Shell_Cli::write_line(Shell_Cli::getColoredString('OK', 'green'));
+							Shell_Cli::write_line(Shell_Cli::get_colored_string('OK', 'green'));
 						}
 					}
 					catch (Exception $e)
 					{
-						Shell_Cli::write_line(Shell_Cli::getColoredString('ERROR ', 'red').$e->getCode().': '.$e->getMessage());
+						Shell_Cli::write_line(Shell_Cli::get_colored_string('ERROR ', 'red').$e->getCode().': '.$e->getMessage());
 						die();
 					}
 				}
 
 				// Informamos que todo fue correcto.
-				Shell_Cli::write_line(Shell_Cli::getColoredString('Migraciones aplicadas correctamente.', 'green'));
+				Shell_Cli::write_line(Shell_Cli::get_colored_string('Migraciones aplicadas correctamente.', 'green'));
 				break;
 			case 'status':
 			default:
@@ -119,7 +119,7 @@ class Shell_Controller_Migration extends Shell_Controller {
 				}
 				catch (Database_Exception $e)
 				{
-					Shell_Cli::write_line(Shell_Cli::getColoredString('Error ', 'red').$e->getCode().': '.$e->getMessage());
+					Shell_Cli::write_line(Shell_Cli::get_colored_string('Error ', 'red').$e->getCode().': '.$e->getMessage());
 				}
 
 				// Obtenemos las pentientes.
@@ -167,9 +167,9 @@ class Shell_Controller_Migration extends Shell_Controller {
 		}
 		catch (Database_Exception $e)
 		{
-			Shell_Cli::write_line(Shell_Cli::getColoredString('Error ', 'red').$e->getCode().': '.$e->getMessage());
+			Shell_Cli::write_line(Shell_Cli::get_colored_string('Error ', 'red').$e->getCode().': '.$e->getMessage());
 		}
-		Shell_Cli::write_line('Conección DB: '.Shell_Cli::getColoredString('OK', 'green'));
+		Shell_Cli::write_line('Conección DB: '.Shell_Cli::get_colored_string('OK', 'green'));
 
 		// Intentamos crear la tabla de migraciones.
 		try {
@@ -177,7 +177,7 @@ class Shell_Controller_Migration extends Shell_Controller {
 		}
 		catch (Database_Exception $e)
 		{
-			Shell_Cli::write_line(Shell_Cli::getColoredString('Error ', 'red').$e->getCode().': '.$e->getMessage());
+			Shell_Cli::write_line(Shell_Cli::get_colored_string('Error ', 'red').$e->getCode().': '.$e->getMessage());
 		}
 	}
 

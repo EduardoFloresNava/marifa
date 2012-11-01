@@ -103,14 +103,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 	public function action_posts($pagina, $tipo)
 	{
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina > 0) ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
 		$model_configuracion = new Model_Configuracion;
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Verifico el tipo de fotos a mostrar.
-		$tipo = $tipo === NULL ? NULL : (int) $tipo;
+		$tipo = ($tipo === NULL) ? NULL : ( (int) $tipo);
 		if ($tipo === 0)
 		{
 			$tipo = array('activo', 0);
@@ -146,7 +146,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/posts');
-		$vista->assign('tipo', $tipo[1] == NULL ? 7 : $tipo[1]);
+		$vista->assign('tipo', ($tipo[1] == NULL) ? 7 : ($tipo[1]));
 
 		// Modelo de posts.
 		$model_posts = new Model_Post;
@@ -238,7 +238,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 			// Obtenemos los campos.
 			$tipo = isset($_POST['tipo']) ? (int) $_POST['tipo'] : NULL;
 			$razon = isset($_POST['razon']) ? preg_replace('/\s+/', ' ', trim($_POST['razon'])) : NULL;
-			$borrador = isset($_POST['borrador']) ? $_POST['borrador'] == 1 : FALSE;
+			$borrador = isset($_POST['borrador']) ? ($_POST['borrador'] == 1) : FALSE;
 
 			// Valores para cambios.
 			$vista->assign('tipo', $tipo);
@@ -320,10 +320,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 		switch ($model_post->estado)
 		{
 			case 0: // Activo
-				if ($estado == 2) // Borrar.
+				if ($estado == Model_Post::ESTADO_BORRADO)
 				{
+					// Borramos.
+
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
@@ -333,10 +335,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 					$_SESSION['flash_success'] = 'El post se a eliminado correctamente.';
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 4) // Ocultar
+				elseif ($estado == Model_Post::ESTADO_OCULTO)
 				{
+					// Ocultamos.
+
 					// Actualizo el estado.
-					$model_post->actualizar_estado(4);
+					$model_post->actualizar_estado(Model_Post::ESTADO_OCULTO);
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
@@ -346,8 +350,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 5) // Rechazar.
+				elseif ($estado == 5)
 				{
+					// Rechazamos.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(5);
 
@@ -359,8 +365,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 6) // Enviar a la papelera.
+				elseif ($estado == 6)
 				{
+					// Enviamos a la papelera.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(6);
 
@@ -380,8 +388,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 				}
 				break;
 			case 1: // Borrador
-				if ($estado == 2) // Borrar.
+				if ($estado == 2)
 				{
+					// Borramos.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
 
@@ -406,8 +416,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 				Request::redirect('/admin/contenido/posts');
 				break;
 			case 3: // Pendiente
-				if ($estado == 0) // Aprobar.
+				if ($estado == 0)
 				{
+					// Aprobamos.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(0);
 
@@ -419,8 +431,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 5) // Rechazar
+				elseif ($estado == 5)
 				{
+					// Rechazamos.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(5);
 
@@ -432,8 +446,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2) // Borrar.
+				elseif ($estado == 2)
 				{
+					// Borramos.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
 
@@ -453,8 +469,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 				}
 				break;
 			case 4: // Oculto
-				if ($estado == 0) // Mostrar.
+				if ($estado == 0)
 				{
+					// Mostrar.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(0);
 
@@ -466,8 +484,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2) // Borrar.
+				elseif ($estado == 2)
 				{
+					// Borramos.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
 
@@ -487,8 +507,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 				}
 				break;
 			case 5: // Rechazado
-				if ($estado == 0) // Aprobar.
+				if ($estado == 0)
 				{
+					// Aprobamos.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(0);
 
@@ -500,8 +522,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2) // Borrar.
+				elseif ($estado == 2)
 				{
+					// Borramos.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
 
@@ -521,8 +545,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 				}
 				break;
 			case 6: // Papelera
-				if ($estado == 0) // Restaurar.
+				if ($estado == 0)
 				{
+					// Restauramos.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(0);
 
@@ -534,8 +560,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 					$_SESSION['flash_success'] = 'Actualización correcta.';
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2) // Borrar.
+				elseif ($estado == 2)
 				{
+					// Borramos.
+
 					// Actualizo el estado.
 					$model_post->actualizar_estado(2);
 
@@ -565,7 +593,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 	public function action_fotos($pagina, $tipo)
 	{
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Verifico el tipo de fotos a mostrar.
 		switch ($tipo)
@@ -593,7 +621,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/fotos');
-		$vista->assign('tipo', $tipo[1] === NULL ? 4 : $tipo[1]);
+		$vista->assign('tipo', ($tipo[1] === NULL) ? 4 : $tipo[1]);
 
 		// Modelo de fotos.
 		$model_fotos = new Model_Foto;
@@ -1007,7 +1035,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 	public function action_noticias($pagina)
 	{
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
 		$model_configuracion = new Model_Configuracion;
@@ -1077,7 +1105,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$contenido = isset($_POST['contenido']) ? $_POST['contenido'] : NULL;
 
 			// Obtenemos estado por defecto.
-			$visible = isset($_POST['visible']) ? $_POST['visible'] == 1 : FALSE;
+			$visible = isset($_POST['visible']) ? ($_POST['visible'] == 1) : FALSE;
 
 			// Quitamos BBCode para dimenciones.
 			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
@@ -1128,20 +1156,22 @@ class Base_Controller_Admin_Contenido extends Controller {
 	 */
 	public function action_estado_noticia($id, $estado)
 	{
+		$id = (int) $id;
+
 		// Cargamos el modelo de noticia.
-		$model_noticia = new Model_Noticia( (int) $id);
+		$model_noticia = new Model_Noticia($id);
 		if ($model_noticia->existe())
 		{
 			$estado = (bool) $estado;
 			if ($estado)
 			{
 				$model_noticia->activar();
-				$_SESSION['flash_success'] = 'Se habilitó correctamente la noticia #'. (int) $id;
+				$_SESSION['flash_success'] = 'Se habilitó correctamente la noticia #'.$id;
 			}
 			else
 			{
 				$model_noticia->desactivar();
-				$_SESSION['flash_success'] = 'Se ocultó correctamente la noticia #'. (int) $id;
+				$_SESSION['flash_success'] = 'Se ocultó correctamente la noticia #'.$id;
 			}
 		}
 		Request::redirect('/admin/contenido/noticias');
@@ -1164,13 +1194,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 	 */
 	public function action_borrar_noticia($id)
 	{
+		$id = (int) $id;
 		// Cargamos el modelo de noticia.
-		$model_noticia = new Model_Noticia( (int) $id);
+		$model_noticia = new Model_Noticia($id);
 		if ($model_noticia->existe())
 		{
 			// Borramos la noticia.
 			$model_noticia->eliminar();
-			$_SESSION['flash_success'] = 'Se borró correctamente la noticia #'. (int) $id;
+			$_SESSION['flash_success'] = 'Se borró correctamente la noticia #'.$id;
 		}
 		Request::redirect('/admin/contenido/noticias');
 	}

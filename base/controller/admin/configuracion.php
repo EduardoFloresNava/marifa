@@ -277,7 +277,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 			// Verifico cada uno de los IP's.
 			$error = FALSE;
-			foreach($ips as $k => $ip)
+			foreach ($ips as $k => $ip)
 			{
 				$ip = trim($ip);
 				$ips[$k] = $ip;
@@ -568,7 +568,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				$file = $_FILES['plugin'];
 
 				// Verifico el estado.
-				if($file['error'] !== UPLOAD_ERR_OK)
+				if ($file['error'] !== UPLOAD_ERR_OK)
 				{
 					$error = TRUE;
 					switch ($file['error'])
@@ -915,7 +915,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				$file = $_FILES['theme'];
 
 				// Verifico el estado.
-				if($file['error'] !== UPLOAD_ERR_OK)
+				if ($file['error'] !== UPLOAD_ERR_OK)
 				{
 					$error = TRUE;
 					switch ($file['error'])
@@ -1059,7 +1059,6 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				}
 				else
 				{
-					//die();
 					// Limpio directorios.
 					Update_Utils::unlink($file['tmp_name']);
 					Update_Utils::unlink($tmp_dir);

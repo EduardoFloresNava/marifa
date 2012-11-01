@@ -118,14 +118,14 @@ class Base_Usuario {
 	{
 		if ( ! isset(self::$usuario))
 		{
-			self::$usuario = self::is_login() ? new Model_Usuario(self::$usuario_id) : FALSE;
+			(self::$usuario = self::is_login()) ? ( new Model_Usuario(self::$usuario_id)) : FALSE;
 		}
 		return self::$usuario;
 	}
 
 	/**
 	 * Verificamos si el usuario tiene el permiso asociado.
-	 * @param int|array Permiso o listado de permisos a comprobar. Si se pasa un
+	 * @param int|array $permiso Permiso o listado de permisos a comprobar. Si se pasa un
 	 * listado, con la existencia de 1 es TRUE.
 	 * @return bool
 	 */

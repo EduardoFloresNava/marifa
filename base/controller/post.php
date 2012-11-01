@@ -1665,7 +1665,7 @@ class Base_Controller_Post extends Controller {
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
 
 				// Verifico si es borrador.
-				$borrador = isset($_POST['submit']) ? $_POST['submit'] == 'borrador' : FALSE;
+				$borrador = isset($_POST['submit']) ? ($_POST['submit'] == 'borrador') : FALSE;
 
 				// Obtengo el estado a aplicar.
 				if ($borrador)

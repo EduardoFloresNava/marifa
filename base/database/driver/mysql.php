@@ -179,7 +179,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	{
 		if ($this->is_connected() === FALSE)
 		{
-			$this->conn = @mysql_connect($this->host, $this->user, $this->pass) OR $error = mysql_error();
+			$this->conn = @mysql_connect($this->host, $this->user, $this->pass) || $error = mysql_error();
 			if ($this->conn === FALSE || isset($error))
 			{
 				$e = new Database_Exception(mysql_error(), mysql_errno());
@@ -275,9 +275,9 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			$rst = mysql_query($query, $this->conn);
-			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($rst === TRUE)
 			{
@@ -317,9 +317,9 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			$rst = mysql_query($query, $this->conn);
-			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($rst === TRUE)
 			{
@@ -356,9 +356,9 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			$rst = mysql_query($query, $this->conn);
-			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($rst === TRUE)
 			{

@@ -176,7 +176,7 @@ class Base_Model_Post_Moderado extends Model_Dataset {
 	 * @param int $post ID del post a moderar.
 	 * @param int $usuario ID del usuario que realiza la moderación.
 	 * @param int $tipo Tipo de motivo de la moderación realizada.
-	 * @param int i$padre ID del post borrador creado como resultado de la moderación.
+	 * @param int $padre ID del post borrador creado como resultado de la moderación.
 	 * @param string $razon Motivo para el tipo personalizado.
 	 * @return bool
 	 */

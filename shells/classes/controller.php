@@ -84,7 +84,7 @@ class Shell_Controller {
 		if (is_array($this->lines) && count($this->lines) > 0)
 		{
 			Shell_Cli::write_line('Usage: ');
-			foreach($this->lines as $line)
+			foreach ($this->lines as $line)
 			{
 				Shell_Cli::write_line("  php $script $command $line");
 			}

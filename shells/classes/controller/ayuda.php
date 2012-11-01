@@ -68,13 +68,13 @@ class Shell_Controller_Ayuda extends Shell_Controller {
 		Shell_Cli::write_line('');
 		Shell_Cli::write_line('Listado de comandos:');
 
-		//Cargamos la lista de controladores.
+		// Cargamos la lista de controladores.
 		$c_list = scandir(dirname(__FILE__));
 
-		//Inicializamos la lista de comandos.
+		// Inicializamos la lista de comandos.
 		$command_list = array();
 
-		foreach($c_list as $cl)
+		foreach ($c_list as $cl)
 		{
 			if ($cl == '.' || $cl == '..' || $cl == 'ayuda.php' || ! is_file(dirname(__FILE__).'/'.$cl))
 			{
@@ -135,7 +135,7 @@ class Shell_Controller_Ayuda extends Shell_Controller {
 		}
 
 		// Imprimimos la lista de comandos.
-		foreach($command_list as $c)
+		foreach ($command_list as $c)
 		{
 			Shell_Cli::write_line(sprintf('  %-15.13s%s', $c->name, $c->descripcion));
 		}

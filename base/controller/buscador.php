@@ -131,7 +131,7 @@ class Base_Controller_Buscador extends Controller {
 			$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 			// Formato de la página.
-			$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+			$pagina = ( (int) $pagina > 0) ? ( (int) $pagina) : 1;
 
 			// Realizamos la busqueda.
 			$model_post = new Model_Post;
@@ -208,7 +208,7 @@ class Base_Controller_Buscador extends Controller {
 		$vista = View::factory('buscador/index');
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
 		$model_configuracion = new Model_Configuracion;

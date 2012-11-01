@@ -60,7 +60,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		}
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
 		$model_configuracion = new Model_Configuracion;

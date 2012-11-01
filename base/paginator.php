@@ -150,7 +150,7 @@ class Base_Paginator {
 	/**
 	 * Obtenemos la vista por defecto del paginador.
 	 * @param int $pagina Numero de página actual.
-	 * @param string URL de la paginación.
+	 * @param string $url URL de la paginación.
 	 * @return string
 	 */
 	public function get_view($pagina, $url)

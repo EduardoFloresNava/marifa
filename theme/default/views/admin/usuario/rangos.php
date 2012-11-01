@@ -35,7 +35,7 @@
 				</div>
 			</td>
 			<td>{$value.nombre}</td>
-			<td><span style="color: #{function="sprintf('%06s', dechex($value.color))"}; background-color: #{function="Utils::getContrastYIQ(sprintf('%06s', dechex($value.color)))"};">#{function="strtoupper(sprintf('%06s', dechex($value.color)))"}</span></td>
+			<td><span style="color: #{function="sprintf('%06s', dechex($value.color))"}; background-color: #{function="Utils::get_contrast_yiq(sprintf('%06s', dechex($value.color)))"};">#{function="strtoupper(sprintf('%06s', dechex($value.color)))"}</span></td>
 			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /></td>
 			<td>
 				<div class="btn-group">

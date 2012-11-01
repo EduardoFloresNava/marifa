@@ -62,7 +62,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		}
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// 0: Pendiente y Rechazado.
 		// 1: Pendiente.
@@ -92,7 +92,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$model_post = new Model_Post;
 
 		// Cargamos el listado de posts.
-		$lst = $model_post->listado($pagina, $cantidad_por_pagina, $tipo == 0 ? array(Model_Post::ESTADO_PENDIENTE, Model_Post::ESTADO_RECHAZADO) : ($tipo == 1 ? Model_Post::ESTADO_PENDIENTE : Model_Post::ESTADO_RECHAZADO));
+		$lst = $model_post->listado($pagina, $cantidad_por_pagina, ($tipo == 0) ? array(Model_Post::ESTADO_PENDIENTE, Model_Post::ESTADO_RECHAZADO) : (($tipo == 1) ? Model_Post::ESTADO_PENDIENTE : Model_Post::ESTADO_RECHAZADO));
 
 		if (count($lst) == 0 && $pagina != 1)
 		{
@@ -111,7 +111,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$vista->assign('actual', $pagina);
 
 		// Paginación.
-		$total = $tipo == 0 ? $c_total : ($tipo == 1 ? $c_pendientes : $c_rechazados);
+		$total = ($tipo == 0) ? $c_total : (($tipo == 1) ? $c_pendientes : $c_rechazados);
 		$paginador = new Paginator($total, $cantidad_por_pagina);
 		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/desaprobado/posts/%s/'.$tipo));
 
@@ -255,7 +255,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		}
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// 0: Posts y fotos
 		// 1: Fotos.
@@ -333,7 +333,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$vista->assign('actual', $pagina);
 
 		// Paginación.
-		$total = $tipo == 0 ? $c_total : ($tipo == 1 ? $c_foto : $c_post);
+		$total = ($tipo == 0) ? $c_total : (($tipo == 1) ? $c_foto : $c_post);
 		$paginador = new Paginator($total, $cantidad_por_pagina);
 		$vista->assign('paginacion', $paginador->get_view($pagina, '/moderar/desaprobado/comentario/%s/'.$tipo));
 
@@ -422,7 +422,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id),	$tipo == 1 ? 'post_comentario_mostrar' : 'foto_comentario_mostrar', $model_comentario->id, Usuario::$usuario_id);
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id), ($tipo == 1) ? 'post_comentario_mostrar' : 'foto_comentario_mostrar', $model_comentario->id, Usuario::$usuario_id);
 
 		// Informamos resultado.
 		$_SESSION['flash_success'] = 'El comentario se ha aprobado correctamente.';
@@ -481,7 +481,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id), $tipo == 1 ? 'post_comentario_borrar' : 'foto_comentario_borrar', $model_comentario->id, Usuario::$usuario_id);
+		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id), ($tipo == 1) ? 'post_comentario_borrar' : 'foto_comentario_borrar', $model_comentario->id, Usuario::$usuario_id);
 
 		// Informo el resultado.
 		$_SESSION['flash_success'] = 'El comentario se ha eliminado correctamente.';

@@ -95,11 +95,11 @@ define('THEME_URL', SITE_URL.VIEW_PATH.THEME);
 Error::get_instance()->start(DEBUG);
 
 // Database profiler.
-PRODUCTION OR Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
+PRODUCTION || Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
 
-PRODUCTION OR Profiler_Profiler::get_instance()->log_memory('Framework memory');
+PRODUCTION || Profiler_Profiler::get_instance()->log_memory('Framework memory');
 
 // Cargamos el despachador y damos el control al controlador correspondiente.
 Installer_Dispatcher::dispatch();
 
-PRODUCTION OR Profiler_Profiler::get_instance()->display();
+PRODUCTION || Profiler_Profiler::get_instance()->display();

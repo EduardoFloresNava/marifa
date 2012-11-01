@@ -224,19 +224,19 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
-		PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+		PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
 		// Ejecutamos la consulta.
 		if ($sth->execute())
 		{
 			$rst = $sth->get_result();
-			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			// Generamos un objeto para dar compatibilidad al resto de motores.
 			return new Database_Driver_Mysqli_Query($rst);
 		}
 		else
 		{
-			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			// Error ejecutando la consulta.
 			throw new Database_Exception("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
 			return FALSE;
@@ -265,17 +265,17 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
-		PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+		PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
 		// Ejecutamos la consulta.
 		if ($sth->execute())
 		{
-			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			return array($sth->insert_id, $sth->affected_rows);
 		}
 		else
 		{
-			PRODUCTION OR Profiler_Profiler::get_instance()->log_query($query);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			// Error ejecutando la consulta.
 			throw new Database_Exception("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
 			return FALSE;

@@ -32,10 +32,10 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Texto {
 	/**
 	 * Limits a phrase to a given number of words.
-	 * @param   string   phrase to limit words of
-	 * @param   integer  number of words to limit to
-	 * @param   string   end character or entity
-	 * @return  string
+	 * @param string $str phrase to limit words of
+	 * @param int $limit number of words to limit to
+	 * @param string $end_char end character or entity
+	 * @return string
 	 */
 	public static function limit_words($str, $limit = 100, $end_char = NULL)
 	{
@@ -61,11 +61,11 @@ class Base_Texto {
 
 	/**
 	 * Limits a phrase to a given number of characters.
-	 * @param   string   phrase to limit characters of
-	 * @param   integer  number of characters to limit to
-	 * @param   string   end character or entity
-	 * @param   boolean  enable or disable the preservation of words while limiting
-	 * @return  string
+	 * @param string $str phrase to limit characters of
+	 * @param int $limit number of characters to limit to
+	 * @param string $end_char end character or entity
+	 * @param bool $preserve_words enable or disable the preservation of words while limiting
+	 * @return string
 	 */
 	public static function limit_chars($str, $limit = 100, $end_char = NULL, $preserve_words = FALSE)
 	{

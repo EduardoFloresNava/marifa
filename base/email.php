@@ -127,6 +127,6 @@ class Base_Email {
 	{
 		self::start();
 
-		return new Swift_Message();
+		return new Swift_Message;
 	}
 }

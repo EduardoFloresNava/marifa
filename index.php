@@ -42,7 +42,7 @@ else
 define('PRODUCTION', ! DEBUG);
 
 // Información de rendimiento para depuración.
-PRODUCTION OR define('START_MEMORY', memory_get_peak_usage());
+PRODUCTION || define('START_MEMORY', memory_get_peak_usage());
 
 /**
  * Separador de directorios
@@ -122,7 +122,7 @@ if (PRODUCTION)
 }
 
 // Verifico MCrypt.
-extension_loaded('mcrypt') OR die('Marifa necesita MCrypt para funcionar.');
+extension_loaded('mcrypt') || die('Marifa necesita MCrypt para funcionar.');
 
 // Iniciamos las cookies.
 Cookie::start('secret_cookie_key');
@@ -137,7 +137,7 @@ define('THEME', Theme::actual());
 Error::get_instance()->start(DEBUG);
 
 // Verificamos bloqueos.
-$lock = new Mantenimiento();
+$lock = new Mantenimiento;
 if ($lock->is_locked())
 {
 	if ($lock->is_locked_for(IP::get_ip_addr()))
@@ -163,7 +163,7 @@ Cache::get_instance();
 // Cargamos las configuraciones del gestor de actualizaciones.
 if (file_exists(CONFIG_PATH.DS.'update.php'))
 {
-	//Configuraciones::load(CONFIG_PATH.DS.'update.php', TRUE);
+	// Configuraciones::load(CONFIG_PATH.DS.'update.php', TRUE);
 }
 
 // Comprobamos que existe la lista de plugins.
@@ -174,11 +174,11 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 }
 
 // Database profiler.
-PRODUCTION OR Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
+PRODUCTION || Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
 
-PRODUCTION OR Profiler_Profiler::get_instance()->log_memory('Framework memory');
+PRODUCTION || Profiler_Profiler::get_instance()->log_memory('Framework memory');
 
 // Cargamos el despachador y damos el control al controlador correspondiente.
 Dispatcher::dispatch();
 
-PRODUCTION OR Profiler_Profiler::get_instance()->display();
+PRODUCTION || Profiler_Profiler::get_instance()->display();

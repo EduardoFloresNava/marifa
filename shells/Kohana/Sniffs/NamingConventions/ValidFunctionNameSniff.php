@@ -128,7 +128,7 @@ class Kohana_Sniffs_NamingConventions_ValidFunctionNameSniff extends PHP_CodeSni
             return;
 
         // Ignore magic functions
-        if (substr($functionName, 0, 2) == '__') {
+        if ($functionName != '__' && substr($functionName, 0, 2) == '__') {
             if (in_array(substr($functionName, 2), $this->_magicFunctions) === false) {
                  $error = "Function name \"$functionName\" is invalid; only PHP magic functions should be prefixed with a double underscore";
                  $phpcsFile->addError($error, $stackPtr);

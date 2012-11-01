@@ -318,7 +318,7 @@ class Base_Controller_Perfil extends Controller {
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cargamos la vista de información.
 		$information_view = View::factory('perfil/post');
@@ -373,8 +373,8 @@ class Base_Controller_Perfil extends Controller {
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Formato de la página.
-		$pagina_sigo = (int) $pagina_sigo > 0 ? (int) $pagina_sigo : 1;
-		$pagina_siguen = (int) $pagina_siguen > 0 ? (int) $pagina_siguen : 1;
+		$pagina_sigo = ( (int) $pagina_sigo) > 0 ? ( (int) $pagina_sigo) : 1;
+		$pagina_siguen = ( (int) $pagina_siguen) > 0 ? ( (int) $pagina_siguen) : 1;
 
 		// Cargamos la vista de información.
 		$information_view = View::factory('perfil/seguidores');
@@ -455,7 +455,7 @@ class Base_Controller_Perfil extends Controller {
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Listado de eventos.
 		$lst = Suceso_Perfil::obtener_listado($this->usuario->id, $pagina, $cantidad_por_pagina);

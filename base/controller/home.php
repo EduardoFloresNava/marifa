@@ -88,7 +88,7 @@ class Base_Controller_Home extends Controller {
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		if ($pagina == 1)
 		{

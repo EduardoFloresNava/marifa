@@ -113,7 +113,7 @@ class Base_Cookie {
 
 		self::$_crypt_module = mcrypt_module_open(self::$_algorithm, '', self::$_mode, '');
 
-		if (self::$_crypt_module === false)
+		if (self::$_crypt_module === FALSE)
 		{
 			throw new Exception('Error while loading mcrypt module');
 		}
@@ -370,10 +370,10 @@ class Base_Cookie {
 	 */
 	protected static function _validate_iv($iv)
 	{
-		$ivSize = mcrypt_enc_get_iv_size(self::$_crypt_module);
-		if (strlen($iv) > $ivSize)
+		$iv_size = mcrypt_enc_get_iv_size(self::$_crypt_module);
+		if (strlen($iv) > $iv_size)
 		{
-			$iv = substr($iv, 0, $ivSize);
+			$iv = substr($iv, 0, $iv_size);
 		}
 		return $iv;
 	}
@@ -385,12 +385,12 @@ class Base_Cookie {
 	 *
 	 * @param string $key key
 	 */
-	protected static function _validate_kKey($key)
+	protected static function _validate_key($key)
 	{
-		$keySize = mcrypt_enc_get_key_size(self::$_crypt_module);
-		if (strlen($key) > $keySize)
+		$key_size = mcrypt_enc_get_key_size(self::$_crypt_module);
+		if (strlen($key) > $key_size)
 		{
-			$key = substr($key, 0, $keySize);
+			$key = substr($key, 0, $key_size);
 		}
 		return $key;
 	}

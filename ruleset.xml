@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ruleset name="Marifa Standard">
+
+ <description>Marifa Coding Standard</description>
+
+ <exclude-pattern>cache/*</exclude-pattern>
+ <exclude-pattern>config/*</exclude-pattern>
+ <exclude-pattern>phpdoc/*</exclude-pattern>
+ <exclude-pattern>theme/*</exclude-pattern>
+ <exclude-pattern>vendor/*</exclude-pattern>
+ <exclude-pattern>base/decoda/*</exclude-pattern>
+ <exclude-pattern>shells/Kohana/*</exclude-pattern>
+ <rule ref="./shells/Kohana"/>
+
+</ruleset>

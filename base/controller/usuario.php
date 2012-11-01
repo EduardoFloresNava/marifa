@@ -154,7 +154,7 @@ class Base_Controller_Usuario extends Controller {
 		$model_config = new Model_Configuracion;
 
 		// Verifico si está abierto el registro.
-		if ( ! (bool)$model_config->get('registro', TRUE))
+		if ( ! (bool) $model_config->get('registro', TRUE))
 		{
 			$_SESSION['flash_error'] = 'El registro se encuentra cerrado, no se pueden crear nuevas cuentas.';
 			Request::redirect('/usuario/login/');

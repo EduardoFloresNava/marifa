@@ -113,7 +113,7 @@ class Base_Suceso {
 		}
 		else
 		{
-			PRODUCTION OR Profiler_Profiler::get_instance()->log("No se puede parsear '{$informacion['tipo']}' en $class");
+			PRODUCTION || Profiler_Profiler::get_instance()->log("No se puede parsear '{$informacion['tipo']}' en $class");
 			return NULL;
 		}
 
@@ -138,7 +138,7 @@ class Base_Suceso {
 			}
 			else
 			{
-				PRODUCTION OR Profiler_Profiler::get_instance()->log("No se puede parsear '{$informacion['tipo']}'");
+				PRODUCTION || Profiler_Profiler::get_instance()->log("No se puede parsear '{$informacion['tipo']}'");
 				return NULL;
 			}
 		}*/

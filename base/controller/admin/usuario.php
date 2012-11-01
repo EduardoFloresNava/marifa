@@ -65,7 +65,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 	public function action_index($pagina, $tipo)
 	{
 		// Formato de la página.
-		$pagina = $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ($pagina > 0) ? ( (int) $pagina) : 1;
 
 		// TIPO, 0->todos, 1->activos, 2->suspendidos, 3->baneados
 		$tipo = (int) $tipo;
@@ -393,7 +393,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_fin_suspension', $suspension->id, $suspension->restante() > 0 ? Usuario::$usuario_id : NULL);
+			$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_fin_suspension', $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
 		}
 		// Informo el resultado.
 		$_SESSION['flash_success'] = 'Suspensión anulada correctamente.';
@@ -1159,7 +1159,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 	public function action_sesiones($pagina)
 	{
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina > 0) ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
 		$cantidad_por_pagina = 20;

@@ -37,7 +37,7 @@ class Shell_Dispatcher {
 	public static function dispatch()
 	{
 		// Obtenemos los parametros.
-		$params = Shell_Cli::parseArgs($_SERVER['argv']);
+		$params = Shell_Cli::parse_args($_SERVER['argv']);
 
 		// Obtenemos el controlador.
 		if ( ! isset($params[0]) || $params[0] == 'help')
@@ -53,7 +53,7 @@ class Shell_Dispatcher {
 
 			if ( ! class_exists('Shell_Controller_'.$c_name))
 			{
-				Shell_Cli::write_line(Shell_Cli::getColoredString("Parámetros incorrectos, intente llamando a la ayuda con --help", 'red'));
+				Shell_Cli::write_line(Shell_Cli::get_colored_string("Parámetros incorrectos, intente llamando a la ayuda con --help", 'red'));
 				exit;
 			}
 			else

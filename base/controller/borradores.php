@@ -64,7 +64,7 @@ class Base_Controller_Borradores extends Controller {
 		$model_post = new Model_Post;
 
 		// Formato de la página.
-		$pagina = (int) $pagina > 0 ? (int) $pagina : 1;
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cargamos el listado de borradores.
 		list($borradores, $total) = $model_post->borradores(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
@@ -87,8 +87,8 @@ class Base_Controller_Borradores extends Controller {
 			{
 				$a = $v['post']->as_array();
 				$a['categoria'] = $v['post']->categoria()->as_array();
-				//$a['moderado'] = $v['moderado']->as_array();
-				//$a['motivo'] = $v['moderado']->moderacion()->as_array();
+				// $a['moderado'] = $v['moderado']->as_array();
+				// $a['motivo'] = $v['moderado']->moderacion()->as_array();
 			}
 			else
 			{

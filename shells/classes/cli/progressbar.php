@@ -1,6 +1,6 @@
 <?php
 /**
- * ayuda.php is part of Marifa.
+ * progressbar.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ class Shell_Cli_ProgressBar {
 		'format' => "\r:message::padding:%.01f%% %2\$d/%3\$d ETC: %4\$s. Elapsed: %5\$s [%6\$s]",
 		'message' => 'Running',
 		'size' => 30,
-		'width' => null
+		'width' => NULL
 	);
 
 	/**
@@ -104,7 +104,7 @@ class Shell_Cli_ProgressBar {
 	 * @static
 	 * @return string, the formatted progress bar prefixed with a carriage return
 	 */
-	public static function display($done = null)
+	public static function display($done = NULL)
 	{
 		if ($done)
 		{
@@ -115,32 +115,32 @@ class Shell_Cli_ProgressBar {
 
 		if (self::$total)
 		{
-			$fractionComplete = ( double ) (self::$done / self::$total);
+			$fraction_complete = (double) (self::$done / self::$total);
 		}
 		else
 		{
-			$fractionComplete = 0;
+			$fraction_complete = 0;
 		}
 
-		$bar = floor($fractionComplete * self::$size);
-		$barSize = min($bar, self::$size);
+		$bar = floor($fraction_complete * self::$size);
+		$bar_size = min($bar, self::$size);
 
-		$barContents = str_repeat('=', $barSize);
+		$bar_contents = str_repeat('=', $bar_size);
 		if ($bar < self::$size)
 		{
-			$barContents .= '>';
-			$barContents .= str_repeat(' ', self::$size - $barSize);
+			$bar_contents .= '>';
+			$bar_contents .= str_repeat(' ', self::$size - $bar_size);
 		}
-		elseif ($fractionComplete > 1)
+		elseif ($fraction_complete > 1)
 		{
-			$barContents .= '!';
+			$bar_contents .= '!';
 		}
 		else
 		{
-			$barContents .= '=';
+			$bar_contents .= '=';
 		}
 
-		$percent = number_format($fractionComplete * 100, 0);
+		$percent = number_format($fraction_complete * 100, 0);
 
 		$elapsed = $now - self::$start;
 		if (self::$done)
@@ -156,18 +156,16 @@ class Shell_Cli_ProgressBar {
 
 		if (self::$done)
 		{
-			$etcNowText = '< 1 sec';
+			$etc_now_text = '< 1 sec';
 		}
 		else
 		{
-			$etcNowText = '???';
+			$etc_now_text = '???';
 		}
-		$timeRemaining = self::humanTime($etc, $etcNowText);
-		$timeElapsed = self::humanTime($elapsed);
+		$time_remaining = self::human_time($etc, $etc_now_text);
+		$time_elapsed = self::human_time($elapsed);
 
-		$return = sprintf(
-			self::$format, $percent, self::$done, self::$total, $timeRemaining, $timeElapsed, $barContents
-		);
+		$return = sprintf(self::$format, $percent, self::$done, self::$total, $time_remaining, $time_elapsed, $bar_contents);
 
 		$width = strlen(preg_replace('@(?:\r|:\w+:)@', '', $return));
 
@@ -254,7 +252,7 @@ class Shell_Cli_ProgressBar {
 		self::$size = $options['size'];
 		self::$start = $options['start'];
 		self::$total = $options['total'];
-		self::setWidth($options['width']);
+		self::set_width($options['width']);
 	}
 
 	/**
@@ -265,7 +263,7 @@ class Shell_Cli_ProgressBar {
 	 * @static
 	 * @return void
 	 */
-	public static function setMessage($message = '')
+	public static function set_message($message = '')
 	{
 		self::$message = $message;
 	}
@@ -278,7 +276,7 @@ class Shell_Cli_ProgressBar {
 	 * @static
 	 * @return void
 	 */
-	public static function setTotal($total = '')
+	public static function set_total($total = '')
 	{
 		self::$total = $total;
 	}
@@ -293,7 +291,7 @@ class Shell_Cli_ProgressBar {
 	 * @static
 	 * @return string - the progress bar string with 0 progress
 	 */
-	public static function start($total = null, $message = '', $options = array())
+	public static function start($total = NULL, $message = '', $options = array())
 	{
 		if ($message)
 		{
@@ -310,12 +308,12 @@ class Shell_Cli_ProgressBar {
 	 * Convert a number of seconds into something human readable like "2 days, 4 hrs"
 	 *
 	 * @param int $seconds how far in the future/past to display
-	 * @param string $nowText if there are no seconds, what text to display
+	 * @param string $now_tText if there are no seconds, what text to display
 	 *
 	 * @static
 	 * @return string representation of the time
 	 */
-	protected static function humanTime($seconds, $nowText = '< 1 sec')
+	protected static function human_time($seconds, $now_text = '< 1 sec')
 	{
 		$prefix = '';
 		if ($seconds < 0)
@@ -362,9 +360,9 @@ class Shell_Cli_ProgressBar {
 			$return[] = "$seconds secs";
 		}
 
-		if (!$return)
+		if ( ! $return)
 		{
-			return $nowText;
+			return $now_text;
 		}
 		return $prefix.implode(array_slice($return, 0, 2), ', ');
 	}
@@ -377,9 +375,9 @@ class Shell_Cli_ProgressBar {
 	 * @static
 	 * @return void
 	 */
-	protected static function setWidth($width = null)
+	protected static function set_width($width = NULL)
 	{
-		if ($width === null)
+		if ($width === NULL)
 		{
 			if (DIRECTORY_SEPARATOR === '/')
 			{

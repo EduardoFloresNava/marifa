@@ -60,15 +60,13 @@ class Base_Utils {
 	 */
    public static function get_gravatar($email, $s = 80, $d = 'mm', $r = 'g', $img = FALSE, $atts = array())
    {
-		$url = 'http://www.gravatar.com/avatar/';
-		$url .= md5(strtolower(trim($email)));
-		$url .= "?s=$s&d=$d&r=$r";
+		$url = 'http://www.gravatar.com/avatar/'.md5(strtolower(trim($email)))."?s=$s&d=$d&r=$r";
 		if ($img)
 		{
-			$url = '<img src="'.$url.'"';
+			$url = "<img src=\"$url\"";
 			foreach ($atts as $key => $val)
 			{
-				$url .= ' '.$key.'="'.$val.'"';
+				$url .= " $key=\"$val\"";
 			}
 			$url .= ' />';
 		}
@@ -80,7 +78,7 @@ class Base_Utils {
 	 * @param string $hexcolor Color exadecimal.
 	 * @return strign
 	 */
-	public static function getContrastYIQ($hexcolor)
+	public static function get_contrast_yiq($hexcolor)
 	{
 		$r = hexdec(substr($hexcolor,0,2));
 		$g = hexdec(substr($hexcolor,2,2));
