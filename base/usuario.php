@@ -118,7 +118,7 @@ class Base_Usuario {
 	{
 		if ( ! isset(self::$usuario))
 		{
-			(self::$usuario = self::is_login()) ? ( new Model_Usuario(self::$usuario_id)) : FALSE;
+			self::$usuario = self::is_login() ? ( new Model_Usuario(self::$usuario_id)) : FALSE;
 		}
 		return self::$usuario;
 	}
