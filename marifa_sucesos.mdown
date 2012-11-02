@@ -98,6 +98,9 @@
 
 ## Fotos:
 
+ * **foto_nueva** (*foto_id*): Creamos una nueva foto.
+ * * **foto_id**: ID de la foto creada.
+
  * **foto_votar** (*foto_id*, *usuario_id*, *tipo*): Votamos una foto.
  * * **foto_id**: ID de la foto a votar.
  * * **usuario_id**: ID del usuario que realiza la votación.
@@ -106,9 +109,6 @@
  * **foto_favorito** (*foto_id*, *usuario_id*): Agregamos una foto a favoritos.
  * * **foto_id**: ID de la foto que se agrega a favoritos.
  * * **usuario_id**: ID del usuario que agrega la foto a favoritos.
-
- * **foto_nueva** (*foto_id*): Creamos una nueva foto.
- * * **foto_id**: ID de la foto creada.
 
  * **foto_editar** (*foto_id*, *usuario_id*): Un usuario edita una foto. Puede ser el dueño o un administrador/moderador.
  * * **foto_id**: ID de la foto que fue editada.
@@ -168,11 +168,6 @@
  * **usuario_nuevo** (*usuario_id*): Se crea una cuenta de usuario nueva.
  * * **usuario_id**: ID del usuario que ha sido creado.
 
- * **usuario_bloqueo** (*usuario_id*, *bloqueado_id*, *tipo*): El usuario *usuario_id* bloquea/desbloquea al usuario *bloqueado_id* para acceder a su perfil y eventos.
- * * **usuario_id**: ID del usuario que bloquea/desbloquea al otro.
- * * **bloquedo_id**: ID del usuario que es bloqueado/desbloqueado.
- * * **tipo**: Tipo de acción: 0 bloquea, 1 desbloquea.
-
  * **usuario_cambio_nick** (*usuario_id*, *nick_inicial_id*, *nick_final_id*): Un usuario cambia su nick.
  * * **usuario_id**: ID del usuario que cambia el nick.
  * * **nick_inicial_id**: ID del nick anterior del usuario.
@@ -203,14 +198,11 @@
  * **usuario_seguir** (*usuario_id*, *seguidor_id*): *seguidor_id* sigue a *usuario_id*
  * * **usuario_id**: ID del usuario a quien se sigue.
  * * **seguidor_id**: ID del usuario que sigue.
-
- * **usuario_bloquear** (*usuario_id*, *bloqueado_id*): *usuario_id* bloquea a *bloqueado_id* para que evitar que vea su perfil.
- * * **usuario_id**: ID del usuario que realiza el bloqueo.
- * * **bloqueado_id**: ID del usuario que es bloqueado.
-
- * **usuario_desbloquear** (*usuario_id*, *bloqueado_id*): *usuario_id* desbloquea a *bloqueado_id* para que vea su perfil.
- * * **usuario_id**: ID del usuario que realiza el desbloqueo.
- * * **bloqueado_id**: ID del usuario que es desbloqueado.
+ 
+ * **usuario_bloqueo** (*usuario_id*, *bloqueado_id*, *tipo*): El usuario *usuario_id* bloquea/desbloquea al usuario *bloqueado_id* para evitar que acceda a su perfil y eventos.
+ * * **usuario_id**: ID del usuario que bloquea/desbloquea al otro.
+ * * **bloquedo_id**: ID del usuario que es bloqueado/desbloqueado.
+ * * **tipo**: Tipo de acción: 0 bloquea, 1 desbloquea.
 
 ### Denuncias a usuarios:
 

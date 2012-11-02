@@ -709,7 +709,7 @@ class Base_Controller_Perfil extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array($this->usuario->id, Usuario::$usuario_id), 'usuario_bloquear', Usuario::$usuario_id, $this->usuario->id);
+		$model_suceso->crear(array($this->usuario->id, Usuario::$usuario_id), 'usuario_bloqueo', Usuario::$usuario_id, $this->usuario->id, 0);
 
 		// Informo resultado.
 		$_SESSION['flash_success'] = 'El usuario se ha bloqueado correctamente.';
@@ -758,7 +758,7 @@ class Base_Controller_Perfil extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array($this->usuario->id, Usuario::$usuario_id), 'usuario_desbloquear', Usuario::$usuario_id, $this->usuario->id);
+		$model_suceso->crear(array($this->usuario->id, Usuario::$usuario_id), 'usuario_bloqueo', Usuario::$usuario_id, $this->usuario->id, 1);
 
 		// Informo resultado.
 		$_SESSION['flash_success'] = 'El usuario se ha desbloqueado correctamente.';
