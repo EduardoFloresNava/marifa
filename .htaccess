@@ -8,7 +8,8 @@ RewriteBase /
 SetEnv MARIFA_DEBUG 1
 
 # Instalador.
-RewriteRule ^installer/.* installer.php/$0 [PT]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^installer/.* installer.php/$0 [L]
 
 # Permitimos archivos y directorios mostrarse directamente.
 RewriteCond %{REQUEST_FILENAME} !-f

@@ -60,10 +60,10 @@ class Base_RainTPL extends Lib_RainTPL {
 	 * @return mixed Template parseado o el resultado.
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function draw($tpl_name = NULL, $return_string = FALSE)
+	public function draw($tpl_name, $return_string = FALSE)
 	{
 		// Verificamos que tengamos una vista.
-		if ($tpl_name === NULL && $this->view === NULL)
+		if (( ! isset($tpl_name) || $tpl_name === NULL) && $this->view === NULL)
 		{
 			throw new Exception('Vista no especificada');
 			return NULL;

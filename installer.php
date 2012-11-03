@@ -81,6 +81,9 @@ require_once (APP_BASE.DS.'function.php');
 spl_autoload_register('installer_loader_load');
 spl_autoload_register('loader_load');
 
+// Defino zona horaria.
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+
 /**
  * Defino la URL del sitio.
  */

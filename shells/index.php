@@ -29,6 +29,12 @@
 define('VERSION', 0.1);
 
 /**
+ * Estamos en producción siempre.
+ */
+define('DEBUG', FALSE);
+define('PRODUCTION', TRUE);
+
+/**
  * Separador de directorios
  */
 define('DS', DIRECTORY_SEPARATOR);

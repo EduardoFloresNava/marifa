@@ -154,8 +154,7 @@ class Installer_Dispatcher {
 	public static function call($url, $finish = FALSE)
 	{
 		// Reemplazamos // y \ por / para normalizar.
-		$str = preg_replace('/\/+/', '/', $url);
-		$str = preg_replace('//', '/', $url);
+		//$url = preg_replace('//', '/', preg_replace('/\/+/', '/', $url));
 
 		if ($url === '/')
 		{

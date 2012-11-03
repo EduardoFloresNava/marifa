@@ -298,11 +298,23 @@ class Base_Error {
 		$template = View::factory('internal/template');
 
 		// Asigno datos.
-		$template->assign('contenido', $view->parse());
+		try {
+			$template->assign('contenido', $view->parse());
+		}
+		catch (Exception $e)
+		{
+			die('ERROR '.$e->getCode().': '.$e->getMessage());
+		}
 		$template->assign('number', $number);
 
 		// Mostramos la pantalla de error.
-		$template->draw();
+		try {
+			$template->show();
+		}
+		catch (Exception $e)
+		{
+			die('ERROR '.$e->getCode().': '.$e->getMessage());
+		}
 
 		// Terminamos la ejecución
 		exit;
