@@ -366,7 +366,15 @@ class Base_Controller_Foto extends Controller {
 
 		// Creamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_votar', $foto, Usuario::$usuario_id, (int) $voto);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_votar', TRUE, $foto, Usuario::$usuario_id, (int) $voto);
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_votar', FALSE, $foto, Usuario::$usuario_id, (int) $voto);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_votar', FALSE, $foto, Usuario::$usuario_id, (int) $voto);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'El voto fue guardado correctamente.';
@@ -425,7 +433,15 @@ class Base_Controller_Foto extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_favorito', $foto, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_favorito', TRUE, $foto, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, FALSE, 'foto_favorito', $foto, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_favorito', FALSE, $foto, Usuario::$usuario_id);
+		}
 
 		// Informo el resultado.
 		$_SESSION['flash_success'] = 'Foto agregada a favoritos correctamente.';
@@ -495,7 +511,15 @@ class Base_Controller_Foto extends Controller {
 
 			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_comentario_crear', $id);
+			if (Usuario::$usuario_id != $model_foto->usuario_id)
+			{
+				$model_suceso->crear($model_foto->usuario_id, 'foto_comentario_crear', TRUE, $id);
+				$model_suceso->crear(Usuario::$usuario_id, 'foto_comentario_crear', FALSE, $id);
+			}
+			else
+			{
+				$model_suceso->crear($model_foto->usuario_id, 'foto_comentario_crear', FALSE, $id);
+			}
 
 			// Informo el resultado.
 			$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
@@ -558,7 +582,23 @@ class Base_Controller_Foto extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->foto()->usuario_id), $tipo ? 'foto_comentario_mostrar' : 'foto_comentario_ocultar', $comentario, Usuario::$usuario_id);
+		if (Usuario::$usuario_id == $model_comentario->usuario_id)
+		{
+			$model_suceso->crear(Usuario::$usuario_id, $tipo ? 'foto_comentario_mostrar' : 'foto_comentario_ocultar', FALSE, $comentario, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_comentario->foto()->usuario_id)
+			{
+				$model_suceso->crear($model_comentario->foto()->usuario_id, $tipo ? 'foto_comentario_mostrar' : 'foto_comentario_ocultar', TRUE, $comentario, Usuario::$usuario_id);
+			}
+		}
+		else
+		{
+			$model_suceso->crear($model_comentario->usuario_id, $tipo ? 'foto_comentario_mostrar' : 'foto_comentario_ocultar', TRUE, $comentario, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, $tipo ? 'foto_comentario_mostrar' : 'foto_comentario_ocultar', FALSE, $comentario, Usuario::$usuario_id);
+			if (Usuario::$usuario_id == $model_comentario->foto()->usuario_id)
+			{
+				$model_suceso->crear($model_comentario->foto()->usuario_id, $tipo ? 'foto_comentario_mostrar' : 'foto_comentario_ocultar', FALSE, $comentario, Usuario::$usuario_id);
+			}
+		}
 
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.';
 		Request::redirect('/foto/ver/'.$model_comentario->foto_id);
@@ -608,7 +648,23 @@ class Base_Controller_Foto extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->foto()->usuario_id), 'foto_comentario_borrar', $comentario, Usuario::$usuario_id);
+		if (Usuario::$usuario_id == $model_comentario->usuario_id)
+		{
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_comentario_borrar', FALSE, $comentario, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_comentario->foto()->usuario_id)
+			{
+				$model_suceso->crear($model_comentario->foto()->usuario_id, 'foto_comentario_borrar', TRUE, $comentario, Usuario::$usuario_id);
+			}
+		}
+		else
+		{
+			$model_suceso->crear($model_comentario->usuario_id, 'foto_comentario_borrar', TRUE, $comentario, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_comentario_borrar', FALSE, $comentario, Usuario::$usuario_id);
+			if (Usuario::$usuario_id == $model_comentario->foto()->usuario_id)
+			{
+				$model_suceso->crear($model_comentario->foto()->usuario_id, 'foto_comentario_borrar', FALSE, $comentario, Usuario::$usuario_id);
+			}
+		}
 
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha borrado correctamente.';
 		Request::redirect('/foto/ver/'.$model_comentario->foto_id);
@@ -687,7 +743,23 @@ class Base_Controller_Foto extends Controller {
 
 				// Envio el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->foto()->usuario_id), 'foto_comentario_editar', $comentario, Usuario::$usuario_id);
+				if (Usuario::$usuario_id == $model_comentario->usuario_id)
+				{
+					$model_suceso->crear(Usuario::$usuario_id, 'foto_comentario_editar', FALSE, $comentario, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_comentario->foto()->usuario_id)
+					{
+						$model_suceso->crear($model_comentario->foto()->usuario_id, 'foto_comentario_editar', TRUE, $comentario, Usuario::$usuario_id);
+					}
+				}
+				else
+				{
+					$model_suceso->crear($model_comentario->usuario_id, 'foto_comentario_editar', TRUE, $comentario, Usuario::$usuario_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'foto_comentario_editar', FALSE, $comentario, Usuario::$usuario_id);
+					if (Usuario::$usuario_id == $model_comentario->foto()->usuario_id)
+					{
+						$model_suceso->crear($model_comentario->foto()->usuario_id, 'foto_comentario_editar', FALSE, $comentario, Usuario::$usuario_id);
+					}
+				}
 
 				$_SESSION['post_comentario_success'] = 'El comentario se ha actualizado correctamente.';
 				Request::redirect('/foto/ver/'.$model_comentario->foto_id);
@@ -871,7 +943,7 @@ class Base_Controller_Foto extends Controller {
 				{
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(Usuario::$usuario_id, 'foto_nueva', $model_foto->id);
+					$model_suceso->crear(Usuario::$usuario_id, 'foto_nueva', FALSE, $model_foto->id);
 
 					// Informo el resultado.
 					$_SESSION['flash_success'] = 'Foto creada correctamente.';
@@ -987,7 +1059,15 @@ class Base_Controller_Foto extends Controller {
 
 				// Agregamos el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_denuncia_crear', $id);
+				if (Usuario::$usuario_id != $model_foto->usuario_id)
+				{
+					$model_suceso->crear($model_foto->usuario_id, TRUE, 'foto_denuncia_crear', $id);
+					$model_suceso->crear(Usuario::$usuario_id, FALSE, 'foto_denuncia_crear', $id);
+				}
+				else
+				{
+					$model_suceso->crear($model_foto->usuario_id, FALSE, 'foto_denuncia_crear', $id);
+				}
 
 				// Seteamos mensaje flash y volvemos.
 				$_SESSION['flash_success'] = 'Denuncia enviada correctamente.';
@@ -1115,7 +1195,15 @@ class Base_Controller_Foto extends Controller {
 				{
 					// Agregamos el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_editar', $model_foto->id, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_foto->usuario_id)
+					{
+						$model_suceso->crear($model_foto->usuario_id, 'foto_editar', TRUE, $model_foto->id, Usuario::$usuario_id);
+						$model_suceso->crear(Usuario::$usuario_id, 'foto_editar', FALSE, $model_foto->id, Usuario::$usuario_id);
+					}
+					else
+					{
+						$model_suceso->crear($model_foto->usuario_id, 'foto_editar', FALSE, $model_foto->id, Usuario::$usuario_id);
+					}
 
 					$_SESSION['flash_success'] = 'La foto se ha actualizado correctamente.';
 					Request::redirect('/foto/ver/'.$model_foto->id);
@@ -1178,7 +1266,15 @@ class Base_Controller_Foto extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_ocultar', $foto, Usuario::$usuario_id, ($n_estado == Model_Foto::ESTADO_OCULTA) ? 0 : 1);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_ocultar', TRUE, $foto, Usuario::$usuario_id, ($n_estado == Model_Foto::ESTADO_OCULTA) ? 0 : 1);
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_ocultar', FALSE, $foto, Usuario::$usuario_id, ($n_estado == Model_Foto::ESTADO_OCULTA) ? 0 : 1);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_ocultar', FALSE, $foto, Usuario::$usuario_id, ($n_estado == Model_Foto::ESTADO_OCULTA) ? 0 : 1);
+		}
 
 		// Informo el resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
@@ -1244,7 +1340,15 @@ class Base_Controller_Foto extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), $tipo ? 'foto_borrar' : 'foto_papelera', $foto, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, $tipo ? 'foto_borrar' : 'foto_papelera', TRUE, $foto, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, $tipo ? 'foto_borrar' : 'foto_papelera', FALSE, $foto, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, $tipo ? 'foto_borrar' : 'foto_papelera', FALSE, $foto, Usuario::$usuario_id);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'Acción realizada correctamente.';
@@ -1294,7 +1398,15 @@ class Base_Controller_Foto extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_restaurar', $foto, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_restaurar', TRUE, $foto, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_restaurar', FALSE, $foto, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_restaurar', FALSE, $foto, Usuario::$usuario_id);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'La foto se ha restaurado correctamente.';

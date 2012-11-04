@@ -26,7 +26,7 @@
 			{/if}
 			<div class="actions">
 				<a href="/notificaciones/">Ver todos</a>
-				<a href="/notificaciones/leidas/">Marcar como le&iacute;dos</a>
+				<a href="/notificaciones/vistas/">Marcar como vistas</a>
 			</div>
         </div>
     </div>

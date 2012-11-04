@@ -29,6 +29,14 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @since      0.1
  * @package    Marifa\Base
  * @subpackage Model
+ * @property-read int $id ID del suceso.
+ * @property-read int $objeto_id ID del objeto al que apunta el suceso.
+ * @property-read int $objeto_id1 ID del objeto al que apunta el suceso.
+ * @property-read int $objeto_id2 ID del objeto al que apunta el suceso.
+ * @property-read string $tipo Tipo de suceso.
+ * @property-read bool $notificar Si se muestra en la barra de sucesos o no.
+ * @property-read bool $visto Si fue visto o no.
+ * @property-read fechahora $fecha Cuando se producio el suceso.
  */
 class Base_Model_Suceso extends Model_Dataset {
 
@@ -54,6 +62,8 @@ class Base_Model_Suceso extends Model_Dataset {
 		'objeto_id1' => Database_Query::FIELD_INT,
 		'objeto_id2' => Database_Query::FIELD_INT,
 		'tipo' => Database_Query::FIELD_STRING,
+		'notificar' => Database_Query::FIELD_BOOL,
+		'visto' => Database_Query::FIELD_BOOL,
 		'fecha' => Database_Query::FIELD_DATETIME
 	);
 
@@ -79,11 +89,12 @@ class Base_Model_Suceso extends Model_Dataset {
 	 * de dueños. De esta forma todos los usuarios involucrados tiene el mismo
 	 * suceso.
 	 * @param string $tipo Tipo de suceso.
+	 * @param bool $notificar Si el suceso va a la barra de notificaciones o no.
 	 * @param int $objeto_id ID del objeto del suceso.
 	 * @param int $objeto_id2 ID secundario del objeto del suceso.
 	 * @param int $objeto_id3 ID terciario del objeto del suceso.
 	 */
-	public function crear($usuario_id, $tipo, $objeto_id, $objeto_id2 = NULL, $objeto_id3 = NULL)
+	public function crear($usuario_id, $tipo, $notificar, $objeto_id, $objeto_id2 = NULL, $objeto_id3 = NULL)
 	{
 		if (is_array($usuario_id))
 		{
@@ -94,16 +105,25 @@ class Base_Model_Suceso extends Model_Dataset {
 			$rst = array();
 			foreach ($usuario_id as $id)
 			{
-				list($rst[],) = $this->db->insert('INSERT INTO suceso (usuario_id, objeto_id, objeto_id1, objeto_id2, tipo, fecha) VALUES (?, ?, ?, ?, ?, ?)',
-					array($id, $objeto_id, $objeto_id2, $objeto_id3, $tipo, date('Y/m/d H:i:s')));
+				list($rst[],) = $this->db->insert('INSERT INTO suceso (usuario_id, objeto_id, objeto_id1, objeto_id2, tipo, fecha, notificar) VALUES (?, ?, ?, ?, ?, ?, ?)',
+					array($id, $objeto_id, $objeto_id2, $objeto_id3, $tipo, date('Y/m/d H:i:s'), $notificar));
 			}
 			return $rst;
 		}
 		else
 		{
-			return $this->db->insert('INSERT INTO suceso (usuario_id, objeto_id, objeto_id1, objeto_id2, tipo, fecha) VALUES (?, ?, ?, ?, ?, ?)',
-				array($usuario_id, $objeto_id, $objeto_id2, $objeto_id3, $tipo, date('Y/m/d H:i:s')));
+			return $this->db->insert('INSERT INTO suceso (usuario_id, objeto_id, objeto_id1, objeto_id2, tipo, fecha, notificar) VALUES (?, ?, ?, ?, ?, ?, ?)',
+				array($usuario_id, $objeto_id, $objeto_id2, $objeto_id3, $tipo, date('Y/m/d H:i:s'), $notificar));
 		}
+	}
+
+	/**
+	 * Seteamos las notificaciones del usuario como vistas.
+	 * @param int $usuario ID del usuario del que se setean como vistas.
+	 */
+	public function vistas($usuario)
+	{
+		return $this->db->query('UPDATE suceso SET visto = 1 WHERE usuario_id = ?', $usuario);
 	}
 
 	/**
@@ -147,47 +167,59 @@ class Base_Model_Suceso extends Model_Dataset {
 	 * Obtenemos la cantidad de sucesos segun su dueño y tipo.
 	 * @param int $usuario ID del usuario a dueño de los sucesos. NULL para todos.
 	 * @param array $tipo Arreglo de tipos, NULL para todos.
+	 * @param bool $notificar Si hay mostramos con un tipo de notificar o ninguno.
+	 * @param bool $visto Si hay mostramos con un estado vistor o ninguno.
 	 * @return int
 	 */
-	public function cantidad($usuario = NULL, $tipo = NULL)
+	public function cantidad($usuario = NULL, $tipo = NULL, $notificar = NULL, $visto = NULL)
 	{
-		if ($usuario === NULL)
-		{
-			if ($tipo === NULL)
-			{
-				return $this->db->query('SELECT COUNT(*) FROM suceso')->get_var(Database_Query::FIELD_INT);
-			}
-			else
-			{
-				// Armo la lista de estados.
-				$kk = array();
-				$c = count($tipo);
-				for ($i = 0; $i < $c; $i++)
-				{
-					$kk[] = '?';
-				}
+		$params = array();
+		$q = array();
 
-				return $this->db->query('SELECT COUNT(*) FROM suceso WHERE tipo IN ('.implode(', ', $kk).')', $tipo)->get_var(Database_Query::FIELD_INT);
+		// Agrego limitacion usuario.
+		if ($usuario !== NULL)
+		{
+			$params[] = $usuario;
+			$q[] = 'usuario_id = ?';
+		}
+
+		// Agrego limitacion tipo.
+		if ($tipo !== NULL)
+		{
+			$params = array_merge($params, $tipo);
+
+			// Armo la lista de estados.
+			$kk = array();
+			$c = count($tipo);
+			for ($i = 0; $i < $c; $i++)
+			{
+				$kk[] = '?';
 			}
+			$q[] = 'tipo IN ('.implode(', ', $kk).')';
+		}
+
+		// Agrego limitacion notificar.
+		if ($notificar !== NULL)
+		{
+			$params[] = $notificar;
+			$q[] = 'notificar = ?';
+		}
+
+		// Agrego limitacion visto.
+		if ($visto !== NULL)
+		{
+			$params[] = $visto;
+			$q[] = 'visto = ?';
+		}
+
+		// Ejecuto la consulta.
+		if (count($params) == 0)
+		{
+			return $this->db->query('SELECT COUNT(*) FROM suceso')->get_var(Database_Query::FIELD_INT);
 		}
 		else
 		{
-			if ($tipo === NULL)
-			{
-				return $this->db->query('SELECT COUNT(*) FROM suceso WHERE usuario_id = ?', $usuario)->get_var(Database_Query::FIELD_INT);
-			}
-			else
-			{
-				// Armo la lista de estados.
-				$kk = array();
-				$c = count($tipo);
-				for ($i = 0; $i < $c; $i++)
-				{
-					$kk[] = '?';
-				}
-
-				return $this->db->query('SELECT COUNT(*) FROM suceso WHERE usuario_id = ? AND tipo IN ('.implode(', ', $kk).')', array_merge(array($usuario), $tipo))->get_var(Database_Query::FIELD_INT);
-			}
+			return $this->db->query('SELECT COUNT(*) FROM suceso WHERE '.implode(' AND ', $q), $params)->get_var(Database_Query::FIELD_INT);
 		}
 	}
 
@@ -197,19 +229,24 @@ class Base_Model_Suceso extends Model_Dataset {
 	 * @param int $pagina Número de página a mostrar.
 	 * @param int $cantidad Cantidad de posts por página.
 	 * @param array $tipo Listado de tipos de sucesos a mostrar.
-	 * @param bool $estado Si obtenemos el estado o no.
+	 * @param bool $notificar Si hay mostramos con un tipo de notificar o ninguno.
+	 * @param bool $visto Si hay mostramos con un estado vistor o ninguno.
 	 * @return array
 	 */
-	public function listado($usuario, $pagina, $cantidad = 10, $tipo = NULL, $estado = FALSE)
+	public function listado($usuario, $pagina, $cantidad = 10, $tipo = NULL, $notificar = NULL, $visto = NULL)
 	{
+		// Elemento de inicio para paginacion.
 		$start = ($pagina - 1) * $cantidad;
 
-		if ($estado === NULL || count($tipo) <= 0)
+		// Arreglo de parametros.
+		$params = array($usuario);
+		$q = array('usuario_id = ?');
+
+		// Agrego limitacion tipo.
+		if ($tipo !== NULL)
 		{
-			$rst = $this->db->query('SELECT id FROM suceso WHERE usuario_id = ? ORDER BY fecha DESC LIMIT '.$start.','.$cantidad, $usuario)->get_pairs(Database_Query::FIELD_INT);
-		}
-		else
-		{
+			$params = array_merge($params, $tipo);
+
 			// Armo la lista de estados.
 			$kk = array();
 			$c = count($tipo);
@@ -217,10 +254,27 @@ class Base_Model_Suceso extends Model_Dataset {
 			{
 				$kk[] = '?';
 			}
-
-			$rst = $this->db->query('SELECT id FROM suceso WHERE usuario_id = ? AND tipo IN ('.implode(', ', $kk).') ORDER BY fecha DESC LIMIT '.$start.','.$cantidad, array_merge(array($usuario), $tipo))->get_pairs(Database_Query::FIELD_INT);
+			$q[] = 'tipo IN ('.implode(', ', $kk).')';
 		}
 
+		// Agrego limitacion notificar.
+		if ($notificar !== NULL)
+		{
+			$params[] = $notificar;
+			$q[] = 'notificar = ?';
+		}
+
+		// Agrego limitacion visto.
+		if ($visto !== NULL)
+		{
+			$params[] = $visto;
+			$q[] = 'visto = ?';
+		}
+
+		// Ejecuto la consulta.
+		$rst = $this->db->query('SELECT id FROM suceso WHERE '.implode(' AND ', $q).' ORDER BY fecha DESC LIMIT '.$start.','.$cantidad, $params)->get_pairs(Database_Query::FIELD_INT);
+
+		// Armamos el listado.
 		$lst = array();
 		foreach ($rst as $v)
 		{

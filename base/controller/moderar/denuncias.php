@@ -215,7 +215,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'post_denuncia_rechazar', $denuncia, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_denuncia->usuario_id)
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'post_denuncia_rechazar', TRUE, $denuncia, Usuario::$usuario_id);
+				$model_suceso->crear(Usuario::$usuario_id, 'post_denuncia_rechazar', FALSE, $denuncia, Usuario::$usuario_id);
+			}
+			else
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'post_denuncia_rechazar', FALSE, $denuncia, Usuario::$usuario_id);
+			}
 
 			// Informo resultado.
 			$_SESSION['flash_success'] = 'Denuncia rechazada correctamente.';
@@ -227,7 +235,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'post_denuncia_aceptar', $denuncia, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_denuncia->usuario_id)
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'post_denuncia_aceptar', TRUE, $denuncia, Usuario::$usuario_id);
+				$model_suceso->crear(Usuario::$usuario_id, 'post_denuncia_aceptar', FALSE, $denuncia, Usuario::$usuario_id);
+			}
+			else
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'post_denuncia_aceptar', FALSE, $denuncia, Usuario::$usuario_id);
+			}
 
 			// Informo resultado.
 			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
@@ -278,7 +294,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $post, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_borrar', TRUE, $post, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_borrar', FALSE, $post, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $post, Usuario::$usuario_id);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'Post eliminado correctamente.';
@@ -452,7 +476,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 			// Enviamos el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'foto_denuncia_rechazar', $denuncia, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_denuncia->usuario_id)
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'foto_denuncia_rechazar', TRUE, $denuncia, Usuario::$usuario_id);
+				$model_suceso->crear(Usuario::$usuario_id, 'foto_denuncia_rechazar', FALSE, $denuncia, Usuario::$usuario_id);
+			}
+			else
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'foto_denuncia_rechazar', FALSE, $denuncia, Usuario::$usuario_id);
+			}
 
 			// Informamos el resultado.
 			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
@@ -464,7 +496,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 			// Enviamos el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'foto_denuncia_aceptada', $denuncia, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_denuncia->usuario_id)
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'foto_denuncia_aceptada', TRUE, $denuncia, Usuario::$usuario_id);
+				$model_suceso->crear(Usuario::$usuario_id, 'foto_denuncia_aceptada', FALSE, $denuncia, Usuario::$usuario_id);
+			}
+			else
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'foto_denuncia_aceptada', FALSE, $denuncia, Usuario::$usuario_id);
+			}
 
 			// Informamos el resultado.
 			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
@@ -515,7 +555,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_borrar', $model_foto->id, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_borrar', TRUE, $model_foto->id, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_borrar', FALSE, $model_foto->id, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_borrar', FALSE, $model_foto->id, Usuario::$usuario_id);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'Post eliminado correctamente.';
@@ -689,7 +737,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 			// Enviamos el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'usuario_denuncia_rechazar', $denuncia, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_denuncia->usuario_id)
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'usuario_denuncia_rechazar', TRUE, $denuncia, Usuario::$usuario_id);
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_denuncia_rechazar', FALSE, $denuncia, Usuario::$usuario_id);
+			}
+			else
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'usuario_denuncia_rechazar', FALSE, $denuncia, Usuario::$usuario_id);
+			}
 
 			// Informamos el resultado.
 			$_SESSION['flash_success'] = 'Denuncia rechazada correctamente.';
@@ -701,7 +757,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 			// Enviamos el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $model_denuncia->usuario_id), 'usuario_denuncia_aceptar', $denuncia, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_denuncia->usuario_id)
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'usuario_denuncia_aceptar', TRUE, $denuncia, Usuario::$usuario_id);
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_denuncia_aceptar', FALSE, $denuncia, Usuario::$usuario_id);
+			}
+			else
+			{
+				$model_suceso->crear($model_denuncia->usuario_id, 'usuario_denuncia_aceptar', FALSE, $denuncia, Usuario::$usuario_id);
+			}
 
 			// Informamos el resultado.
 			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
@@ -793,7 +857,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 				// Agregamos el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_advertir', $id);
+				if (Usuario::$usuario_id != $id)
+				{
+					$model_suceso->crear($id, 'usuario_advertir', TRUE, $id);
+					$model_suceso->crear(Usuario::$usuario_id, 'usuario_advertir', FALSE, $id);
+				}
+				else
+				{
+					$model_suceso->crear($id, 'usuario_advertir', FALSE, $id);
+				}
 
 				// Informamos el resultado.
 				$_SESSION['flash_success'] = 'Advertencia enviada correctamente.';
@@ -924,7 +996,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 				// Enviamos el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_suspender', $s_id);
+				if (Usuario::$usuario_id != $id)
+				{
+					$model_suceso->crear($id, 'usuario_suspender', TRUE, $s_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'usuario_suspender', FALSE, $s_id);
+				}
+				else
+				{
+					$model_suceso->crear($id, 'usuario_suspender', FALSE, $s_id);
+				}
 
 				// Seteamos mensaje flash y volvemos.
 				$_SESSION['flash_success'] = 'Usuario suspendido correctamente.';

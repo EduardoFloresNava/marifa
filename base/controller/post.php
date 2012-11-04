@@ -425,7 +425,15 @@ class Base_Controller_Post extends Controller {
 				if ($rst)
 				{
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_editado', $model_post->id, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_editado', TRUE, $model_post->id, Usuario::$usuario_id);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_editado', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_editado', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
 				}
 
 				// Informo que todo fue correcto.
@@ -533,7 +541,15 @@ class Base_Controller_Post extends Controller {
 				$id = $model_post->denunciar(Usuario::$usuario_id, $motivo, $comentario);
 
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_denuncia_crear', $id);
+				if (Usuario::$usuario_id != $model_post->usuario_id)
+				{
+					$model_suceso->crear($model_post->usuario_id, 'post_denuncia_crear', TRUE, $id);
+					$model_suceso->crear(Usuario::$usuario_id, 'post_denuncia_crear', FALSE, $id);
+				}
+				else
+				{
+					$model_suceso->crear($model_post->usuario_id, 'post_denuncia_crear', FALSE, $id);
+				}
 
 				// Seteamos mensaje flash y volvemos.
 				$_SESSION['flash_success'] = 'Denuncia enviada correctamente.';
@@ -614,7 +630,15 @@ class Base_Controller_Post extends Controller {
 			{
 				// Agregamos los sucesos.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_comentario_crear', $id);
+				if (Usuario::$usuario_id != $model_post->usuario_id)
+				{
+					$model_suceso->crear($model_post->usuario_id, 'post_comentario_crear', TRUE, $id);
+					$model_suceso->crear(Usuario::$usuario_id, 'post_comentario_crear', FALSE, $id);
+				}
+				else
+				{
+					$model_suceso->crear($model_post->usuario_id, 'post_comentario_crear', FALSE, $id);
+				}
 
 				$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
 
@@ -684,7 +708,15 @@ class Base_Controller_Post extends Controller {
 
 		// Creo el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_favorito', $post, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_favorito', TRUE, $post, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_favorito'. FALSE, $post, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_favorito', FALSE, $post, Usuario::$usuario_id);
+		}
 
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El post fue agregado a favoritos correctamente.';
 		Request::redirect('/post/index/'.$post);
@@ -756,7 +788,15 @@ class Base_Controller_Post extends Controller {
 
 		// Agrego el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id), 'post_comentario_voto', $comentario, Usuario::$usuario_id, (int) $voto);
+		if (Usuario::$usuario_id != $model_comentario->usuario_id)
+		{
+			$model_suceso->crear($model_comentario->usuario_id, 'post_comentario_voto', TRUE, $comentario, Usuario::$usuario_id, (int) $voto);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_comentario_voto', FALSE, $comentario, Usuario::$usuario_id, (int) $voto);
+		}
+		else
+		{
+			$model_suceso->crear($model_comentario->usuario_id, 'post_comentario_voto', FALSE, $comentario, Usuario::$usuario_id, (int) $voto);
+		}
 
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha votado correctamente.';
 		Request::redirect('/post/index/'.$model_comentario->post_id);
@@ -817,8 +857,25 @@ class Base_Controller_Post extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->post()->usuario_id), $tipo ? 'post_comentario_mostrar' : 'post_comentario_ocultar', $comentario, Usuario::$usuario_id);
+		if (Usuario::$usuario_id == $model_comentario->usuario_id)
+		{
+			$model_suceso->crear(Usuario::$usuario_id, $tipo ? 'post_comentario_mostrar' : 'post_comentario_ocultar', FALSE, $comentario, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_comentario->post()->usuario_id)
+			{
+				$model_suceso->crear($model_comentario->post()->usuario_id, $tipo ? 'post_comentario_mostrar' : 'post_comentario_ocultar', TRUE, $comentario, Usuario::$usuario_id);
+			}
+		}
+		else
+		{
+			$model_suceso->crear($model_comentario->usuario_id, $tipo ? 'post_comentario_mostrar' : 'post_comentario_ocultar', TRUE, $comentario, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, $tipo ? 'post_comentario_mostrar' : 'post_comentario_ocultar', FALSE, $comentario, Usuario::$usuario_id);
+			if (Usuario::$usuario_id == $model_comentario->post()->usuario_id)
+			{
+				$model_suceso->crear($model_comentario->post()->usuario_id, $tipo ? 'post_comentario_mostrar' : 'post_comentario_ocultar', FALSE, $comentario, Usuario::$usuario_id);
+			}
+		}
 
+		// Informamos el resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.';
 		Request::redirect('/post/index/'.$model_comentario->post_id);
 	}
@@ -867,7 +924,23 @@ class Base_Controller_Post extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->post()->usuario_id), 'post_comentario_borrar', $comentario, Usuario::$usuario_id);
+		if (Usuario::$usuario_id == $model_comentario->usuario_id)
+		{
+			$model_suceso->crear(Usuario::$usuario_id, 'post_comentario_borrar', FALSE, $comentario, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_comentario->post()->usuario_id)
+			{
+				$model_suceso->crear($model_comentario->post()->usuario_id, 'post_comentario_borrar', TRUE, $comentario, Usuario::$usuario_id);
+			}
+		}
+		else
+		{
+			$model_suceso->crear($model_comentario->usuario_id, 'post_comentario_borrar', TRUE, $comentario, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_comentario_borrar', FALSE, $comentario, Usuario::$usuario_id);
+			if (Usuario::$usuario_id == $model_comentario->post()->usuario_id)
+			{
+				$model_suceso->crear($model_comentario->post()->usuario_id, 'post_comentario_borrar', FALSE, $comentario, Usuario::$usuario_id);
+			}
+		}
 
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El comentario se ha borrado correctamente.';
 		Request::redirect('/post/index/'.$model_comentario->post_id);
@@ -946,7 +1019,23 @@ class Base_Controller_Post extends Controller {
 
 				// Envio el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id, $model_comentario->post()->usuario_id), 'post_comentario_editar', $comentario, Usuario::$usuario_id);
+				if (Usuario::$usuario_id == $model_comentario->usuario_id)
+				{
+					$model_suceso->crear(Usuario::$usuario_id, 'post_comentario_editar', FALSE, $comentario, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_comentario->post()->usuario_id)
+					{
+						$model_suceso->crear($model_comentario->post()->usuario_id, 'post_comentario_editar', TRUE, $comentario, Usuario::$usuario_id);
+					}
+				}
+				else
+				{
+					$model_suceso->crear($model_comentario->usuario_id, 'post_comentario_editar', TRUE, $comentario, Usuario::$usuario_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'post_comentario_editar', FALSE, $comentario, Usuario::$usuario_id);
+					if (Usuario::$usuario_id == $model_comentario->post()->usuario_id)
+					{
+						$model_suceso->crear($model_comentario->post()->usuario_id, 'post_comentario_editar', FALSE, $comentario, Usuario::$usuario_id);
+					}
+				}
 
 				$_SESSION['post_comentario_success'] = 'El comentario se ha actualizado correctamente.';
 				Request::redirect('/post/index/'.$model_comentario->post_id);
@@ -1005,7 +1094,15 @@ class Base_Controller_Post extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_seguir', $post, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_seguir', TRUE, $post, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_seguir', FALSE, $post, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_seguir', FALSE, $post, Usuario::$usuario_id);
+		}
 
 		$_SESSION['flash_success'] = 'Te has convertido en seguidor del post correctamente.';
 		Request::redirect('/post/index/'.$post);
@@ -1067,7 +1164,15 @@ class Base_Controller_Post extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_fijar', $post, Usuario::$usuario_id, (int) $tipo);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_fijar', TRUE, $post, Usuario::$usuario_id, (int) $tipo);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_fijar', FALSE, $post, Usuario::$usuario_id, (int) $tipo);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_fijar', FALSE, $post, Usuario::$usuario_id, (int) $tipo);
+		}
 
 		// Informo el resultado.
 		if ($tipo)
@@ -1130,7 +1235,15 @@ class Base_Controller_Post extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_patrocinar', $post, Usuario::$usuario_id, $tipo);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_patrocinar', TRUE, $post, Usuario::$usuario_id, $tipo);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_patrocinar', FALSE, $post, Usuario::$usuario_id, $tipo);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_patrocinar', FALSE, $post, Usuario::$usuario_id, $tipo);
+		}
 
 		// Informo el resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
@@ -1186,7 +1299,15 @@ class Base_Controller_Post extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_ocultar', $post, Usuario::$usuario_id, (int) $tipo);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_ocultar', TRUE, $post, Usuario::$usuario_id, (int) $tipo);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_ocultar', FALSE, $post, Usuario::$usuario_id, (int) $tipo);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_ocultar', FALSE, $post, Usuario::$usuario_id, (int) $tipo);
+		}
 
 		// Informo resultado
 		$_SESSION['flash_success'] = 'El post se ocultó/mostró correctamente.';
@@ -1247,7 +1368,15 @@ class Base_Controller_Post extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $post, Usuario::$usuario_id, $tipo);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_aprobar', TRUE, $post, Usuario::$usuario_id, $tipo);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_aprobar', FALSE, $post, Usuario::$usuario_id, $tipo);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $post, Usuario::$usuario_id, $tipo);
+		}
 
 		// Informo resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> El estado se modific&oacute; correctamente.';
@@ -1315,7 +1444,15 @@ class Base_Controller_Post extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), $tipo ? 'post_borrar' : 'post_papelera', $post, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, $tipo ? 'post_borrar' : 'post_papelera', TRUE, $post, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, $tipo ? 'post_borrar' : 'post_papelera', FALSE, $post, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, $tipo ? 'post_borrar' : 'post_papelera', FALSE, $post, Usuario::$usuario_id);
+		}
 
 		// Informamos resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
@@ -1369,15 +1506,15 @@ class Base_Controller_Post extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(
-				array(
-					Usuario::$usuario_id,
-					$model_post->usuario_id
-				),
-				'post_restaurar',
-				Usuario::$usuario_id,
-				$post
-			);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_restaurar', TRUE, Usuario::$usuario_id, $post);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_restaurar', FALSE, Usuario::$usuario_id, $post);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_restaurar', FALSE, Usuario::$usuario_id, $post);
+		}
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -1437,12 +1574,7 @@ class Base_Controller_Post extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(
-				Usuario::$usuario_id,
-				'post_publicado',
-				Usuario::$usuario_id,
-				$post
-			);
+		$model_suceso->crear(Usuario::$usuario_id, 'post_publicado', FALSE, Usuario::$usuario_id, $post);
 
 		Request::redirect('/post/index/'.$post);
 	}
@@ -1524,7 +1656,15 @@ class Base_Controller_Post extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_puntuar', $post, Usuario::$usuario_id, $cantidad);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_puntuar', TRUE, $post, Usuario::$usuario_id, $cantidad);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_puntuar', FALSE, $post, Usuario::$usuario_id, $cantidad);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_puntuar', FALSE, $post, Usuario::$usuario_id, $cantidad);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'Has puntuado el post de manera correcta.';
@@ -1705,7 +1845,7 @@ class Base_Controller_Post extends Controller {
 
 					// Agrego el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(Usuario::$usuario_id, 'post_nuevo', $post_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'post_nuevo', FALSE, $post_id);
 
 					// Informo y voy a post.
 					$_SESSION['flash_success'] = 'El post fue creado correctamente.';

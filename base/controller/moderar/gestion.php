@@ -153,7 +153,15 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 		// Creamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_usuario->id), 'usuario_fin_suspension', $model_usuario->id, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_usuario->id)
+		{
+			$model_suceso->crear($model_usuario->id, 'usuario_fin_suspension', TRUE, $model_usuario->id, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'usuario_fin_suspension', FALSE, $model_usuario->id, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_usuario->id, 'usuario_fin_suspension', FALSE, $model_usuario->id, Usuario::$usuario_id);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'Suspensión anulada correctamente.';

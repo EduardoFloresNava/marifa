@@ -1,0 +1,2 @@
+<i class="icon icon-pencil"></i>
+<a href="/perfil/index/{$suceso.editor.nick}">{$suceso.editor.nick}</a> {@ha editado tu post@} <a href="/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a> {@de@} <a href="/perfil/index/{$suceso.usuario.nick}">{$suceso.usuario.nick}</a>.

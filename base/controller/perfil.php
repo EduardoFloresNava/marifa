@@ -602,7 +602,15 @@ class Base_Controller_Perfil extends Controller {
 
 				// Envio el suceso
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $this->usuario->id), 'usuario_denuncia_crear', $id);
+				if (Usuario::$usuario_id != $this->usuario->id)
+				{
+					$model_suceso->crear($this->usuario->id, 'usuario_denuncia_crear', TRUE, $id);
+					$model_suceso->crear(Usuario::$usuario_id, 'usuario_denuncia_crear', FALSE, $id);
+				}
+				else
+				{
+					$model_suceso->crear($this->usuario->id, 'usuario_denuncia_crear', FALSE, $id);
+				}
 
 				// Informo el resultado.
 				$_SESSION['flash_success'] = 'El usuario ha sido denunciado correctamente.';
@@ -660,7 +668,15 @@ class Base_Controller_Perfil extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array($this->usuario->id, Usuario::$usuario_id), 'usuario_seguir', $this->usuario->id, Usuario::$usuario_id);
+		if ($this->usuario->id != Usuario::$usuario_id)
+		{
+			$model_suceso->crear($this->usuario->id, 'usuario_seguir', TRUE, $this->usuario->id, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'usuario_seguir', FALSE, $this->usuario->id, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($this->usuario->id, 'usuario_seguir', TRUE, $this->usuario->id, Usuario::$usuario_id);
+		}
 
 		// Informo resultado.
 		$_SESSION['flash_success'] = 'Comenzaste a seguir al usuario correctamente.';
@@ -709,7 +725,15 @@ class Base_Controller_Perfil extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array($this->usuario->id, Usuario::$usuario_id), 'usuario_bloqueo', Usuario::$usuario_id, $this->usuario->id, 0);
+		if ($this->usuario->id != Usuario::$usuario_id)
+		{
+			$model_suceso->crear($this->usuario->id, 'usuario_bloqueo', TRUE, Usuario::$usuario_id, $this->usuario->id, 0);
+			$model_suceso->crear(Usuario::$usuario_id, 'usuario_bloqueo', FALSE, Usuario::$usuario_id, $this->usuario->id, 0);
+		}
+		else
+		{
+			$model_suceso->crear($this->usuario->id, 'usuario_bloqueo', FALSE, Usuario::$usuario_id, $this->usuario->id, 0);
+		}
 
 		// Informo resultado.
 		$_SESSION['flash_success'] = 'El usuario se ha bloqueado correctamente.';
@@ -758,7 +782,15 @@ class Base_Controller_Perfil extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array($this->usuario->id, Usuario::$usuario_id), 'usuario_bloqueo', Usuario::$usuario_id, $this->usuario->id, 1);
+		if ($this->usuario->id != Usuario::$usuario_id)
+		{
+			$model_suceso->crear($this->usuario->id, 'usuario_bloqueo', TRUE, Usuario::$usuario_id, $this->usuario->id, 1);
+			$model_suceso->crear(Usuario::$usuario_id, 'usuario_bloqueo', FALSE, Usuario::$usuario_id, $this->usuario->id, 1);
+		}
+		else
+		{
+			$model_suceso->crear($this->usuario->id, 'usuario_bloqueo', FALSE, Usuario::$usuario_id, $this->usuario->id, 1);
+		}
 
 		// Informo resultado.
 		$_SESSION['flash_success'] = 'El usuario se ha desbloqueado correctamente.';

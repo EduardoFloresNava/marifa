@@ -1,0 +1,2 @@
+<i class="icon icon-pencil"></i>
+<a href="/perfil/index/{$suceso.usuario.nick}">{$suceso.usuario.nick}</a> {@ha editado tu comentario en la foto@} <a href="/foto/ver/{$suceso.foto.id}">{$suceso.foto.titulo}</a>.

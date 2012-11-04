@@ -188,7 +188,15 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $post, Usuario::$usuario_id, (int) $tipo);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_aprobar', TRUE, $post, Usuario::$usuario_id, (int) $tipo);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_aprobar', FALSE, $post, Usuario::$usuario_id, (int) $tipo);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $post, Usuario::$usuario_id, (int) $tipo);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'El estado se modificó correctamente.';
@@ -233,7 +241,15 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $post, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_borrar', TRUE, $post, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_borrar', FALSE, $post, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $post, Usuario::$usuario_id);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'El post fue eliminado correctamente.';
@@ -422,7 +438,15 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id), ($tipo == 1) ? 'post_comentario_mostrar' : 'foto_comentario_mostrar', $model_comentario->id, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_comentario->usuario_id)
+		{
+			$model_suceso->crear($model_comentario->usuario_id, ($tipo == 1) ? 'post_comentario_mostrar' : 'foto_comentario_mostrar', TRUE, $model_comentario->id, Usuario::$usuario_id);
+			$model_suceso->crear($model_comentario->usuario_id, ($tipo == 1) ? 'post_comentario_mostrar' : 'foto_comentario_mostrar', FALSE, $model_comentario->id, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_comentario->usuario_id, ($tipo == 1) ? 'post_comentario_mostrar' : 'foto_comentario_mostrar', FALSE, $model_comentario->id, Usuario::$usuario_id);
+		}
 
 		// Informamos resultado.
 		$_SESSION['flash_success'] = 'El comentario se ha aprobado correctamente.';
@@ -481,7 +505,15 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_comentario->usuario_id), ($tipo == 1) ? 'post_comentario_borrar' : 'foto_comentario_borrar', $model_comentario->id, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_comentario->usuario_id)
+		{
+			$model_suceso->crear($model_comentario->usuario_id, ($tipo == 1) ? 'post_comentario_borrar' : 'foto_comentario_borrar', TRUE, $model_comentario->id, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, ($tipo == 1) ? 'post_comentario_borrar' : 'foto_comentario_borrar', FALSE, $model_comentario->id, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_comentario->usuario_id, ($tipo == 1) ? 'post_comentario_borrar' : 'foto_comentario_borrar', FALSE, $model_comentario->id, Usuario::$usuario_id);
+		}
 
 		// Informo el resultado.
 		$_SESSION['flash_success'] = 'El comentario se ha eliminado correctamente.';

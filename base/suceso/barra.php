@@ -42,7 +42,53 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	public static function obtener_listado($usuario, $pagina, $cantidad = 20, $class = __CLASS__)
 	{
-		return parent::obtener_listado($usuario, $pagina, $cantidad, $class);
+		// Obtenemos la lista de sucesos que puede procesar.
+		$rc = new ReflectionClass(substr($class, 5));
+		$ms = $rc->getMethods(ReflectionMethod::IS_STATIC);
+
+		$methods = array();
+		foreach ($ms as $method)
+		{
+			if (substr($method->name, 0, 7) == 'suceso_')
+			{
+				$methods[] = substr($method->name, 7);
+			}
+		}
+		unset($rc, $ms);
+
+		// Cargamos el listado de sucesos.
+		$model_suceso = new Model_Suceso;
+		return $model_suceso->listado($usuario, $pagina, $cantidad, $methods, TRUE, FALSE);
+	}
+
+	/**
+	 * Obtenemos el listado de sucesos a procesar incluyendo los vistos.
+	 * @param int $usuario ID del usuario dueño de los sucesos.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de elementos por página.
+	 * @return array
+	 */
+	public static function obtener_listado_completo($usuario, $pagina, $cantidad = 20)
+	{
+		$class = __CLASS__;
+
+		// Obtenemos la lista de sucesos que puede procesar.
+		$rc = new ReflectionClass(substr($class, 5));
+		$ms = $rc->getMethods(ReflectionMethod::IS_STATIC);
+
+		$methods = array();
+		foreach ($ms as $method)
+		{
+			if (substr($method->name, 0, 7) == 'suceso_')
+			{
+				$methods[] = substr($method->name, 7);
+			}
+		}
+		unset($rc, $ms);
+
+		// Cargamos el listado de sucesos.
+		$model_suceso = new Model_Suceso;
+		return $model_suceso->listado($usuario, $pagina, $cantidad, $methods, TRUE);
 	}
 
 	/**
@@ -63,20 +109,49 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	public static function cantidad($usuario, $class = __CLASS__)
 	{
-		return parent::cantidad($usuario, $class);
+		// Obtenemos la lista de sucesos que puede procesar.
+		$rc = new ReflectionClass(substr($class, 5));
+		$ms = $rc->getMethods(ReflectionMethod::IS_STATIC);
+
+		$methods = array();
+		foreach ($ms as $method)
+		{
+			if (substr($method->name, 0, 7) == 'suceso_')
+			{
+				$methods[] = substr($method->name, 7);
+			}
+		}
+		unset($rc, $ms);
+
+		// Obtenemos la cantidad.
+		$model_suceso = new Model_Suceso;
+		return $model_suceso->cantidad($usuario, $methods, TRUE, FALSE);
 	}
 
 	/**
-	 * Suceso producido cuando se crea un nuevo post.
-	 * @param array $suceso Datos del suceso.
-	 * @return array
+	 * Obtenemos la cantidad de sucesos que hay disponibles incluyendo los vistos.
+	 * @param int $usuario ID del usuario dueño de los posts.
 	 */
-	protected static function suceso_post_nuevo($suceso)
+	public static function cantidad_completa($usuario)
 	{
-		// Cargo datos del post.
-		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+		$class = __CLASS__;
+		// Obtenemos la lista de sucesos que puede procesar.
+		$rc = new ReflectionClass(substr($class, 5));
+		$ms = $rc->getMethods(ReflectionMethod::IS_STATIC);
 
-		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array());
+		$methods = array();
+		foreach ($ms as $method)
+		{
+			if (substr($method->name, 0, 7) == 'suceso_')
+			{
+				$methods[] = substr($method->name, 7);
+			}
+		}
+		unset($rc, $ms);
+
+		// Obtenemos la cantidad.
+		$model_suceso = new Model_Suceso;
+		return $model_suceso->cantidad($usuario, $methods, TRUE);
 	}
 
 	/**
@@ -86,6 +161,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_post_editado($suceso)
 	{
+		// Verifico si yo edité el post.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
@@ -102,6 +183,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_post_favorito($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
@@ -118,6 +205,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_post_seguir($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
@@ -134,6 +227,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_post_puntuar($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
@@ -150,6 +249,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_post_fijar($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
@@ -166,6 +271,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_post_patrocinar($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
@@ -175,6 +286,30 @@ class Base_Suceso_Barra extends Suceso {
 		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'patrocina' => $model_usuario->as_array(), 'tipo' => (bool) $suceso['objeto_id2']);
 	}
 
+/**
+ * * **post_ocultar** (*post_id*, *usuario_id*, *tipo*): Ocultamos/mostramos un post.
+ * * **post_id**: ID del post a ocultar/mostrar.
+ * * **usuario_id**: ID del usuario que realiza la acción de ocultar/mostrar el post.
+ * * **tipo**: Tipo de acción. 0 ocultar, 1 mostrar.
+ *
+ * **post_aprobar** (*post_id*, *usuario_id*, *tipo*): Aprobamos/Rechazamos un post.
+ * * **post_id**: ID del post a aprobar/rechazar.
+ * * **usuario_id**: ID del usuario que realiza la acción de aprobar/rechazar el post.
+ * * **tipo**: Tipo de acción. 0 rechazar, 1 aprobar.
+ *
+ * **post_borrar** (*post_id*, *usuario_id*): Eliminamos un post.
+ * * **post_id**: ID del post a eliminar.
+ * * **usuario_id**: ID del usuario que elimina el post.
+ *
+ * **post_papelera** (*post_id*, *usuario_id*): Enviamos un post a la papelera de posts.
+ * * **post_id**: ID del post que se envia a la papelera.
+ * * **usuario_id**: ID del usuario que envia el post a la papelera.
+ *
+ * **post_restaurar** (*post_id*, *usuario_id*): Restauramos un post que se encuentra en la papelera.
+ * * **post_id**: ID del post a restaurar.
+ * * **usuario_id**: ID del usuario que restaura el post.
+ */
+
 	/**
 	 * Suceso producido cuando se publica un post.
 	 * @param array $suceso Datos del suceso.
@@ -182,6 +317,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_post_publicar($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
 
@@ -190,6 +331,21 @@ class Base_Suceso_Barra extends Suceso {
 
 		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'publica' => $model_usuario->as_array());
 	}
+
+/**
+ *
+ * **post_denuncia_crear** (*denuncia_id*): Se denuncia un post. Implica la creación que luego debe ser verificada por un moderador/administrador para tomar una acción.
+ * * **denuncia_id**: ID de la denuncia creada.
+
+ * **post_denuncia_aceptar** (*denuncia_id*, *usuario_id*): Aceptamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a aceptar.
+ * * **usuario_id**: ID del usuario que acepta la denuncia.
+
+ * **post_denuncia_rechazar** (*denuncia_id*, *usuario_id*): Rechazamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a rechazar.
+ * * **usuario_id**: ID del usuario que rechaza la denuncia.
+ *
+ */
 
 	/**
 	 * Suceso producido cuando se publica un comentario en un post.
@@ -200,6 +356,12 @@ class Base_Suceso_Barra extends Suceso {
 	{
 		// Cargo el comentario.
 		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
+
+		// Verifico no sea yo.
+		if (Usuario::$usuario_id == $model_comentario->usuario_id)
+		{
+			return NULL;
+		}
 
 		// Post donde se crea el comentario.
 		$model_post = $model_comentario->post();
@@ -217,6 +379,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_post_comentario_voto($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo el comentario.
 		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
 
@@ -229,6 +397,20 @@ class Base_Suceso_Barra extends Suceso {
 		return array('post' => $model_comentario->post()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
 	}
 
+/**
+ *  * **post_comentario_ocultar** (*comentario_id*, *usuario_id*): El moderador/administrador oculta el comentario de un post.
+ * * **comentario_id**: ID del comentario a ocultar.
+ * * **usuario_id**: ID del usuario que realiza la acción de ocultar. Puede ser un moderador/administrador.
+
+ * **post_comentario_mostrar** (*comentario_id*, *usuario_id*): El moderador/administrador muestra el comentario de un post.
+ * * **comentario_id**: ID del comentario a mostrar.
+ * * **usuario_id**: ID del usuario que realiza la acción de mostrar. Puede ser un moderador/administrador.
+
+ * **post_comentario_borrar** (*comentario_id*, *usuario_id*): Se elimina un comentario.
+ * * **comentario_id**: ID del comentario a eliminar.
+ * * **usuario_id**: ID del usuario que elimina el comentario.
+ */
+
 	/**
 	 * Suceso producido cuando se edita el comentario de un usuario.
 	 * @param array $suceso Datos del suceso.
@@ -236,6 +418,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_post_comentario_editar($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo el comentario.
 		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
 
@@ -246,25 +434,18 @@ class Base_Suceso_Barra extends Suceso {
 	}
 
 	/**
-	 * Suceso producido cuando se crea una nueva foto.
-	 * @param array $suceso Datos del suceso.
-	 * @return array
-	 */
-	protected static function suceso_foto_nueva($suceso)
-	{
-		// Cargo la foto.
-		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
-
-		return array('foto' => $model_foto->as_array(), 'usuario' => $model_foto->usuario()->as_array());
-	}
-
-	/**
 	 * Suceso producido cuando se vota una foto.
 	 * @param array $suceso Datos del suceso.
 	 * @return array
 	 */
 	protected static function suceso_foto_votar($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
 
@@ -284,6 +465,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_foto_favorito($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
 
@@ -300,6 +487,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_foto_editar($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
 
@@ -309,6 +502,38 @@ class Base_Suceso_Barra extends Suceso {
 		return array('foto' => $model_foto->as_array(), 'usuario' => $model_foto->usuario()->as_array(), 'editor' => $model_usuario->as_array());
 	}
 
+/**
+ * * **foto_ocultar** (*foto_id*, *usuario_id*, *tipo*): Ocultamos/Mostramos una foto.
+ * * **foto_id**: ID de la foto a ocultar/mostrar.
+ * * **usuario_id**: ID del usuario que oculta/muestra la foto.
+ * * **tipo**: Tipo de modificación. 0 oculta, 1 muestra.
+
+ * **foto_borrar** (*foto_id*, *usuario_id*): Eliminamos una foto.
+ * * **foto_id**: ID de la foto a eliminar.
+ * * **usuario_id**: ID del usuario que elimina la foto.
+
+ * **foto_papelera** (*foto_id*, *usuario_id*): Enviamos una foto a la papelera de fotos.
+ * * **foto_id**: ID de la foto que se envia a la papelera.
+ * * **usuario_id**: ID del usuario que envia la foto a la papelera.
+
+ * **foto_restaurar** (*foto_id*, *usuario_id*): Restauramos una foto que se encuentra en la papelera.
+ * * **foto_id**: ID de la foto a restaurar.
+ * * **usuario_id**: ID del usuario que restaura la foto.
+ */
+
+/**
+ * * **foto_denuncia_crear** (*denuncia_id*): Se denuncia una foto. Implica la creación que luego debe ser verificada por un moderador/administrador para tomar una acción.
+ * * **denuncia_id**: ID de la denuncia creada.
+
+ * **foto_denuncia_aceptar** (*denuncia_id*, *usuario_id*): Aceptamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a aceptar.
+ * * **usuario_id**: ID del usuario que acepta la denuncia.
+
+ * **foto_denuncia_rechazar** (*denuncia_id*, *usuario_id*): Rechazamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a rechazar.
+ * * **usuario_id**: ID del usuario que rechaza la denuncia.
+ */
+
 	/**
 	 * Suceso producido cuando se publica un comentario en una foto.
 	 * @param array $suceso Datos del suceso.
@@ -316,6 +541,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_foto_comentario_crear($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo el comentario.
 		$model_comentario = new Model_Foto_Comentario( (int) $suceso['objeto_id']);
 
@@ -328,6 +559,20 @@ class Base_Suceso_Barra extends Suceso {
 		return array('comentario' => $model_comentario->as_array(), 'foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
 	}
 
+/**
+ * * **foto_comentario_ocultar** (*comentario_id*, *usuario_id*): El moderador/administrador oculta el comentario de  una foto.
+ * * **comentario_id**: ID del comentario a ocultar.
+ * * **usuario_id**: ID del usuario que realiza la acción de ocultar. Puede ser un moderador/administrador.
+
+ * **foto_comentario_mostrar** (*comentario_id*, *usuario_id*): El moderador/administrador muestra el comentario de  una foto.
+ * * **comentario_id**: ID del comentario a mostrar.
+ * * **usuario_id**: ID del usuario que realiza la acción de mostrar. Puede ser un moderador/administrador.
+
+ * **foto_comentario_borrar** (*comentario_id*, *usuario_id*): Se elimina un comentario.
+ * * **comentario_id**: ID del comentario a eliminar.
+ * * **usuario_id**: ID del usuario que elimina el comentario.
+ */
+
 	/**
 	 * Suceso producido cuando se edita el comentario de un usuario en una foto.
 	 * @param array $suceso Datos del suceso.
@@ -335,6 +580,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_foto_comentario_editar($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id1'] == Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo el comentario.
 		$model_comentario = new Model_Foto_Comentario( (int) $suceso['objeto_id']);
 
@@ -344,33 +595,12 @@ class Base_Suceso_Barra extends Suceso {
 		return array('foto' => $model_comentario->foto()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
 	}
 
-	/**
-	 * Suceso producido cuando se crea un usuario.
-	 * @param array $suceso Datos del suceso.
-	 * @return array
-	 */
-	protected static function suceso_usuario_nuevo($suceso)
-	{
-		// Cargo datos del usuario.
-		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
-
-		return array('usuario' => $model_usuario->as_array());
-	}
-
-	/**
-	 * Suceso producido cuando el usuario cambia su nick.
-	 * @param array $suceso Datos del suceso.
-	 * @return array
-	 */
-	protected static function suceso_usuario_cambio_nick($suceso)
-	{
-		// Cargo datos del usuario.
-		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
-
-		//TODO: Cargar los nicks.
-
-		return array('usuario' => $model_usuario->as_array());
-	}
+/**
+ * * **usuario_bloqueo** (*usuario_id*, *bloqueado_id*, *tipo*): El usuario *usuario_id* bloquea/desbloquea al usuario *bloqueado_id* para acceder a su perfil y eventos.
+ * * **usuario_id**: ID del usuario que bloquea/desbloquea al otro.
+ * * **bloquedo_id**: ID del usuario que es bloqueado/desbloqueado.
+ * * **tipo**: Tipo de acción: 0 bloquea, 1 desbloquea.
+ */
 
 	/**
 	 * Suceso producido cuando el usuario cambia de rango.
@@ -379,6 +609,12 @@ class Base_Suceso_Barra extends Suceso {
 	 */
 	protected static function suceso_usuario_cambio_rango($suceso)
 	{
+		// Verifico si fui yo.
+		if ($suceso['objeto_id'] != Usuario::$usuario_id)
+		{
+			return NULL;
+		}
+
 		// Cargo datos del usuario.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
 
@@ -390,6 +626,25 @@ class Base_Suceso_Barra extends Suceso {
 
 		return array('usuario' => $model_usuario->as_array(), 'rango' => $model_rango->as_array(), 'moderador' => $model_moderador->as_array());
 	}
+
+/**
+ * * **usuario_suspender** (*suspension_id*): El usuario es suspendido.
+ * * **suspension_id**: ID de la suspensión.
+
+ * **usuario_fin_suspension** (*usuario_id*, [*moderador_id*]): Suspensión del usuario finalizada. Puede ser de forma automática (terminada la suspensión) o por acción de un usuario.
+ * * **usuario_id**: ID del usuario del que se quitó(o finalizo) la suspensión.
+ * * **moderador_id**: ID del moderador que termina la suspensión. En caso de ser NULO es porque finalizó el periodo de forma automática.
+
+ * **usuario_baneo** (*baneo_id*): Un usuario es baneado.
+ * * **baneo_id**: ID del baneo al usuario.
+
+ * **usuario_fin_baneo** (*usuario_id*, *moderador_id*): Se cancela el baneo del usuario.
+ * * **usuario_id:**: ID del usuario al que se le quita el baneo.
+ * * **moderador_id**: ID del usuario (moderador o administrador) que ha quitado el baneo al usuario.
+
+ * **usuario_advertir** (*advertencia_id*): Se envía una advertencia al usuario.
+ * * **advertencia_id*: ID de la advertencia que se ha creado.
+ */
 
 	/**
 	 * Suceso producido cuando el usuario cambia de rango.
@@ -406,5 +661,18 @@ class Base_Suceso_Barra extends Suceso {
 
 		return array('usuario' => $model_usuario->as_array(), 'seguidor' => $model_seguidor->as_array());
 	}
+
+/**
+ * * **usuario_denuncia_crear** (*denuncia_id*): Se denuncia un usuario. Implica la creación que luego debe ser verificada por un moderador/administrador para tomar una acción.
+ * * **denuncia_id**: ID de la denuncia creada.
+
+ * **usuario_denuncia_aceptar** (*denuncia_id*, *usuario_id*): Aceptamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a aceptar.
+ * * **usuario_id**: ID del usuario que acepta la denuncia.
+
+ * **usuario_denuncia_rechazar** (*denuncia_id*, *usuario_id*): Rechazamos una denuncia.
+ * * **denuncia_id**: ID de la denuncia a rechazar.
+ * * **usuario_id**: ID del usuario que rechaza la denuncia.
+ */
 
 }

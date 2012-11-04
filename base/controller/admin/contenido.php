@@ -276,7 +276,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 				// Enviamos el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+				if (Usuario::$usuario_id != $model_post->usuario_id)
+				{
+					$model_suceso->crear($model_post->usuario_id, 'post_borrar', TRUE, $model_post->id, Usuario::$usuario_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+				}
+				else
+				{
+					$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+				}
 
 				// Informamos el resultado.
 				$_SESSION['flash_success'] = 'Post borrado correctamente.';
@@ -329,7 +337,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', TRUE, $model_post->id, Usuario::$usuario_id);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'El post se a eliminado correctamente.';
@@ -344,7 +360,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_ocultar', $model_post->id, Usuario::$usuario_id, 0);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_ocultar', TRUE, $model_post->id, Usuario::$usuario_id, 0);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_ocultar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_ocultar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -359,7 +383,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $model_post->id, Usuario::$usuario_id, 0);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_aprobar',TRUE, $model_post->id, Usuario::$usuario_id, 0);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -374,7 +406,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_papelera', $model_post->id, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_papelera', TRUE, $model_post->id, Usuario::$usuario_id);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_papelera', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_papelera', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -397,7 +437,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', TRUE, $model_post->id, Usuario::$usuario_id);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -425,7 +473,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $model_post->id, Usuario::$usuario_id, 1);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', TRUE, $model_post->id, Usuario::$usuario_id, 1);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -440,7 +496,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $model_post->id, Usuario::$usuario_id, 0);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', TRUE, $model_post->id, Usuario::$usuario_id, 0);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -455,7 +519,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', TRUE, $model_post->id, Usuario::$usuario_id);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -478,7 +550,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_ocultar', $model_post->id, Usuario::$usuario_id, 1);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_ocultar', TRUE, $model_post->id, Usuario::$usuario_id, 1);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_ocultar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_ocultar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -493,7 +573,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', TRUE, $model_post->id, Usuario::$usuario_id);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -516,7 +604,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_aprobar', $model_post->id, Usuario::$usuario_id, 1);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', TRUE, $model_post->id, Usuario::$usuario_id, 1);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -531,7 +627,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', TRUE, $model_post->id, Usuario::$usuario_id);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -554,7 +658,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_restaurar', $model_post->id, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_restaurar', TRUE, $model_post->id, Usuario::$usuario_id);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_restaurar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_restaurar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -569,7 +681,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 					// Envio el suceso.
 					$model_suceso = new Model_Suceso;
-					$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $model_post->id, Usuario::$usuario_id);
+					if (Usuario::$usuario_id != $model_post->usuario_id)
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', TRUE, $model_post->id, Usuario::$usuario_id);
+						$model_suceso->crear(Usuario::$usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
+					else
+					{
+						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
+					}
 
 					// Informo el resultado
 					$_SESSION['flash_success'] = 'Actualización correcta.';
@@ -699,7 +819,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_ocultar', $model_foto->id, Usuario::$usuario_id, 0);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_ocultar', TRUE, $model_foto->id, Usuario::$usuario_id, 0);
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_ocultar', FALSE, $model_foto->id, Usuario::$usuario_id, 0);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_ocultar', FALSE, $model_foto->id, Usuario::$usuario_id, 0);
+		}
 
 		// Informamos.
 		$_SESSION['flash_success'] = 'Foto ocultada correctamente.';
@@ -734,7 +862,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_ocultar', $model_foto->id, Usuario::$usuario_id, 1);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_ocultar', TRUE, $model_foto->id, Usuario::$usuario_id, 1);
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_ocultar', FALSE, $model_foto->id, Usuario::$usuario_id, 1);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_ocultar', FALSE, $model_foto->id, Usuario::$usuario_id, 1);
+		}
 
 		// Informamos.
 		$_SESSION['flash_success'] = 'Foto seteada como visible correctamente.';
@@ -762,7 +898,15 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_borrar', $model_foto->id, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_borrar', TRUE, $model_foto->id, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_borrar', FALSE, $model_foto->id, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_borrar', FALSE, $model_foto->id, Usuario::$usuario_id);
+		}
 
 		// Informamos.
 		$_SESSION['flash_success'] = 'Foto borrrada correctamente.';
@@ -826,15 +970,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los campos.
-			$nombre = isset($_POST['nombre']) ? $_POST['nombre'] : NULL;
+			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
 
 			// Valores para cambios.
 			$vista->assign('nombre', $nombre);
 			$vista->assign('imagen', $imagen);
-
-			// Formateamos el nombre.
-			$nombre = preg_replace('/\s+/', ' ', trim($nombre));
 
 			// Verificamos el nombre.
 			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{3,50}$/iD', $nombre))
@@ -961,15 +1102,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los campos.
-			$nombre = isset($_POST['nombre']) ? $_POST['nombre'] : NULL;
+			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
 
 			// Valores para cambios.
 			$vista->assign('nombre', $nombre);
 			$vista->assign('imagen', $imagen);
-
-			// Formateamos el nombre.
-			$nombre = preg_replace('/\s+/', ' ', trim($nombre));
 
 			// Verificamos el nombre.
 			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{3,50}$/iD', $nombre))
@@ -1124,7 +1262,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 				// Creamos la noticia.
 				$model_noticia = new Model_Noticia;
-				$id = $model_noticia->nuevo($_SESSION['usuario_id'], $contenido, $visible ? Model_Noticia::ESTADO_VISIBLE : Model_Noticia::ESTADO_OCULTO);
+				$model_noticia->nuevo(Usuario::$usuario_id, $contenido, $visible ? Model_Noticia::ESTADO_VISIBLE : Model_Noticia::ESTADO_OCULTO);
 
 				//TODO: agregar suceso de administracion.
 

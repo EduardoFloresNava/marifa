@@ -334,7 +334,15 @@ class Base_Controller_Mensaje extends Controller {
 					if ($mensaje_id > 0)
 					{
 						$model_suceso = new Model_Suceso;
-						$model_suceso->crear(array(Usuario::$usuario_id, $u->id), 'nuevo_mensaje', $mensaje_id);
+						if (Usuario::$usuario_id != $u->id)
+						{
+							$model_suceso->crear($u->id, 'nuevo_mensaje', TRUE, $mensaje_id);
+							$model_suceso->crear(Usuario::$usuario_id, 'nuevo_mensaje', FALSE, $mensaje_id);
+						}
+						else
+						{
+							$model_suceso->crear($u->id, 'nuevo_mensaje', FALSE, $mensaje_id);
+						}
 					}
 					else
 					{

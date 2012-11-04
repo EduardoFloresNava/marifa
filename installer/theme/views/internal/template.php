@@ -2,7 +2,7 @@
 <html lang="es">
     <head>
         <meta charset="utf-8">
-        <title>Marifa - Error{if="isset($number)"}: {$number}{/if}</title>
+        <title>Marifa Installer {if="isset($title)"} - {$title}{/if}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
@@ -26,20 +26,8 @@
     </head>
 
     <body>
-
-        <div class="navbar navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </a>
-                    <a class="brand" href="/">{if="isset($brand)"}{$brand}{else}Marifa{/if}</a>
-                </div>
-            </div>
-        </div>
         <div class="container">
+			<h1 class="logo-title">Instalador de Marifa</h1>
 			{$contenido}
 		</div>
 		<footer class="footer container">
@@ -50,21 +38,10 @@
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="{#THEME_URL#}/assets/js/jquery.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-transition.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-alert.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-modal.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-dropdown.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-scrollspy.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-tab.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-tooltip.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-popover.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-button.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-collapse.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-carousel.js"></script>
-		<script src="{#THEME_URL#}/assets/js/bootstrap-typeahead.js"></script>
-		<script src="{#THEME_URL#}/assets/js/jquery.markitup.js"></script>
-		<script src="{#THEME_URL#}/assets/js/bbcode.markitup.js"></script>
-		<script src="{#THEME_URL#}/assets/js/jquery.masonry.min.js"></script>
 		<script src="{#THEME_URL#}/assets/js/base.js"></script>
         {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}
     </body>

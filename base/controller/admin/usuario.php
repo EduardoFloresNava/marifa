@@ -327,7 +327,15 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 				// Envio el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_suspender', $s_id);
+				if (Usuario::$usuario_id != $id)
+				{
+					$model_suceso->crear($id, 'usuario_suspender', TRUE, $s_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'usuario_suspender', FALSE, $s_id);
+				}
+				else
+				{
+					$model_suceso->crear($id, 'usuario_suspender', FALSE, $s_id);
+				}
 
 				// Informamos el resultado.
 				$_SESSION['flash_success'] = 'Usuario suspendido correctamente.';
@@ -393,7 +401,15 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_fin_suspension', $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
+			if (Usuario::$usuario_id != $id)
+			{
+				$model_suceso->crear($id, 'usuario_fin_suspension', TRUE, $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_fin_suspension', FALSE, $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
+			}
+			else
+			{
+				$model_suceso->crear($id, 'usuario_fin_suspension', FALSE, $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
+			}
 		}
 		// Informo el resultado.
 		$_SESSION['flash_success'] = 'Suspensión anulada correctamente.';
@@ -442,11 +458,8 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los campos.
-			$asunto = isset($_POST['asunto']) ? $_POST['asunto'] : NULL;
+			$asunto = isset($_POST['asunto']) ? preg_replace('/\s+/', ' ', trim($_POST['asunto'])) : NULL;
 			$contenido = isset($_POST['contenido']) ? $_POST['contenido'] : NULL;
-
-			// Limpiamos asunto.
-			$asunto = preg_replace('/\s+/', ' ', trim($asunto));
 
 			// Valores para cambios.
 			$vista->assign('asunto', $asunto);
@@ -480,7 +493,15 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 				// Enviamos el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_suspender', $adv_id);
+				if (Usuario::$usuario_id != $id)
+				{
+					$model_suceso->crear($id, 'usuario_suspender', TRUE, $adv_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'usuario_suspender', FALSE, $adv_id);
+				}
+				else
+				{
+					$model_suceso->crear($id, 'usuario_suspender', FALSE, $adv_id);
+				}
 
 				// Seteamos mensaje flash y volvemos.
 				$_SESSION['flash_success'] = 'Advertencia enviada correctamente.';
@@ -569,7 +590,15 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 				// Enviamos el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_baneo', $ban_id);
+				if (Usuario::$usuario_id != $id)
+				{
+					$model_suceso->crear($id, 'usuario_baneo', TRUE, $ban_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'usuario_baneo', FALSE, $ban_id);
+				}
+				else
+				{
+					$model_suceso->crear($id, 'usuario_baneo', FALSE, $ban_id);
+				}
 
 				// Informamos el resultado.
 				$_SESSION['flash_success'] = 'Baneo realizado correctamente.';
@@ -623,7 +652,15 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			// Genero el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $id), 'usuario_fin_baneo', $id, Usuario::$id);
+			if (Usuario::$usuario_id != $id)
+			{
+				$model_suceso->crear($id, 'usuario_fin_baneo', TRUE, $id, Usuario::$id);
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_fin_baneo', FALSE, $id, Usuario::$id);
+			}
+			else
+			{
+				$model_suceso->crear($id, 'usuario_fin_baneo', FALSE, $id, Usuario::$id);
+			}
 		}
 
 		// Informo el resultado.
@@ -680,7 +717,15 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
-			$model_suceso->crear(array(Usuario::$usuario_id, $model_usuario->id), 'usuario_cambio_rango', $model_usuario->id, $rango, Usuario::$usuario_id);
+			if (Usuario::$usuario_id != $model_usuario->id)
+			{
+				$model_suceso->crear($model_usuario->id, 'usuario_cambio_rango', TRUE, $model_usuario->id, $rango, Usuario::$usuario_id);
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_cambio_rango', FALSE, $model_usuario->id, $rango, Usuario::$usuario_id);
+			}
+			else
+			{
+				$model_suceso->crear($model_usuario->id, 'usuario_cambio_rango', FALSE, $model_usuario->id, $rango, Usuario::$usuario_id);
+			}
 
 			// Informo el resultado.
 			$_SESSION['flash_success'] = 'El rango fue cambiado correctamente correctamente.';
@@ -820,7 +865,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los campos.
-			$nombre = isset($_POST['nombre']) ? $_POST['nombre'] : NULL;
+			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
 			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
 
@@ -828,10 +873,6 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$vista->assign('nombre', $nombre);
 			$vista->assign('color', $color);
 			$vista->assign('imagen', $imagen);
-
-
-			// Formateamos el nombre.
-			$nombre = preg_replace('/\s+/', ' ', trim($nombre));
 
 			// Verificamos el nombre.
 			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{5,32}$/iD', $nombre))
@@ -923,7 +964,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los campos.
-			$nombre = isset($_POST['nombre']) ? $_POST['nombre'] : NULL;
+			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
 			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
 
@@ -931,9 +972,6 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$vista->assign('nombre', $nombre);
 			$vista->assign('color', $color);
 			$vista->assign('imagen', $imagen);
-
-			// Formateamos el nombre.
-			$nombre = preg_replace('/\s+/', ' ', trim($nombre));
 
 			// Verificamos el nombre.
 			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{5,32}$/iD', $nombre))

@@ -788,7 +788,15 @@ class Base_Controller_Cuenta extends Controller {
 
 				// Envio el suceso.
 				$model_suceso = new Model_Suceso;
-				$model_suceso->crear(array(Usuario::$usuario_id, $model_usuario->id), 'usuario_bloqueo', Usuario::$usuario_id, $model_usuario->id, 0);
+				if (Usuario::$usuario_id != $model_usuario->id)
+				{
+					$model_suceso->crear($model_usuario->id, 'usuario_bloqueo', TRUE, Usuario::$usuario_id, $model_usuario->id, 0);
+					$model_suceso->crear(Usuario::$usuario_id, 'usuario_bloqueo', FALSE, Usuario::$usuario_id, $model_usuario->id, 0);
+				}
+				else
+				{
+					$model_suceso->crear($model_usuario->id, 'usuario_bloqueo', FALSE, Usuario::$usuario_id, $model_usuario->id, 0);
+				}
 
 				// Envio notificación.
 				$_SESSION['flash_success'] = 'El usuario fue bloqueado correctamente.';

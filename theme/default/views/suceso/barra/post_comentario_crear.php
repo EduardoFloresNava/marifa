@@ -1,0 +1,2 @@
+<i class="icon icon-comment"></i>
+<a href="/perfil/index/{$suceso.usuario.nick}">{$suceso.usuario.nick}</a> {@ha comentado en tu post@} <a href="/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a>.

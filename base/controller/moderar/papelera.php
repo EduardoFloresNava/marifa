@@ -148,7 +148,15 @@ class Base_Controller_Moderar_Papelera extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_restaurar', $post, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_restaurar', TRUE, $post, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_restaurar', FALSE, $post, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_restaurar', FALSE, $post, Usuario::$usuario_id);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Post restaurado correctamente.';
@@ -193,7 +201,15 @@ class Base_Controller_Moderar_Papelera extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_post->usuario_id), 'post_borrar', $post, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_post->usuario_id)
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_borrar', TRUE, $post, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_borrar', FALSE, $post, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $post, Usuario::$usuario_id);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Post borrado correctamente.';
@@ -300,7 +316,15 @@ class Base_Controller_Moderar_Papelera extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_restaurar', $foto, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_restaurar', TRUE, $foto, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_restaurar', FALSE, $foto, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_restaurar', FALSE, $foto, Usuario::$usuario_id);
+		}
 
 		// Informamos resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Foto restaurada correctamente.';
@@ -344,7 +368,15 @@ class Base_Controller_Moderar_Papelera extends Controller {
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
-		$model_suceso->crear(array(Usuario::$usuario_id, $model_foto->usuario_id), 'foto_borrar', $foto, Usuario::$usuario_id);
+		if (Usuario::$usuario_id != $model_foto->usuario_id)
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_borrar', TRUE, $foto, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'foto_borrar', FALSE, $foto, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_foto->usuario_id, 'foto_borrar', FALSE, $foto, Usuario::$usuario_id);
+		}
 
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Foto borrada correctamente.';
