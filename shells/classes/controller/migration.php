@@ -88,6 +88,27 @@ class Shell_Controller_Migration extends Shell_Controller {
 				$migraciones = Shell_Migraciones::migraciones();
 				$faltantes = array_diff($migraciones, array_keys($lista));
 
+				// Verifico si especificó alguna en especial.
+				if (isset($this->params[2]))
+				{
+					$migracion = (int) $this->params[2];
+
+					// Verifico no esté aplicada aún.
+					if (in_array($migracion, $lista))
+					{
+						Shell_Cli::write_line(Shell_Cli::get_colored_string('ERROR: ', 'red').'La migracion '.$migracion.' ya se encuentra aplicada.');
+					}
+
+					// Verifico su existencia.
+					if ( ! in_array($migracion, $migraciones))
+					{
+						Shell_Cli::write_line(Shell_Cli::get_colored_string('ERROR: ', 'red').'La migracion '.$migracion.' no se encuentra disponible.');
+					}
+
+					// Sobreescribo faltantes.
+					$faltantes = array($migracion);
+				}
+
 				// Aplicamos las faltantes.
 				foreach ($faltantes as $f)
 				{
