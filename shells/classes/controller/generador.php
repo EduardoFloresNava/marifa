@@ -302,7 +302,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 			else
 			{
 				$s_p = substr(dirname($class_name), strlen($this->p_dir));
-				$s_p = preg_replace('/([\/])\s*(\w)/e', 'strtoupper($1$2)', ucfirst(strtolower($s_p)));
+				$s_p = preg_replace('/([\/])\s*(\w)/e', 'strtoupper("$1$2")', ucfirst(strtolower($s_p)));
 				$s_p = preg_replace('/[\/]+/', '\\', $s_p);
 			}
 
@@ -336,7 +336,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 
 			// Subpackage.
 			$s_p = substr(dirname($class_name), strlen($this->p_dir));
-			$s_p = preg_replace('/([\/])\s*(\w)/e', 'strtoupper($1$2)', ucfirst(strtolower($s_p)));
+			$s_p = preg_replace('/([\/])\s*(\w)/e', 'strtoupper("$1$2")', ucfirst(strtolower($s_p)));
 			$s_p = preg_replace('/[\/]+/', '\\', $s_p);
 
 			$l = "interface $c extends Base_$c {}";
