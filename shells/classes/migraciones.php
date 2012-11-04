@@ -35,10 +35,13 @@ class Shell_Migraciones {
 	 */
 	public static function migraciones()
 	{
+		// Arreglo donde poner las migraciones.
 		$lst = array();
 
+		// Listado de archivos.
 		$files = scandir(SHELL_PATH.DS.'migraciones'.DS);
 
+		// Obtenemos las migraciones.
 		foreach ($files as $f)
 		{
 			if (preg_match('/^([0-9]+)_migracion\.php$/D', $f))
@@ -46,6 +49,9 @@ class Shell_Migraciones {
 				$lst[] = (int) array_shift(explode('_', $f));
 			}
 		}
+
+		// Ordenamos las migraciones.
+		sort($lst);
 
 		return $lst;
 	}
@@ -56,6 +62,7 @@ class Shell_Migraciones {
 	 */
 	public static function migrar($numero)
 	{
+		// Path de la migracion a aplicar.
 		$f_migracion = SHELL_PATH.DS.'migraciones'.DS.$numero.'_migracion.php';
 
 		// Verificamos exista la migración.
