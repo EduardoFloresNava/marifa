@@ -105,21 +105,8 @@ class Base_Suceso {
 		// Limpio prefijos de la clase.
 		$class = substr($class, 5);
 
-		// Verificamos si existe.
-		if (is_callable($class.'::suceso_'.$informacion['tipo']))
-		{
-			// Procesamos el suceso.
-			$data = call_user_func($class.'::suceso_'.$informacion['tipo'], $informacion);
-		}
-		else
-		{
-			PRODUCTION || Profiler_Profiler::get_instance()->log("No se puede parsear '{$informacion['tipo']}' en $class");
-			return NULL;
-		}
-
-		/**
 		// ID de la cache del suceso.
-		$cache_id = 'suceso_data.'.$informacion['id'];
+		$cache_id = 'suceso_data.'.$informacion['id'].'-'.Usuario::$usuario_id;
 
 		// Obtenemos elemento a partir de la cache.
 		$data = Cache::get_instance()->get($cache_id);
@@ -128,20 +115,20 @@ class Base_Suceso {
 		if ($data === FALSE)
 		{
 			// Verificamos si existe.
-			if (is_callable('self::suceso_'.$informacion['tipo']))
+			if (is_callable($class.'::suceso_'.$informacion['tipo']))
 			{
 				// Procesamos el suceso.
-				$data = call_user_func('self::suceso_'.$informacion['tipo'], $informacion);
+				$data = call_user_func($class.'::suceso_'.$informacion['tipo'], $informacion);
 
 				// Guardamos en la cache.
 				Cache::get_instance()->save($cache_id, $data);
 			}
 			else
 			{
-				PRODUCTION || Profiler_Profiler::get_instance()->log("No se puede parsear '{$informacion['tipo']}'");
+				PRODUCTION || Profiler_Profiler::get_instance()->log("No se puede parsear '{$informacion['tipo']}' en $class");
 				return NULL;
 			}
-		}*/
+		}
 
 		return $data;
 	}
