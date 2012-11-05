@@ -91,13 +91,17 @@ class Base_Model_Configuracion extends Model {
 	 */
 	public function __get($name)
 	{
-		if (isset($this->$name))
+		// Obtengo la clave.
+		$rst = $this->db->query('SELECT valor FROM configuracion WHERE clave = ?', $name);
+
+		// Verifico la cantidad.
+		if ($rst->num_rows() <= 0)
 		{
-			return $this->db->query('SELECT valor FROM configuracion WHERE clave = ?', $name)->get_var();
+			throw new UnexpectedValueException('No existe la clave.');
 		}
 		else
 		{
-			throw new UnexpectedValueException('No existe la clave.');
+			return $rst->get_var();
 		}
 	}
 
