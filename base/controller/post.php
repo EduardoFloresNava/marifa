@@ -109,6 +109,16 @@ class Base_Controller_Post extends Controller {
 			// Mi id.
 			$view->assign('me', Usuario::$usuario_id);
 
+			// Verifico si sigo al usuario.
+			if ($model_post->usuario_id !== Usuario::$usuario_id)
+			{
+				$view->assign('sigue_usuario', $model_post->usuario()->es_seguidor(Usuario::$usuario_id));
+			}
+			else
+			{
+				$view->assign('sigue_usuario', TRUE);
+			}
+
 			// Información del usuario dueño del post.
 			$u_data = $model_post->usuario()->as_array();
 			$u_data['seguidores'] = $model_post->usuario()->cantidad_seguidores();
@@ -1048,6 +1058,72 @@ class Base_Controller_Post extends Controller {
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $vista->parse());
+	}
+
+	/**
+	 * Seguimos a un usuario.
+	 * @param int $post ID del post que estamos viendo.
+	 * @param int $usuario ID del usuario a seguir.
+	 */
+	public function action_seguir_usuario($post, $usuario)
+	{
+		// Verifico estar logueado.
+		if ( ! Usuario::is_login())
+		{
+			$_SESSION['flash_error'] = 'Debes estar logueado para poder seguir usuarios.';
+			Request::redirect('/usuario/login');
+		}
+
+		// Cargo el usuario.
+		$usuario = (int) $usuario;
+		$model_usuario = new Model_Usuario($usuario);
+
+		// Verifico existencia.
+		if ( ! $model_usuario->existe())
+		{
+			$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Verificamos no sea uno mismo.
+		if (Usuario::$usuario_id == $model_usuario->id)
+		{
+			$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Verifico el estado.
+		if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
+		{
+			$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Verifico no sea seguidor.
+		if ($model_usuario->es_seguidor(Usuario::$usuario_id))
+		{
+			$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			Request::redirect('/post/index/'.$post);
+		}
+
+		// Sigo al usuario.
+		$model_usuario->seguir(Usuario::$usuario_id);
+
+		// Envio el suceso.
+		$model_suceso = new Model_Suceso;
+		if ($model_usuario->id != Usuario::$usuario_id)
+		{
+			$model_suceso->crear($model_usuario->id, 'usuario_seguir', TRUE, $model_usuario->id, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'usuario_seguir', FALSE, $model_usuario->id, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_usuario->id, 'usuario_seguir', TRUE, $model_usuario->id, Usuario::$usuario_id);
+		}
+
+		// Informo resultado.
+		$_SESSION['flash_success'] = 'Comenzaste a seguir al usuario correctamente.';
+		Request::redirect('/post/index/'.$post);
 	}
 
 	/**
