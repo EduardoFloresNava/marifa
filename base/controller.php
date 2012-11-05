@@ -54,6 +54,10 @@ class Base_Controller {
 		}
 		unset($noticia);
 
+		// Cargo nombre del sitio.
+		$model_config = new Model_Configuracion;
+		$this->template->assign('brand', $model_config->get('nombre', 'Marifa'));
+
 		// Acciones para menu offline.
 		if ( ! Usuario::is_login())
 		{
