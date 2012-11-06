@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * configuracion.php is part of Marifa.
  *
@@ -18,16 +18,16 @@
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Model
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Modelo de configuraciones generales del sistema.
  *
- * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Model
  */
 class Base_Model_Configuracion extends Model {
@@ -91,13 +91,33 @@ class Base_Model_Configuracion extends Model {
 	 */
 	public function __get($name)
 	{
-		if (isset($this->$name))
+		// Obtengo la clave.
+		$rst = $this->db->query('SELECT valor FROM configuracion WHERE clave = ?', $name);
+
+		// Verifico la cantidad.
+		if ($rst->num_rows() <= 0)
 		{
-			return $this->db->query('SELECT valor FROM configuracion WHERE clave = ?', $name)->get_var();
+			throw new UnexpectedValueException('No existe la clave.');
 		}
 		else
 		{
-			throw new Exception('No existe la clave.');
+			return $rst->get_var();
+		}
+	}
+
+	/**
+	 * Obtenemos un valor utilizando un resultado por defecto.
+	 * @param string $name
+	 * @param mixed $default
+	 */
+	public function get($name, $default = NULL)
+	{
+		try {
+			return $this->$name;
+		}
+		catch (UnexpectedValueException $e)
+		{
+			return $default;
 		}
 	}
 

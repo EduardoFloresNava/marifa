@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * mysqli.php is part of Marifa.
  *
@@ -15,24 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Database/Driver
+ * @package		Marifa\Base
+ * @subpackage  Database\Driver
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Driver base para PDO.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @version    0.1
- * @package    Marifa/Base
- * @subpackage Database/Driver
+ * @package    Marifa\Base
+ * @subpackage Database\Driver
  */
 class Base_Database_Driver_Mysqli extends Database_Driver {
+
+	/**
+	 * Instancia de la base de datos.
+	 * @var mysqli
+	 */
+	protected $dbh;
 
 	/**
 	 * Constructor de la clase.
@@ -44,7 +49,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 	public function __construct($data)
 	{
 		// Obtenemos los parametros de conección.
-		foreach(array('host', 'username', 'password', 'db_name') as $t)
+		foreach (array('host', 'username', 'password', 'db_name') as $t)
 		{
 			$this->$t = isset($data[$t]) ? $data[$t] : NULL;
 		}
@@ -100,6 +105,105 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 	}
 
 	/**
+	 * Obtenemos la explicación de una consulta SQL.
+	 * @param string $sql Consulta a explicar.
+	 * @return array
+	 */
+	public function explain_query($sql)
+	{
+		// Creamos la consulta.
+		if ( ! $sth = $this->dbh->prepare($sql))
+		{
+			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
+		}
+
+		// Ejecutamos la consulta.
+		if ($sth->execute())
+		{
+			$rst = new Database_Driver_Mysqli_Query($sth->get_result());
+		}
+		else
+		{
+			// Error ejecutando la consulta.
+			throw new Database_Exception("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
+		}
+
+		// Armamos el resultado.
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			// Posibles keys
+			if (isset($v->possible_keys) && $v->possible_keys != NULL)
+			{
+				if ( ! isset($lst['posibles_keys']))
+				{
+					$lst['posibles_keys'] = array();
+				}
+
+				$lst['posibles_keys'][] = $v->possible_keys;
+			}
+
+			// Key
+			if (isset($v->key) && $v->key != NULL)
+			{
+				if ( ! isset($lst['key']))
+				{
+					$lst['key'] = array();
+				}
+				$ks = $v->key;
+
+				if (isset($v->key_len) && $v->key_len != NULL)
+				{
+					$ks = $ks.'('.$v->key_len.')';
+				}
+				$lst['key'][] = $ks;
+			}
+
+			// Type
+			if (isset($v->type) && $v->type != NULL)
+			{
+				if ( ! isset($lst['type']))
+				{
+					$lst['type'] = array();
+				}
+				$lst['type'][] = $v->type;
+			}
+
+			// Rows
+			if (isset($v->rows) && $v->rows != NULL)
+			{
+				$lst['rows'] = (int) $v->rows;
+			}
+		}
+
+		// Tranformamos elemento a string.
+		foreach ($lst as $k => $v)
+		{
+			if (is_array($v))
+			{
+				$lst[$k] = implode(', ', $v);
+			}
+		}
+
+		// Devolvemos el resultado.
+		return $lst;
+	}
+
+	/**
+	 * Verifica si es una cadena de caracteres o un objeto a parsear en una
+	 * consulta SQL. Realizando el pertinente parseo para obtener el SQL a
+	 * ejecutar.
+	 * @param mixed $query Objeto a parsear.
+	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @return string Consulta SQL
+	 */
+	private function parse_query($query, $params = array())
+	{
+		$o = new Base_Database_Parser($query, $params);
+		return $o->build();
+	}
+
+	/**
 	 * Función para realizar consultas.
 	 *
 	 * Estás son las consultas que devuelven un objeto con
@@ -111,58 +215,28 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 	 */
 	public function query($query, $params = array())
 	{
+		// Armamos la consulta.
+		$query = $this->parse_query($query, $params);
+
 		// Creamos la consulta.
 		if ( ! $sth = $this->dbh->prepare($query))
 		{
 			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
-		// Verificamos sea arreglo.
-		if ( ! is_array($params) && $params !== NULL)
-		{
-			$params = array($params);
-		}
-
-		if (count($params) > 0)
-		{
-			// Agregamos la lista de parámetros.
-			$type = '';
-			foreach($params as $param)
-			{
-				// Obtenemos el tipo.
-				if(is_int($param))
-				{
-					$type .= 'i'; //integer
-				}
-				elseif (is_float($param))
-				{
-					$type .= 'd'; //double
-				}
-				elseif (is_string($param))
-				{
-					$type .= 's'; //string
-				}
-				else
-				{
-					$type .= 'b'; //blob and unknown
-				}
-			}
-
-			// Lo asociamos.
-			if ( ! call_user_func_array(array($sth, 'bind_param'), array_merge($type, $params)))
-			{
-				throw new Database_Exception("Error asociando los parametros a la consulta: '{$sth->error}'", $sth->errno);
-			}
-		}
+		PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
 		// Ejecutamos la consulta.
 		if ($sth->execute())
 		{
+			$rst = $sth->get_result();
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			// Generamos un objeto para dar compatibilidad al resto de motores.
-			return new Database_Driver_Mysqli_Query($sth->get_result());
+			return new Database_Driver_Mysqli_Query($rst);
 		}
 		else
 		{
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			// Error ejecutando la consulta.
 			throw new Database_Exception("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
 			return FALSE;
@@ -182,57 +256,26 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 	 */
 	private function write_query($query, $params = array())
 	{
+		// Armamos la consulta.
+		$query = $this->parse_query($query, $params);
+
 		// Creamos la consulta.
 		if ( ! $sth = $this->dbh->prepare($query))
 		{
 			throw new Database_Exception("Error generando la consulta: '{$this->dbh->error}'", $this->dbh->errno);
 		}
 
-		// Verificamos sea arreglo.
-		if ( ! is_array($params) && $params !== NULL)
-		{
-			$params = array($params);
-		}
-
-		if (count($params) > 0)
-		{
-			// Agregamos la lista de parámetros.
-			$type = '';
-			foreach($params as $param)
-			{
-				// Obtenemos el tipo.
-				if(is_int($param))
-				{
-					$type .= 'i'; //integer
-				}
-				elseif (is_float($param))
-				{
-					$type .= 'd'; //double
-				}
-				elseif (is_string($param))
-				{
-					$type .= 's'; //string
-				}
-				else
-				{
-					$type .= 'b'; //blob and unknown
-				}
-			}
-
-			// Lo asociamos.
-			if ( ! call_user_func_array(array($sth, 'bind_param'), array_merge($type, $params)))
-			{
-				throw new Database_Exception("Error asociando los parametros a la consulta: '{$sth->error}'", $sth->errno);
-			}
-		}
+		PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
 		// Ejecutamos la consulta.
 		if ($sth->execute())
 		{
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			return array($sth->insert_id, $sth->affected_rows);
 		}
 		else
 		{
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 			// Error ejecutando la consulta.
 			throw new Database_Exception("Error ejecutando la consulta: '{$sth->error}'", $sth->errno);
 			return FALSE;
@@ -299,5 +342,17 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		{
 			return $rst;
 		}
+	}
+
+	/**
+	 * Validamos que una cadena no tenga caracteres no permitidos y la convertimos
+	 * en una cadena segura.
+	 * @param string $data Cadena a limpiar.
+	 * @return string Cadena limpia
+	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
+	 */
+	public function escape_string($data)
+	{
+		return mysqli_real_escape_string($this->dbh, $data);
 	}
 }

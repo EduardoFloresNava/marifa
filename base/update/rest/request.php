@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * request.php is part of Marifa.
  *
@@ -15,22 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.3
+ * @since		Versión 0.1
  * @filesource
- * @subpackage  Update/Rest
- * @package		Marifa/Base
+ * @subpackage  Update\Rest
+ * @package		Marifa\Base
  */
 
 /**
  * Clase encargada de realizar las llamadas al API.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @since      Versión 0.3
- * @subpackage Update/Rest
- * @package    Marifa/Base
+ * @since      Versión 0.1
+ * @subpackage Update\Rest
+ * @package    Marifa\Base
  */
 class Base_Update_Rest_Request {
 
@@ -70,16 +68,13 @@ class Base_Update_Rest_Request {
 			if ($callback !== NULL)
 			{
 				curl_setopt($petition, CURLOPT_NOPROGRESS, FALSE);
-				//curl_setopt($petition, CURLOPT_BUFFERSIZE, 24);
 				curl_setopt($petition, CURLOPT_PROGRESSFUNCTION, $callback);
 			}
 
 			// Agregamos los parametros post.
 			if ($post !== NULL)
 			{
-				//curl_setopt($petition, CURLOPT_HTTPHEADER, array("Content-type: multipart/form-data"));
 				curl_setopt($petition, CURLOPT_POST, 1);
-				//curl_setopt($petition, CURLOPT_POST, count($post));
 				curl_setopt($petition, CURLOPT_POSTFIELDS, $post);
 			}
 
@@ -111,14 +106,7 @@ class Base_Update_Rest_Request {
 	 */
 	private function parse_response($data)
 	{
-		$decoded_data = json_decode($data);
-
-		//if ($decoded_data === NULL)
-		//{
-		//	return FALSE;
-		//}
-
-		return new Update_Rest_Response($decoded_data);
+		return new Update_Rest_Response(json_decode($data));
 	}
 
 	/**
@@ -167,7 +155,7 @@ class Base_Update_Rest_Request {
 			curl_setopt($petition, CURLOPT_URL, $this->server.$url);
 			curl_setopt($petition, CURLOPT_TIMEOUT, 50);
 			curl_setopt($petition, CURLOPT_FILE, $fp);
-			//curl_setopt($petition, CURLOPT_FOLLOWLOCATION, true);
+			// curl_setopt($petition, CURLOPT_FOLLOWLOCATION, true);
 
 			// Realizamos la peticion.
 			curl_exec($petition);
@@ -211,7 +199,7 @@ class Base_Update_Rest_Request {
 			}
 
 			// Comenzamos a mover los bytes.
-			while( ! feof($r_fp))
+			while ( ! feof($r_fp))
 			{
 				fwrite($l_fp, fread($r_fp, 1024));
 			}

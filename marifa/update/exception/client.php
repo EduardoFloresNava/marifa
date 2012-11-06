@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * client.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Update/Exception
+ * @package		Marifa\Base
+ * @subpackage  Update\Exception
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Alias de Base_Update_Exception_Client
  *
- * @package    Marifa/Marifa
- * @subpackage Update/Exception
+ * @package    Marifa\Marifa
+ * @subpackage Update\Exception
  */
 class Update_Exception_Client extends Base_Update_Exception_Client {}

@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * query.php is part of Marifa.
  *
@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Database/Driver/Mysql
+ * @package		Marifa\Base
+ * @subpackage  Database\Driver
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase que representa una consulta SQL realizada desde MySQL.
@@ -31,8 +30,8 @@
  *
  * @author     Cody Roodaka <roodakazo@hotmail.com>
  * @version    0.1
- * @package    Marifa/Base
- * @subpackage Database/Driver/Mysql
+ * @package    Marifa\Base
+ * @subpackage Database\Driver
  */
 class Base_Database_Driver_Mysql_Query extends Database_Query {
 
@@ -63,7 +62,13 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 	 */
 	public function __construct($query, $conn)
 	{
+		PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 		$this->query = mysql_query($query, $conn);
+		if ($this->query === FALSE)
+		{
+			throw new Database_Exception(mysql_error($conn).' (error '.mysql_errno($conn).')', mysql_errno($conn));
+		}
+		PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 	}
 
 	/**
@@ -72,7 +77,10 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 	 */
 	public function __destruct()
 	{
-		mysql_free_result($this->query);
+		if (is_resource($this->query))
+		{
+			mysql_free_result($this->query);
+		}
 	}
 
 	/**
@@ -95,7 +103,7 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 
 	/**
 	 * Obtenemos un elemento del resultado.
-	 * @param $type Tipo de retorno de los valores.
+	 * @param int $type Tipo de retorno de los valores.
 	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return mixed
 	 */
@@ -106,6 +114,12 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 			case Database_Query::FETCH_NUM:
 				// Obtenemos el arreglo.
 				$resultado = mysql_fetch_array($this->query, MYSQL_NUM);
+
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_array($resultado))
+				{
+					return $resultado;
+				}
 
 				// Verificamos si hay que hcaer cast. Sirve a fines de rendimiento.
 				if ($cast !== NULL)
@@ -126,6 +140,12 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 				// Obtenemos el objeto.
 				$object = mysql_fetch_object($this->query);
 
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_object($object))
+				{
+					return $object;
+				}
+
 				// Verificamos si hay que hcaer cast. Sirve a fines de rendimiento.
 				if ($cast !== NULL)
 				{
@@ -133,7 +153,7 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 					$cast = $this->expand_cast_list($cast, array_keys(get_object_vars($object)));
 
 					// Realizamos el cast.
-					foreach($cast as $k => $v)
+					foreach ($cast as $k => $v)
 					{
 						$object->$k = $this->cast_field($object->$k, $v);
 					}
@@ -145,6 +165,12 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 				// Obtenemos el arreglo.
 				$resultado = mysql_fetch_array($this->query, MYSQL_ASSOC);
 
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_array($resultado))
+				{
+					return $resultado;
+				}
+
 				// Verificamos si hay que hcaer cast. Sirve a fines de rendimiento.
 				if ($cast !== NULL)
 				{
@@ -152,7 +178,7 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 					$cast = $this->expand_cast_list($cast, array_keys($resultado));
 
 					// Realizamos el cast.
-					foreach($cast as $k => $v)
+					foreach ($cast as $k => $v)
 					{
 						$resultado[$k] = $this->cast_field($resultado[$k], $v);
 					}
@@ -164,7 +190,7 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 
 	/**
 	 * Obtenemos un arreglo de elementos.
-	 * @param $type Tipo de retorno de los valores.
+	 * @param int $type Tipo de retorno de los valores.
 	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return array
 	 */

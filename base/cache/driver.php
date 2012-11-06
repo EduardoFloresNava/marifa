@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * driver.php is part of Marifa.
  *
@@ -15,21 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Database/Cache
+ * @package		Marifa\Base
+ * @subpackage  Cache
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Interface base para la cache.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @version    0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Cache
  */
 interface Base_Cache_Driver {
@@ -37,7 +36,7 @@ interface Base_Cache_Driver {
 	/**
 	 * Obtenemos un elemento de la cache.
 	 * @param string $id Clave del elemento abtener.
-	 * @param mixed Información si fue correcto o FALSE en caso de error.
+	 * @return mixed Información si fue correcto o FALSE en caso de error.
 	 */
 	public function get($id);
 

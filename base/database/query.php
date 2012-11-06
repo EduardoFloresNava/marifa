@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * query.php is part of Marifa.
  *
@@ -15,20 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Database
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Interface para los objetos devueltos por las consultas de selección.
  *
  * @version    0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  * @subpackage Database
  */
 abstract class Base_Database_Query implements Iterator {
@@ -72,6 +71,11 @@ abstract class Base_Database_Query implements Iterator {
 	 * Campo de tipo FECHA Y HORA.
 	 */
 	const FIELD_DATETIME = 4;
+
+	/**
+	 * Campo del tipo booleano.
+	 */
+	const FIELD_BOOL = 5;
 
 	/**
 	 * Tipo de valor devuelto en las iteraciones.
@@ -120,15 +124,23 @@ abstract class Base_Database_Query implements Iterator {
 	{
 		if ($cast === self::FIELD_INT)
 		{
-			return (int) $field;
+			return ($field === NULL) ? NULL : ( (int) $field);
 		}
 		elseif ($cast === self::FIELD_FLOAT)
 		{
-			return (float) $field;
+			return ($field === NULL) ? NULL : ( (float) $field);
 		}
-		elseif ($cast === self::FIELD_DATE || $cast === self::FIELD_DATETIME || $cast === self::FIELD_STRING)
+		elseif ($cast === self::FIELD_STRING)
 		{
-			return (string) $field;
+			return ($field === NULL) ? NULL : ( (string) $field);
+		}
+		elseif ($cast === self::FIELD_DATE || $cast === self::FIELD_DATETIME)
+		{
+			return ($field === NULL) ? NULL : new Fechahora($field);
+		}
+		elseif ($cast === self::FIELD_BOOL)
+		{
+			return ($field === NULL) ? NULL : ( (bool) $field);
 		}
 		else
 		{
@@ -151,7 +163,16 @@ abstract class Base_Database_Query implements Iterator {
 	{
 		$dt = $this->get_record(self::FETCH_NUM);
 
-		return is_array($dt) && isset($dt[0]) ? $this->cast_field($dt[0], $cast) : NULL;
+		$v = (is_array($dt) && isset($dt[0])) ? $dt[0] : NULL;
+
+		if ($cast !== NULL)
+		{
+			return $this->cast_field($v, $cast);
+		}
+		else
+		{
+			return $v;
+		}
 	}
 
 	/**
@@ -166,12 +187,12 @@ abstract class Base_Database_Query implements Iterator {
 		// Armamos arreglo inicial.
 		if ( ! is_array($list))
 		{
-			$list = $list == NULL ? array() : array($list);
+			$list = ($list === NULL) ? array() : array($list);
 		}
 
 		if (is_array($cant))
 		{
-			foreach($cant as $k)
+			foreach ($cant as $k)
 			{
 				if ( ! isset($list[$k]))
 				{
@@ -181,10 +202,13 @@ abstract class Base_Database_Query implements Iterator {
 		}
 		else
 		{
-			// Lo expandimos hasta completar.
-			while(count($list) < $cant)
+			// Expandimos hasta completar.
+			for ($i = 0; $i < $cant; $i++)
 			{
-				$list[] = NULL;
+				if ( ! isset($list[$i]))
+				{
+					$list[$i] = NULL;
+				}
 			}
 		}
 
@@ -205,7 +229,7 @@ abstract class Base_Database_Query implements Iterator {
 
 		$dt = $this->get_records(self::FETCH_NUM);
 		$rst = array();
-		foreach($dt as $data)
+		foreach ($dt as $data)
 		{
 			// Verificamos si hay cast o no. Se valida a fines de rendimiento.
 			if ($cast !== NULL)

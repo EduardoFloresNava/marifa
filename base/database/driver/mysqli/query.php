@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * query.php is part of Marifa.
  *
@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Database/Driver/Mysqli
+ * @package		Marifa\Base
+ * @subpackage  Database\Driver
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase que representa el resultado de una consulta de selección.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @version    0.1
- * @package    Marifa/Base
- * @subpackage Database/Driver/Mysqli
+ * @package    Marifa\Base
+ * @subpackage Database\Driver
  */
 class Base_Database_Driver_Mysqli_Query extends Database_Query {
 
@@ -80,19 +79,25 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 
 	/**
 	 * Obtenemos un elemento del resultado.
-	 * @param $type Tipo de retorno de los valores.
+	 * @param int $type Tipo de retorno de los valores.
 	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return mixed
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
 	public function get_record($type = Database_Query::FETCH_ASSOC, $cast = NULL)
 	{
-		$this->next();
+		// $this->next();
 		switch ($type)
 		{
 			case Database_Query::FETCH_NUM:
 				// Obtenemos el arreglo.
 				$resultado = $this->query->fetch_array(MYSQLI_NUM);
+
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_array($resultado))
+				{
+					return $resultado;
+				}
 
 				// Expandimos listado de cast.
 				$cast = $this->expand_cast_list($cast, count($resultado));
@@ -109,11 +114,17 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 				// Obtenemos el objeto.
 				$object = $this->query->fetch_object();
 
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_object($object))
+				{
+					return $object;
+				}
+
 				// Expandimos la lista de cast.
 				$cast = $this->expand_cast_list($cast, array_keys(get_object_vars($object)));
 
 				// Realizamos el cast.
-				foreach($cast as $k => $v)
+				foreach ($cast as $k => $v)
 				{
 					$object->$k = $this->cast_field($object->$k, $v);
 				}
@@ -124,11 +135,17 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 				// Obtenemos el arreglo.
 				$resultado = $this->query->fetch_array(MYSQLI_ASSOC);
 
+				// Evitamos cast de consultas erroneas o vacias.
+				if ( ! is_array($resultado))
+				{
+					return $resultado;
+				}
+
 				// Expandimos la lista de cast.
 				$cast = $this->expand_cast_list($cast, array_keys($resultado));
 
 				// Realizamos el cast.
-				foreach($cast as $k => $v)
+				foreach ($cast as $k => $v)
 				{
 					$resultado[$k] = $this->cast_field($resultado[$k], $v);
 				}
@@ -139,7 +156,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 
 	/**
 	 * Obtenemos un arreglo de elementos.
-	 * @param $type Tipo de retorno de los valores.
+	 * @param int $type Tipo de retorno de los valores.
 	 * @param int|array $cast Cast a aplicar a los elementos.
 	 * @return array
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
@@ -163,7 +180,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 	 */
 	public function current()
 	{
-		$this->query->field_seek($this->position);
+		$this->query->data_seek($this->position);
 		return $this->get_record($this->fetch_type, $this->cast);
 	}
 

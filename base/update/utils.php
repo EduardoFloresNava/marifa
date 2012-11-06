@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * utils.php is part of Marifa.
  *
@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.3
+ * @since		Versión 0.1
  * @filesource
  * @subpackage  Update
- * @package		Marifa/Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Utileria varia.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @since      Versión 0.3
+ * @since      Versión 0.1
  * @subpackage Update
- * @package    Marifa/Base
+ * @package    Marifa\Base
  */
 class Base_Update_Utils {
 
@@ -50,7 +49,7 @@ class Base_Update_Utils {
 	 * @param int $precision Presición de la conversión.
 	 * @return string
 	 */
-	public static function formatBytes($bytes, $precision = 2)
+	public static function format_bytes($bytes, $precision = 2)
 	{
 		$units = array('B', 'KB', 'MB', 'GB', 'TB');
 
@@ -72,7 +71,7 @@ class Base_Update_Utils {
      */
     public static function sys_get_temp_dir()
     {
-		foreach(array('TMP', 'TEMP', 'TMPDIR') as $t)
+		foreach (array('TMP', 'TEMP', 'TMPDIR') as $t)
 		{
 			$temp = getenv($t);
 			if ($temp !== FALSE)
@@ -109,7 +108,7 @@ class Base_Update_Utils {
         }
 
         // Agregamo la barra final.
-        $path = substr($path, -1) == '/' ? $path : $path.'/';
+        $path = (substr($path, -1) == '/') ? $path : ($path.'/');
         return $path;
     }
 
@@ -138,14 +137,15 @@ class Base_Update_Utils {
         }
 
         // Make destination directory
-        if (!is_dir($dest))
+        if ( ! is_dir($dest))
 		{
             mkdir($dest);
         }
 
         // Loop through the folder
-        $dir = dir($source);
-        while (FALSE !== $entry = $dir->read())
+        $dir = scandir($source);
+		$rst = TRUE;
+        foreach ($dir as $entry)
 		{
             // Skip pointers
             if ($entry == '.' || $entry == '..')
@@ -154,12 +154,15 @@ class Base_Update_Utils {
             }
 
             // Deep copy directories
-            self::copyr("$source/$entry", "$dest/$entry");
+            $r = self::copyr("$source/$entry", "$dest/$entry");
+			if ( ! $r)
+			{
+				$rst = FALSE;
+			}
         }
 
         // Clean up
-        $dir->close();
-        return FALSE;
+        return $rst;
     }
 
 	/**
@@ -175,7 +178,7 @@ class Base_Update_Utils {
 
 			$rst = TRUE;
 
-			foreach($lst as $file)
+			foreach ($lst as $file)
 			{
 				if ($file === '.' || $file === '..')
 				{
@@ -188,7 +191,7 @@ class Base_Update_Utils {
 				}
 			}
 
-			if ( ! rmdir($path))
+			if ( ! @rmdir($path))
 			{
 				$rst = FALSE;
 			}
@@ -197,7 +200,7 @@ class Base_Update_Utils {
 		}
 		else
 		{
-			return unlink($path);
+			return @unlink($path);
 		}
 	}
 

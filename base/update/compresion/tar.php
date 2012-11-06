@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * client.php is part of Marifa.
  *
@@ -15,37 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.3
+ * @since		Versión 0.1
  * @filesource
- * @subpackage  Update/Compresion
- * @package		Marifa/Base
+ * @subpackage  Update\Compresion
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Compresor Tar basado en Pear_Archive
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @since      Versión 0.3
- * @subpackage Update/Compresion
- * @package    Marifa/Base
+ * @since      Versión 0.1
+ * @subpackage Update\Compresion
+ * @package    Marifa\Base
  */
 class Base_Update_Compresion_Tar extends Update_Compresion_Compresion {
 
 	/**
 	 * Creamos un archivo zip con la lista de archivo enviados.
 	 * @param string $file Archivo donde colocar la compresión.
-	 * @param string $basePath Path base a utilizar en la compresión zip.
+	 * @param string $base_path Path base a utilizar en la compresión zip.
 	 * @param array|string $files Arreglo de archivos o directorio donde se
 	 * encuentran los archivos a comprimir.
 	 * @return bool
 	 */
-	public function compress($file, $basePath, $files)
+	public function compress($file, $base_path, $files)
 	{
 		$pt = new Update_Compresion_Pear_Tar($file, NULL);
-		return $pt->createModify($files, '', $basePath);
+		return $pt->create_modify($files, '', $base_path);
 	}
 
 	/**
@@ -56,6 +55,6 @@ class Base_Update_Compresion_Tar extends Update_Compresion_Compresion {
 	public function decompress($path)
 	{
 		$pt = new Update_Compresion_Pear_Tar($path, NULL);
-		return $pt->extractModify($this->tempPath, '', FALSE);
+		return $pt->extract_modify($this->temp_path, '', FALSE);
 	}
 }

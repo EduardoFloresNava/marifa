@@ -38,11 +38,11 @@ else
 	// PARA PRODUCCION DEBE SER FALSE.
 }
 
-if (DEBUG)
-{
-	// Información de rendimiento para depuración.
-	$timestart = microtime(TRUE);
-}
+// Defino producción para simplificar.
+define('PRODUCTION', ! DEBUG);
+
+// Información de rendimiento para depuración.
+define('START_MEMORY', memory_get_peak_usage());
 
 /**
  * Separador de directorios
@@ -52,7 +52,7 @@ define('DS', DIRECTORY_SEPARATOR);
 /**
  * Directorio base de la aplicación.
  */
-define('APP_BASE', __DIR__);
+define('APP_BASE', dirname(__FILE__));
 
 /**
  * Directorio de configuraciones.
@@ -72,29 +72,77 @@ define('PLUGINS_PATH', 'plugin');
 /**
  * Directorio de las vistas.
  */
-define('VIEW_PATH', 'view');
+define('VIEW_PATH', 'theme'.DS);
 
 /**
  * Directorio de la cache.
  */
 define('CACHE_PATH', APP_BASE.DS.'cache');
 
-// Cargamos la libreria de carga de clases.
-require_once (APP_BASE.DS.'base'.DS.'loader.php');
-require_once (APP_BASE.DS.'marifa'.DS.'loader.php');
+/**
+ * Directorio de clases de 3ros.
+ */
+define('VENDOR_PATH', APP_BASE.DS.'vendor'.DS);
+
+// Cargamos funciones varias.
+require_once (APP_BASE.DS.'function.php');
 
 // Iniciamos el proceso de carga automatica de librerias.
-spl_autoload_register('Loader::load');
+spl_autoload_register('loader_load');
+
+//Defino la URL del sitio.
+define('SITE_URL', get_site_url());
+
+// Verifico que no exista el instalador.
+if (PRODUCTION)
+{
+	if (file_exists(APP_BASE.DS.'installer') || file_exists(APP_BASE.DS.'installer.php'))
+	{
+		if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
+		{
+			Request::redirect('/installer/');
+		}
+
+		if (isset($_GET['finish']) && $_GET['finish'] == 1)
+		{
+			session_start();
+			if (isset($_SESSION['step']) && $_SESSION['step'] >= 5)
+			{
+				// Intento eliminar.
+				@unlink('installer.php');
+				Update_Utils::unlink('installer');
+
+				// Redirecciono.
+				Request::redirect('/');
+			}
+		}
+
+		die('Debes eliminar el instalador para poder acceder al sitio. Para intentar de forma autom&aacute;tica has click <a href="/?finish=1">aqu&iacute;</a>.');
+	}
+}
+
+// Verifico MCrypt.
+extension_loaded('mcrypt') || die('Marifa necesita MCrypt para funcionar.');
+
+// Iniciamos las cookies.
+Cookie::start('secret_cookie_key');
+
+// Iniciamos el usuario.
+Usuario::start();
+
+// Cargo el tema actual.
+define('THEME', Theme::actual());
 
 // Iniciamos el manejo de errores.
-Error::getInstance()->start(DEBUG);
+Error::get_instance()->start(DEBUG);
 
 // Verificamos bloqueos.
-$lock = new Mantenimiento();
+$lock = new Mantenimiento;
 if ($lock->is_locked())
 {
-	if ($lock->is_locked_for(IP::getIpAddr()))
+	if ($lock->is_locked_for(IP::get_ip_addr()))
 	{
+		//TODO: utilizar vista para dar flexibilidad.
 		die("Modo mantenimiento activado.");
 	}
 }
@@ -108,39 +156,29 @@ if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
 	//TODO: lo mandamos al instalador.
 	die("Falta configurar la base de datos");
 }
-else
-{
-	// Cargamos la configuración de la base de datos.
-	Configuraciones::load(CONFIG_PATH.DS.'database.php', TRUE);
-}
-
-// Forzamos una cache inexistente. Comente esta linea para habilitar la cache.
-Configuraciones::set('cache.type', NULL);
 
 // Cargamos la cache.
-Cache::getInstance();
+Cache::get_instance();
 
 // Cargamos las configuraciones del gestor de actualizaciones.
-if ( file_exists(CONFIG_PATH.DS.'update.php'))
+if (file_exists(CONFIG_PATH.DS.'update.php'))
 {
-	Configuraciones::load(CONFIG_PATH.DS.'update.php', TRUE);
+	// Configuraciones::load(CONFIG_PATH.DS.'update.php', TRUE);
 }
 
 // Comprobamos que existe la lista de plugins.
 if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 {
 	// Generamos la lista de plugins.
-	Plugin_Manager::getInstance()->regenerar_lista();
+	Plugin_Manager::get_instance()->regenerar_lista();
 }
 
-// Iniciamos la session.
-Session::start('random_value');
+// Database profiler.
+PRODUCTION || Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
+
+PRODUCTION || Profiler_Profiler::get_instance()->log_memory('Framework memory');
 
 // Cargamos el despachador y damos el control al controlador correspondiente.
 Dispatcher::dispatch();
 
-if (DEBUG)
-{
-	// Mostramos rendimiento.
-	echo(Update_Utils::formatBytes(memory_get_peak_usage(), 1).' - '.round(microtime(true) - $timestart, 1).'s');
-}
+PRODUCTION || Profiler_Profiler::get_instance()->display();

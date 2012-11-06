@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * cache.php is part of Marifa.
  *
@@ -15,20 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase base de la cache. Configura y devuelve un driver para su uso.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  */
 class Base_Cache {
 
@@ -41,26 +40,27 @@ class Base_Cache {
 	/**
 	 * No se deben generar instancias de Cache.
 	 */
-	private function __construct() {}
+	private function __construct()
+	{
+	}
 
 	/**
 	 * Obtenemos un driver
 	 * @return Cache_Driver
 	 */
-	public static function getInstance()
+	public static function get_instance()
 	{
 		if ( ! isset(self::$instance))
 		{
-			// Verificamos si tenemos información de la cache.
-			$data = Configuraciones::get('cache');
-
-			if ( ! is_array($data))
+			if (file_exists(CONFIG_PATH.DS.'cache.php'))
 			{
-				// Tratamos de cargarlo.
-				Configuraciones::load(CONFIG_PATH.DS.'cache.php', TRUE);
-
-				// Volvemos a cargar.
-				$data = Configuraciones::get('cache');
+				// Verificamos si tenemos información de la cache.
+				$data = configuracion_obtener(CONFIG_PATH.DS.'cache.php');
+			}
+			else
+			{
+				// Cargamos dummy.
+				$data = array('type' => 'dummy');
 			}
 
 			// Comprobamos el tipo de cache.
@@ -74,7 +74,7 @@ class Base_Cache {
 				// Not dummy.
 
 				// Verificamos el tipo.
-				if ( !in_array($data['type'], array('dummy', 'apc', 'file', 'memcached')))
+				if ( ! in_array($data['type'], array('dummy', 'apc', 'file', 'memcached')))
 				{
 					throw new Exception("Invalid cache type '{$data['type']}'.");
 				}
@@ -111,7 +111,7 @@ class Base_Cache {
 						break;
 					case 'file':
 						// Obtenemos el path.
-						$p = isset($data['path']) ? $data['path'] : APP_BASE.DS.'cache'.DS.'file'.DS;
+						$p = isset($data['path']) ? $data['path'] : (APP_BASE.DS.'cache'.DS.'file'.DS);
 
 						// Verificamos que tenga barra final.
 						if (substr($p, -1) !== DS)
@@ -122,11 +122,18 @@ class Base_Cache {
 						// Verificamos existencia.
 						if ( ! file_exists($p) || ! is_dir($p))
 						{
-							throw new Exception('El directorio para la cache no existe.');
+							// Tratamos de crearlo.
+							@mkdir($p, 0777, TRUE);
+
+							// Reintentamos creacion.
+							if ( ! file_exists($p) || ! is_dir($p))
+							{
+								throw new Exception('El directorio para la cache no existe.');
+							}
 						}
 
 						// Verificamos los permisos.
-						if ( !is_writable($p))
+						if ( ! is_writable($p))
 						{
 							throw new Exception('El directorio para la cache no tiene permisos de escritura.');
 						}
@@ -148,11 +155,15 @@ class Base_Cache {
 	 * Patrón singleton, no se permite clonar
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function __clone() {}
+	public function __clone()
+	{
+	}
 
 	/**
 	 * Patrón singleton, no se permite deserealizar.
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function __wakeup() {}
+	public function __wakeup()
+	{
+	}
 }

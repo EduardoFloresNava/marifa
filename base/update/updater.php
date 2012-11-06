@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * updater.php is part of Marifa.
  *
@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.3
+ * @since		Versión 0.1
  * @filesource
  * @subpackage  Update
- * @package		Marifa/Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase base de la actualización.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @since      Versión 0.3
+ * @since      Versión 0.1
  * @subpackage Update
- * @package    Marifa/Base
+ * @package    Marifa\Base
  */
 class Base_Update_Updater {
 
@@ -48,14 +47,16 @@ class Base_Update_Updater {
 
 	/**
 	 * Creamos una instancia del servidor de actualizaciones.
+	 * @param string $server Servidor de actualizaciones.
+	 * @param string $token Token para autenticar al API.
 	 */
-    public function __construct()
+    public function __construct($server, $token)
     {
     	// Seteamos el servidor de actualizaciones.
-    	$this->server = Configuraciones::get('update.server', NULL);
+    	$this->server = $server;
 
 		// Seteamos el token.
-		$this->token = Configuraciones::get('update.token', NULL);
+		$this->token = $token;
     }
 
     /**
@@ -68,11 +69,11 @@ class Base_Update_Updater {
     public function find_updates()
     {
 		// Obtenemos el manejador de paquetes.
-		$pkg_manager = Plugin_Manager::getInstance();
+		$pkg_manager = Plugin_Manager::get_instance();
 
 		// Generamos el listado de paquetes.
 		$pkg_list = array();
-		foreach(array_keys($pkg_manager->load()) as $nombre)
+		foreach (array_keys($pkg_manager->load()) as $nombre)
 		{
 			// TODO: ver si es lógico omitir los desactivados.
 
@@ -119,7 +120,7 @@ class Base_Update_Updater {
 		$o_client = new Update_Client($this->server, $this->token);
 
 		// Verificamos si hay versión especificada.
-		if($version === NULL)
+		if ($version === NULL)
 		{
 			// Obtenemos la última versión.
 			$version = $o_client->get_last_version($hash);
@@ -152,7 +153,7 @@ class Base_Update_Updater {
 		unset($compresiones);
 
 		// Armamos directorio temporal de la descarga.
-		$temp_file = TMP_PATH.uniqid('upd_fule_');
+		$temp_file = TMP_PATH.uniqid('upd_file_');
 
 		// Descargamos el archivo.
 		$rqs = new Update_Rest_Request($this->server);

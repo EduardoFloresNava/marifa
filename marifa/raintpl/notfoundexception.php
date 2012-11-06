@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * notfoundexception.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Raintpl
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Alias de Base_RainTpl_NotFoundException
  *
- * @package    Marifa/Marifa
+ * @package    Marifa\Marifa
  * @subpackage Raintpl
  */
 class RainTpl_NotFoundException extends Base_RainTpl_NotFoundException {}

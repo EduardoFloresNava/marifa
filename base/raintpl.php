@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * raintpl.php is part of Marifa.
  *
@@ -15,13 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase alias de Lib_RainTPL. Es para mantener compatibilidad con RainTPL.
@@ -29,7 +28,7 @@
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  */
 class Base_RainTPL extends Lib_RainTPL {
 
@@ -61,10 +60,10 @@ class Base_RainTPL extends Lib_RainTPL {
 	 * @return mixed Template parseado o el resultado.
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function draw($tpl_name = NULL, $return_string = false)
+	public function draw($tpl_name, $return_string = FALSE)
 	{
 		// Verificamos que tengamos una vista.
-		if ($tpl_name === NULL && $this->view === NULL)
+		if (( ! isset($tpl_name) || $tpl_name === NULL) && $this->view === NULL)
 		{
 			throw new Exception('Vista no especificada');
 			return NULL;
@@ -89,14 +88,14 @@ class Base_RainTPL extends Lib_RainTPL {
 			$plugin = strtolower($s_list[1]);
 
 			// Generamos la ruta de la vista.
-			$template_name = PLUGINS_PATH.DS.$plugin.DS.VIEW_PATH.DS.$tpl_name;
+			$template_name = PLUGINS_PATH.DS.$plugin.DS.VIEW_PATH.DS.'views'.DS.$tpl_name;
 		}
 		else
 		{
 			// Es la vista del nucleo.
 
 			// Generamos el nombre de la vista.
-			$template_name = 'base'.DS.VIEW_PATH.DS.$tpl_name;
+			$template_name = VIEW_PATH.THEME.DS.'views'.DS.$tpl_name;
 		}
 
 		// Enviamos a rainTPL para que lo procese.
@@ -104,7 +103,7 @@ class Base_RainTPL extends Lib_RainTPL {
 	}
 
 	/**
-	 * Similar a draw, aunque solo mostramos devolvemos la plantilla.
+	 * Similar a draw, aunque solo devolvemos la plantilla.
 	 * @return string
 	 */
 	public function parse()
@@ -118,6 +117,16 @@ class Base_RainTPL extends Lib_RainTPL {
 	public function show()
 	{
 		$this->draw(NULL, FALSE);
+	}
+
+	/**
+	 * Reduce a path, eg. www/library/../filepath//file => www/filepath/file
+	 * @param mixed $path Path.
+	 * @return mixed
+	 */
+	protected function reduce_path($path)
+	{
+		return self::$base_url;
 	}
 
 }

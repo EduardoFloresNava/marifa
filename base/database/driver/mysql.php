@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * mysql.php is part of Marifa.
  *
@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Database/Driver
+ * @package		Marifa\Base
+ * @subpackage  Database\Driver
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Driver base para mysql.
  *
  * @author     Cody Roodaka <roodakazo@hotmail.com>
  * @version    0.1
- * @package    Marifa/Base
- * @subpackage Database/Driver
+ * @package    Marifa\Base
+ * @subpackage Database\Driver
  */
 class Base_Database_Driver_Mysql extends Database_Driver {
 
@@ -78,6 +77,86 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	}
 
 	/**
+	 * Obtenemos la explicación de una consulta SQL.
+	 * @param string $sql Consulta a explicar.
+	 * @return array
+	 */
+	public function explain_query($sql)
+	{
+		// Realizamos la ejecución.
+		if ($this->is_connected())
+		{
+			// Consulta.
+			$rst = new Database_Driver_Mysql_Query($sql, $this->conn);
+			$rst->set_fetch_type(Database_Query::FETCH_OBJ);
+
+			// Armamos el resultado.
+			$lst = array();
+			foreach ($rst as $v)
+			{
+				// Posibles keys
+				if (isset($v->possible_keys) && $v->possible_keys != NULL)
+				{
+					if ( ! isset($lst['posibles_keys']))
+					{
+						$lst['posibles_keys'] = array();
+					}
+
+					$lst['posibles_keys'][] = $v->possible_keys;
+				}
+
+				// Key
+				if (isset($v->key) && $v->key != NULL)
+				{
+					if ( ! isset($lst['key']))
+					{
+						$lst['key'] = array();
+					}
+					$ks = $v->key;
+
+					if (isset($v->key_len) && $v->key_len != NULL)
+					{
+						$ks = $ks.'('.$v->key_len.')';
+					}
+					$lst['key'][] = $ks;
+				}
+
+				// Type
+				if (isset($v->type) && $v->type != NULL)
+				{
+					if ( ! isset($lst['type']))
+					{
+						$lst['type'] = array();
+					}
+					$lst['type'][] = $v->type;
+				}
+
+				// Rows
+				if (isset($v->rows) && $v->rows != NULL)
+				{
+					$lst['rows'] = (int) $v->rows;
+				}
+			}
+
+			// Tranformamos elemento a string.
+			foreach ($lst as $k => $v)
+			{
+				if (is_array($v))
+				{
+					$lst[$k] = implode(', ', $v);
+				}
+			}
+
+			// Devolvemos el resultado.
+			return $lst;
+		}
+		else
+		{
+			return array();
+		}
+	}
+
+	/**
 	 * Destructor de la clase.
 	 * @author Cody Roodaka <roodakazo@hotmail.com>
 	 */
@@ -100,14 +179,14 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	{
 		if ($this->is_connected() === FALSE)
 		{
-			$this->conn = @mysql_connect($this->host, $this->user, $this->pass);
-			if ($this->conn === FALSE)
+			$this->conn = @mysql_connect($this->host, $this->user, $this->pass) || $error = mysql_error();
+			if ($this->conn === FALSE || isset($error))
 			{
 				$e = new Database_Exception(mysql_error(), mysql_errno());
 				throw new Database_Exception('No se ha podido conectar al servidor de base de datos.', 100, $e);
 			}
 
-			if( ! @mysql_select_db($this->db, $this->conn))
+			if ( ! @mysql_select_db($this->db, $this->conn))
 			{
 				$this->conn = NULL;
 				$e = new Database_Exception(mysql_error(), mysql_errno());
@@ -196,9 +275,11 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			$query = mysql_query($query, $this->conn);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
+			$rst = mysql_query($query, $this->conn);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
-			if ($query === TRUE)
+			if ($rst === TRUE)
 			{
 				// Si fue correcto devolvemos el ID y las filas afectadas.
 				return array(
@@ -236,9 +317,11 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			$query = mysql_query($query, $this->conn);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
+			$rst = mysql_query($query, $this->conn);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
-			if ($query === TRUE)
+			if ($rst === TRUE)
 			{
 				// Si fue correcto devolvemos las filas afectadas.
 				return mysql_affected_rows();
@@ -273,9 +356,11 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		if ($this->is_connected())
 		{
 			$query = $this->parse_query($query, $params);
-			$query = mysql_query($query, $this->conn);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
+			$rst = mysql_query($query, $this->conn);
+			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
-			if ($query === TRUE)
+			if ($rst === TRUE)
 			{
 				// Si fue correcto devolvemos las filas afectadas.
 				return mysql_affected_rows();

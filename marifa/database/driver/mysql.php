@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * mysql.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Database/Driver
+ * @package		Marifa\Base
+ * @subpackage  Database\Driver
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Alias de Base_Database_Driver_Mysql
  *
- * @package    Marifa/Marifa
- * @subpackage Database/Driver
+ * @package    Marifa\Marifa
+ * @subpackage Database\Driver
  */
 class Database_Driver_Mysql extends Base_Database_Driver_Mysql {}

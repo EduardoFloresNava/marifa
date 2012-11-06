@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * client.php is part of Marifa.
  *
@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.3
+ * @since		Versión 0.1
  * @filesource
- * @subpackage  Update/Compresion
- * @package		Marifa/Base
+ * @subpackage  Update\Compresion
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase abstracta para uniformar los compresores.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @since      Versión 0.3
- * @subpackage Update/Compresion
- * @package    Marifa/Base
+ * @since      Versión 0.1
+ * @subpackage Update\Compresion
+ * @package    Marifa\Base
  */
 abstract class Base_Update_Compresion_Compresion {
 
@@ -38,7 +37,7 @@ abstract class Base_Update_Compresion_Compresion {
 	 * Directorio temporal.
 	 * @var string
 	 */
-	protected $tempPath = 'temp/';
+	protected $temp_path = 'temp/';
 
     /**
      * Seteamos el path para descargas temporales automáticamente
@@ -49,11 +48,11 @@ abstract class Base_Update_Compresion_Compresion {
         // Seteamos de manera automática el path de archivos temporales.
         if (function_exists('sys_get_temp_dir'))
         {
-            $this->setTempPath(realpath(sys_get_temp_dir()));
+            $this->set_temp_path(realpath(sys_get_temp_dir()));
         }
         else
         {
-            $this->setTempPath(realpath($this->sys_get_temp_dir()));
+            $this->set_temp_path(realpath($this->sys_get_temp_dir()));
         }
     }
 
@@ -62,9 +61,9 @@ abstract class Base_Update_Compresion_Compresion {
 	 * @param string $path
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-    public function setTempPath($path)
+    public function set_temp_path($path)
     {
-        $this->tempPath = $path;
+        $this->temp_path = $path;
     }
 
     /**
@@ -74,7 +73,7 @@ abstract class Base_Update_Compresion_Compresion {
      */
     private function sys_get_temp_dir()
     {
-		foreach(array('TMP', 'TEMP', 'TMPDIR') as $t)
+		foreach (array('TMP', 'TEMP', 'TMPDIR') as $t)
 		{
 			$temp = getenv($t);
 			if ($temp !== FALSE)
@@ -95,12 +94,12 @@ abstract class Base_Update_Compresion_Compresion {
 	/**
 	 * Creamos un archivo zip con la lista de archivo enviados.
 	 * @param string $file Archivo donde colocar la compresión.
-	 * @param string $basePath Path base a utilizar en la compresión zip.
+	 * @param string $base_path Path base a utilizar en la compresión zip.
 	 * @param array|string $files Arreglo de archivos o directorio donde se
 	 * encuentran los archivos a comprimir.
 	 * @return bool
 	 */
-    abstract public function compress($file, $basePath, $files);
+    abstract public function compress($file, $base_path, $files);
 
 	/**
 	 * Descomprimimos el archivo y lo colocamos en el directorio temporal.

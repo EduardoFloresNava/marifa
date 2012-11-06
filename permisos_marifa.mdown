@@ -1,0 +1,40 @@
+# Permisos posibles y su descripción.
+
+## Usuario:
+ * **VER_DENUNCIAS**: Ver las denuncias y actuar sobre ellas.
+ * **SUSPENDER**: Ver suspensiones y modificarlas.
+ * **BANEAR**: Ver baneos y modificarlos.
+ * **ADVERTIR**: Enviar advertencias.
+ * **REVISAR_CONTENIDO**: Revisar posts y fotos agregadas por el usuario.
+
+## Post:
+ * **CREAR**: Puede crear un post.
+ * **PUNTUAR**: Puede dar puntos a un post.
+ * **ELIMINAR**: Eliminar posts.
+ * **OCULTAR**: Oculta/muestra posts.
+ * **VER_DENUNCIAS**: Ver las denuncias y actuar sobre ellas.
+ * **VER_DESAPROBADO**: Ver el contenido que no se encuentra aprobado.
+ * **FIJAR_PROMOVER**: Modificar el parámetro sticky y sponsored de posts.
+ * **EDITAR**: Editar posts de TODOS los usuarios.
+ * **VER_PAPELERA**: Ver la papelera de TODOS los usuarios.
+
+## Foto:
+ * **CREAR**: Puede agregar fotos.
+ * **VOTAR**: Puede votar las fotos.
+ * **ELIMINAR**: Eliminar fotos.
+ * **OCULTAR**: Oculta/muestra fotos.
+ * **VER_DENUNCIAS**: Ver las denuncias y actuar sobre ellas.
+ * **VER_DESAPROBADO**: Ver el contenido que no se encuentra aprobado.
+ * **EDITAR**: Editar fotos de TODOS los usuarios.
+ * **VER_PAPELERA**: Ver la papelera de TODOS los usuarios.
+
+## Comentario:
+ * **COMENTAR**: Crear comentarios.
+ * **COMENTAR_CERRADO**: Comentar aún cuando están cerrados.
+ * **VOTAR**: Puede votar comentarios.
+ * **ELIMINAR**: Puede eliminar comentarios de TODOS los usuarios.
+ * **OCULTAR**: Ocultar y mostrar comentarios de TODOS los usuarios.
+ * **EDITAR**: Editar comentarios de TODOS los usuarios.
+
+## Sitio:
+ * **ACCESO_MANTENIMIENTO**: Puede ingresar aún con el sitio en mantenimiento.

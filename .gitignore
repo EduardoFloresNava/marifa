@@ -5,7 +5,13 @@ plugin/plugin.php
 /nbproject/
 config/database.php
 config/update.php
+config/upload.php
+config/cache.php
+config/email.php
 router.php
-plugin/
+/plugin/
+/phpdoc/
+/cache/file/
 EXAMPLE
 TODO
+/theme/theme.php

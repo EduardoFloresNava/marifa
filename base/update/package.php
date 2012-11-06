@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * package.php is part of Marifa.
  *
@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.3
  * @filesource
  * @subpackage  Update
- * @package		Marifa/Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase encargada de la gestion del paquete de actualización.
@@ -30,7 +29,7 @@
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.3
  * @subpackage Update
- * @package    Marifa/Base
+ * @package    Marifa\Base
  */
 class Base_Update_Package {
 
@@ -61,10 +60,10 @@ class Base_Update_Package {
 		$c_type = Update_Utils::mime2compresor(Update_Utils::get_mime($this->package));
 
 		// Cargamos el compresor.
-		$c = Update_Compresion::getInstance($c_type);
+		$c = Update_Compresion::get_instance($c_type);
 
 		// Seteamos donde descomprimir.
-		$c->setTempPath($tmp_path);
+		$c->set_temp_path($tmp_path);
 
 		return $c->decompress($this->package);
 	}
@@ -162,7 +161,7 @@ class Base_Update_Package {
 			}
 		}
 
-		//Limpiamos archivos de la instalación y salimos.
+		// Limpiamos archivos de la instalación y salimos.
 		return Update_Utils::unlink($temp_dir);
 	}
 

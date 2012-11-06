@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or exit('No tienes permisos.');
+<?php
 /**
  * phpass.php is part of marifa.
  *
@@ -16,16 +16,17 @@
  * along with marifa. If not, see <http://www.gnu.org/licenses/>.
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		0.1
+ * @since		Versión 0.1
  * @filesource
- * @package		Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || exit('No tienes permisos.');
 
 /**
  * Clase de encriptación de contraseñas.
  *
- * @since      0.1
- * @package    Base
+ * @since      Versión 0.1
+ * @package    Marifa\Base
  */
 class Base_Phpass {
 
@@ -36,7 +37,7 @@ class Base_Phpass {
 	private $itoa64;
 
 	/**
-	 *
+	 * Semilla para el salt.
 	 * @var int
 	 */
 	private $iteration_count_log2;
@@ -55,7 +56,7 @@ class Base_Phpass {
 
 	/**
 	 * Constructor de la clase.
-	 * @param int $iteration_count_log2
+	 * @param int $iteration_count_log2 Semilla para el salt.
 	 * @param bool $portable_hashes Si debe ser portable el hash generado.
 	 */
 	public function __construct($iteration_count_log2, $portable_hashes)
@@ -274,7 +275,7 @@ class Base_Phpass {
 	 * @param string $password Contraseña a encriptar.
 	 * @return string
 	 */
-	public function HashPassword($password)
+	public function hash_password($password)
 	{
 		$random = '';
 
@@ -319,7 +320,7 @@ class Base_Phpass {
 	 * @param string $stored_hash Contraseña almacenada.
 	 * @return bool
 	 */
-	public function CheckPassword($password, $stored_hash)
+	public function check_password($password, $stored_hash)
 	{
 		$hash = $this->crypt_private($password, $stored_hash);
 		if ($hash[0] == '*')

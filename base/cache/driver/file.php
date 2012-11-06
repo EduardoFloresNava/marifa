@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * file.php is part of Marifa.
  *
@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Database/Cache/Driver
+ * @package		Marifa\Base
+ * @subpackage  Cache\Driver
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Driver de cache para archivos en disco.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @version    0.1
- * @package    Marifa/Base
- * @subpackage Cache/Driver
+ * @package    Marifa\Base
+ * @subpackage Cache\Driver
  */
 class Base_Cache_Driver_File implements Cache_Driver {
 
@@ -52,7 +51,7 @@ class Base_Cache_Driver_File implements Cache_Driver {
 	/**
 	 * Obtenemos un elemento de la cache.
 	 * @param string $id Clave del elemento abtener.
-	 * @param mixed Información si fue correcto o FALSE en caso de error.
+	 * @return mixed Información si fue correcto o FALSE en caso de error.
 	 */
 	public function get($id)
 	{
@@ -80,13 +79,13 @@ class Base_Cache_Driver_File implements Cache_Driver {
 	 * @param int $ttl Tiempo en segundo a mantener la información.
 	 * @return bool Resultado de la operación.
 	 */
-	public function save($id, $data, $ttl = 60)
+	public function save($id, $data, $ttl = 3600)
 	{
 		// Generamos el contenido.
 		$contents = array('time' => time(), 'ttl' => $ttl, 'data' => $data);
 
 		// Abrimos el archivo.
-		if ( ! $fp = @fopen($this->_cache_path.$id, FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		if ( ! $fp = @fopen($this->_cache_path.$id, 'wb'))
 		{
 			return FALSE;
 		}
@@ -126,28 +125,28 @@ class Base_Cache_Driver_File implements Cache_Driver {
 	private function delete_files($path, $del_dir = FALSE, $level = 0)
 	{
 		// Trim the trailing slash
-		$path = preg_replace("|^(.+?)/*$|", "\\1", $path);
+		$path = preg_replace('|^(.+?)/*$|', '$1', $path);
 
 		if ( ! $current_dir = @opendir($path))
 		{
 			return;
 		}
 
-		while(FALSE !== ($filename = @readdir($current_dir)))
+		while (($filename = @readdir($current_dir)) !== FALSE)
 		{
-			if ($filename != "." and $filename != "..")
+			if ($filename != "." && $filename != "..")
 			{
-				if (is_dir($path.'/'.$filename))
+				if (is_dir($path.DS.$filename))
 				{
 					// Ignore empty folders
 					if (substr($filename, 0, 1) != '.')
 					{
-						$this->delete_files($path.'/'.$filename, $del_dir, $level + 1);
+						$this->delete_files($path.DS.$filename, $del_dir, $level + 1);
 					}
 				}
 				else
 				{
-					unlink($path.'/'.$filename);
+					unlink($path.DS.$filename);
 				}
 			}
 		}
@@ -176,7 +175,7 @@ class Base_Cache_Driver_File implements Cache_Driver {
 	private function is_really_writable($file)
 	{
 		// If we're on a Unix server with safe_mode off we call is_writable
-		if (DIRECTORY_SEPARATOR == '/' AND @ini_get("safe_mode") == FALSE)
+		if (DIRECTORY_SEPARATOR == '/' && @ini_get("safe_mode") == FALSE)
 		{
 			return is_writable($file);
 		}
@@ -187,7 +186,7 @@ class Base_Cache_Driver_File implements Cache_Driver {
 		{
 			$file = rtrim($file, '/').'/'.md5(rand(1,100));
 
-			if (($fp = @fopen($file, FOPEN_WRITE_CREATE)) === FALSE)
+			if (($fp = @fopen($file, 'ab')) === FALSE)
 			{
 				return FALSE;
 			}
@@ -197,7 +196,7 @@ class Base_Cache_Driver_File implements Cache_Driver {
 			@unlink($file);
 			return TRUE;
 		}
-		elseif (($fp = @fopen($file, FOPEN_WRITE_CREATE)) === FALSE)
+		elseif (($fp = @fopen($file, 'ab')) === FALSE)
 		{
 			return FALSE;
 		}

@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * request.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Update/Rest
+ * @package		Marifa\Base
+ * @subpackage  Update\Rest
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Alias de Base_Update_Rest_Request
  *
- * @package    Marifa/Marifa
- * @subpackage Update/Rest
+ * @package    Marifa\Marifa
+ * @subpackage Update\Rest
  */
 class Update_Rest_Request extends Base_Update_Rest_Request {}

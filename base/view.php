@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * view.php is part of Marifa.
  *
@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Version 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase encargada del manejo de las vistas.
@@ -28,7 +28,7 @@
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  */
 class Base_View {
 
@@ -39,13 +39,18 @@ class Base_View {
 
 	/**
 	 * Configuramos RainTPL.
-	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
 	private static function configure()
 	{
+		// Defino constantes para URL's relativas.
+		if ( ! defined('THEME_URL'))
+		{
+			define('THEME_URL', SITE_URL.'theme/'.THEME);
+		}
+
 		// No usarmos las URL's de RainTPL.
-		RainTPL::configure('base_url', NULL);
-		RainTPL::configure('path_replace', NULL);
+		RainTPL::configure('base_url', '');
+		RainTPL::configure('path_replace', FALSE);
 
 		// Configuramos directorio de los template's. Seteamos base para que nuestra
 		// extensión se encarge.
@@ -53,7 +58,7 @@ class Base_View {
 
 		// Directorio de cache de raintpl ( se usa subdirectorio por la cache de otros
 		// elementos).
-		RainTPL::configure('cache_dir', CACHE_PATH.DS.'raintpl'.DS);
+		RainTPL::configure('cache_dir', CACHE_PATH.DS.'raintpl'.DS.THEME.DS);
 
 		// Extension de los templates iguales que los archivos generales. Evitamos su
 		// descarga.
@@ -89,7 +94,6 @@ class Base_View {
 	 * Creamos una instancia de RainTPL configurada y lista para usarse.
 	 * @param string $view Path a la vista deseada.
 	 * @return RainTPL instancia del template.
-	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
 	public static function factory($view = NULL)
 	{

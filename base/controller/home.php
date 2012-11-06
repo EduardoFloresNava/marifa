@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * home.php is part of Marifa.
  *
@@ -15,42 +15,204 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  * @subpackage  Controller
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Controlador de ejemplo.
+ * Controlador de la portada.
  *
- * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @version    0.1
- * @package    Marifa/Base
+ * @since      Versión 0.1
+ * @package    Marifa\Base
  * @subpackage Controller
  */
 class Base_Controller_Home extends Controller {
 
 	/**
-	 * Constructor del controlador.
+	 * Submenu de la portada.
+	 * @param string $selected Elemento seleccionado.
 	 */
-	public function __construct()
+	public static function submenu($selected = NULL)
 	{
-		// Llamamos al contructor padre.
-		parent::__construct();
+		$data = array();
+
+		// Listado de elemento OFFLINE.
+		$data['inicio'] = array('link' => '/', 'caption' => 'Inicio', 'active' => FALSE);
+		$data['buscador'] = array('link' => '/buscador', 'caption' => 'Buscador', 'active' => FALSE);
+
+		// Listado de elementos ONLINE.
+		if (Usuario::is_login())
+		{
+			$data['nuevo'] = array('link' => '/post/nuevo', 'caption' => 'Agregar Post', 'active' => FALSE);
+		}
+
+		// Seleccionamos elemento.
+		if ($selected !== NULL && isset($data[$selected]))
+		{
+			$data[$selected]['active'] = TRUE;
+		}
+		else
+		{
+			$data['inicio']['active'] = TRUE;
+		}
+
+		return $data;
 	}
 
 	/**
-	 * Index.
+	 * Portada del sitio.
+	 * @param int $pagina Número de página para lo últimos posts.
 	 */
-	public function action_index()
+	public function action_index($pagina)
 	{
-		View::factory('home')->draw();
-		$m = new Model_Comentario;
-		$m->get_name();
+		// Cargamos la portada.
+		$portada = View::factory('home/index');
+
+		// Seteo el menu.
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', self::submenu('inicio'));
+
+		// Cargamos datos de posts.
+		$model_post = new Model_Post;
+
+		// Cantidad posts y comentarios en posts.
+		$portada->assign('cantidad_posts', $model_post->cantidad());
+		$portada->assign('cantidad_comentarios_posts', $model_post->cantidad_comentarios());
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Formato de la página.
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
+		if ($pagina == 1)
+		{
+			// Cargo fijos.
+			$post_sticky = $model_post->sticky();
+
+			// Extendemos la información de los posts.
+			foreach ($post_sticky as $k => $v)
+			{
+				$a = $v->as_array();
+				$a['usuario'] = $v->usuario()->as_array();
+				$a['puntos'] = $v->puntos();
+				$a['comentarios'] = $v->cantidad_comentarios(Model_Post_Comentario::ESTADO_VISIBLE);
+				$a['categoria'] = $v->categoria()->as_array();
+
+				$post_sticky[$k] = $a;
+			}
+
+			// Seteo y limpio.
+			$portada->assign('sticky', $post_sticky);
+			unset($post_sticky);
+		}
+
+		// Ultimos posts
+		$post_list = $model_post->obtener_ultimos($pagina, $cantidad_por_pagina);
+
+		// Verifivo validez de la pagina.
+		if (count($post_list) == 0 && $pagina != 1)
+		{
+			Request::redirect('/');
+		}
+
+		// Paginación.
+		$paginador = new Paginator($model_post->cantidad(Model_Post::ESTADO_ACTIVO), $cantidad_por_pagina);
+		$portada->assign('paginacion', $paginador->get_view($pagina, '/home/index/%d'));
+		unset($paginador);
+
+		// Extendemos la información de los posts.
+		foreach ($post_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['usuario'] = $v->usuario()->as_array();
+			$a['puntos'] = $v->puntos();
+			$a['comentarios'] = $v->cantidad_comentarios(Model_Post_Comentario::ESTADO_VISIBLE);
+			$a['categoria'] = $v->categoria()->as_array();
+
+			$post_list[$k] = $a;
+		}
+
+		$portada->assign('ultimos_posts', $post_list);
+		unset($post_list);
+
+		// Cargamos TOP posts.
+		$post_top_list = $model_post->obtener_tops();
+
+		// Extendemos la información de los posts.
+		foreach ($post_top_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['puntos'] = $v->puntos();
+			$post_top_list[$k] = $a;
+		}
+
+		$portada->assign('top_posts', $post_top_list);
+		unset($post_top_list, $model_post);
+
+		// Cargamos últimos comentarios.
+		$comentario_list = Model_Post_Comentario::obtener_ultimos();
+
+		// Extendemos la información de los comentarios.
+		foreach ($comentario_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['usuario'] = $v->usuario()->as_array();
+			$a['post'] = $v->post()->as_array();
+
+			$comentario_list[$k] = $a;
+		}
+
+		$portada->assign('ultimos_comentarios', $comentario_list);
+		unset($comentario_list);
+
+		// Cargamos top usuarios.
+		$model_usuario = new Model_Usuario;
+
+		// Cantidad de usuarios
+		$portada->assign('cantidad_usuarios', $model_usuario->cantidad());
+		$portada->assign('cantidad_usuarios_online', $model_usuario->cantidad_activos());
+
+		// Top de usuarios.
+		$usuario_top_list = $model_usuario->obtener_tops();
+
+		// Extendemos la información de los usuarios.
+		foreach ($usuario_top_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['puntos'] = $v->cantidad_puntos();
+
+			$usuario_top_list[$k] = $a;
+		}
+		$portada->assign('usuario_top', $usuario_top_list);
+		unset($usuario_top_list, $model_usuario);
+
+		// Cargamos ultimas fotos.
+		$model_foto = new Model_Foto;
+		$foto_list = $model_foto->obtener_ultimas(1, 1);
+
+		// Extendemos la información de las fotos.
+		foreach ($foto_list as $k => $v)
+		{
+			$foto_list[$k] = $v->as_array();
+		}
+		$portada->assign('ultimas_fotos', $foto_list);
+		unset($foto_list);
+
+		// Cantidad fotos y comentarios en fotos.
+		$portada->assign('cantidad_fotos', $model_foto->cantidad());
+		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios());
+		unset($model_foto);
+
+
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $portada->parse());
 	}
 
 	/**
@@ -64,13 +226,13 @@ class Base_Controller_Home extends Controller {
 		$p_nombre = "Test Plugin";
 
 		// Borramos el plugin.
-		//if (file_exists(Plugin_Manager::nombre_as_path($p_nombre)))
-		//{
-		//	Update_Utils::unlink(Plugin_Manager::nombre_as_path($p_nombre));
-		//}
+		// if (file_exists(Plugin_Manager::nombre_as_path($p_nombre)))
+		// {
+		// Update_Utils::unlink(Plugin_Manager::nombre_as_path($p_nombre));
+		// }
 
 		// Objeto manejador de plugins.
-		$pkg_manager = Plugin_Manager::getInstance();
+		$pkg_manager = Plugin_Manager::get_instance();
 
 		// Verificamos su existencia
 		$o_plugin = $pkg_manager->get(Plugin_Manager::make_name($p_nombre));

@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * file.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Cache/Driver
+ * @package		Marifa\Base
+ * @subpackage  Cache\Driver
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Alias de Base_Cache_Driver_File
  *
- * @package    Marifa/Marifa
- * @subpackage Cache/Driver
+ * @package    Marifa\Marifa
+ * @subpackage Cache\Driver
  */
 class Cache_Driver_File extends Base_Cache_Driver_File {}

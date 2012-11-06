@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * request.php is part of Marifa.
  *
@@ -15,13 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase con metodos genericos sobre las peticiones como si es la inicial,
@@ -29,7 +28,7 @@
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.1
- * @package    Marifa/Base
+ * @package    Marifa\Base
  */
 class Base_Request {
 
@@ -40,26 +39,37 @@ class Base_Request {
 	private static $request = array();
 
 	/**
-	 * Agregamos una llamada al stack
-	 * @param string $call Url llamada.
-	 * @param string $method
+	 * Agregamos una llamada al stack.
+	 * @param string $method Método llamado.
+	 * @param string $controller Controllador llamado.
+	 * @param string $action Acción llamada.
+	 * @param array $params Parametros de la llamada.
+	 * @param string $plugin Plugin si corresponde.
 	 */
-	public static function addStack($call, $method = 'GET')
+	public static function add_stack($method, $controller, $action, $params, $plugin)
 	{
-		// Verificamos que sea un arreglo.
 		if ( ! is_array(self::$request))
 		{
 			self::$request = array();
 		}
 
+		// Obtenemos metodo.
+		$method = ($method === NULL) ? (self::method()) : $method;
+
 		// Agregamos la petición al stack.
-		self::$request[] = array($call, $method);
+		self::$request[] = array(
+			'method' => $method,
+			'controller' => $controller,
+			'action' => $action,
+			'args' => $params,
+			'plugin' => $plugin
+		);
 	}
 
 	/**
 	 * Damos por terminada la última petición del stack de llamadas.
 	 */
-	public static function popStack()
+	public static function pop_stack()
 	{
 		if (is_array(self::$request) && count(self::$request) > 0)
 		{
@@ -135,19 +145,107 @@ class Base_Request {
 	/**
 	 * Redireccionamos a la ruta provista.
 	 * @param string|array $url URL o segmentos de la URL a donde redireccionar.
+	 * @param bool $save_current Si guardamos la URL para que el usuario pueda regresar.
+	 * @param bool $go_saved Si tratamos de ir a una ruta guardada.
 	 */
-	public static function redirect($url)
+	public static function redirect($url, $save_current = FALSE, $go_saved = FALSE)
 	{
+		// Verifico ruta guardada.
+		if ($go_saved && Cookie::cookie_exists('r_u'))
+		{
+			$url = Cookie::get_cookie_value('r_u');
+			Cookie::delete_cookie('r_u');
+		}
+
 		// Si tenemos los segmentos generamos la URL.
 		if (is_array($url))
 		{
 			$url = '/'.implode('/', $url);
 		}
 
-		//TODO: agregamos directorio base.
+		if ($url{0} == '/')
+		{
+			$url = substr($url, 1);
+		}
+
+		$url = SITE_URL.$url;
+
+		// Verifico si tengo que guardar la URL.
+		if ($save_current)
+		{
+			Cookie::set_classic_cookie('r_u', Request::current());
+		}
 
 		// Redireccionamos.
 		header("Location: $url");
+
+		die();
+	}
+
+	/**
+	 * Obtenemos la URL de donde refiere.
+	 * @return string
+	 */
+	public static function referer()
+	{
+		return isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : NULL;
+	}
+
+	/**
+	 * Obtiene el URL de la petición actual.
+	 * @return string Url actual
+	 */
+	public static function current_url()
+	{
+		if ( ! isset($_SERVER['REQUEST_URI']) || ! isset($_SERVER['SCRIPT_NAME']))
+		{
+			return '';
+		}
+
+		$uri = $_SERVER['REQUEST_URI'];
+		if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
+		{
+			$uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
+		}
+		elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0)
+		{
+			$uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
+		}
+
+		// This section ensures that even on servers that require the URI to be in the
+		// query string (Nginx) a correct
+		// URI is found, and also fixes the QUERY_STRING server var and $_GET array.
+		if (strncmp($uri, '?/', 2) === 0)
+		{
+			$uri = substr($uri, 2);
+		}
+		$parts = preg_split('#\?#i', $uri, 2);
+		$uri = $parts[0];
+		if (isset($parts[1]))
+		{
+			$_SERVER['QUERY_STRING'] = $parts[1];
+			parse_str($_SERVER['QUERY_STRING'], $_GET);
+		}
+		else
+		{
+			$_SERVER['QUERY_STRING'] = '';
+			$_GET = array();
+		}
+
+		if ($uri == '/' || empty($uri))
+		{
+			return '/';
+		}
+
+		$uri = parse_url($uri, PHP_URL_PATH);
+
+		// Do some final cleaning of the URI and return it
+		$uri = str_replace(array(
+				'//',
+				'../'
+		), '/', trim($uri, '/'));
+
+		return $uri;
 	}
 
 }

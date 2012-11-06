@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * compresion.php is part of Marifa.
  *
@@ -15,23 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.3
+ * @since		Versión 0.1
  * @filesource
  * @subpackage  Update
- * @package		Marifa/Base
+ * @package		Marifa\Base
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Clase para comprimir, se basa en el uso de drivers.
  * Nos permite consultar información sobre versiones y/o plugins.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @since      Versión 0.3
+ * @since      Versión 0.1
  * @subpackage Update
- * @package    Marifa/Base
+ * @package    Marifa\Base
  */
 class Base_Update_Compresion {
 
@@ -61,16 +60,16 @@ class Base_Update_Compresion {
         if (count(self::$compresors) <= 0)
         {
             // Agregamos los distintos drivers.
-            self::_addSupport('zip', 'Update_Compresion_Zip', 'ZipArchive');
-            self::_addSupport('tar', 'Update_Compresion_Tar');
-            self::_addSupport('gz', 'Update_Compresion_Gz', NULL, 'gzopen');
-            self::_addSupport('bz2', 'Update_Compresion_Bz2', NULL, 'bzopen');
-            //self::_addSupport('rar', 'Compresion_Rar', 'RarArchive');
-            //self::_addSupport('lzf', 'Compresion_Lzf', NULL, 'lzf_compress');
-            //self::_addSupport('phar', 'Compresion_Phar', 'Phar');
+            self::_add_support('zip', 'Update_Compresion_Zip', 'ZipArchive');
+            self::_add_support('tar', 'Update_Compresion_Tar');
+            self::_add_support('gz', 'Update_Compresion_Gz', NULL, 'gzopen');
+            self::_add_support('bz2', 'Update_Compresion_Bz2', NULL, 'bzopen');
+            // self::_add_support('rar', 'Compresion_Rar', 'RarArchive');
+            // self::_add_support('lzf', 'Compresion_Lzf', NULL, 'lzf_compress');
+            // self::_add_support('phar', 'Compresion_Phar', 'Phar');
 
             // Comprobamos el soporte.
-            self::_testSupport();
+            self::_test_support();
         }
     }
 
@@ -78,9 +77,9 @@ class Base_Update_Compresion {
      * Patrón singleton para obtener los distintos compresores si están
      * disponibles.
 	 * @param string $type Tipo de compresor a usar.
-	 * @return Api_Compresion_Compresion
+	 * @return Update_Compresion_Compresion
      */
-    public static function getInstance($type)
+    public static function get_instance($type)
     {
         // Cargamos la información.
         self::load();
@@ -104,33 +103,33 @@ class Base_Update_Compresion {
 	 * Agregamos un compresor a la lista.
 	 * @param string $name Nombre del compresor.
 	 * @param string $compresor Clase usada para el compresor.
-	 * @param array|string $testClass Clases que deben estar disponibles para su uso.
-	 * @param array|string $testFunctions Funciones que deben estar disponibles para su uso.
+	 * @param array|string $test_class Clases que deben estar disponibles para su uso.
+	 * @param array|string $test_functions Funciones que deben estar disponibles para su uso.
 	 */
-    private static function _addSupport($name, $compresor, $testClass = NULL, $testFunctions = NULL)
+    private static function _add_support($name, $compresor, $test_class = NULL, $test_functions = NULL)
     {
         $class = array();
         $class['compresor'] = $compresor;
-        if ($testClass !== NULL)
+        if ($test_class !== NULL)
         {
-            if (is_array($testClass))
+            if (is_array($test_class))
             {
-                $class['support']['class'] = $testClass;
+                $class['support']['class'] = $test_class;
             }
             else
             {
-                $class['support']['class'] = array($testClass);
+                $class['support']['class'] = array($test_class);
             }
         }
-        if ($testFunctions !== NULL)
+        if ($test_functions !== NULL)
         {
-            if (is_array($testFunctions))
+            if (is_array($test_functions))
             {
-                $class['support']['functions'] = $testFunctions;
+                $class['support']['functions'] = $test_functions;
             }
             else
             {
-                $class['support']['functions'] = array($testFunctions);
+                $class['support']['functions'] = array($test_functions);
             }
         }
         self::$compresors[$name] = $class;
@@ -139,8 +138,16 @@ class Base_Update_Compresion {
     /**
      * Comprobamos la disponibilidad de compresores.
      */
-    private static function _testSupport()
+    private static function _test_support()
     {
+		// Cargo la cache.
+		$a = Cache::get_instance()->get('uploaders_cache');
+		if (is_array($a))
+		{
+			self::$available = $a;
+			return;
+		}
+
         self::$available = array();
         foreach (self::$compresors as $name => $info)
         {
@@ -183,6 +190,8 @@ class Base_Update_Compresion {
 	        }
 			self::$available[$name] = $info['compresor'];
         }
+
+		Cache::get_instance()->save('uploaders_cache', self::$available);
     }
 
     /**
@@ -193,6 +202,6 @@ class Base_Update_Compresion {
     public static function get_list($all = FALSE)
     {
         self::load();
-        return array_keys($all ? self::$compresors : self::$available);
+        return array_keys($all ? (self::$compresors) : (self::$available));
     }
 }

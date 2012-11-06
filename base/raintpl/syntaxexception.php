@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * raintpl.php is part of Marifa.
  *
@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
- * @copyright	Copyright (c) 2012 Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @since		Versión 0.1
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Lib/Raintpl
+ * @package		Marifa\Base
+ * @subpackage  Raintpl
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Exception thrown when syntax error occurs.
@@ -32,8 +31,8 @@
  * Distributed under GNU/LGPL 3 License
  *
  * @version    2.7.2
- * @package    Marifa/Base
- * @subpackage Lib/Raintpl
+ * @package    Marifa\Base
+ * @subpackage Raintpl
  */
 class Base_RainTpl_SyntaxException extends RainTpl_Exception {
 
@@ -42,14 +41,14 @@ class Base_RainTpl_SyntaxException extends RainTpl_Exception {
 	 *
 	 * @var int | null
 	 */
-	protected $templateLine = null;
+	protected $templateLine = NULL;
 
 	/**
 	 * Tag which caused an error.
 	 *
 	 * @var string | null
 	 */
-	protected $tag = null;
+	protected $tag = NULL;
 
 	/**
 	 * Returns line in template file where error has occured
@@ -70,7 +69,7 @@ class Base_RainTpl_SyntaxException extends RainTpl_Exception {
 	 */
 	public function setTemplateLine($templateLine)
 	{
-		$this->templateLine = ( int ) $templateLine;
+		$this->templateLine = (int) $templateLine;
 		return $this;
 	}
 
@@ -92,7 +91,7 @@ class Base_RainTpl_SyntaxException extends RainTpl_Exception {
 	 */
 	public function setTag($tag)
 	{
-		$this->tag = ( string ) $tag;
+		$this->tag = (string) $tag;
 		return $this;
 	}
 

@@ -1,0 +1,1 @@
+Este es un correo para recuperar tu clave de {$titulo}, para restaurar tu clave, debes ir al siguiente enlace: {function="get_site_url()"}/usuario/restaurar/{$codigo}

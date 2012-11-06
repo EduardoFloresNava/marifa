@@ -1,4 +1,4 @@
-<?php defined('APP_BASE') or die('No direct access allowed.');
+<?php
 /**
  * error.php is part of Marifa.
  *
@@ -17,14 +17,15 @@
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
  * @filesource
- * @package		Marifa/Base
- * @subpackage  Update/Exception/Rest
+ * @package		Marifa\Base
+ * @subpackage  Update\Exception\Rest
  */
+defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Alias de Base_Update_Exception_Rest_Error
  *
- * @package    Marifa/Marifa
- * @subpackage Update/Exception/Rest
+ * @package    Marifa\Marifa
+ * @subpackage Update\Exception\Rest
  */
 class Update_Exception_Rest_Error extends Base_Update_Exception_Rest_Error {}
