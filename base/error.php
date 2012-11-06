@@ -51,6 +51,12 @@ class Base_Error {
 	protected static $loggers;
 
 	/**
+	 * Variable que determina si se han mostrado errores o no aun.
+	 * @var bool
+	 */
+	public static $has_error = FALSE;
+
+	/**
 	 * Constructor privado para singleton.
 	 */
 	private function __construct()
@@ -248,6 +254,9 @@ class Base_Error {
 	 */
 	public static function show_error($description, $number = 500, $extended = NULL)
 	{
+		// Estamos mostrando un error.
+		self::$has_error = TRUE;
+
 		// Cargamos la vista.
 		$view = View::factory('internal/error/'.$number);
 

@@ -86,7 +86,7 @@ class Installer_Controller {
 	 */
 	public function __destruct()
 	{
-		if (is_object($this->template) && ! Request::is_ajax() && error_get_last() === NULL)
+		if (is_object($this->template) && ! Request::is_ajax() && ! Error::$has_error)
 		{
 			$this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
 			$this->template->show();
