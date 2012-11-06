@@ -74,6 +74,11 @@ define('VIEW_PATH', 'installer'.DS);
  */
 define('CACHE_PATH', APP_BASE.DS.'cache');
 
+/**
+ * Directorio de clases de 3ros.
+ */
+define('VENDOR_PATH', APP_BASE.DS.'vendor'.DS);
+
 // Cargamos funciones varias.
 require_once (APP_BASE.DS.'function.php');
 
