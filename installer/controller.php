@@ -731,8 +731,7 @@ class Installer_Controller {
 				else
 				{
 					// Creo la cuenta.
-					$model_usuario->register($usuario, $email, $password);
-					$model_usuario->actualizar_campo('rango', 1);
+					$model_usuario->register($usuario, $email, $password, 1);
 					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
 				}
 
