@@ -150,6 +150,10 @@ class Base_Error {
 		$error_string = self::get_error_string($errstr, $errfile, $errline);
 		// REPRESENTACION DEL STACK
 		$error_backtrace = self::parse_back_trace($ec);
+
+		// Enviamos error a los logs.
+		Log::log($error_type_string.$error_string, self::get_error_log_type($errno));
+
 		// MOSTRAMOS ERROR SEGUN ES DEBUG O NO.
 		if ( ! self::$debug)
 		{
@@ -217,9 +221,19 @@ class Base_Error {
 	 */
 	public static function exception_handler($exception)
 	{
+		// Si es excepcion de RainTPL la ponemos como
+		if ($exception instanceof RainTpl_NotFoundException || $exception instanceof RainTpl_SyntaxException)
+		{
+			return self::parse_as_raintpl($exception);
+		}
+
 		$error_type_string = get_class($exception);
 		$error_string = self::get_error_string($exception->getMessage(), $exception->getFile(), $exception->getLine());
 		$error_backtrace = $exception->getTraceAsString();
+
+		// Envio log del error.
+		Log::log($error_type_string.$error_string, Log::ERROR);
+
 		if ( ! self::$debug)
 		{
 			self::show_error(self::get_user_message('exception'), 500);
@@ -232,6 +246,45 @@ class Base_Error {
 		foreach (self::$loggers as $logger)
 		{
 			$logger->write($errno, $error_type_string.$error_string.$error_backtrace);
+		}
+	}
+
+	/**
+	 * Procesamos una excepcion como una de RainTPL.
+	 * Permite excepciones mas amigables.
+	 * @param RainTPL_Exception $exception Excepcion a procesar.
+	 */
+	protected static function parse_as_raintpl($exception)
+	{
+		if ($exception instanceof RainTpl_NotFoundException)
+		{
+			// Envio log del error.
+			Log::log("No se ha podido cargar la vista '{$exception->getTemplateFile()}'.", Log::ERROR);
+
+			if ( ! self::$debug)
+			{
+				self::show_error(self::get_user_message('exception'), 500);
+			}
+			else
+			{
+				//TODO: obtener la llamada al parseo y no el codigo interno.
+				self::show_error("No se ha podido cargar la vista '{$exception->getTemplateFile()}'.", 500, array('file' => $exception->getFile(), 'line' => $exception->getLine()));
+			}
+		}
+		elseif ($exception instanceof RainTpl_SyntaxException)
+		{
+			// Envio log del error.
+			Log::log("No se ha podido procesar la vista '{$exception->getTemplateFile()}' por un error en la etiqueta {$exception->getTag()} en la linea {$exception->getTemplateLine()}.", Log::ERROR);
+
+			if ( ! self::$debug)
+			{
+				self::show_error(self::get_user_message('exception'), 500);
+			}
+			else
+			{
+				//TODO: obtener la llamada al parseo y no el codigo interno.
+				self::show_error("No se ha podido procesar la vista '{$exception->getTemplateFile()}' por un error en la etiqueta {$exception->getTag()} en la linea {$exception->getTemplateLine()}.", 500, array('file' => $exception->getFile(), 'line' => $exception->getLine()));
+			}
 		}
 	}
 
@@ -456,6 +509,30 @@ class Base_Error {
 				break;
 		}
 		return $type;
+	}
+
+	/**
+	 * Obtenemos una cadena de caracteres del número de error.
+	 * @param int $error_number Number Número de error a procesar.
+	 * @return string Cadena representativa del error.
+	 */
+	private static function get_error_log_type($error_number)
+	{
+		//TODO: Agregar errores faltantes.
+		switch ($error_number)
+		{
+			case E_NOTICE:
+			case E_USER_NOTICE:
+				return Log::INFO;
+			case E_WARNING:
+			case E_USER_WARNING:
+				return Log::WARNING;
+			case E_ERROR:
+			case E_USER_ERROR:
+				return Log::ERROR;
+			default:
+				return Log::ERROR;
+		}
 	}
 
 	/**
