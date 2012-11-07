@@ -5,7 +5,7 @@ RewriteEngine On
 RewriteBase /
 
 # Ponemos el entorno en modo depuracion. Para ponerlo en produccion cambiar a 0.
-SetEnv MARIFA_DEBUG 1
+SetEnv MARIFA_DEBUG 0
 
 # Instalador.
 RewriteCond %{REQUEST_FILENAME} !-f
