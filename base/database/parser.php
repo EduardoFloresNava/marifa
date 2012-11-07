@@ -334,7 +334,7 @@ class Base_Database_Parser {
 
 		foreach ($params as $key => $value)
 		{
-			$q = preg_replace('/:'.$key.'/', $this->parse_input($value), $q);
+			$q = str_replace(":$key", $this->parse_input($value), $q);
 		}
 		return $q;
 	}
@@ -364,7 +364,14 @@ class Base_Database_Parser {
 		}
 		foreach ($params as $param)
 		{
-			$q = preg_replace('/\?/', $this->parse_input($param), $q, 1);
+			// Proceso la entrada.
+			$param = $this->parse_input($param);
+
+			// Valido $n y \\n
+			$param = preg_replace('/(\$[0-9]+)/', '\\\\$0', $param);
+			$param = preg_replace('/(\\\\[0-9]+)/', '\\\\\\\\$0', $param);
+
+			$q = preg_replace('/\?/', $param, $q, 1);
 		}
 		return $q;
 	}

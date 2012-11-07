@@ -434,22 +434,10 @@ $consultas[] = array(
 				`objeto_id1` int(11) DEFAULT NULL,
 				`objeto_id2` int(11) DEFAULT NULL,
 				`tipo` varchar(50) NOT NULL,
+				`notificar` BIT NOT NULL DEFAULT 0,
+				`visto` BIT NOT NULL DEFAULT 0,
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`id`),
-				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
-		)
-	)
-);
-
-// Tabla de sucesos vistos por los usuarios.
-$consultas[] = array(
-	'Tabla de sucesos vistos por los usuarios',
-	array(
-		array('ALTER', 'CREATE TABLE  `suceso_visto` (
-				`suceso_id` int(11) NOT NULL,
-				`usuario_id` int(11) NOT NULL,
-				PRIMARY KEY (`suceso_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
 			);', NULL, array('error_no' => 1050)
 		)

@@ -28,7 +28,7 @@
     <body>
         <div class="container">
 			<h1 class="logo-title">Instalador de Marifa</h1>
-			{if="count($steps) > 0"}
+			{if="isset($steps) && count($steps) > 0"}
 			{$step_width=round(100/count($steps), 2)}
 			<div class="progress">
 				{loop="$steps"}

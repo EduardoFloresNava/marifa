@@ -1,6 +1,5 @@
 .project
 .settings/
-plugin/plugin.php
 /nbproject/private/
 /nbproject/
 config/database.php
@@ -9,9 +8,7 @@ config/upload.php
 config/cache.php
 config/email.php
 router.php
-/plugin/
 /phpdoc/
 /cache/file/
 EXAMPLE
 TODO
-/theme/theme.php

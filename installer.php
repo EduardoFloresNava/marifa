@@ -38,6 +38,9 @@ else
 	// PARA PRODUCCION DEBE SER FALSE.
 }
 
+// Suprimimos advertencias de DateTime. Si lo deseas puedes poner una TZ estatica.
+date_default_timezone_set('UTC');
+
 // Defino producción para simplificar.
 define('PRODUCTION', ! DEBUG);
 
@@ -74,15 +77,17 @@ define('VIEW_PATH', 'installer'.DS);
  */
 define('CACHE_PATH', APP_BASE.DS.'cache');
 
+/**
+ * Directorio de clases de 3ros.
+ */
+define('VENDOR_PATH', APP_BASE.DS.'vendor'.DS);
+
 // Cargamos funciones varias.
 require_once (APP_BASE.DS.'function.php');
 
 // Iniciamos el proceso de carga automatica de librerias.
 spl_autoload_register('installer_loader_load');
 spl_autoload_register('loader_load');
-
-// Defino zona horaria.
-date_default_timezone_set('America/Argentina/Buenos_Aires');
 
 /**
  * Defino la URL del sitio.
@@ -93,6 +98,9 @@ define('SITE_URL', get_site_url());
 define('THEME', 'theme');
 
 define('THEME_URL', SITE_URL.VIEW_PATH.THEME);
+
+// Inicio logs.
+Log::setup(APP_BASE.DS.'log', '%d-%m-%Y.log', PRODUCTION ? Log::INFO : Log::DEBUG);
 
 // Iniciamos el manejo de errores.
 Error::get_instance()->start(DEBUG);

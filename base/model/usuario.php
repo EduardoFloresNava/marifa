@@ -397,7 +397,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		$info = array($nick, $enc_password, $email, $rango, 10, 10, date('Y/m/d H:i:s'), 0);
 
 		// Creamos la cuenta.
-		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, puntos_disponibles, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', array_values($info));
+		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, puntos_disponibles, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', $info);
 
 		return ($cant > 0) ? $id : FALSE;
 	}

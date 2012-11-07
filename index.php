@@ -38,6 +38,9 @@ else
 	// PARA PRODUCCION DEBE SER FALSE.
 }
 
+// Suprimimos advertencias de DateTime. Si lo deseas puedes poner una TZ estatica.
+date_default_timezone_set('UTC');
+
 // Defino producción para simplificar.
 define('PRODUCTION', ! DEBUG);
 
@@ -123,6 +126,9 @@ if (PRODUCTION)
 
 // Verifico MCrypt.
 extension_loaded('mcrypt') || die('Marifa necesita MCrypt para funcionar.');
+
+// Inicio logs.
+Log::setup(APP_BASE.DS.'log', '%d-%m-%Y.log', PRODUCTION ? Log::INFO : Log::DEBUG);
 
 // Iniciamos las cookies.
 Cookie::start('secret_cookie_key');

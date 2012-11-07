@@ -191,6 +191,13 @@ class Base_Assets {
 			include(VENDOR_PATH.'lessc.php');
 		}
 
+		// Verifico si se puede escribir.
+		if ( ! @is_writable($target))
+		{
+			Log::warning("No se puede generar la cache del asset '$file' en '$target'. Verifique los permisos de escritura.");
+			$target = NULL;
+		}
+
 		// Realizo la compilación.
 		if ($target !== NULL)
 		{

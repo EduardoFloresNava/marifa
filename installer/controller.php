@@ -86,7 +86,7 @@ class Installer_Controller {
 	 */
 	public function __destruct()
 	{
-		if (is_object($this->template) && ! Request::is_ajax() && error_get_last() === NULL)
+		if (is_object($this->template) && ! Request::is_ajax() && ! Error::$has_error)
 		{
 			$this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
 			$this->template->show();
@@ -237,6 +237,12 @@ class Installer_Controller {
 			'Sistema de actualizaciones',
 			array('titulo' => 'CUrl', 'requerido' => 'ON', 'actual' => function_exists('curl_init') ? 'ON' : 'OFF', 'estado' => function_exists('curl_init'), 'opcional' => TRUE),
 			array('titulo' => 'External open', 'requerido' => 'ON', 'actual' => ini_get('allow_url_fopen') ? 'ON' : 'OFF', 'estado' => ini_get('allow_url_fopen'), 'opcional' => TRUE),
+			'Permisos escritura',
+			array('titulo' => '/cache/raintpl/', 'requerido' => 'ON', 'actual' => is_writable(CACHE_PATH.DS.'raintpl') ? 'ON' : 'OFF', 'estado' => is_writable(CACHE_PATH.DS.'raintpl')),
+			array('titulo' => '/log/', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.DS.'log') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.DS.'log')),
+			array('titulo' => '/theme/theme.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/theme/theme.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/theme/theme.php')),
+			array('titulo' => '/plugin/plugin.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/plugin/plugin.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/plugin/plugin.php')),
+			array('titulo' => '/config/database.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/config/database.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/config/database.php')),
 		);
 
 		//TODO: verificar cache FILE.
@@ -731,8 +737,8 @@ class Installer_Controller {
 				else
 				{
 					// Creo la cuenta.
-					$model_usuario->register($usuario, $email, $password);
-					$model_usuario->actualizar_campo('rango', 1);
+					$model_usuario->register($usuario, $email, $password, 1);
+					$model_usuario->load_by_nick($usuario);
 					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
 				}
 
