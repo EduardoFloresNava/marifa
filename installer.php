@@ -99,6 +99,9 @@ define('THEME', 'theme');
 
 define('THEME_URL', SITE_URL.VIEW_PATH.THEME);
 
+// Inicio logs.
+Log::setup(APP_BASE.DS.'log', '%d-%m-%Y.log', PRODUCTION ? Log::INFO : Log::DEBUG);
+
 // Iniciamos el manejo de errores.
 Error::get_instance()->start(DEBUG);
 

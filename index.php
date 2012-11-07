@@ -124,6 +124,9 @@ if (PRODUCTION)
 // Verifico MCrypt.
 extension_loaded('mcrypt') || die('Marifa necesita MCrypt para funcionar.');
 
+// Inicio logs.
+Log::setup(APP_BASE.DS.'log', '%d-%m-%Y.log', PRODUCTION ? Log::INFO : Log::DEBUG);
+
 // Iniciamos las cookies.
 Cookie::start('secret_cookie_key');
 
