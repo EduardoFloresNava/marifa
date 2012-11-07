@@ -237,6 +237,12 @@ class Installer_Controller {
 			'Sistema de actualizaciones',
 			array('titulo' => 'CUrl', 'requerido' => 'ON', 'actual' => function_exists('curl_init') ? 'ON' : 'OFF', 'estado' => function_exists('curl_init'), 'opcional' => TRUE),
 			array('titulo' => 'External open', 'requerido' => 'ON', 'actual' => ini_get('allow_url_fopen') ? 'ON' : 'OFF', 'estado' => ini_get('allow_url_fopen'), 'opcional' => TRUE),
+			'Permisos escritura',
+			array('titulo' => '/cache/raintpl/', 'requerido' => 'ON', 'actual' => is_writable(CACHE_PATH.DS.'raintpl') ? 'ON' : 'OFF', 'estado' => is_writable(CACHE_PATH.DS.'raintpl')),
+			array('titulo' => '/log/', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.DS.'log') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.DS.'log')),
+			array('titulo' => '/theme/theme.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/theme/theme.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/theme/theme.php')),
+			array('titulo' => '/plugin/plugin.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/plugin/plugin.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/plugin/plugin.php')),
+			array('titulo' => '/config/database.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/config/database.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/config/database.php')),
 		);
 
 		//TODO: verificar cache FILE.
