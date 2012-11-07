@@ -732,6 +732,7 @@ class Installer_Controller {
 				{
 					// Creo la cuenta.
 					$model_usuario->register($usuario, $email, $password, 1);
+					$model_usuario->load_by_nick($usuario);
 					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
 				}
 
