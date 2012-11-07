@@ -295,7 +295,7 @@ class Base_Controller_Usuario extends Controller {
 
 						// Registro completo.
 						$view_usuario = View::factory('usuario/register_complete');
-						$view_usuario->assign('tipo_activacion', $t_act);
+						$view_usuario->assign('tipo', $t_act);
 					}
 					else
 					{
