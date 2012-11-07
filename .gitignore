@@ -1,6 +1,5 @@
 .project
 .settings/
-plugin/plugin.php
 /nbproject/private/
 /nbproject/
 config/database.php
