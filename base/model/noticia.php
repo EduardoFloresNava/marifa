@@ -90,10 +90,11 @@ class Base_Model_Noticia extends Model_Dataset {
 	 */
 	public static function get_active()
 	{
-		$id = Database::get_instance()->query('SELECT id FROM noticia WHERE estado = ? LIMIT 1', self::ESTADO_VISIBLE)->get_var(Database_Query::FIELD_INT);
+		$id = Database::get_instance()->query('SELECT id FROM noticia WHERE estado = ? ORDER BY rand() LIMIT 1', self::ESTADO_VISIBLE)->get_var(Database_Query::FIELD_INT);
 
 		if ($id !== NULL)
 		{
+
 			return new Model_Noticia($id);
 		}
 		else
