@@ -125,6 +125,12 @@ class Base_Plugin_Manager {
 		// Cargamos el estado actual.
 		$old_data = $this->load();
 
+		// Verifico existencia carpeta.
+		if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH))
+		{
+			mkdir(APP_BASE.DS.PLUGINS_PATH, 0777, TRUE);
+		}
+
 		// Exploramos la lista de plugins actuales.
 		$dirs = scandir(APP_BASE.DS.PLUGINS_PATH);
 
