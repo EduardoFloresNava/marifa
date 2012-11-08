@@ -290,6 +290,7 @@ class Base_Controller_Usuario extends Controller {
 						}
 						elseif ($t_act == 2)
 						{
+							$model_usuario->load_by_nick($nick);
 							$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
 						}
 
