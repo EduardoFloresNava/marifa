@@ -81,6 +81,7 @@ class Base_Controller_Admin_Home extends Controller {
 		$listado = array();
 		$listado['p_general'] = array('caption' => 'General');
 		$listado['index'] = array('link' => '/admin/', 'caption' => 'Inicio', 'active' => FALSE);
+		$listado['home_logs'] = array('link' => '/admin/home/logs', 'caption' => 'Log\'s', 'active' => FALSE);
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
 		{
@@ -133,6 +134,68 @@ class Base_Controller_Admin_Home extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', self::submenu('index'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Mostramos los logs existentes en el sistema de archivos.
+	 */
+	public function action_logs($file)
+	{
+		// Cargamos la portada.
+		$vista = View::factory('/admin/home/log');
+		
+		// Listado de archivos.
+		$file_list = glob(APP_BASE.DS.'log'.DS.'*.log');
+		$file_list = array_map(create_function('$str', 'return substr($str, strlen(APP_BASE.DS.\'log\'.DS));'), $file_list);
+		$vista->assign('file_list', $file_list);
+		
+		if ($file !== NULL)
+		{
+			// Verifico si esta en la lista.
+			if ( ! in_array($file, $file_list))
+			{
+				$_SESSION['flash_error'] = 'El archivo no es correcto.';
+				Request::redirect('/admin/home/logs/');
+			}
+			
+			// Cargo el archivo.
+			$data = file(APP_BASE.DS.'log'.DS.$file);
+			
+			// Proceso las lineas.
+			$pd = array();
+			foreach ($data as $v)
+			{
+				// Obtengo los datos.
+				preg_match('/\[(.*)\] \[(.*)\] (.*)/', $v, $aux);
+				
+				// Verifico sea correcto.
+				if (count($aux) != 4)
+				{
+					continue;
+				}
+				
+				// Genero la linea.
+				$pd[] = array('fecha' => new Fechahora($aux[1]), 'tipo' => trim($aux[2]), 'str' => $aux[3]);
+			}
+			unset($data);
+			
+			// Envio los datos a la vista.
+			$vista->assign('lineas', $pd);
+			$vista->assign('actual', $file);
+			unset($pd);
+		} 
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', self::submenu('home_logs'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
