@@ -415,7 +415,7 @@ class Base_Controller_Perfil extends Controller {
 
 		// Paginación.
 		$paginador = new Paginator($this->usuario->cantidad_sigue(), $cantidad_por_pagina);
-		$information_view->assign('paginacion_sigo', $paginador->get_view($pagina_siguen, '/perfil/seguidores/'.$usuario.'/'.$pagina_sigo.'/%d/'));
+		$information_view->assign('paginacion_sigue', $paginador->get_view($pagina_siguen, '/perfil/seguidores/'.$usuario.'/'.$pagina_sigo.'/%d/'));
 		unset($paginador);
 
 		// Transformamos a arreglo.
