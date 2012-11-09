@@ -209,7 +209,6 @@ class Base_Controller_Admin_Usuario extends Controller {
 			// Creo el mensaje de correo.
 			$message = Email::get_message();
 			$message->setSubject('Cuenta de '.$model_config->get('nombre', 'Marifa').' activada');
-			$message->setFrom('areslepra@gmail.com', 'Ares');
 			$message->setTo($model_usuario->email, $model_usuario->nick);
 
 			// Cargo la vista.

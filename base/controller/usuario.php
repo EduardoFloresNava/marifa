@@ -274,7 +274,6 @@ class Base_Controller_Usuario extends Controller {
 							// Creo el mensaje de correo.
 							$message = Email::get_message();
 							$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
-							$message->setFrom('areslepra@gmail.com', 'Ares');
 							$message->setTo($email, $nick);
 
 							// Cargo la vista.
@@ -453,7 +452,6 @@ class Base_Controller_Usuario extends Controller {
 				// Creo el mensaje de correo.
 				$message = Email::get_message();
 				$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
-				$message->setFrom('areslepra@gmail.com', 'Ares');
 				$message->setTo($email, $model_usuario->nick);
 
 				// Cargo la vista.
@@ -546,7 +544,6 @@ class Base_Controller_Usuario extends Controller {
 				// Creo el mensaje de correo.
 				$message = Email::get_message();
 				$message->setSubject('Restaurar contraseña de '.$model_config->get('nombre', 'Marifa'));
-				$message->setFrom('areslepra@gmail.com', 'Ares');
 				$message->setTo($email, $model_usuario->nick);
 
 				// Cargo la vista.

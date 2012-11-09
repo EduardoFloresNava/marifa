@@ -1,0 +1,1 @@
+Este es un correo de verificación de las configuraciones de {$titulo}. Implica que el envio de correos está configurado correctamente.
