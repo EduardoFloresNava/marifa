@@ -41,9 +41,9 @@ class Base_Controller_Perfil extends Controller {
 	/**
 	 * Constructor de la clase. Seteamos el elemento del menu actual.
 	 */
-	public function __construct()
+	public function before()
 	{
-		parent::__construct();
+		parent::before();
 
 		// Cargo el menu.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));

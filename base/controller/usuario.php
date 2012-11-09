@@ -36,9 +36,9 @@ class Base_Controller_Usuario extends Controller {
 	/**
 	 * Verificamos que barra utilizar.
 	 */
-	public function __construct()
+	public function before()
 	{
-		parent::__construct();
+		parent::before();
 
 		// Seteo el menu.
 		$this->template->assign('master_bar', parent::base_menu());

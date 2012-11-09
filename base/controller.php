@@ -41,7 +41,7 @@ class Base_Controller {
 	/**
 	 * Cargamos la plantilla base.
 	 */
-	public function __construct()
+	public function before()
 	{
 		// Cargamos la plantilla base.
 		$this->template = View::factory('template');
@@ -174,9 +174,9 @@ class Base_Controller {
 	/**
 	 * Mostramos el template.
 	 */
-	public function __destruct()
+	public function after()
 	{
-		if (is_object($this->template) && ! Request::is_ajax() && ! Error::$has_error)
+		if (is_object($this->template) && ! Request::is_ajax())
 		{
 			DEBUG || $this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
 			$this->template->show();

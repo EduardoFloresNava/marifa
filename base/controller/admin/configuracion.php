@@ -33,10 +33,9 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Admin_Configuracion extends Controller {
 
 	/**
-	 * Constructor de la clase.
 	 * Verficiamos los permisos.
 	 */
-	public function __construct()
+	public function before()
 	{
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
@@ -51,7 +50,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			Request::redirect('/');
 		}
 
-		parent::__construct();
+		parent::before();
 	}
 
 	/**

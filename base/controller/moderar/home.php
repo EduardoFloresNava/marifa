@@ -35,7 +35,7 @@ class Base_Controller_Moderar_Home extends Controller {
 	/**
 	 * Constructor de la clase. Verificamos permisos.
 	 */
-	public function __construct()
+	public function before()
 	{
 		// Verifico esté logueado.
 		if ( ! Usuario::is_login())
@@ -51,7 +51,7 @@ class Base_Controller_Moderar_Home extends Controller {
 			Request::redirect('/');
 		}
 
-		parent::__construct();
+		parent::before();
 	}
 
 	/**

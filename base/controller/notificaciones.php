@@ -36,14 +36,14 @@ class Base_Controller_Notificaciones extends Controller {
 	 * Constructor de la clase.
 	 * Verificamos este logueado para ver sus sucesos.
 	 */
-	public function __construct()
+	public function before()
 	{
 		if ( ! Usuario::is_login())
 		{
 			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a tus notificaciones.';
 			Request::redirect('/usuario/login');
 		}
-		parent::__construct();
+		parent::before();
 	}
 
 	/**

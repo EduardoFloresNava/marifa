@@ -249,30 +249,10 @@ class Base_Dispatcher {
 								throw new Exception("No existe la acción '$accion' para el controlador '$controller_name'", 404);
 							}
 						}
-						else
-						{
-							$cont = new $controller_name;
-						}
 					}
-
-					// Obtenemos la cantidad de parámetros necesaria.
-					$r_m = new ReflectionMethod($cont, 'action_'.$accion);
-					$p_n = $r_m->getNumberOfRequiredParameters();
-
-					// Expandemos el arreglo de parámetros con NULL si es necesario.
-					while (count($args) < $p_n)
-					{
-						$args[] = NULL;
-					}
-
-					Request::add_stack(NULL, $controller, $accion, $args, $p_name);
-					// No hubo problemas, llamamos.
-					$rst = call_user_func_array(array(
-							$cont,
-							'action_'.$accion
-					), $args);
-					Request::pop_stack();
-					return $rst;
+					
+					// Realizo la llamada.
+					return self::call_controller($controller_name, $accion, $args);
 				}
 				else
 				{
@@ -324,26 +304,8 @@ class Base_Dispatcher {
 					$r_c = new ReflectionClass($controller_name);
 					if ($r_c->hasMethod('action_'.$accion))
 					{
-						$cont = new $controller_name;
-
-						// Obtenemos la cantidad de parámetros necesaria.
-						$r_m = new ReflectionMethod($cont, 'action_'.$accion);
-						$p_n = $r_m->getNumberOfRequiredParameters();
-
-						// Expandemos el arreglo de parámetros con NULL si es necesario.
-						while (count($args) < $p_n)
-						{
-							$args[] = NULL;
-						}
-
-						Request::add_stack(NULL, $controller, $accion, $args, NULL);
-						// No hubo problemas, llamamos.
-						$rst = call_user_func_array(array(
-								$cont,
-								'action_'.$accion
-						), $args);
-						Request::pop_stack();
-						return $rst;
+						// Realizo la llamada.
+						return self::call_controller($controller_name, $accion, $args);
 					}
 				}
 			}
@@ -421,12 +383,17 @@ class Base_Dispatcher {
 					throw new Exception("No existe la acción '$accion' para el controlador '$controller_name'", 404);
 				}
 			}
-			else
-			{
-				$cont = new $controller_name;
-			}
 		}
+		
+		// Realizo la llamada.
+		return self::call_controller($controller_name, $accion, $args);
+	}
 
+	private static function call_controller($controller, $accion, $args)
+	{
+		// Creo instancia del objeto.
+		$cont = new $controller;
+		
 		// Obtenemos la cantidad de parámetros necesaria.
 		$r_m = new ReflectionMethod($cont, 'action_'.$accion);
 		$p_n = $r_m->getNumberOfRequiredParameters();
@@ -437,13 +404,25 @@ class Base_Dispatcher {
 			$args[] = NULL;
 		}
 
+		// Agrego a Stack.
 		Request::add_stack(NULL, $controller, $accion, $args, NULL);
-		// No hubo problemas, llamamos.
+		
+		// Llamo pre-llamada.
+		call_user_func(array($cont, 'before'));
+		
+		// Llamo la acción.
 		$rst = call_user_func_array(array(
 				$cont,
 				'action_'.$accion
 		), $args);
+		
+		// Llamo post-llamada.
+		call_user_func(array($cont, 'after'));
+		
+		// Quito del Stack.
 		Request::pop_stack();
+		
+		// Retorno el valor.
 		return $rst;
 	}
 }

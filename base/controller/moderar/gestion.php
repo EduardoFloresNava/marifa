@@ -33,10 +33,9 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Moderar_Gestion extends Controller {
 
 	/**
-	 * Constructor de la clase.
 	 * Verificamos que esté logueado para poder realizar las acciones.
 	 */
-	public function __construct()
+	public function before()
 	{
 		// Verifico esté logueado.
 		if ( ! Usuario::is_login())
@@ -44,7 +43,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
 			Request::redirect('/usuario/login');
 		}
-		parent::__construct();
+		parent::before();
 	}
 
 	/**

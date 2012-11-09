@@ -218,6 +218,7 @@ class Base_Controller_Home extends Controller {
 	/**
 	 * Prueba descarga de un plugin.
 	 */
+	/**
 	public function action_install()
 	{
 		Dispatcher::call(''); // Prueba del uso de memoria.
@@ -323,6 +324,6 @@ class Base_Controller_Home extends Controller {
 		{
 			echo "<br />";
 		}
-	}
+	}*/
 
 }

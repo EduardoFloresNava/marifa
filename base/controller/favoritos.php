@@ -33,10 +33,9 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Favoritos extends Controller {
 
 	/**
-	 * Constructor de la clase.
 	 * Verificamos los permisos para acceder a la sección.
 	 */
-	public function __construct()
+	public function before()
 	{
 		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
@@ -44,7 +43,7 @@ class Base_Controller_Favoritos extends Controller {
 			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a tus favoritos.';
 			Request::redirect('/usuario/login');
 		}
-		parent::__construct();
+		parent::before();
 	}
 
 	/**
