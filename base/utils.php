@@ -60,7 +60,7 @@ class Base_Utils {
 	 */
    public static function get_gravatar($email, $s = 80, $d = 'mm', $r = 'g', $img = FALSE, $atts = array())
    {
-		$url = 'http://www.gravatar.com/avatar/'.md5(strtolower(trim($email)))."?s=$s&d=$d&r=$r";
+		$url = 'http://www.gravatar.com/avatar/'.md5(strtolower(trim($email)))."?s=$s&d=$d&r=$r&d=mm";
 		if ($img)
 		{
 			$url = "<img src=\"$url\"";
