@@ -59,7 +59,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="5">&iexcl;No hay usuarios!</td>
+			<td class="alert" colspan="6">&iexcl;No hay usuarios!</td>
 		</tr>
 		{/loop}
 	</tbody>
