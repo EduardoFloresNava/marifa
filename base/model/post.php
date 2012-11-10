@@ -540,12 +540,20 @@ class Base_Model_Post extends Model_Dataset {
 
 	/**
 	 * Obtenemos el listado de los posts fijos.
+	 * @param bool Si mostramos los privados o no.
 	 * @return array
 	 */
-	public function sticky()
+	public function sticky($privados = FALSE)
 	{
 		// Obtenemos el listado.
-		$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 1 ORDER BY fecha DESC')->get_pairs(Database_Query::FIELD_INT);
+		if ($privados)
+		{
+			$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 1 ORDER BY fecha DESC')->get_pairs(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 1 AND privado = 0 ORDER BY fecha DESC')->get_pairs(Database_Query::FIELD_INT);
+		}
 
 		// Armamos la lista.
 		$lst = array();

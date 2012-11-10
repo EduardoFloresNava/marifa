@@ -16,7 +16,7 @@ return array(
 		/**
 		 * Donde guardar los archivos cargados.
 		 */
-		'path' => CACHE_PATH.'upload'.DS,
+		'path' => CACHE_PATH.DS.'upload'.DS,
 
 		/**
 		 * Si se utiliza un hash para los nombres de archivos.
@@ -70,7 +70,7 @@ return array(
 		/**
 		 * Directorio donde almacenar las imagenes.
 		 */
-		'save_path' => CACHE_PATH.'imagen'.DS,
+		'save_path' => CACHE_PATH.DS.'imagen'.DS,
 
 		/**
 		 * URL base para el PATH.

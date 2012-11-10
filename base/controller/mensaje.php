@@ -35,7 +35,7 @@ class Base_Controller_Mensaje extends Controller {
 	/**
 	 * Verificamos los permisos.
 	 */
-	public function __construct()
+	public function before()
 	{
 		// Solo usuarios conectados.
 		if ( ! Usuario::is_login())
@@ -43,7 +43,7 @@ class Base_Controller_Mensaje extends Controller {
 			Request::redirect('/usuario/login', TRUE);
 		}
 
-		parent::__construct();
+		parent::before();
 	}
 
 	/**

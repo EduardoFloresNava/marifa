@@ -94,7 +94,10 @@ class Base_Log {
 		if ( ! file_exists(self::$file))
 		{
 			// Fuerzo creacion del directorio.
-			mkdir(dirname(self::$file), 0777, TRUE);
+			if ( ! file_exists(dirname(self::$file)))
+			{
+				mkdir(dirname(self::$file), 0777, TRUE);
+			}
 
 			// Genero el archivo.
 			touch(self::$file);

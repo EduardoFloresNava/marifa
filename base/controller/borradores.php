@@ -33,10 +33,9 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Borradores extends Controller {
 
 	/**
-	 * Contructor de la clase.
 	 * Verifico que esté logueado para poder acceder a las secciones.
 	 */
-	public function __construct()
+	public function before()
 	{
 		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
@@ -44,7 +43,7 @@ class Base_Controller_Borradores extends Controller {
 			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder ver los borradores.';
 			Request::redirect('/usuario/login');
 		}
-		parent::__construct();
+		parent::before();
 	}
 
 	/**

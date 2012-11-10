@@ -10,7 +10,7 @@ return array(
 	 */
 	//'transport' => 'smtp',
 	//'transport' => 'sendmail',
-	//'transport' => 'mail',
+	'transport' => 'mail',
 
 	/**
 	 * Propiedades de los transportes. Cada transporte tiene una lista de propiedades.
@@ -26,11 +26,20 @@ return array(
 	 *  - Propiedades de mail:
 	 *    - NO POSEE PROPIEDADES EXTRA.
 	 */
-	'parametros' => array(
+	/**'parametros' => array(
 		'host'       => 'smtp.gmail.com',
 		'port'       => 587,
 		'encryption' => 'tls',
 		'username'   => '',
 		'password'   => ''
-	)
+	),*/
+	
+	/**
+	 * Usuario que envia los correos.
+	 * Estos datos generan las cabeceras From.
+	 */
+	'from' => array(
+		'usuario' => 'Nombre Completo',
+		'email' => 'ejemplo@ejemplo.com'
+	),
 );

@@ -425,11 +425,19 @@ class Decoda_Decoda {
 			return;
 		}
 
-		if (strpos($class, 'Filter') !== false) {
-			include_once DECODA_FILTERS . $class . '.php';
-
-		} else if (strpos($class, 'Hook') !== false) {
-			include_once DECODA_HOOKS . $class . '.php';
+		if (strpos($class, 'Filter') !== false)
+		{
+			if (file_exists(DECODA_FILTERS.$class.'.php'))
+			{
+				include_once(DECODA_FILTERS.$class.'.php');
+			}
+		}
+		elseif (strpos($class, 'Hook') !== false)
+		{
+			if (file_exists(DECODA_HOOKS.$class.'.php'))
+			{
+				include_once(DECODA_HOOKS.$class.'.php');
+			}
 		}
 	}
 

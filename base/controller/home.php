@@ -93,7 +93,7 @@ class Base_Controller_Home extends Controller {
 		if ($pagina == 1)
 		{
 			// Cargo fijos.
-			$post_sticky = $model_post->sticky();
+			$post_sticky = $model_post->sticky(Usuario::is_login());
 
 			// Extendemos la información de los posts.
 			foreach ($post_sticky as $k => $v)
@@ -218,6 +218,7 @@ class Base_Controller_Home extends Controller {
 	/**
 	 * Prueba descarga de un plugin.
 	 */
+	/**
 	public function action_install()
 	{
 		Dispatcher::call(''); // Prueba del uso de memoria.
@@ -323,6 +324,6 @@ class Base_Controller_Home extends Controller {
 		{
 			echo "<br />";
 		}
-	}
+	}*/
 
 }

@@ -8,13 +8,8 @@ return array(
 	//'type'     => 'pdo',
 	//'dsn'      => 'mysql:dbname=database;host=127.0.0.1',
 
-	/* Datos para el driver MySQL. No recomendado. */
+	/* Datos para el driver MySQL. Recomendado solo para depuración. */
 	'type'     => 'mysql',
-	'host'     => '127.0.0.1',
-	'db_name'  => 'database',
-
-	/* Datos para el driver MySQLi.. */
-	'type'     => 'mysqli',
 	'host'     => '127.0.0.1',
 	'db_name'  => 'database',
 

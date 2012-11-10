@@ -19,7 +19,7 @@
         </style>
         <link href="{#THEME_URL#}/assets/css/bootstrap-responsive.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/base.css" rel="stylesheet">
-        <link href="{#THEME_URL#}/assets/css/profiler.css" rel="stylesheet">
+        {if="DEBUG"}<link href="{#THEME_URL#}/assets/css/profiler.css" rel="stylesheet">{/if}
 
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -44,7 +44,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" href="/">Marifa</a>
+                    <a class="brand" href="/">{if="isset($brand)"}{$brand}{else}Marifa{/if}</a>
                     {if="isset($user_header)"}{$user_header}{/if}
                     <div class="nav-collapse">
                         <ul class="nav">
@@ -54,7 +54,7 @@
                             </li>
                             {/loop}
                         </ul>
-                    </div><!--/.nav-collapse -->
+                    </div>
                 </div>
             </div>
         </div>

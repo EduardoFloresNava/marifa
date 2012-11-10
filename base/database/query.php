@@ -140,6 +140,11 @@ abstract class Base_Database_Query implements Iterator {
 		}
 		elseif ($cast === self::FIELD_BOOL)
 		{
+			// Solucionamos BUG en MySQL con los campos BIT.
+			if ($field != NULL && (ord($field) == 0 || ord($field) == 1))
+			{
+				$field = ord($field);
+			}
 			return ($field === NULL) ? NULL : ( (bool) $field);
 		}
 		else

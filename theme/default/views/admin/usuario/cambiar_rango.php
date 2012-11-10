@@ -9,6 +9,6 @@
 <h4 class="title">Seleccione el rango que desea asignar:</h4>
 <ul>
 	{loop="$rangos"}
-	<li><a href="/admin/usuario/cambiar_rango/{$usuario.id}/{$value.id}/">{$value.nombre}</a></li>
+	{if="$value.id !== $usuario.rango"}<li><a href="/admin/usuario/cambiar_rango/{$usuario.id}/{$value.id}/">{$value.nombre}</a></li>{/if}
 	{/loop}
 </ul>

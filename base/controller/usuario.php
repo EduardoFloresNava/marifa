@@ -36,9 +36,9 @@ class Base_Controller_Usuario extends Controller {
 	/**
 	 * Verificamos que barra utilizar.
 	 */
-	public function __construct()
+	public function before()
 	{
-		parent::__construct();
+		parent::before();
 
 		// Seteo el menu.
 		$this->template->assign('master_bar', parent::base_menu());
@@ -274,7 +274,6 @@ class Base_Controller_Usuario extends Controller {
 							// Creo el mensaje de correo.
 							$message = Email::get_message();
 							$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
-							$message->setFrom('areslepra@gmail.com', 'Ares');
 							$message->setTo($email, $nick);
 
 							// Cargo la vista.
@@ -290,12 +289,13 @@ class Base_Controller_Usuario extends Controller {
 						}
 						elseif ($t_act == 2)
 						{
+							$model_usuario->load_by_nick($nick);
 							$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
 						}
 
 						// Registro completo.
 						$view_usuario = View::factory('usuario/register_complete');
-						$view_usuario->assign('tipo_activacion', $t_act);
+						$view_usuario->assign('tipo', $t_act);
 					}
 					else
 					{
@@ -452,7 +452,6 @@ class Base_Controller_Usuario extends Controller {
 				// Creo el mensaje de correo.
 				$message = Email::get_message();
 				$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
-				$message->setFrom('areslepra@gmail.com', 'Ares');
 				$message->setTo($email, $model_usuario->nick);
 
 				// Cargo la vista.
@@ -545,7 +544,6 @@ class Base_Controller_Usuario extends Controller {
 				// Creo el mensaje de correo.
 				$message = Email::get_message();
 				$message->setSubject('Restaurar contraseña de '.$model_config->get('nombre', 'Marifa'));
-				$message->setFrom('areslepra@gmail.com', 'Ares');
 				$message->setTo($email, $model_usuario->nick);
 
 				// Cargo la vista.

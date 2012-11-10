@@ -35,10 +35,9 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Admin_Usuario extends Controller {
 
 	/**
-	 * Constructor de la clase.
 	 * Verificamos permisos para acceder a la sección.
 	 */
-	public function __construct()
+	public function before()
 	{
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
@@ -54,7 +53,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			Request::redirect('/');
 		}
 
-		parent::__construct();
+		parent::before();
 	}
 
 	/**
@@ -201,21 +200,26 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Configuraciones del sitio.
 		$model_config = new Model_Configuracion;
 
-		// Creo el mensaje de correo.
-		$message = Email::get_message();
-		$message->setSubject('Cuenta de '.$model_config->get('nombre', 'Marifa').' activada');
-		$message->setFrom('areslepra@gmail.com', 'Ares');
-		$message->setTo($model_usuario->email, $model_usuario->nick);
+		// Verifico tipo de activación del usuario.
+		$t_act = (int) $model_config->get('activacion_usuario', 1);
 
-		// Cargo la vista.
-		$message_view = View::factory('emails/activada');
-		$message_view->assign('titulo', $model_config->get('nombre', 'Marifa'));
-		$message->setBody($message_view->parse());
-		unset($message_view);
+		if ($t_act == 1)
+		{
+			// Creo el mensaje de correo.
+			$message = Email::get_message();
+			$message->setSubject('Cuenta de '.$model_config->get('nombre', 'Marifa').' activada');
+			$message->setTo($model_usuario->email, $model_usuario->nick);
 
-		// Envio el email.
-		$mailer = Email::get_mailer();
-		$mailer->send($message);
+			// Cargo la vista.
+			$message_view = View::factory('emails/activada');
+			$message_view->assign('titulo', $model_config->get('nombre', 'Marifa'));
+			$message->setBody($message_view->parse());
+			unset($message_view);
+
+			// Envio el email.
+			$mailer = Email::get_mailer();
+			$mailer->send($message);
+		}
 
 		// Actualizo es estado.
 		$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
@@ -706,7 +710,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		if ($model_rango->existe())
 		{
 			// Verifico el nivel.
-			if ($rango == Usuario::usuario()->rango || $model_rango->es_superior(Usuario::usuario()->rango))
+			if ($model_rango->es_superior(Usuario::usuario()->rango))
 			{
 				$_SESSION['flash_error'] = 'Rango que deseas asignar no se encuentra disponible.';
 				Request::redirect('/admin/usuario/');

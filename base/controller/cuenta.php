@@ -33,9 +33,9 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Cuenta extends Controller {
 
 	/**
-	 * Constructor de la clase.
+	 * Verifico los permisos.
 	 */
-	public function __construct()
+	public function before()
 	{
 		// Verificamos permisos.
 		if ( ! Usuario::is_login())
@@ -45,7 +45,7 @@ class Base_Controller_Cuenta extends Controller {
 		}
 
 		// Llamamos al constructor padre.
-		parent::__construct();
+		parent::before();
 	}
 
 	/**

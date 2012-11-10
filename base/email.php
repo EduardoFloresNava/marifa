@@ -126,7 +126,41 @@ class Base_Email {
 	public static function get_message()
 	{
 		self::start();
+		
+		// Creo el objeto.
+		$msg = new Swift_Message;
+		
+		// Cargo configuraciones.
+		if (file_exists(CONFIG_PATH.DS.'email.php'))
+		{
+			$config = configuracion_obtener(CONFIG_PATH.DS.'email.php', FALSE);
+		}
+		else
+		{
+			$config = array();
+		}
+		
+		// Verifico existencia.
+		if ( ! isset($config['from']) || ! is_array($config['from']))
+		{
+			throw new Exception("No se han definido los datos para la cabecera FROM.");
+		}
+		
+		// Verifico validez usuario.
+		if ( ! isset($config['from']['usuario']) || empty($config['from']['usuario']))
+		{
+			throw new Exception("El nombre ingresado para la cabecera FROM no es válido.");
+		}
+		
+		// Verifico validez del email.
+		if ( ! isset($config['from']['email']) || ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $config['from']['email']))
+		{
+			throw new Exception("El correo ingresado para la cabecera FROM no es válido.");
+		}
+		
+		// Seteo la cabecera.
+		$msg->setFrom($config['from']['email'], $config['from']['usuario']);
 
-		return new Swift_Message;
+		return $msg;
 	}
 }
