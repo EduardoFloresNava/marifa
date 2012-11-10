@@ -1,4 +1,4 @@
-<div class="btn-toolbar">
+<div class="btn-toolbar header-toolbar">
     <div class="btn-group pull-right">
         <button class="btn dropdown-toggle" data-toggle="dropdown"><img height="16" width="16" src="{function="Utils::get_gravatar($usuario.email, 32, 32)"}" /> {$usuario.nick}&nbsp;<span class="caret"></span></button>
         <ul class="dropdown-menu">
@@ -13,7 +13,7 @@
         </ul>
     </div>
     <div class="btn-group pull-right">
-        <button class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-bullhorn"></i>&nbsp;</button><!--SUCESOS GENERALES-->
+        <button class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-bullhorn"></i>{if="count($sucesos) > 0"}<span class="badge badge-important event">{function="count($sucesos)"}</span>{/if}</button><!--SUCESOS GENERALES-->
         <div class="dropdown-menu" id="suceso-dropdown">
 			{if="count($sucesos) > 0"}
 			<ul>
@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="btn-group pull-right">
-        <a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-inbox"></i>{if="$mensajes_nuevos > 0"}&nbsp;<span class="badge badge-info">{$mensajes_nuevos}</span>{/if}</a><!--MENSAJES-->
+        <a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-inbox"></i>{if="$mensajes_nuevos"}<span class="badge badge-important event">{$mensajes_nuevos}</span>{/if}</a><!--MENSAJES-->
         <div class="dropdown-menu" id="message-dropdown">
 			{if="count($mensajes) > 0"}
 			<ul>
