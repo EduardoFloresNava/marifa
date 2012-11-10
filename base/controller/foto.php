@@ -937,7 +937,7 @@ class Base_Controller_Foto extends Controller {
 				$estado = Model_Foto::ESTADO_ACTIVA;
 
 				$model_foto = new Model_Foto;
-				$foto_id = $model_foto->crear(Usuario::$usuario_id, $titulo, $descripcion, $url, $model_categorias->id, $visitantes, $comentarios, $estado);
+				$foto_id = $model_foto->crear(Usuario::$usuario_id, $titulo, $descripcion, $url, $model_categorias->id, $visitantes, ! $comentarios, $estado);
 
 				if ($foto_id > 0)
 				{
@@ -1126,7 +1126,7 @@ class Base_Controller_Foto extends Controller {
 		// Cargo valores actuales.
 		$view->assign('titulo', $model_foto->titulo);
 		$view->assign('descripcion', $model_foto->descripcion);
-		$view->assign('comentarios', $model_foto->comentar);
+		$view->assign('comentarios', ! $model_foto->comentar);
 		$view->assign('visitantes', $model_foto->visitas !== NULL);
 
 		// Inicializo los errores.
@@ -1186,7 +1186,7 @@ class Base_Controller_Foto extends Controller {
 				$campos = array(
 					'titulo' => $titulo,
 					'descripcion' => $descripcion,
-					'comentar' => $comentarios,
+					'comentar' => ! $comentarios,
 					'visitas' => $visitantes ? (($model_foto->visitas !== NULL) ? ($model_foto->visitas) : 0) : NULL,
 				);
 
