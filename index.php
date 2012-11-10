@@ -50,7 +50,7 @@ define('START_MEMORY', memory_get_peak_usage());
 /**
  * Separador de directorios
  */
-define('DS', DIRECTORY_SEPARATOR);
+define('DS', '/');
 
 /**
  * Directorio base de la aplicación.
