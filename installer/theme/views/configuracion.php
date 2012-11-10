@@ -56,6 +56,17 @@
 			</div>
 		</div>
 	</fieldset>
+	
+	<fieldset>
+		<legend>Verificaci&oacute;n</legend>
+		<div class="control-group{if="$error_usuario"} error{/if}">
+			<label class="control-label" for="bd_password">Contrase&ntilde;a</label>
+			<div class="controls">
+				<input type="password" name="bd_password" id="bd_password" class="input-xxlarge" value="{$bd_password}" />
+				<span class="help-inline">{if="$error_bd_password"}{$error_bd_password}{else}Contrase&ntilde;a de conecci&oacute;n a la base de datos. Por motivos de seguridad.{/if}</span>
+			</div>
+		</div>
+	</fieldset>
 
 	<div class="form-actions">
 		<button type="submit" class="btn btn-primary">Guardar</button>

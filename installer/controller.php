@@ -227,9 +227,8 @@ class Installer_Controller {
 			array('titulo' => 'Versión PHP', 'requerido' => '> 5.2', 'actual' => phpversion(), 'estado' => version_compare(PHP_VERSION, '5.2.0', '>=')),
 			array('titulo' => 'MCrypt', 'requerido' => 'ON', 'actual' => extension_loaded('mcrypt') ? 'ON' : 'OFF', 'estado' => extension_loaded('mcrypt')),
 			'Base de Datos', // Separador.
-			array('titulo' => 'MySQL', 'requerido' => 'ON', 'actual' => function_exists('mysql_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysql_connect'), 'opcional' => function_exists('mysqli_connect') || class_exists('pdo')),
-			array('titulo' => 'MySQLi', 'requerido' => 'ON', 'actual' => function_exists('mysqli_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysqli_connect'), 'opcional' => function_exists('mysql_connect') || class_exists('pdo')),
-			array('titulo' => 'PDO', 'requerido' => 'ON', 'actual' => class_exists('pdo') ? 'ON' : 'OFF', 'estado' => class_exists('pdo'), 'opcional' => function_exists('mysql_connect') || function_exists('mysqli_connect')),
+			array('titulo' => 'MySQL', 'requerido' => 'ON', 'actual' => function_exists('mysql_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysql_connect'), 'opcional' => class_exists('pdo')),
+			array('titulo' => 'PDO', 'requerido' => 'ON', 'actual' => class_exists('pdo') ? 'ON' : 'OFF', 'estado' => class_exists('pdo'), 'opcional' => function_exists('mysql_connect')),
 			'Cache',
 			array('titulo' => 'File', 'requerido' => 'ON', 'actual' => 'ON', 'estado' => TRUE, 'opcional' => TRUE),
 			array('titulo' => 'APC', 'requerido' => 'ON', 'actual' => (extension_loaded('apc') && function_exists('apc_store')) ? 'ON' : 'OFF', 'estado' => (extension_loaded('apc') && function_exists('apc_store')), 'opcional' => TRUE),
@@ -326,11 +325,6 @@ class Installer_Controller {
 			$drivers['mysql'] = 'MySQL';
 		}
 
-		if (function_exists('mysqli_connect'))
-		{
-			$drivers['mysqli'] = 'MySQLi';
-		}
-
 		if (class_exists('pdo'))
 		{
 			$drivers['pdo'] = 'PDO';
@@ -339,7 +333,7 @@ class Installer_Controller {
 		$vista->assign('drivers', $drivers);
 
 		// Información por defecto.
-		$vista->assign('driver', isset($drivers['mysql']) ? 'mysql' : (isset($drivers['mysqli']) ? 'mysqli' : 'pdo'));
+		$vista->assign('driver', isset($drivers['mysql']) ? 'mysql' : 'pdo');
 		$vista->assign('error_driver', FALSE);
 		$vista->assign('host', '');
 		$vista->assign('error_host', FALSE);
@@ -369,7 +363,7 @@ class Installer_Controller {
 			}
 
 			// Verifico lo datos.
-			if ($driver == 'mysql' || $driver == 'mysqli')
+			if ($driver == 'mysql')
 			{
 				if (empty($host))
 				{
@@ -488,7 +482,7 @@ class Installer_Controller {
 		}
 		elseif (is_string($value))
 		{
-			return "'$value'";
+			return "'".str_replace("'", "\\'", $value)."'";
 		}
 		elseif (is_array($value))
 		{
@@ -646,7 +640,7 @@ class Installer_Controller {
 		$model_configuracion = new Model_Configuracion;
 
 		// Datos por defecto.
-		foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
+		foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword', 'bd_password') as $v)
 		{
 			$vista->assign($v, '');
 			$vista->assign('error_'.$v, FALSE);
@@ -655,7 +649,7 @@ class Installer_Controller {
 		if (Request::method() == 'POST')
 		{
 			// Cargo los valores.
-			foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
+			foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword', 'bd_password') as $v)
 			{
 				$$v = isset($_POST[$v]) ? trim($_POST[$v]) : '';
 			}
@@ -669,8 +663,16 @@ class Installer_Controller {
 			{
 				$vista->assign($v, $$v);
 			}
-
+			
 			$error = FALSE;
+			
+			// Verifico la clave de la base de datos.
+			$cfg = configuracion_obtener(CONFIG_PATH.DS.'database.php');
+			if ($bd_password !== $cfg['password'])
+			{
+				$error = TRUE;
+				$vista->assign('error_bd_password', 'La contraseña de la base de datos es incorrecta.');
+			}
 
 			// Verifico el nombre.
 			if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{2,20}$/iD', $nombre))
@@ -697,7 +699,7 @@ class Installer_Controller {
 			if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $email))
 			{
 				$error = TRUE;
-				$vista->assign('error_usuario', 'El E-Mail ingresado no es válido.');
+				$vista->assign('error_email', 'El E-Mail ingresado no es válido.');
 			}
 
 			// Verifico contraseña.
