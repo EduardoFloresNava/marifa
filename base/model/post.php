@@ -145,7 +145,8 @@ class Base_Model_Post extends Model_Dataset {
 	 */
 	public function actualizar_fecha()
 	{
-		$this->db->update('UPDATE post SET fecha = ? WHERE id = ?', array(date('Y/m/d H:i:s'), $this->primary_key['id']));
+		$fecha = date('Y/m/d H:i:s');
+		$this->db->update('UPDATE post SET fecha = ? WHERE id = ?', array($fecha, $this->primary_key['id']));
 		$this->update_value('fecha', $fecha);
 	}
 
