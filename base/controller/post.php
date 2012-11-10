@@ -147,7 +147,7 @@ class Base_Controller_Post extends Controller {
 			$view->assign('modificar_borrar', Usuario::$usuario_id === $model_post->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR));
 
 			// Verifico si el usuario puede comentar.
-			$view->assign('podemos_comentar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR_CERRADO) || $model_post->comentar && Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR));
+			$view->assign('podemos_comentar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR_CERRADO) || ($model_post->comentar && Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR)));
 
 			// Verifico si el usuario puede votar comentarios.
 			$view->assign('podemos_votar_comentarios', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VOTAR));
@@ -297,7 +297,7 @@ class Base_Controller_Post extends Controller {
 		$view->assign('privado', $model_post->privado);
 		$view->assign('patrocinado', $model_post->sponsored);
 		$view->assign('sticky', $model_post->sticky);
-		$view->assign('comentar', $model_post->comentar);
+		$view->assign('comentar', ! $model_post->comentar);
 		$view->assign('tags', implode(', ', $model_post->etiquetas()));
 
 
@@ -409,7 +409,7 @@ class Base_Controller_Post extends Controller {
 						'privado' => $privado,
 						'sponsored' => $patrocinado,
 						'sticky' => $sticky,
-						'comentar' => $comentar
+						'comentar' => ! $comentar
 				);
 
 				// Verifico parámetros especiales.
@@ -1909,7 +1909,7 @@ class Base_Controller_Post extends Controller {
 				}
 
 				$model_post = new Model_Post;
-				$post_id = $model_post->crear(Usuario::$usuario_id, $titulo, $contenido, $categoria_id, $privado, $patrocinado, $sticky, $comentar, $estado);
+				$post_id = $model_post->crear(Usuario::$usuario_id, $titulo, $contenido, $categoria_id, $privado, $patrocinado, $sticky, ! $comentar, $estado);
 
 				if ($post_id > 0)
 				{
