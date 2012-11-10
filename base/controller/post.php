@@ -721,7 +721,7 @@ class Base_Controller_Post extends Controller {
 		if (Usuario::$usuario_id != $model_post->usuario_id)
 		{
 			$model_suceso->crear($model_post->usuario_id, 'post_favorito', TRUE, $post, Usuario::$usuario_id);
-			$model_suceso->crear(Usuario::$usuario_id, 'post_favorito'. FALSE, $post, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, 'post_favorito', FALSE, $post, Usuario::$usuario_id);
 		}
 		else
 		{
