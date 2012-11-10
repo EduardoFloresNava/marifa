@@ -710,7 +710,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		if ($model_rango->existe())
 		{
 			// Verifico el nivel.
-			if ($rango == Usuario::usuario()->rango || $model_rango->es_superior(Usuario::usuario()->rango))
+			if ($model_rango->es_superior(Usuario::usuario()->rango))
 			{
 				$_SESSION['flash_error'] = 'Rango que deseas asignar no se encuentra disponible.';
 				Request::redirect('/admin/usuario/');

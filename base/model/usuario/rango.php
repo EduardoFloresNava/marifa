@@ -530,7 +530,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 		}
 		else
 		{
-			$rst = $this->db->query('SELECT id FROM usuario_rango WHERE orden > ? ORDER BY orden ASC', $orden)->get_pairs(Database_Query::FIELD_INT);
+			$rst = $this->db->query('SELECT id FROM usuario_rango WHERE orden >= ? ORDER BY orden ASC', $orden)->get_pairs(Database_Query::FIELD_INT);
 		}
 
 		$lst = array();
