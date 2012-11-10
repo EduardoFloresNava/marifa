@@ -141,13 +141,18 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		{
 			$params = array($params);
 		}
-		
+		else
+		{
+			// Para dar compatibilidad con MySQL.
+			$params = array_values($params);
+		}
+
 		// Obtengo el listado de campos con su respectivo tipo.
 		foreach ($params as $k => $v)
 		{
 			$params[$k] = $this->get_query_field($k, $v);
 		}
-		
+
 		// Creamos la consulta.
 		try {
 			$sth = $this->dbh->prepare($query);
