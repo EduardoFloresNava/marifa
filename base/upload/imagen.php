@@ -71,7 +71,14 @@ class Base_Upload_Imagen {
 
 			// Obtenemos datos de la imagen.
 			//TODO: verificar alternativas a GD. Verificar en la instalacion.
-			$img_data = getimagesize($target);
+			$img_data = @getimagesize($target);
+			
+			// Verifico si los datos son correctos.
+			if ( ! is_array($img_data))
+			{
+				throw new Exception('La imagen no se encuentra disponible');
+			}
+			
 			$w = $img_data[0];
 			$h = $img_data[1];
 			$mime = $img_data['mime'];
