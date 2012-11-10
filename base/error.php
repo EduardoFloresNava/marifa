@@ -142,6 +142,12 @@ class Base_Error {
 	 */
 	public static function error_handler($errno, $errstr, $errfile, $errline, $errcontext = array())
 	{
+		// Verifico @.
+		if (error_reporting() === 0)
+		{
+			return;
+		}
+		
 		// OBTENEMOS EL STACK.
 		$ec = (is_array($errcontext)) ? ((count($errcontext) > 0) ? $errcontext : debug_backtrace()) : debug_backtrace();
 		// CADENA QUE REPRESENTA EL NUMERO DE ERROR
