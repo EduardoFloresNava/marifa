@@ -53,7 +53,7 @@ $consultas[] = array(
 				`imagen` varchar(32) NOT NULL DEFAULT \'\',
 				UNIQUE INDEX `seo` (`seo`),
 				PRIMARY KEY (`id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Animaciones', 'animaciones', 'flash.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Apuntes y Monografías', 'Apuntes-y-Monografias', 'report.png'), array('error_no' => 1062)),
@@ -100,7 +100,7 @@ $consultas[] = array(
 				`valor` mediumtext,
 				`defecto` mediumtext,
 				PRIMARY KEY (`clave`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('registro', 1, 1), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('activacion_usuario', 2, 2), array('error_no' => 1062)),
@@ -128,7 +128,7 @@ $consultas[] = array(
 				`comentar` bit(1) NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -147,7 +147,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				KEY `foto_id` (`foto_id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -165,7 +165,7 @@ $consultas[] = array(
 				`fecha` DATETIME NOT NULL,
 				`estado` INTEGER NOT NULL DEFAULT 0,
 				PRIMARY KEY (`id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -179,7 +179,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				PRIMARY KEY (`foto_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -194,7 +194,7 @@ $consultas[] = array(
 				`cantidad` int(11) NOT NULL,
 				PRIMARY KEY (`foto_id`,`usuario_id`,`cantidad`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -216,7 +216,7 @@ $consultas[] = array(
 				KEY `emisor_id` (`emisor_id`),
 				KEY `receptor_id` (`receptor_id`),
 				KEY `padre_id` (`padre_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -233,7 +233,7 @@ $consultas[] = array(
 				`estado` int(11) NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -260,7 +260,7 @@ $consultas[] = array(
 				KEY `usuario_id` (`usuario_id`),
 				KEY `post_categoria_id` (`categoria_id`),
 				FULLTEXT KEY `busqueda` (`titulo`,`contenido`,`tags`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -279,7 +279,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				KEY `post_id` (`post_id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -294,7 +294,7 @@ $consultas[] = array(
 				`cantidad` int(11) NOT NULL DEFAULT 1,
 				PRIMARY KEY (`post_comentario_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -308,7 +308,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				PRIMARY KEY (`post_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -328,7 +328,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				KEY `post_id` (`post_id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -342,7 +342,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				PRIMARY KEY (`post_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -360,7 +360,7 @@ $consultas[] = array(
 				PRIMARY KEY (`post_id`),
 				KEY `usuario_id` (`usuario_id`),
 				KEY `padre_id` (`padre_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -375,7 +375,7 @@ $consultas[] = array(
 				`cantidad` int(11) NOT NULL DEFAULT 1,
 				PRIMARY KEY (`post_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -389,7 +389,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				PRIMARY KEY (`post_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -402,7 +402,7 @@ $consultas[] = array(
 				`post_id` int(11) NOT NULL,
 				`nombre` varchar(50) NOT NULL,
 				PRIMARY KEY (`post_id`,`nombre`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -418,7 +418,7 @@ $consultas[] = array(
 				`expira` datetime NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -439,7 +439,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -463,7 +463,7 @@ $consultas[] = array(
 				`estado` int(11) NOT NULL DEFAULT 0,
 				PRIMARY KEY (`id`),
 				KEY `rango` (`rango`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -483,7 +483,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`),
 				KEY `moderador_id` (`moderador_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -502,7 +502,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`),
 				KEY `moderador_id` (`moderador_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -516,7 +516,7 @@ $consultas[] = array(
 				`bloqueado_id` int(11) NOT NULL,
 				PRIMARY KEY (`usuario_id`,`bloqueado_id`),
 				KEY `bloqueado_id` (`bloqueado_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -534,7 +534,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				`estado` int(11) NOT NULL DEFAULT 0,
 				PRIMARY KEY (`id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -552,7 +552,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`usuario_id`,`nick`,`fecha`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -566,7 +566,7 @@ $consultas[] = array(
 				`campo` varchar(50) NOT NULL,
 				`valor` mediumtext,
 				PRIMARY KEY (`usuario_id`,`campo`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -584,7 +584,7 @@ $consultas[] = array(
 				`orden` int(11) NOT NULL DEFAULT 1,
 				PRIMARY KEY (`id`),
 				UNIQUE KEY `orden` (`orden`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		),
 		array('INSERT', 'INSERT INTO usuario_rango (id, nombre, color, imagen, orden) VALUES (1, \'Administrador\', 10168064, \'Admin2.png\', 1)', NULL, array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO usuario_rango (id, nombre, color, imagen, orden) VALUES (2, \'Moderador\', 65509, \'moderador.gif\', 2)', NULL, array('error_no' => 1062)),
@@ -600,7 +600,7 @@ $consultas[] = array(
 				`rango_id` int(11) NOT NULL,
 				`permiso` int(11) NOT NULL,
 				PRIMARY KEY (`rango_id`,`permiso`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		),
 		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (1, 0)', NULL, array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (1, 1)', NULL, array('error_no' => 1062)),
@@ -687,7 +687,7 @@ $consultas[] = array(
 				`tipo` int(11) NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -702,7 +702,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`usuario_id`,`seguidor_id`),
 				KEY `seguidor_id` (`seguidor_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -721,7 +721,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				UNIQUE KEY `usuario_id` (`usuario_id`),
 				KEY `moderador_id` (`moderador_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -736,7 +736,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`usuario_id`,`visitado_id`,`fecha`),
 				KEY `visitado_id` (`visitado_id`)
-			);', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
