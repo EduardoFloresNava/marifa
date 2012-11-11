@@ -182,15 +182,13 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 			$this->conn = @mysql_connect($this->host, $this->user, $this->pass);
 			if ($this->conn === FALSE)
 			{
-				$e = new Database_Exception(mysql_error(), mysql_errno());
-				throw new Database_Exception('No se ha podido conectar al servidor de base de datos.', 100, $e);
+				throw new Database_Exception('No se ha podido conectar al servidor de base de datos: "'.mysql_error().'"', mysql_errno());
 			}
 
 			if ( ! @mysql_select_db($this->db, $this->conn))
 			{
 				$this->conn = NULL;
-				$e = new Database_Exception(mysql_error(), mysql_errno());
-				throw new Database_Exception('No se ha podido seleccionar la base de datos.', 101, $e);
+				throw new Database_Exception('No se ha podido seleccionar la base de datos: "'.mysql_error().'"', mysql_errno());
 			}
 		}
 	}
@@ -245,7 +243,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		}
 		else
 		{
-			throw new Database_Exception('No hay una conección a la base de datos extablecida.', 102);
+			throw new Database_Exception('No hay una conección a la base de datos establecida.', 102);
 			return FALSE;
 		}
 	}
@@ -298,7 +296,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		}
 		else
 		{
-			throw new Database_Exception('No hay una conección a la base de datos extablecida.', 102);
+			throw new Database_Exception('No hay una conección a la base de datos establecida.', 102);
 			return FALSE;
 		}
 	}
