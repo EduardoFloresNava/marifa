@@ -86,7 +86,6 @@ define('VENDOR_PATH', APP_BASE.DS.'vendor'.DS);
 require_once (APP_BASE.DS.'function.php');
 
 // Iniciamos el proceso de carga automatica de librerias.
-spl_autoload_register('installer_loader_load');
 spl_autoload_register('loader_load');
 
 /**
