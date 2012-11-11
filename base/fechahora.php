@@ -84,6 +84,14 @@ class Base_Fechahora extends DateTime {
 
 		return sprintf($key, __('instantes', FALSE));
 	}
+	
+	/**
+	 * Fallback de getTimestamp para PHP<5.3
+	 */
+	public function getTimestamp()
+	{
+		return (int) $this->format('U');
+	}
 
 	/**
 	 * Obtenemos cadena en plural si es necesario.
