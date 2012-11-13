@@ -112,6 +112,8 @@ class Base_Plugin_Plugin {
 		$data->nombre = (string) $props['nombre'];
 		$data->descripcion = (string) $props['descripcion'];
 		$data->version = (int) $props['version'];
+		
+		// TODO: ver arreglo.
 		$data->autor = (string) $props['autor'];
 
 		// Devolvemos el objeto.
@@ -149,6 +151,7 @@ class Base_Plugin_Plugin {
 		$pc = 'Plugin_'.ucfirst($this->nombre).'_Index';
 
 		// Verificamos la posibilidad del plugin.
+		//TODO: verificar si existe el método.
 		$p = new $pc;
 		return (bool) $p->check_support();
 	}
@@ -225,6 +228,7 @@ class Base_Plugin_Plugin {
 		$pc = 'Plugin_'.ucfirst($this->nombre).'_Index';
 
 		// Llamamos al instalador.
+		//TODO: verificar si existe install.
 		$p = new $pc;
 		$p->install();
 
@@ -299,6 +303,7 @@ class Base_Plugin_Plugin {
 		$pc = 'Plugin_'.ucfirst($this->nombre).'_Index';
 
 		// Llamamos al instalador.
+		//TODO: verificar si existe remove.
 		$p = new $pc;
 		$p->remove();
 

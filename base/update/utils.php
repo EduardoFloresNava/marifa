@@ -211,14 +211,34 @@ class Base_Update_Utils {
 	 */
 	public static function get_mime($path)
 	{
-		if (file_exists('finfo_open'))
+		if (function_exists('finfo_open'))
 		{
 			$finfo = new finfo(FILEINFO_MIME);
 			return $finfo->file($path);
 		}
-		else
+		elseif (function_exists('mime_content_type'))
 		{
 			return mime_content_type($path);
+		}
+		else
+		{
+			// Obtengo la extensión.
+			$ext = strtolower(array_pop(explode('.', $path)));
+			
+			// Verifico el tipo.
+			//TODO: implementar mime's extra.
+			switch ($ext) {
+				case 'zip':
+					return 'application/zip';
+				case 'tar':
+					return 'application/x-tar';
+				case 'gz':
+					return 'application/x-gzip';
+				case 'bz2':
+					return 'application/x-bzip2';
+				default:
+					return 'application/octet-stream';
+			}
 		}
 	}
 
