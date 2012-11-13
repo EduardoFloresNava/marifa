@@ -66,12 +66,6 @@ class Base_View {
 
 		// Los templates por razones de seguridad no pueden usar variables globales.
 		RainTPL::configure('black_list', array(
-				'_SESSION',
-				'_POST',
-				'_GET',
-				'_SERVER',
-				'_ENV',
-				'_REQUEST',
 				'\$this',
 				'raintpl::',
 				'self::',

@@ -75,7 +75,7 @@
 			{$contenido}
 		</div>
 		<footer class="footer container">
-			<p>&copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Equipo desarrollo Marifa {if="isset($execution)"} - {$execution}{/if}</p>
+			<p>{$_SERVER.HTTP_HOST} &copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Powered by <a href="http://www.marifa.com.ar/" rel="folow" title="Marifa">Marifa</a>{if="isset($execution)"} - {$execution}{/if}</p>
 		</footer>
 
         <!-- Le javascript
