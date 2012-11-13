@@ -131,15 +131,67 @@ class Base_Dispatcher {
 		$segmentos = explode('/', $url);
 
 		// Verificamos si es un plugin.
-		if (count($segmentos) >= 2)
+		if (strtolower($segmentos[0]) === 'plugin')
 		{
-			if (strtolower($segmentos[0]) === 'plugin')
+			// Verifico esté especificado un plugin.
+			if ( ! isset($segmentos[1]))
 			{
-				// Formateo el plugins.
-				$p_name = strtolower($segmentos[1]);
+				if ( ! $throw)
+				{
+					Error::show_error('Petición inválida', 404);
+				}
+				else
+				{
+					throw new Exception('Petición inválida', 404);
+				}
+				return FALSE;
+			}
+			
+			// Formateo el plugins.
+			$p_name = strtolower($segmentos[1]);
+
+			// Validamos que tenga el formato requerido.
+			if (preg_match('/^[a-z0-9]+$/D', $p_name) < 1)
+			{
+				if ( ! $throw)
+				{
+					Error::show_error('Petición inválida', 404);
+				}
+				else
+				{
+					throw new Exception('Petición inválida', 404);
+				}
+				return FALSE;
+			}
+
+			// Verifico su existencia y que este activo.
+			$p_obj = Plugin_Manager::get_instance()->get($p_name);
+
+			if ($p_obj === NULL || ! $p_obj->estado())
+			{
+				if ( ! $throw)
+				{
+					Error::show_error('Plugin inexistente', 404);
+				}
+				else
+				{
+					throw new Exception('Plugin inexistente', 404);
+				}
+				return FALSE;
+			}
+
+			$p_dir = Plugin_Manager::nombre_as_path($p_name);
+
+
+			if (file_exists($p_dir) && is_dir($p_dir))
+			{
+				// Cargamos el plugin.
+
+				// Obtenemos el controlador
+				$controller = empty($segmentos[2]) ? 'home' : strtolower($segmentos[2]);
 
 				// Validamos que tenga el formato requerido.
-				if (preg_match('/^[a-z0-9]+$/D', $p_name) < 1)
+				if (preg_match('/^[a-z0-9_]+$/D', $controller) < 1)
 				{
 					if ( ! $throw)
 					{
@@ -152,121 +204,80 @@ class Base_Dispatcher {
 					return FALSE;
 				}
 
-				// Verifico su existencia y que este activo.
-				$p_obj = Plugin_Manager::get_instance()->get($p_name);
+				// Obtenemos la acción.
+				$accion = empty($segmentos[3]) ? 'index' : strtolower($segmentos[3]);
 
-				if ($p_obj === NULL || ! $p_obj->estado())
+				// Validamos que tenga el formato requerido.
+				if (preg_match('/^[a-z0-9_]+$/D', $accion) < 1)
 				{
 					if ( ! $throw)
 					{
-						Error::show_error('Plugin inexistente', 404);
+						Error::show_error('Petición inválida', 404);
 					}
 					else
 					{
-						throw new Exception('Plugin inexistente', 404);
+						throw new Exception('Petición inválida', 404);
 					}
 					return FALSE;
 				}
 
-				$p_dir = Plugin_Manager::nombre_as_path($p_name);
-
-
-				if (file_exists($p_dir) && is_dir($p_dir))
+				// Obtenemos los argumentos.
+				if (is_array($segmentos) && count($segmentos) > 4)
 				{
-					// Cargamos el plugin.
-
-					// Obtenemos el controlador
-					$controller = empty($segmentos[2]) ? 'home' : strtolower($segmentos[2]);
-
-					// Validamos que tenga el formato requerido.
-					if (preg_match('/^[a-z0-9_]+$/D', $controller) < 1)
-					{
-						if ( ! $throw)
-						{
-							Error::show_error('Petición inválida', 404);
-						}
-						else
-						{
-							throw new Exception('Petición inválida', 404);
-						}
-						return FALSE;
-					}
-
-					// Obtenemos la acción.
-					$accion = empty($segmentos[3]) ? 'index' : strtolower($segmentos[3]);
-
-					// Validamos que tenga el formato requerido.
-					if (preg_match('/^[a-z0-9_]+$/D', $accion) < 1)
-					{
-						if ( ! $throw)
-						{
-							Error::show_error('Petición inválida', 404);
-						}
-						else
-						{
-							throw new Exception('Petición inválida', 404);
-						}
-						return FALSE;
-					}
-
-					// Obtenemos los argumentos.
-					if (is_array($segmentos) && count($segmentos) > 4)
-					{
-						$args = array_slice($segmentos, 4);
-					}
-					else
-					{
-						$args = array();
-					}
-
-					// Normalizamos el nombre del controlador para usar en las clases.
-					$controller_name = 'Plugin_'.ucfirst($p_name).'_Controller_'.ucfirst($controller);
-
-					//Instanciamos el controllador
-					if ( ! class_exists($controller_name))
-					{
-						if ( ! $throw)
-						{
-							Error::show_error("No existe el controlador: '$controller_name'", 404);
-						}
-						else
-						{
-							throw new Exception("No existe el controlador: '$controller_name'", 404);
-						}
-					}
-					else
-					{
-						// Verificamos exista método.
-						$r_c = new ReflectionClass($controller_name);
-						if ( ! $r_c->hasMethod('action_'.$accion))
-						{
-							if ( ! $throw)
-							{
-								Error::show_error("No existe la acción '$accion' para el controlador '$controller_name'", 404);
-							}
-							else
-							{
-								throw new Exception("No existe la acción '$accion' para el controlador '$controller_name'", 404);
-							}
-						}
-					}
-					
-					// Realizo la llamada.
-					return self::call_controller($controller_name, $accion, $args, $p_name);
+					$args = array_slice($segmentos, 4);
 				}
 				else
 				{
-					// Plugin Inválido.
+					$args = array();
+				}
+
+				// Normalizamos el nombre del controlador para usar en las clases.
+				$controller_name = 'Plugin_'.ucfirst($p_name).'_Controller_'.ucfirst($controller);
+
+				//Instanciamos el controllador
+				if ( ! class_exists($controller_name))
+				{
 					if ( ! $throw)
 					{
-						Error::show_error("El plugin '$p_name' no existe", 404);
+						Error::show_error("No existe el controlador: '$controller_name'", 404);
 					}
 					else
 					{
-						throw new Exception("El plugin '$p_name' no existe", 404);
+						throw new Exception("No existe el controlador: '$controller_name'", 404);
 					}
-					return FALSE;
 				}
+				else
+				{
+					// Verificamos exista método.
+					$r_c = new ReflectionClass($controller_name);
+					if ( ! $r_c->hasMethod('action_'.$accion))
+					{
+						if ( ! $throw)
+						{
+							Error::show_error("No existe la acción '$accion' para el controlador '$controller_name'", 404);
+						}
+						else
+						{
+							throw new Exception("No existe la acción '$accion' para el controlador '$controller_name'", 404);
+						}
+					}
+				}
+				
+				// Realizo la llamada.
+				return self::call_controller($controller_name, $accion, $args, $p_name);
+			}
+			else
+			{
+				// Plugin Inválido.
+				if ( ! $throw)
+				{
+					Error::show_error("El plugin '$p_name' no existe", 404);
+				}
+				else
+				{
+					throw new Exception("El plugin '$p_name' no existe", 404);
+				}
+				return FALSE;
 			}
 		}
 
