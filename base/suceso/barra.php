@@ -647,11 +647,27 @@ class Base_Suceso_Barra extends Suceso {
  */
 
 	/**
-	 * Suceso producido cuando el usuario cambia de rango.
+	 * Suceso producido cuando el usuario comienza a seguirte.
 	 * @param array $suceso Datos del suceso.
 	 * @return array
 	 */
 	protected static function suceso_usuario_seguir($suceso)
+	{
+		// Cargo datos del usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
+
+		// Cargo datos del seguidor.
+		$model_seguidor = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('usuario' => $model_usuario->as_array(), 'seguidor' => $model_seguidor->as_array());
+	}
+	
+	/**
+	 * Suceso producido cuando un usuario deja de seguirte.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_fin_seguir($suceso)
 	{
 		// Cargo datos del usuario.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);

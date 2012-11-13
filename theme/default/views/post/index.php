@@ -5,9 +5,15 @@
 			<img src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
 			<h4 class="nick">{$usuario.nick}</h4>
 		</a>
-		{if="!$sigue_usuario"}<div class="row-fluid follow">
-			<a href="/post/seguir_usuario/{$post.id}/{$usuario.id}" class="btn span12" style="min-height: 0;"><i class="icon icon-plus"></i> Seguir usuario</a>
-		</div>{/if}
+		{if="$me !== NULL && $me !== $usuario.id"}
+		<div class="row-fluid follow">
+			{if="!$sigue_usuario"}
+			<a href="/post/seguir_usuario/{$post.id}/{$usuario.id}/1" class="btn span12" style="min-height: 0;"><i class="icon icon-plus"></i> Seguir usuario</a>
+			{else}
+			<a href="/post/seguir_usuario/{$post.id}/{$usuario.id}/0" class="btn span12" style="min-height: 0;"><i class="icon icon-minus"></i> Dejar de seguir</a>
+			{/if}
+		</div>
+		{/if}
 		<div class="well"><i class="icon icon-user"></i><span class="pull-right">{if="$usuario.seguidores > 1"}{$usuario.seguidores} {@seguidores@}{elseif="$usuario.seguidores == 1"}1 {@seguidor@}{else}{@sin@} {@seguidores@}{/if}</span></div>
 		<div class="well"><i class="icon icon-plus"></i><span class="pull-right">{if="$usuario.puntos > 1"}{$usuario.puntos} {@puntos@}{elseif="$usuario.puntos == 1"}1 {@puntos@}{else}{@sin@} {@puntos@}{/if}</span></div>
 		<div class="well"><i class="icon icon-book"></i><span class="pull-right">{if="$usuario.posts > 1"}{$usuario.posts} {@posts@}{elseif="$usuario.posts == 1"}1 {@post@}{else}{@sin@} {@posts@}{/if}</span></div>

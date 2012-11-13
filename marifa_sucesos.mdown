@@ -199,6 +199,10 @@
  * * **usuario_id**: ID del usuario a quien se sigue.
  * * **seguidor_id**: ID del usuario que sigue.
  
+ * **usuario_fin_seguir** (*usuario_id*, *seguidor_id*): *seguidor_id* deja de seguir a *usuario_id*
+ * * **usuario_id**: ID del usuario a quien se deja de seguir.
+ * * **seguidor_id**: ID del usuario que deja de seguir.
+ 
  * **usuario_bloqueo** (*usuario_id*, *bloqueado_id*, *tipo*): El usuario *usuario_id* bloquea/desbloquea al usuario *bloqueado_id* para evitar que acceda a su perfil y eventos.
  * * **usuario_id**: ID del usuario que bloquea/desbloquea al otro.
  * * **bloquedo_id**: ID del usuario que es bloqueado/desbloqueado.

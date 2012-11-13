@@ -234,6 +234,16 @@ class Base_Controller_Foto extends Controller {
 
 		// Mi id.
 		$view->assign('me', Usuario::$usuario_id);
+		
+		// Verifico si sigo al usuario.
+		if ($model_foto->usuario_id !== Usuario::$usuario_id)
+		{
+			$view->assign('sigue_usuario', $model_foto->usuario()->es_seguidor(Usuario::$usuario_id));
+		}
+		else
+		{
+			$view->assign('sigue_usuario', TRUE);
+		}
 
 		// Informamos los permisos a la vista.
 		$view->assign('permiso_borrar', Usuario::$usuario_id === $model_foto->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR));
@@ -304,6 +314,120 @@ class Base_Controller_Foto extends Controller {
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
+	 * Seguimos a un usuario.
+	 * @param int $foto ID de la foto que estamos viendo.
+	 * @param int $usuario ID del usuario a seguir.
+	 * @param bool $seguir TRUE para seguir, FALSE para dejar de seguir.
+	 */
+	public function action_seguir_usuario($foto, $usuario, $seguir)
+	{
+		$seguir = (bool) $seguir;
+		
+		// Verifico estar logueado.
+		if ( ! Usuario::is_login())
+		{
+			if ($seguir)
+			{
+				$_SESSION['flash_error'] = 'Debes estar logueado para poder seguir usuarios.';
+			}
+			else
+			{
+				$_SESSION['flash_error'] = 'Debes estar logueado para poder dejar de seguir usuarios.';
+			}
+			Request::redirect('/usuario/login');
+		}
+
+		// Cargo el usuario.
+		$usuario = (int) $usuario;
+		$model_usuario = new Model_Usuario($usuario);
+
+		// Verifico existencia.
+		if ( ! $model_usuario->existe())
+		{
+			if ($seguir)
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			}
+			else
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+			}
+			Request::redirect('/foto/ver/'.$foto);
+		}
+
+		// Verificamos no sea uno mismo.
+		if (Usuario::$usuario_id == $model_usuario->id)
+		{
+			if ($seguir)
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			}
+			else
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+			}
+			Request::redirect('/foto/ver/'.$foto);
+		}
+		
+		// Verificaciones especiales en funcion si lo voy a seguir o dejar de seguir.
+		if ($seguir)
+		{
+			// Verifico el estado.
+			if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+				Request::redirect('/foto/ver/'.$foto);
+			}
+	
+			// Verifico no sea seguidor.
+			if ($model_usuario->es_seguidor(Usuario::$usuario_id))
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+				Request::redirect('/foto/ver/'.$foto);
+			}
+			
+			// Sigo al usuario.
+			$model_usuario->seguir(Usuario::$usuario_id);
+		}
+		else
+		{
+			// Verifico sea seguidor.
+			if ( ! $model_usuario->es_seguidor(Usuario::$usuario_id))
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+				Request::redirect('/foto/ver/'.$foto);
+			}
+
+			// Dejo de seguir al usuario.
+			$model_usuario->fin_seguir(Usuario::$usuario_id);
+		}
+
+		// Envio el suceso.
+		$tipo = $seguir ? 'usuario_seguir' : 'usuario_fin_seguir';
+		$model_suceso = new Model_Suceso;
+		if ($model_usuario->id != Usuario::$usuario_id)
+		{
+			$model_suceso->crear($model_usuario->id, $tipo, TRUE, $model_usuario->id, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, $tipo, FALSE, $model_usuario->id, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_usuario->id, $tipo, TRUE, $model_usuario->id, Usuario::$usuario_id);
+		}
+
+		// Informo resultado.
+		if ($seguir)
+		{
+			$_SESSION['flash_success'] = 'Comenzaste a seguir al usuario correctamente.';
+		}
+		else
+		{
+			$_SESSION['flash_success'] = 'Dejaste de seguir al usuario correctamente.';
+		}
+		Request::redirect('/foto/ver/'.$foto);
 	}
 
 	/**

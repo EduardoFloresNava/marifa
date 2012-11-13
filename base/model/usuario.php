@@ -480,6 +480,15 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * Dejar de seguir.
+	 * @param int $usuario Quien se deja de seguir.
+	 */
+	public function fin_seguir($usuario)
+	{
+		$this->db->query('DELETE FROM usuario_seguidor WHERE usuario_id = ? AND seguidor_id = ?',  array($this->primary_key['id'], $usuario));
+	}
+	
+	/**
 	 * Obtenemos la lista de usuarios que sigue.
 	 * @param int $pagina Número de página a mostrar.
 	 * @param int $cantidad Cantidad de elementos por página.
