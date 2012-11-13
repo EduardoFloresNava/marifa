@@ -252,7 +252,7 @@ class Base_Dispatcher {
 					}
 					
 					// Realizo la llamada.
-					return self::call_controller($controller_name, $accion, $args);
+					return self::call_controller($controller_name, $accion, $args, $p_name);
 				}
 				else
 				{
@@ -389,7 +389,15 @@ class Base_Dispatcher {
 		return self::call_controller($controller_name, $accion, $args);
 	}
 
-	private static function call_controller($controller, $accion, $args)
+	/**
+	 * Llamamos a la acción en el controlador indicado.
+	 * @param string $controller Nombre de la clase del controlador.
+	 * @param string $accion Nombre de la acción a ejecutar.
+	 * @param array $args Listado de argumentos provistos.
+	 * @param string $plugin Plugin que se llama si corresponde.
+	 * @return mixed Resultado de la llamada al controlador.
+	 */
+	private static function call_controller($controller, $accion, $args, $plugin = NULL)
 	{
 		// Creo instancia del objeto.
 		$cont = new $controller;
@@ -405,7 +413,7 @@ class Base_Dispatcher {
 		}
 
 		// Agrego a Stack.
-		Request::add_stack(NULL, $controller, $accion, $args, NULL);
+		Request::add_stack(NULL, $controller, $accion, $args, $plugin);
 		
 		// Llamo pre-llamada.
 		call_user_func(array($cont, 'before'));

@@ -94,6 +94,30 @@ class Base_Request {
 			return NULL;
 		}
 	}
+	
+	/**
+	 * Convertimos un arreglo de una petición a una URL válida.
+	 * @param array $peticion Petición.
+	 * @return string URL
+	 */
+	public static function peticion_to_url($peticion)
+	{
+		if ($peticion['plugin'] !== NULL)
+		{
+			// Quito prefijo y convierto a URL.
+			$controller = strtolower(str_replace('_', '/', str_replace('Controller_', '', $peticion['controller'])));
+
+			return '/'.$controller.'/'.$peticion['action'].'/'.implode('/', $peticion['args']); 
+		}
+		else
+		{
+			// Quito prefijo y convierto a URL.
+			$controller = strtolower(str_replace('_', '/', substr($peticion['controller'], 11)));
+			
+			// Devolvemos la URL completa.
+			return '/'.$controller.'/'.$peticion['action'].'/'.implode('/', $peticion['args']);
+		}
+	}
 
 	/**
 	 * Verificamos si la petición actual es la inicial o es interna.
@@ -173,7 +197,7 @@ class Base_Request {
 		// Verifico si tengo que guardar la URL.
 		if ($save_current)
 		{
-			Cookie::set_classic_cookie('r_u', Request::current());
+			Cookie::set_classic_cookie('r_u', Request::peticion_to_url(Request::current()));
 		}
 
 		// Redireccionamos.
