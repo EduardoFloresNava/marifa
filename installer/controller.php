@@ -221,6 +221,9 @@ class Installer_Controller {
 	{
 		// Cargo la vista.
 		$vista = View::factory('requerimientos');
+		
+		// Intento crear /plugin/plugins.php para solucionar falla.
+		@touch(APP_BASE.'/plugin/plugin.php');
 
 		// Listado de requerimientos.
 		$reqs = array(
@@ -230,7 +233,7 @@ class Installer_Controller {
 			array('titulo' => 'MySQL', 'requerido' => 'ON', 'actual' => function_exists('mysql_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysql_connect'), 'opcional' => class_exists('pdo')),
 			array('titulo' => 'PDO', 'requerido' => 'ON', 'actual' => class_exists('pdo') ? 'ON' : 'OFF', 'estado' => class_exists('pdo'), 'opcional' => function_exists('mysql_connect')),
 			'Cache',
-			array('titulo' => 'File', 'requerido' => 'ON', 'actual' => 'ON', 'estado' => TRUE, 'opcional' => TRUE),
+			array('titulo' => 'File', 'requerido' => 'ON', 'actual' => 'ON', 'estado' => is_writable(CACHE_PATH.DS.'file'), 'opcional' => TRUE),
 			array('titulo' => 'APC', 'requerido' => 'ON', 'actual' => (extension_loaded('apc') && function_exists('apc_store')) ? 'ON' : 'OFF', 'estado' => (extension_loaded('apc') && function_exists('apc_store')), 'opcional' => TRUE),
 			array('titulo' => 'Memcached', 'requerido' => 'ON', 'actual' => extension_loaded('memcached') ? 'ON' : 'OFF', 'estado' => extension_loaded('memcached'), 'opcional' => TRUE),
 			'Sistema de actualizaciones',
@@ -243,8 +246,6 @@ class Installer_Controller {
 			array('titulo' => '/plugin/plugin.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/plugin/plugin.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/plugin/plugin.php')),
 			array('titulo' => '/config/database.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/config/database.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/config/database.php')),
 		);
-
-		//TODO: verificar cache FILE.
 
 		// Seteo el listado de requerimientos.
 		$vista->assign('requerimientos', $reqs);
