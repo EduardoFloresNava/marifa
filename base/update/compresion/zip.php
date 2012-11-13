@@ -45,7 +45,7 @@ class Base_Update_Compresion_Zip extends Update_Compresion_Compresion {
 	 */
     public function decompress($file)
     {
-        $archive = new PclZip($file);
+        $archive = new Pcl_zip($file);
         if ($archive->extract(PCLZIP_OPT_PATH, $this->temp_path) == 0)
         {
             return FALSE;
@@ -66,7 +66,7 @@ class Base_Update_Compresion_Zip extends Update_Compresion_Compresion {
 	 */
     public function compress($file, $base_path, $files)
     {
-        $archive = new PclZip($file);
+        $archive = new Pcl_zip($file);
         if ($archive->create($files, PCLZIP_OPT_REMOVE_PATH, $base_path))
         {
             return TRUE;
