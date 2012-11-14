@@ -719,6 +719,12 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			}
 		}
 
+		// Cargo listado de compresores disponibles.
+		$vista->assign('compresores', Update_Compresion::get_list());
+		
+		// Directorio de los plugins.
+		$vista->assign('plugin_dir', DS.PLUGINS_PATH.DS);
+
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
