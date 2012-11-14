@@ -8,6 +8,9 @@
 	Aún no se encuentra configurado el envio de correos. Para configurarlo copie el archivo <code>/config/email.example.php</code> a <code>/config/email.php</code> y rellene con sus configuraciones.
 </div>
 {else}
+<div class="alert alert-info">
+	Para cambiar las configuraciones del correo, edite el archivo <code>/config/email.php</code>. En <code>/config/email.example.php</code> puede encontrar uno documentado sobre las distintas opciones.
+</div>
 <table class="table table-bordered table-striped">
 	<thead>
 		<tr>
