@@ -54,12 +54,39 @@ class Base_Dispatcher {
 		{
 			$url = '';
 		}
-
-		// Verificamos theme.
-		if (preg_match('/^(\/){0,1}(theme)\/([a-z0-9_]+)\/(assets)\/(css|js)\/([a-z0-9_\.]+)(\.css|\.js)$/D', $url)
-			|| preg_match('/^(\/){0,1}(plugin)\/([a-z0-9]+)\/(theme)\/([a-z0-9_]+)\/(assets)\/(css|js)\/([a-z0-9_\.]+)(\.css|\.js)$/D', $url))
+				
+		// Verificamos assets tema.
+		if (preg_match('/^(\/){0,1}(theme)\/([a-z0-9_]+)\/(assets)\/(css|js)\/([a-z0-9_\.]+)(\.css|\.js)$/D', $url))
 		{
-			Assets::reverse_compile(APP_BASE.DS.$url, ! DEBUG);
+			// Genero el path.
+			if ($url{0} == '/')
+			{
+				$p = APP_BASE.$url;
+			}
+			else
+			{
+				$p = APP_BASE.DS.$url;
+			}
+						
+			// Compilo el asset.
+			Assets::reverse_compile($p, ! DEBUG);
+		}
+		
+		// Verificamos assets en plugins.
+		if (preg_match('/^(\/){0,1}(plugins)\/([a-z0-9]+)\/(assets)\/((css|js)\/){0,1}([a-z0-9_\.]+)(\.css|\.js)$/D', $url))
+		{
+			// Transformo en un path válido.
+			if ($url{0} == '/')
+			{
+				$p = APP_BASE.DS.'plugin'.substr($url, 8);
+			}
+			else
+			{
+				$p = APP_BASE.DS.'plugin'.DS.substr($url, 8);
+			}
+
+			// Compilo el asset.
+			Assets::reverse_compile($p, ! DEBUG);
 		}
 
 		return self::route($url);
@@ -131,7 +158,7 @@ class Base_Dispatcher {
 		$segmentos = explode('/', $url);
 
 		// Verificamos si es un plugin.
-		if (strtolower($segmentos[0]) === 'plugin')
+		if (strtolower($segmentos[0]) === 'plugins')
 		{
 			// Verifico esté especificado un plugin.
 			if ( ! isset($segmentos[1]))
