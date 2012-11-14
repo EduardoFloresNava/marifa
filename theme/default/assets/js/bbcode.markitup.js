@@ -24,7 +24,7 @@
     $('.bbcode-bar .btn-h5').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'H5', openWith: '[h5]', closeWith: '[/h5]'}); });
     $('.bbcode-bar .btn-h6').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'H6', openWith: '[h6]', closeWith: '[/h6]'}); });
 
-    $('.bbcode-bar .btn-list-sorted').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Bulleted list', openWith: '[list]\n', closeWith: '\n[/ulist]'}); });
+    $('.bbcode-bar .btn-list-sorted').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Bulleted list', openWith: '[list]\n', closeWith: '\n[/list]'}); });
     $('.bbcode-bar .btn-list-unsorted').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Numeric list', openWith: '[olist]\n', closeWith: '\n[/olist]'}); });
     $('.bbcode-bar .btn-list-item').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'List Item', openWith: '[li]', closeWith: '[/li]'}); });
 
