@@ -223,7 +223,7 @@ class Base_Update_Utils {
 		else
 		{
 			// Obtengo la extensión.
-			$ext = strtolower(array_pop(explode('.', $path)));
+			$ext = pathinfo($path, PATHINFO_EXTENSION);
 			
 			// Verifico el tipo.
 			//TODO: implementar mime's extra.
