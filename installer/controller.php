@@ -738,6 +738,15 @@ class Installer_Controller {
 					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
 					$model_usuario->actualizar_campo('email', $email);
 				}
+				elseif ($model_usuario->exists_email($email))
+				{
+					// Actualizo los datos.
+					$model_usuario->load_by_email($email);
+					$model_usuario->actualizar_contrasena($password);
+					$model_usuario->actualizar_campo('rango', 1);
+					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
+					$model_usuario->actualizar_campo('nick', $usuario);
+				}
 				else
 				{
 					// Creo la cuenta.
