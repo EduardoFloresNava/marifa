@@ -221,9 +221,10 @@ class Installer_Controller {
 	{
 		// Cargo la vista.
 		$vista = View::factory('requerimientos');
-		
-		// Intento crear /plugin/plugins.php para solucionar falla.
+
+		// Intento crear /plugin/plugins.php y /config/database.php para solucionar problema de verificación de permisos.
 		@touch(APP_BASE.'/plugin/plugin.php');
+		@touch(APP_BASE.'/config/database.php');
 
 		// Listado de requerimientos.
 		$reqs = array(
