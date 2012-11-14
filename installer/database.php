@@ -457,9 +457,9 @@ $consultas[] = array(
 				`puntos` int(11) NOT NULL DEFAULT 10,
 				`puntos_disponibles` int(11) NOT NULL DEFAULT 10,
 				`registro` datetime NOT NULL,
-				`lastlogin` datetime NOT NULL,
-				`lastactive` datetime NOT NULL,
-				`lastip` int(11) NOT NULL,
+				`lastlogin` datetime NULL DEFAULT NULL,
+				`lastactive` datetime NULL DEFAULT NULL,
+				`lastip` int(11) NULL DEFAULT NULL,
 				`estado` int(11) NOT NULL DEFAULT 0,
 				PRIMARY KEY (`id`),
 				KEY `rango` (`rango`)
