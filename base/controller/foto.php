@@ -1099,15 +1099,15 @@ class Base_Controller_Foto extends Controller {
 			Request::redirect('/usuario/login/');
 		}
 
+		// Cargamos la foto.
+		$model_foto = new Model_Foto($foto);
+		
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
 			$_SESSION['flash_error'] = 'La foto que quieres denunciar no se encuentra disponible.';
 			Request::redirect('/foto/');
 		}
-
-		// Cargamos la foto.
-		$model_foto = new Model_Foto($foto);
 
 		// Verificamos que no sea autor.
 		if ($model_foto->usuario_id === Usuario::$usuario_id)
