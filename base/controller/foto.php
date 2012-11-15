@@ -234,7 +234,7 @@ class Base_Controller_Foto extends Controller {
 
 		// Mi id.
 		$view->assign('me', Usuario::$usuario_id);
-		
+
 		// Verifico si sigo al usuario.
 		if ($model_foto->usuario_id !== Usuario::$usuario_id)
 		{
@@ -325,7 +325,7 @@ class Base_Controller_Foto extends Controller {
 	public function action_seguir_usuario($foto, $usuario, $seguir)
 	{
 		$seguir = (bool) $seguir;
-		
+
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
@@ -371,7 +371,7 @@ class Base_Controller_Foto extends Controller {
 			}
 			Request::redirect('/foto/ver/'.$foto);
 		}
-		
+
 		// Verificaciones especiales en funcion si lo voy a seguir o dejar de seguir.
 		if ($seguir)
 		{
@@ -381,14 +381,14 @@ class Base_Controller_Foto extends Controller {
 				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
 				Request::redirect('/foto/ver/'.$foto);
 			}
-	
+
 			// Verifico no sea seguidor.
 			if ($model_usuario->es_seguidor(Usuario::$usuario_id))
 			{
 				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
 				Request::redirect('/foto/ver/'.$foto);
 			}
-			
+
 			// Sigo al usuario.
 			$model_usuario->seguir(Usuario::$usuario_id);
 		}
@@ -616,7 +616,7 @@ class Base_Controller_Foto extends Controller {
 
 		// Verificamos el formato.
 		$comentario_clean = preg_replace('/\[.*\]/', '', $comentario);
-		if ( ! isset($comentario_clean{20}) || isset($comentario{400}))
+		if ( ! isset($comentario_clean{10}) || isset($comentario{400}))
 		{
 			$_SESSION['post_comentario_error'] = 'El comentario debe tener entre 20 y 400 caracteres.';
 
@@ -1101,7 +1101,7 @@ class Base_Controller_Foto extends Controller {
 
 		// Cargamos la foto.
 		$model_foto = new Model_Foto($foto);
-		
+
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{

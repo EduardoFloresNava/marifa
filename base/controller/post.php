@@ -619,7 +619,7 @@ class Base_Controller_Post extends Controller {
 
 		// Verificamos el formato.
 		$comentario_clean = preg_replace('/\[.*\]/', '', $comentario);
-		if ( ! isset($comentario_clean{20}) || isset($comentario{400}))
+		if ( ! isset($comentario_clean{10}) || isset($comentario{400}))
 		{
 			$_SESSION['post_comentario_error'] = 'El comentario debe tener entre 20 y 400 caracteres.';
 
@@ -1069,7 +1069,7 @@ class Base_Controller_Post extends Controller {
 	public function action_seguir_usuario($post, $usuario, $seguir)
 	{
 		$seguir = (bool) $seguir;
-		
+
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
@@ -1115,7 +1115,7 @@ class Base_Controller_Post extends Controller {
 			}
 			Request::redirect('/post/index/'.$post);
 		}
-		
+
 		// Verificaciones especiales en funcion si lo voy a seguir o dejar de seguir.
 		if ($seguir)
 		{
@@ -1125,14 +1125,14 @@ class Base_Controller_Post extends Controller {
 				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
 				Request::redirect('/post/index/'.$post);
 			}
-	
+
 			// Verifico no sea seguidor.
 			if ($model_usuario->es_seguidor(Usuario::$usuario_id))
 			{
 				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
 				Request::redirect('/post/index/'.$post);
 			}
-			
+
 			// Sigo al usuario.
 			$model_usuario->seguir(Usuario::$usuario_id);
 		}
