@@ -86,5 +86,37 @@ class Base_Utils {
 		$yiq = (($r*299)+($g*587)+($b*114))/1000;
 		return ($yiq >= 128) ? '000000' : 'FFFFFF';
 	}
+	
+	/**
+	 * Cargamos una URL.
+	 * @param string $url URL a cargar.
+	 * @return mixed
+	 */
+	public static function remote_call($url)
+	{
+		if (function_exists('curl_init'))
+		{
+			$petition = curl_init();
+			curl_setopt($petition, CURLOPT_URL, $url);
+			curl_setopt($petition, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($petition, CURLOPT_TIMEOUT, 5); // Evitamos mucho tiempo para la respuesta.
+
+			$data = curl_exec($petition);
+			if (curl_errno($petition) === 0)
+			{
+				curl_close($petition);
+				return $data;
+			}
+			else
+			{
+				curl_close($petition);
+				return FALSE;
+			}
+		}
+		else
+		{
+			return @file_get_contents($url);
+		}
+	}
 
 }

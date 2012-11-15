@@ -7,9 +7,9 @@
 </div>
 <div class="btn-group" style="margin-bottom: 10px;">
 	{loop="$file_list"}{if="!isset($actual) || $value != $actual"}
-	<a href="/admin/home/logs/{$value}/" class="btn">{$value}</a>
+	<a href="/admin/home/logs/{$value}/" class="btn btn-mini">{$value}</a><a href="/admin/home/borrar_log/{$value}/" class="btn btn-mini btn-danger"><i class="icon-white icon-remove"></i></a>
 	{else}
-	<a href="" class="btn" disabled="disabled">{$value}</a>
+	<a href="" class="btn btn-mini" disabled="disabled">{$value}</a><a href="/admin/home/borrar_log/{$value}/" class="btn btn-mini btn-danger"><i class="icon-white icon-remove"></i></a>
 	{/if}{/loop}
 </div>
 {if="isset($lineas)"}

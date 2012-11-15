@@ -124,7 +124,67 @@ class Base_Controller_Admin_Home extends Controller {
 	{
 		// Cargamos la portada.
 		$vista = View::factory('admin/home/index');
-
+		
+		// Ultimos usuarios.
+		$model_usuario = new Model_Usuario;
+		$usuarios = $model_usuario->listado(1, 5);
+		foreach ($usuarios as $k => $v)
+		{
+			$usuarios[$k] = $v->as_array();
+		}
+		$vista->assign('usuarios', $usuarios);
+		
+		// Total de usuarios.
+		$vista->assign('usuarios_total', $model_usuario->cantidad());
+		unset($usuarios, $model_usuario);
+		
+		// Obtenemos versiones de Marifa.
+		$rst = Cache::get_instance()->get('last_version');
+		if ( ! is_array($rst))
+		{
+			$rst = @json_decode(Utils::remote_call('https://api.github.com/repos/Marifa/marifa/tags'));
+			Cache::get_instance()->save('last_version', $rst, 60);
+		}
+		
+		// Ordenamos y obtenemos la última y si podemos actualizar.
+		if (is_array($rst) && isset($rst[0]))
+		{
+			// Ordeno las versiones.
+			usort($rst, create_function('$a, $b', 'return version_compare(substr($b->name, 1), substr($a->name, 1));'));
+			
+			$vista->assign('version', $rst[0]->name);
+			$vista->assign('version_new', version_compare(substr($rst[0]->name, 1), VERSION) < 0);
+			$vista->assign('download', array('zip' => $rst[0]->zipball_url, 'tar' => $rst[0]->tarball_url));
+		}
+		
+		// Obtenemos contenido.
+		$rst = Database::get_instance()->query('SELECT * FROM ((SELECT "foto" as type, id, creacion AS fecha FROM foto ORDER BY fecha DESC LIMIT 5) UNION (SELECT "post" as type, id, fecha FROM post ORDER BY fecha DESC LIMIT 5)) as A ORDER BY fecha DESC LIMIT 5')->get_records();
+		
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			if ($v['type'] == 'post')
+			{
+				$obj = new Model_Post( (int) $v['id']);
+				$aux = $obj->as_array();
+				$aux['tipo'] = 'post';
+				$aux['usuario'] = $obj->usuario()->as_array();
+				$lst[] = $aux;
+			}
+			else
+			{
+				$obj = new Model_Foto( (int) $v['id']);
+				$aux = $obj->as_array();
+				$aux['tipo'] = 'foto';
+				$aux['usuario'] = $obj->usuario()->as_array();
+				$lst[] = $aux;
+			}
+		}
+		$vista->assign('contenido', $lst);
+		unset($lst);
+		
+		$vista->assign('contenido_total', Model_Post::s_cantidad() + Model_Foto::s_cantidad());
+		
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
@@ -198,5 +258,35 @@ class Base_Controller_Admin_Home extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Eliminamos un log.
+	 * @param string $file Nombre del archivo de log's a eliminar.
+	 */
+	public function action_borrar_log($file)
+	{
+		// Listado de archivos.
+		$file_list = glob(APP_BASE.DS.'log'.DS.'*.log');
+		$file_list = array_map(create_function('$str', 'return substr($str, strlen(APP_BASE.DS.\'log\'.DS));'), $file_list);
+		
+		// Verifico si esta en la lista.
+		if ( ! in_array($file, $file_list))
+		{
+			$_SESSION['flash_error'] = 'El archivo de log que deseas eliminar no es correcto.';
+			Request::redirect('/admin/home/logs/');
+		}
+		
+		// Elimino el archivo.
+		if (@unlink(APP_BASE.DS.'log'.DS.$file))
+		{
+			$_SESSION['flash_success'] = 'El archivo de log se ha eliminado correctamente.';
+			Request::redirect('/admin/home/logs/');
+		}
+		else
+		{
+			$_SESSION['flash_error'] = 'Se ha producido un falla al borrar el archivo de logs. Verifique los permisos.';
+			Request::redirect('/admin/home/logs/');
+		}
 	}
 }
