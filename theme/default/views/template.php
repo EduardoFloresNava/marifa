@@ -45,7 +45,6 @@
                         <span class="icon-bar"></span>
                     </a>
                     <a class="brand" href="/">{if="isset($brand)"}{$brand}{else}Marifa{/if}</a>
-                    {if="isset($user_header)"}{$user_header}{/if}
                     <div class="nav-collapse">
                         <ul class="nav">
                             {loop="master_bar"}
@@ -54,6 +53,7 @@
                             </li>
                             {/loop}
                         </ul>
+                        {if="isset($user_header)"}{$user_header}{/if}
                     </div>
                 </div>
             </div>
