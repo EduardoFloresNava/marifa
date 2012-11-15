@@ -71,7 +71,7 @@
 			</div>{/if}
 			{if="$me != NULL && $foto.usuario_id != $me"}
 			<div class="btn-group pull-right">
-				<a href="#" class="btn btn-danger">{@Denunciar@}</a>
+				<a href="/foto/denunciar/{$foto.id}" class="btn btn-danger">{@Denunciar@}</a>
 			</div>
 			{/if}
 		</div>
