@@ -532,6 +532,36 @@ class Installer_Controller {
 			$lst[$k] = array('titulo' => $v[0]);
 		}
 
+		// Obtengo versión actual.
+		$version_actual = Database::get_instance()->query('SELECT valor FROM configuracion WHERE clave = \'version_actual\';')->get_var();
+
+		// Obtengo el listado de actualizaciones.
+		$aux = scandir(APP_BASE.DS.'installer'.DS.'update'.DS);
+		foreach ($aux as $u)
+		{
+			// Verifico sea un archivo válido.
+			if (substr($u, (-1) * strlen(FILE_EXT)) !== FILE_EXT)
+			{
+				continue;
+			}
+
+			// Verifico si debe ser importada.
+			if (version_compare($version_actual, substr($u, 0, (-1) * (strlen(FILE_EXT) + 1))) < 0)
+			{
+				// Agrego el título.
+				$lst[] = substr($u, 0, (-1) * (strlen(FILE_EXT) + 1));
+
+				// Listado de titulos.
+				$upd_aux_list = require(APP_BASE.DS.'installer'.DS.'update'.DS.$u);
+
+				foreach ($upd_aux_list as $k => $item)
+				{
+					$lst[$u.$k] = array('titulo' => $item[0]);
+					$database_list[$u.$k] = $item;
+				}
+			}
+		}
+
 		// Ejecuto el listado de consultas.
 		if (Request::method() == 'POST')
 		{
@@ -665,9 +695,9 @@ class Installer_Controller {
 			{
 				$vista->assign($v, $$v);
 			}
-			
+
 			$error = FALSE;
-			
+
 			// Verifico la clave de la base de datos.
 			$cfg = configuracion_obtener(CONFIG_PATH.DS.'database.php');
 			if ($bd_password !== $cfg['password'])
