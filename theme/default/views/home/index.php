@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="span7">
-		<h3 class="title">&Uacute;ltimos posts</h3>
+		<h3 class="title">&Uacute;ltimos posts<small class="pull-right">Leyenda: <span class="leyenda-post fijo">Fijo</span> <span class="leyenda-post patrocinado">Patrocinado</span></small></h3>
 		{loop="$sticky"}
 		<div class="ultimo-post fijo">
 			<div class="categoria hidden-phone">
@@ -9,7 +9,7 @@
 			<div class="contenido">
 				<a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
 				<div class="info">
-					{@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
+					{@Por@}: <a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
 				</div>
 			</div>
 			<div class="fecha visible-desktop">
@@ -25,7 +25,7 @@
 			<div class="contenido">
 				<a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
 				<div class="info">
-					{@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
+					{@Por@}: <a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
 				</div>
 			</div>
 			<div class="fecha visible-desktop">
