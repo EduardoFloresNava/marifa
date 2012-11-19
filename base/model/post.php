@@ -324,7 +324,7 @@ class Base_Model_Post extends Model_Dataset {
 	public function dar_puntos($usuario_id, $cantidad)
 	{
 		$this->db->insert('INSERT INTO post_punto (post_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->primary_key['id'], $usuario_id, $cantidad));
-		$this->db->update('UPDATE usuario SET puntos_disponibles = puntos_disponibles - ? WHERE id = ?', array($cantidad, $usuario_id));
+		$this->db->update('UPDATE usuario SET puntos = puntos - ? WHERE id = ?', array($cantidad, $usuario_id));
 	}
 
 	/**

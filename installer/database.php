@@ -456,7 +456,6 @@ $consultas[] = array(
 				`email` varchar(50) NOT NULL,
 				`rango` int(11) NOT NULL DEFAULT 1,
 				`puntos` int(11) NOT NULL DEFAULT 10,
-				`puntos_disponibles` int(11) NOT NULL DEFAULT 10,
 				`registro` datetime NOT NULL,
 				`lastlogin` datetime NULL DEFAULT NULL,
 				`lastactive` datetime NULL DEFAULT NULL,

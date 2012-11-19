@@ -21,7 +21,7 @@
 		<label class="control-label" for="color">Color</label>
 		<div class="controls">
 			<input type="text" value="{$color}" name="color" id="color" class="span10" />
-			<span class="help-block">{if="$error_color"}{$error_color}{else}Color exadecimal de 6 digitos. Por ejemplo: 00FFE5{/if}</span>
+			<span class="help-block">{if="$error_color"}{$error_color}{else}Color hexadecimal de 6 d&iacute;gitos. Por ejemplo: 00FFE5{/if}</span>
 		</div>
 	</div>
 
@@ -30,10 +30,18 @@
 		<div class="controls">
 			<select name="imagen" id="imagen">
 				{loop="$imagenes_rangos"}
-				<option value="{$value}"{if="$value == $imagen"} selected="selected"{/if}>{$value}</option>
+				<option style="padding-left: 30px; background: transparent url({#THEME_URL#}/assets/img/rangos/{$value}) no-repeat 0 5px;" value="{$value}"{if="$value == $imagen"} selected="selected"{/if}>{$value}</option>
 				{/loop}
 			</select>
 			<span class="help-block">{if="$error_imagen"}{$error_imagen}{/if}</span>
+		</div>
+	</div>
+
+	<div class="control-group{if="$error_puntos"} error{/if}">
+		<label class="control-label" for="puntos">Puntos por d&iacute;a</label>
+		<div class="controls">
+			<input type="text" value="{$puntos}" name="puntos" id="puntos" class="span10" />
+			<span class="help-block">{if="$error_puntos"}{$error_puntos}{else}Cantidad de puntos que se le otorgan por d&iacute;a.{/if}</span>
 		</div>
 	</div>
 

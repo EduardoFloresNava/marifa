@@ -856,6 +856,8 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('error_color', FALSE);
 		$vista->assign('imagen', '');
 		$vista->assign('error_imagen', FALSE);
+		$vista->assign('puntos', '');
+		$vista->assign('error_puntos', FALSE);
 
 		// Cargamos el listado de imagens para rangos disponibles.
 		$imagenes_rangos = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
@@ -872,6 +874,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
 			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+			$puntos = isset($_POST['puntos']) ? (int) $_POST['puntos'] : NULL;
 
 			// Valores para cambios.
 			$vista->assign('nombre', $nombre);
@@ -899,6 +902,13 @@ class Base_Controller_Admin_Usuario extends Controller {
 				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
 			}
 
+			// Verificamos los puntos.
+			if ($puntos === NULL || $puntos < 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_puntos', 'La cantidad de puntos es mayor o igual a cero.');
+			}
+
 			if ( ! $error)
 			{
 				// Convertimos el color a entero.
@@ -906,7 +916,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 				// Creamos el rango.
 				$model_rango = new Model_Usuario_Rango;
-				$model_rango->nuevo_rango($nombre, $color, $imagen);
+				$model_rango->nuevo_rango($nombre, $color, $imagen, $puntos);
 
 				//TODO: agregar suceso de administracion.
 
@@ -961,6 +971,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('error_color', FALSE);
 		$vista->assign('imagen', $model_rango->imagen);
 		$vista->assign('error_imagen', FALSE);
+		$vista->assign('puntos', $model_rango->puntos);
+		$vista->assign('error_puntos', FALSE);
+
 
 		if (Request::method() == 'POST')
 		{
@@ -971,11 +984,13 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
 			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+			$puntos = isset($_POST['puntos']) ? (int) $_POST['puntos'] : NULL;
 
 			// Valores para cambios.
 			$vista->assign('nombre', $nombre);
 			$vista->assign('color', $color);
 			$vista->assign('imagen', $imagen);
+			$vista->assign('puntos', $puntos);
 
 			// Verificamos el nombre.
 			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{5,32}$/iD', $nombre))
@@ -996,6 +1011,13 @@ class Base_Controller_Admin_Usuario extends Controller {
 			{
 				$error = TRUE;
 				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
+			}
+
+			// Verificamos los puntos.
+			if ($puntos === NULL || $puntos < 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_puntos', 'La cantidad de puntos debe ser mayor o igual a cero.');
 			}
 
 			if ( ! $error)
@@ -1019,6 +1041,12 @@ class Base_Controller_Admin_Usuario extends Controller {
 				if ($model_rango->nombre != $nombre)
 				{
 					$model_rango->renombrar($nombre);
+				}
+
+				// Actualizo los puntos.
+				if ($model_rango->puntos != $puntos)
+				{
+					$model_rango->actualizar_campo('puntos', $puntos);
 				}
 
 				// Informamos suceso.

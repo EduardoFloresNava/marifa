@@ -171,7 +171,7 @@ class Base_Controller_Post extends Controller {
 				{
 					// Obtenemos puntos disponibles.
 					$m_user = Usuario::usuario();
-					$p_d = $m_user->puntos_disponibles;
+					$p_d = $m_user->puntos;
 
 					$p_arr = array();
 					for ($i = 1; $i <= $p_d; $i++)
@@ -1769,7 +1769,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verificamos la cantidad de puntos.
-		if (Usuario::usuario()->puntos_disponibles < $cantidad)
+		if (Usuario::usuario()->puntos < $cantidad)
 		{
 			$_SESSION['flash_error'] = 'El post que desea puntuar ya ha sido puntuado por usted.';
 			Request::redirect('/post/index/'.$post);

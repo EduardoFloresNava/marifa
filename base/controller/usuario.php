@@ -99,6 +99,12 @@ class Base_Controller_Usuario extends Controller {
 						$view_usuario->assign('error_password', TRUE);
 						break;
 					case Model_Usuario::ESTADO_ACTIVA: // Cuenta activa.
+						// Actualizo los puntos.
+						if ($model_usuario->lastlogin->getTimestamp() < mktime(0, 0, 0))
+						{
+							$model_usuario->actualizar_campo('puntos', $model_usuario->puntos + $model_usuario->rango()->puntos);
+						}
+
 						$_SESSION['flash_success'] = 'Bienvenido.';
 						Request::redirect('/', FALSE, TRUE);
 						break;

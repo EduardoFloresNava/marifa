@@ -35,8 +35,7 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @property-read string $password Contraseña del usuario.
  * @property-read string $email E-Mail del usuario.
  * @property-read int $rango ID del rango del usuario.
- * @property-read int $puntos Cantidad de puntos que se le dan al usuario.
- * @property-read int $puntos_disponibles Cantidad de puntos que tiene el usuario.
+ * @property-read int $puntos Cantidad de puntos que tiene el usuario.
  * @property-read Fechahora $registro Fecha del registro.
  * @property-read Fechahora $lastlogin Fecha de su último ingreso al sitio.
  * @property-read Fechahora $lastactive Fecha de su última  visita.
@@ -87,7 +86,6 @@ class Base_Model_Usuario extends Model_Dataset {
 		'email' => Database_Query::FIELD_STRING,
 		'rango' => Database_Query::FIELD_INT,
 		'puntos' => Database_Query::FIELD_INT,
-		'puntos_disponibles' => Database_Query::FIELD_INT,
 		'registro' => Database_Query::FIELD_DATETIME,
 		'lastlogin' => Database_Query::FIELD_DATETIME,
 		'lastactive' => Database_Query::FIELD_DATETIME,
@@ -394,10 +392,10 @@ class Base_Model_Usuario extends Model_Dataset {
 		unset($enc);
 
 		// Creamos arreglo con los datos.
-		$info = array($nick, $enc_password, $email, $rango, 10, 10, date('Y/m/d H:i:s'), 0);
+		$info = array($nick, $enc_password, $email, $rango, 10, date('Y/m/d H:i:s'), 0);
 
 		// Creamos la cuenta.
-		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, puntos_disponibles, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', $info);
+		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?)', $info);
 
 		return ($cant > 0) ? $id : FALSE;
 	}
@@ -487,7 +485,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	{
 		$this->db->query('DELETE FROM usuario_seguidor WHERE usuario_id = ? AND seguidor_id = ?',  array($this->primary_key['id'], $usuario));
 	}
-	
+
 	/**
 	 * Obtenemos la lista de usuarios que sigue.
 	 * @param int $pagina Número de página a mostrar.

@@ -56,7 +56,8 @@ $consultas[] = array(
 $consultas[] = array(
 	'Puntos para los rangos',
 	array(
-		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `puntos` INT NOT NULL DEFAULT \'10\';', NULL, array('error_no' => 1060))
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `puntos` INT NOT NULL DEFAULT \'10\';', NULL, array('error_no' => 1060)),
+		array('ALTER', 'ALTER TABLE `usuario` DROP `puntos_disponibles`;', NULL, array('error_no' => 1060))
 	)
 );
 
