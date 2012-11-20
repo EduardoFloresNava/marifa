@@ -61,4 +61,11 @@ $consultas[] = array(
 	)
 );
 
+$consultas[] = array(
+	'Orden rangos',
+	array(
+		array('ALTER', 'ALTER TABLE usuario_rango DROP INDEX orden', NULL, array('error_no' => 1060))
+	)
+);
+
 return $consultas;

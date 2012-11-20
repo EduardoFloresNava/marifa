@@ -323,38 +323,39 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	 */
 	public function posicionar($posicion)
 	{
-		//TODO: Mejorar con viejo método de desplazamiento
-
 		// Obtengo la lista de rangos y su posición.
-		// $lista = $this->db->query('SELECT id, orden FROM usuario_rango ORDER BY orden ASC')->get_pairs(array('id' => Database_Query::FIELD_INT, 'orden' => Database_Query::FIELD_INT));
+		$lista = $this->db->query('SELECT orden, id FROM usuario_rango ORDER BY orden ASC')->get_pairs(array('id' => Database_Query::FIELD_INT, 'orden' => Database_Query::FIELD_INT));
 
-
+		// Posición del actual.
 		$actual = $this->get('orden');
 
 		// Verificamos posición actual.
 		if ($posicion != $actual)
 		{
-			// Movemos todos para abajo.
-			// $lst = $this->db->query('SELECT id FROM usuario_rango WHERE orden >= ? ORDER BY orden DESC', $posicion);
-			// foreach ($lst as $v)
-			// {
-			// 	$this->db->query('UPDATE usuario_rango SET orden = orden + 1 WHERE id = ?', (int) $v);
-			// }
-			$this->db->update('UPDATE usuario_rango SET orden = orden + 1 WHERE orden >= ?', $posicion);
-
-			// Me coloco en la posicion.
-			$this->db->update('UPDATE usuario_rango SET orden = ? WHERE id = ?', array($posicion, $this->primary_key['id']));
-
-			if ($posicion < $actual)
+			// Guardo ID en una variable auxiliar.
+			$aux = $lista[$actual];
+			if ($actual < $posicion)
 			{
-				// Corrijo los siguientes.
-				$this->db->update('UPDATE usuario_rango SET orden = orden - 1 WHERE orden > ?', $actual);
+				// Muevo los elementos.
+				for($i = $actual; $i < $posicion; $i++)
+				{
+					$this->db->update('UPDATE usuario_rango SET orden = ? WHERE id = ?', array($i, $lista[$i + 1]));
+					//$lista[$i] = $lista[$i + 1];
+				}
 			}
 			else
 			{
-				// Corrijo los siguientes.
-				$this->db->update('UPDATE usuario_rango SET orden = orden - 2 WHERE orden > ? LIMIT 1', $posicion);
+				// Muevo los elementos.
+				for($i = $actual; $i > $posicion; $i--)
+				{
+					$this->db->update('UPDATE usuario_rango SET orden = ? WHERE id = ?', array($i, $lista[$i - 1]));
+					//$lista[$i] = $lista[$i - 1];
+				}
 			}
+			// Posiciono en su lugar final.
+			$this->db->update('UPDATE usuario_rango SET orden = ? WHERE id = ?', array($posicion, $aux));
+			//$lista[$posicion] = $aux;
+			unset($aux, $lista);
 
 			$this->update_value('orden', $posicion);
 		}
