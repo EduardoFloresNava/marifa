@@ -54,12 +54,33 @@ $consultas[] = array(
  * Categorias con sus valores.
  */
 $consultas[] = array(
-	'Puntos para los rangos',
+	'Opciones faltantes a los rangos',
 	array(
-		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `puntos` INT NOT NULL DEFAULT \'10\';', NULL, array('error_no' => 1060)),
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `puntos` INT NOT NULL DEFAULT 10;', NULL, array('error_no' => 1060)),
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `puntos_dar` INT NOT NULL DEFAULT 10;', NULL, array('error_no' => 1060)),
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `tipo` INT NOT NULL DEFAULT 0;', NULL, array('error_no' => 1060)),
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `cantidad` INT NULL DEFAULT NULL;', NULL, array('error_no' => 1060)),
 		array('ALTER', 'ALTER TABLE `usuario` DROP `puntos_disponibles`;', NULL, array('error_no' => 1060))
 	)
 );
+
+/**
+ * Indices faltantes.
+ */
+$consultas[] = array(
+	'Indices faltantes para mejorar integridad',
+	array(
+		array('ALTER', 'ALTER TABLE `usuario` ADD UNIQUE `email` (`email`);', NULL, array('error_no' => 1061)),
+		array('ALTER', 'ALTER TABLE `usuario` ADD UNIQUE `nick` (`nick`);', NULL, array('error_no' => 1061)),
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD UNIQUE `nombre` (`nombre`);', NULL, array('error_no' => 1061)),
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD UNIQUE `tipo` (`tipo`, `cantidad`);', NULL, array('error_no' => 1061)),
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `puntos_dar` INT NOT NULL DEFAULT 10;', NULL, array('error_no' => 1060)),
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `tipo` INT NOT NULL DEFAULT 0;', NULL, array('error_no' => 1060)),
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `cantidad` INT NULL DEFAULT NULL;', NULL, array('error_no' => 1060)),
+		array('ALTER', 'ALTER TABLE `usuario` DROP `puntos_disponibles`;', NULL, array('error_no' => 1060))
+	)
+);
+
 
 $consultas[] = array(
 	'Orden rangos',

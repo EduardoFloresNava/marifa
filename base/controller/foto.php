@@ -633,6 +633,9 @@ class Base_Controller_Foto extends Controller {
 			// Insertamos el comentario.
 			$id = $model_foto->comentar(Usuario::$usuario_id, $comentario);
 
+			// Verifico actualización del rango.
+			Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
+
 			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $model_foto->usuario_id)
@@ -1069,6 +1072,9 @@ class Base_Controller_Foto extends Controller {
 					$model_suceso = new Model_Suceso;
 					$model_suceso->crear(Usuario::$usuario_id, 'foto_nueva', FALSE, $model_foto->id);
 
+					// Verifico actualización del rango.
+					Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+
 					// Informo el resultado.
 					$_SESSION['flash_success'] = 'Foto creada correctamente.';
 					Request::redirect('/foto/ver/'.$model_foto->id);
@@ -1377,6 +1383,9 @@ class Base_Controller_Foto extends Controller {
 		}
 		elseif ($model_foto->estado === Model_Foto::ESTADO_OCULTA)
 		{
+			// Verifico actualización del rango.
+			$model_foto->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+
 			$n_estado = Model_Foto::ESTADO_ACTIVA;
 		}
 		else

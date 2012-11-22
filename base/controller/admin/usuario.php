@@ -843,6 +843,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 	/**
 	 * Creamos un nuevo rango.
+	 * @todo Verificar no existan 2 rangos con el mismo tipo y cantidad.
 	 */
 	public function action_nuevo_rango()
 	{
@@ -856,8 +857,14 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('error_color', FALSE);
 		$vista->assign('imagen', '');
 		$vista->assign('error_imagen', FALSE);
-		$vista->assign('puntos', '');
+		$vista->assign('puntos', 10);
 		$vista->assign('error_puntos', FALSE);
+		$vista->assign('puntos_dar', 10);
+		$vista->assign('error_puntos_dar', FALSE);
+		$vista->assign('tipo', 0);
+		$vista->assign('error_tipo', FALSE);
+		$vista->assign('cantidad', '');
+		$vista->assign('error_cantidad', FALSE);
 
 		// Cargamos el listado de imagens para rangos disponibles.
 		$imagenes_rangos = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
@@ -875,122 +882,18 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
 			$puntos = isset($_POST['puntos']) ? (int) $_POST['puntos'] : NULL;
-
-			// Valores para cambios.
-			$vista->assign('nombre', $nombre);
-			$vista->assign('color', $color);
-			$vista->assign('imagen', $imagen);
-
-			// Verificamos el nombre.
-			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{5,32}$/iD', $nombre))
-			{
-				$error = TRUE;
-				$vista->assign('error_nombre', 'El nombre del rango deben ser entre 5 y 32 caractéres alphanuméricos.');
-			}
-
-			// Verificamos el color.
-			if ( ! preg_match('/^[0-9a-f]{6}$/Di', $color))
-			{
-				$error = TRUE;
-				$vista->assign('error_color', 'El color debe ser HEXADECIMAL de 6 digitos. Por ejemplo: 00FF00.');
-			}
-
-			// Verificamos la imagen.
-			if ( ! in_array($imagen, $imagenes_rangos))
-			{
-				$error = TRUE;
-				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
-			}
-
-			// Verificamos los puntos.
-			if ($puntos === NULL || $puntos < 0)
-			{
-				$error = TRUE;
-				$vista->assign('error_puntos', 'La cantidad de puntos es mayor o igual a cero.');
-			}
-
-			if ( ! $error)
-			{
-				// Convertimos el color a entero.
-				$color = hexdec($color);
-
-				// Creamos el rango.
-				$model_rango = new Model_Usuario_Rango;
-				$model_rango->nuevo_rango($nombre, $color, $imagen, $puntos);
-
-				//TODO: agregar suceso de administracion.
-
-				// Seteo FLASH message.
-				$_SESSION['rango_correcto'] = 'El rango se creó correctamente';
-
-				// Redireccionamos.
-				Request::redirect('/admin/usuario/rangos');
-			}
-		}
-
-		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu('admin'));
-
-		// Cargamos plantilla administracion.
-		$admin_template = View::factory('admin/template');
-		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
-
-		// Asignamos la vista a la plantilla base.
-		$this->template->assign('contenido', $admin_template->parse());
-	}
-
-	/**
-	 * Editamos el rango.
-	 * @param int $id ID del rango a editar.
-	 */
-	public function action_editar_rango($id)
-	{
-		$id = (int) $id;
-		// Cargamos el modelo del rango.
-		$model_rango = new Model_Usuario_Rango($id);
-		if ( ! $model_rango->existe())
-		{
-			Request::redirect('/admin/usuario/rangos');
-		}
-
-		// Cargamos la vista.
-		$vista = View::factory('admin/usuario/editar_rango');
-
-		// Cargamos el listado de imagens para rangos disponibles.
-		$imagenes_rangos = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
-		unset($imagenes_rangos[1], $imagenes_rangos[0]); // Quitamos . y ..
-
-		$vista->assign('imagenes_rangos', $imagenes_rangos);
-
-		// Valores por defecto y errores.
-		$vista->assign('nombre', $model_rango->nombre);
-		$vista->assign('error_nombre', FALSE);
-		$vista->assign('color', strtoupper(sprintf('%06s', dechex($model_rango->color))));
-		$vista->assign('error_color', FALSE);
-		$vista->assign('imagen', $model_rango->imagen);
-		$vista->assign('error_imagen', FALSE);
-		$vista->assign('puntos', $model_rango->puntos);
-		$vista->assign('error_puntos', FALSE);
-
-
-		if (Request::method() == 'POST')
-		{
-			// Seteamos sin error.
-			$error = FALSE;
-
-			// Obtenemos los campos.
-			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
-			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
-			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
-			$puntos = isset($_POST['puntos']) ? (int) $_POST['puntos'] : NULL;
+			$puntos_dar = isset($_POST['puntos_dar']) ? (int) $_POST['puntos_dar'] : NULL;
+			$tipo = isset($_POST['tipo']) ? (int) $_POST['tipo'] : NULL;
+			$cantidad = isset($_POST['cantidad']) ? $_POST['cantidad'] : NULL;
 
 			// Valores para cambios.
 			$vista->assign('nombre', $nombre);
 			$vista->assign('color', $color);
 			$vista->assign('imagen', $imagen);
 			$vista->assign('puntos', $puntos);
+			$vista->assign('puntos_dar', $puntos_dar);
+			$vista->assign('tipo', $tipo);
+			$vista->assign('cantidad', $cantidad);
 
 			// Verificamos el nombre.
 			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{5,32}$/iD', $nombre))
@@ -1020,10 +923,196 @@ class Base_Controller_Admin_Usuario extends Controller {
 				$vista->assign('error_puntos', 'La cantidad de puntos debe ser mayor o igual a cero.');
 			}
 
+			// Verificamos los puntos máximos a que se puede dar a un post.
+			if ($puntos === NULL || $puntos <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_puntos', 'La cantidad de puntos a dar en un post debe ser mayor a cero.');
+			}
+
+			// Verificamos el tipo.
+			if ($tipo < 0 || $tipo > 4)
+			{
+				$error = TRUE;
+				$vista->assign('error_tipo', 'El tipo de rango es incorrecto.');
+			}
+
+			// Verificamos la cantidad.
+			if ($tipo !== 0 && $cantidad <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_cantidad', 'Debe ingresar una cantidad positiva.');
+			}
+
 			if ( ! $error)
 			{
 				// Convertimos el color a entero.
 				$color = hexdec($color);
+
+				// Cantidad para tipo especial.
+				if ($tipo == 0)
+				{
+					$cantidad = NULL;
+				}
+				else
+				{
+					$cantidad = (int) $cantidad;
+				}
+
+				// Creamos el rango.
+				$model_rango = new Model_Usuario_Rango;
+				$model_rango->nuevo_rango($nombre, $color, $imagen, $puntos, $tipo, $cantidad, $puntos_dar);
+
+				//TODO: agregar suceso de administracion.
+
+				// Seteo FLASH message.
+				$_SESSION['rango_correcto'] = 'El rango se creó correctamente';
+
+				// Redireccionamos.
+				Request::redirect('/admin/usuario/rangos');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Editamos el rango.
+	 * @param int $id ID del rango a editar.
+	 * @todo Verificar no existan 2 rangos con el mismo tipo y cantidad.
+	 */
+	public function action_editar_rango($id)
+	{
+		$id = (int) $id;
+		// Cargamos el modelo del rango.
+		$model_rango = new Model_Usuario_Rango($id);
+		if ( ! $model_rango->existe())
+		{
+			Request::redirect('/admin/usuario/rangos');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/editar_rango');
+
+		// Cargamos el listado de imagens para rangos disponibles.
+		$imagenes_rangos = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
+		unset($imagenes_rangos[1], $imagenes_rangos[0]); // Quitamos . y ..
+
+		$vista->assign('imagenes_rangos', $imagenes_rangos);
+
+		// Valores por defecto y errores.
+		$vista->assign('nombre', $model_rango->nombre);
+		$vista->assign('error_nombre', FALSE);
+		$vista->assign('color', strtoupper(sprintf('%06s', dechex($model_rango->color))));
+		$vista->assign('error_color', FALSE);
+		$vista->assign('imagen', $model_rango->imagen);
+		$vista->assign('error_imagen', FALSE);
+		$vista->assign('puntos', $model_rango->puntos);
+		$vista->assign('error_puntos', FALSE);
+		$vista->assign('puntos_dar', $model_rango->puntos_dar);
+		$vista->assign('error_puntos_dar', FALSE);
+		$vista->assign('tipo', $model_rango->tipo);
+		$vista->assign('error_tipo', FALSE);
+		$vista->assign('cantidad', $model_rango->cantidad);
+		$vista->assign('error_cantidad', FALSE);
+
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
+			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
+			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+			$puntos = isset($_POST['puntos']) ? (int) $_POST['puntos'] : NULL;
+			$puntos_dar = isset($_POST['puntos_dar']) ? (int) $_POST['puntos_dar'] : NULL;
+			$tipo = isset($_POST['tipo']) ? (int) $_POST['tipo'] : NULL;
+			$cantidad = isset($_POST['cantidad']) ? $_POST['cantidad'] : NULL;
+
+			// Valores para cambios.
+			$vista->assign('nombre', $nombre);
+			$vista->assign('color', $color);
+			$vista->assign('imagen', $imagen);
+			$vista->assign('puntos', $puntos);
+			$vista->assign('puntos_dar', $puntos_dar);
+			$vista->assign('tipo', $tipo);
+			$vista->assign('cantidad', $cantidad);
+
+			// Verificamos el nombre.
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{5,32}$/iD', $nombre))
+			{
+				$error = TRUE;
+				$vista->assign('error_nombre', 'El nombre del rango deben ser entre 5 y 32 caractéres alphanuméricos.');
+			}
+
+			// Verificamos el color.
+			if ( ! preg_match('/^[0-9a-f]{6}$/Di', $color))
+			{
+				$error = TRUE;
+				$vista->assign('error_color', 'El color debe ser HEXADECIMAL de 6 digitos. Por ejemplo: 00FF00.');
+			}
+
+			// Verificamos la imagen.
+			if ( ! in_array($imagen, $imagenes_rangos))
+			{
+				$error = TRUE;
+				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
+			}
+
+			// Verificamos los puntos.
+			if ($puntos === NULL || $puntos < 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_puntos', 'La cantidad de puntos debe ser mayor o igual a cero.');
+			}
+
+			// Verificamos los puntos a dar.
+			if ($puntos === NULL || $puntos <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_puntos_dar', 'La cantidad de puntos a dar por post debe ser mayor a cero.');
+			}
+
+			// Verificamos el tipo.
+			if ($tipo < 0 || $tipo > 4)
+			{
+				$error = TRUE;
+				$vista->assign('error_tipo', 'El tipo de rango es incorrecto.');
+			}
+
+			// Verificamos la cantidad.
+			if ($tipo !== 0 && ($cantidad <= 0 || $cantidad === NULL))
+			{
+				$error = TRUE;
+				$vista->assign('error_cantidad', 'Debe ingresar una cantidad positiva.');
+			}
+
+			if ( ! $error)
+			{
+				// Convertimos el color a entero.
+				$color = hexdec($color);
+
+				// Cantidad para tipo especial.
+				if ($tipo == 0)
+				{
+					$cantidad = NULL;
+				}
+				else
+				{
+					$cantidad = (int) $cantidad;
+				}
 
 				// Actualizo el color.
 				if ($model_rango->color != $color)
@@ -1047,6 +1136,24 @@ class Base_Controller_Admin_Usuario extends Controller {
 				if ($model_rango->puntos != $puntos)
 				{
 					$model_rango->actualizar_campo('puntos', $puntos);
+				}
+
+				// Actualizo los puntos a dar.
+				if ($model_rango->puntos_dar != $puntos_dar)
+				{
+					$model_rango->actualizar_campo('puntos_dar', $puntos_dar);
+				}
+
+				// Actualizo el tipo.
+				if ($model_rango->tipo != $tipo)
+				{
+					$model_rango->actualizar_campo('tipo', $tipo);
+				}
+
+				// Actualizo la cantidads.
+				if ($model_rango->cantidad != $cantidad)
+				{
+					$model_rango->actualizar_campo('cantidad', $cantidad);
 				}
 
 				// Informamos suceso.
@@ -1085,39 +1192,39 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		// Listado de permisos.
 		$permisos = array();
-		$permisos[0] = array('Permiso usuario ver denuncias', 'Ver las denuncias de usuarios y actuar sobre ellas.');
-		$permisos[1] = array('Permiso usuario suspender', 'Ver suspensiones de usuarios y modificarlas.');
-		$permisos[2] = array('Permiso usuario banear', 'Ver baneos a usuarios y modificarlos.');
-		$permisos[3] = array('Permiso usuario advertir', 'Enviar advertencias a usuarios.');
-		$permisos[4] = array('Permiso usuario revisar contenido', 'Revisar posts y fotos agregadas por el usuario. Es decir, el contenido creado por el usuario va a revisión antes de postearse.');
-		$permisos[5] = array('Permiso usuario administrar', 'Permite realizar tareas de administración de usuarios. Entre ellas está la asignación de rangos, su creación, etc.');
-		$permisos[20] = array('Permiso post crear', 'Puede crear un post.');
-		$permisos[21] = array('Permiso post puntuar', 'Puede dar puntos a un post.');
-		$permisos[22] = array('Permiso post eliminar', 'Eliminar posts de todos los usuarios.');
-		$permisos[23] = array('Permiso post ocultar', 'Oculta/muestra posts de todos los usuarios.');
-		$permisos[24] = array('Permiso post ver denuncias', 'Ver las denuncias de posts y actuar sobre ellas.');
-		$permisos[25] = array('Permiso post ver desaprobado', 'Ver los posts que no se encuentran aprobados.');
-		$permisos[26] = array('Permiso post fijar promover', 'Modificar el parámetro sticky y sponsored de los posts.');
-		$permisos[27] = array('Permiso post editar', 'Editar posts de todos los usuarios.');
-		$permisos[28] = array('Permiso post ver papelera', 'Ver los posts que se encuentran en la papelera de todos los usuarios.');
-		$permisos[40] = array('Permiso foto crear', 'Puede agregar fotos.');
-		$permisos[41] = array('Permiso foto votar', 'Puede votar las fotos.');
-		$permisos[42] = array('Permiso foto eliminar', 'Eliminar fotos de todos los usuarios.');
-		$permisos[43] = array('Permiso foto ocultar', 'Oculta/muestra fotos de todos los usuarios.');
-		$permisos[44] = array('Permiso foto ver denuncias', 'Ver las denuncias y actuar sobre ellas.');
-		$permisos[45] = array('Permiso foto ver desaprobado', 'Ver el contenido que no se encuentra aprobado.');
-		$permisos[46] = array('Permiso foto editar', 'Editar fotos de todos los usuarios.');
-		$permisos[47] = array('Permiso foto ver papelera', 'Ver la papelera de TODOS los usuarios.');
-		$permisos[60] = array('Permiso comentario comentar', 'Crear comentarios.');
-		$permisos[61] = array('Permiso comentario comentar cerrado', 'Comentar aún cuando están cerrados.');
-		$permisos[62] = array('Permiso comentario votar', 'Puede votar comentarios.');
-		$permisos[63] = array('Permiso comentario eliminar', 'Puede eliminar comentarios de todos los usuarios.');
-		$permisos[64] = array('Permiso comentario ocultar', 'Ocultar y mostrar comentarios de todos los usuarios.');
-		$permisos[65] = array('Permiso comentario editar', 'Editar comentarios de todos los usuarios.');
-		$permisos[66] = array('Permiso comentario ver desaprobado', 'Ver los comentarios que se encuentran desaprobados y tomar acciones sobre ellos.');
-		$permisos[80] = array('Permiso sitio acceso mantenimiento', 'Puede ingresar aún con el sitio en mantenimiento.');
-		$permisos[81] = array('Permiso sitio configurar', 'Permisos para modificar configuraciones globales, acciones sobre temas y plugins. modificar la publicidades y todo lo relacionado a configuracion general.');
-		$permisos[82] = array('Permiso sitio administrar contenido', 'Acceso a la administración de contenido del panel de administración.');
+		$permisos[0] = array('Usuario ver denuncias', 'Ver las denuncias de usuarios y actuar sobre ellas.');
+		$permisos[1] = array('Usuario suspender', 'Ver suspensiones de usuarios y modificarlas.');
+		$permisos[2] = array('Usuario banear', 'Ver baneos a usuarios y modificarlos.');
+		$permisos[3] = array('Usuario advertir', 'Enviar advertencias a usuarios.');
+		$permisos[4] = array('Usuario revisar contenido', 'Revisar posts y fotos agregadas por el usuario. Es decir, el contenido creado por el usuario va a revisión antes de postearse.');
+		$permisos[5] = array('Usuario administrar', 'Permite realizar tareas de administración de usuarios. Entre ellas está la asignación de rangos, su creación, etc.');
+		$permisos[20] = array('Post crear', 'Puede crear un post.');
+		$permisos[21] = array('Post puntuar', 'Puede dar puntos a un post.');
+		$permisos[22] = array('Post eliminar', 'Eliminar posts de todos los usuarios.');
+		$permisos[23] = array('Post ocultar', 'Oculta/muestra posts de todos los usuarios.');
+		$permisos[24] = array('Post ver denuncias', 'Ver las denuncias de posts y actuar sobre ellas.');
+		$permisos[25] = array('Post ver desaprobado', 'Ver los posts que no se encuentran aprobados.');
+		$permisos[26] = array('Post fijar promover', 'Modificar el parámetro sticky y sponsored de los posts.');
+		$permisos[27] = array('Post editar', 'Editar posts de todos los usuarios.');
+		$permisos[28] = array('Post ver papelera', 'Ver los posts que se encuentran en la papelera de todos los usuarios.');
+		$permisos[40] = array('Foto crear', 'Puede agregar fotos.');
+		$permisos[41] = array('Foto votar', 'Puede votar las fotos.');
+		$permisos[42] = array('Foto eliminar', 'Eliminar fotos de todos los usuarios.');
+		$permisos[43] = array('Foto ocultar', 'Oculta/muestra fotos de todos los usuarios.');
+		$permisos[44] = array('Foto ver denuncias', 'Ver las denuncias y actuar sobre ellas.');
+		$permisos[45] = array('Foto ver desaprobado', 'Ver el contenido que no se encuentra aprobado.');
+		$permisos[46] = array('Foto editar', 'Editar fotos de todos los usuarios.');
+		$permisos[47] = array('Foto ver papelera', 'Ver la papelera de TODOS los usuarios.');
+		$permisos[60] = array('Comentario comentar', 'Crear comentarios.');
+		$permisos[61] = array('Comentario comentar cerrado', 'Comentar aún cuando están cerrados.');
+		$permisos[62] = array('Comentario votar', 'Puede votar comentarios.');
+		$permisos[63] = array('Comentario eliminar', 'Puede eliminar comentarios de todos los usuarios.');
+		$permisos[64] = array('Comentario ocultar', 'Ocultar y mostrar comentarios de todos los usuarios.');
+		$permisos[65] = array('Comentario editar', 'Editar comentarios de todos los usuarios.');
+		$permisos[66] = array('Comentario ver desaprobado', 'Ver los comentarios que se encuentran desaprobados y tomar acciones sobre ellos.');
+		$permisos[80] = array('Sitio acceso mantenimiento', 'Puede ingresar aún con el sitio en mantenimiento.');
+		$permisos[81] = array('Sitio configurar', 'Permisos para modificar configuraciones globales, acciones sobre temas y plugins. modificar la publicidades y todo lo relacionado a configuracion general.');
+		$permisos[82] = array('Sitio administrar contenido', 'Acceso a la administración de contenido del panel de administración.');
 
 		$vista->assign('permisos', $permisos);
 
@@ -1154,6 +1261,10 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			$vista->assign('success', 'Permisos actualizados correctamente.');
 		}
+
+		// Rango por defecto para nuevos usuario, evitamos que se borre.
+		$model_config = new Model_Configuracion;
+		$vista->assign('rango_defecto', (int) $model_config->get('rango_defecto', 1));
 
 		// Seteamos datos del rango.
 		$vista->assign('rango', $model_rango->as_array());

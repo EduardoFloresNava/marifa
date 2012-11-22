@@ -582,8 +582,11 @@ $consultas[] = array(
 				`color` int(11) NOT NULL,
 				`imagen` varchar(50) NOT NULL,
 				`orden` int(11) NOT NULL DEFAULT 1,
+				`puntos` INT NOT NULL DEFAULT 10,
+				`puntos_dar` INT NOT NULL DEFAULT 10,
+				`tipo` INT NOT NULL DEFAULT 0,
+				`cantidad` INT NULL DEFAULT NULL
 				PRIMARY KEY (`id`),
-				UNIQUE KEY `orden` (`orden`)
 			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		),
 		array('INSERT', 'INSERT INTO usuario_rango (id, nombre, color, imagen, orden) VALUES (1, \'Administrador\', 10168064, \'Admin2.png\', 1)', NULL, array('error_no' => 1062)),

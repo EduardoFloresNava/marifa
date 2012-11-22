@@ -9,13 +9,18 @@
 		<a href="/admin/usuario/nuevo_rango/" class="btn btn-success"><i class="icon-white icon-plus"></i> Nuevo</a>
 	</div>
 </div>
+<div class="alert alert-info">
+	<strong>&iexcl;Importante!</strong> En el caso de que un usuario tenga un rango especial y por un logro pueda pasar a otro rango, solo se va a realizar si el nuevo rango se encuentra con un orden menor (es decir, por arriba).
+</div>
 <table class="table table-bordered">
 	<thead>
 		<tr>
 			<th>Orden</th>
 			<th>Nombre</th>
-			<th>Color</th>
-			<th>Imagen</th>
+			<th>Puntos por d&iacute;a</th>
+			<th>Puntos por post</th>
+			<th>Tipo</th>
+			<th>Requerimiento</th>
 			<th>Acciones</th>
 		</tr>
 	</thead>
@@ -34,9 +39,13 @@
 					</div>
 				</div>
 			</td>
-			<td>{$value.nombre}</td>
-			<td><span style="color: #{function="sprintf('%06s', dechex($value.color))"}; background-color: #{function="Utils::get_contrast_yiq(sprintf('%06s', dechex($value.color)))"};">#{function="strtoupper(sprintf('%06s', dechex($value.color)))"}</span></td>
-			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /></td>
+			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /> <span style="color: #{function="sprintf('%06s', dechex($value.color))"};">{$value.nombre}</span>{if="$value.id == $rango_defecto"} <span class="label label-info">POR DEFECTO</span>{/if}</td>
+			<td>{$value.puntos}</td>
+			<td>{$value.puntos_dar}</td>
+			{if="$value.tipo == 0"}<td colspan="2">Especial</td>
+			{else}<td>{if="$value.tipo == 1"}Puntos{elseif="$value.tipo == 2"}Posts{elseif="$value.tipo == 3"}Fotos{else}Comentarios{/if}</td>
+			<td>{$value.cantidad}</td>
+			{/if}
 			<td>
 				<div class="btn-group">
 					<a href="/admin/usuario/ver_rango/{$value.id}" class="btn btn-mini" title="Permisos" rel="tooltip"><i class="icon icon-lock"></i></a>

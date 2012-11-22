@@ -511,7 +511,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_posts()
 	{
-		return (int) $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return (int) $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -520,7 +520,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_fotos()
 	{
-		return (int) $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return (int) $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -529,8 +529,8 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_comentarios()
 	{
-		$cantidad = $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-		$cantidad += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		$cantidad = $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		$cantidad += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 
 		return $cantidad;
 	}
@@ -984,5 +984,43 @@ class Base_Model_Usuario extends Model_Dataset {
 		}
 
 		return $lst;
+	}
+
+	/**
+	 * Verificamos y realizamos el cambio de rango automático según el tipo provisto.
+	 * @param int $tipo Tipo de rango a verificar.
+	 */
+	public function actualizar_rango($tipo)
+	{
+		// Cuento la cantidad que tiene.
+		switch ($tipo)
+		{
+			case Model_Usuario_Rango::TIPO_PUNTOS:
+				$cantidad = $this->cantidad_puntos();
+				break;
+			case Model_Usuario_Rango::TIPO_POST:
+				$cantidad = $this->cantidad_posts();
+				break;
+			case Model_Usuario_Rango::TIPO_FOTOS:
+				$cantidad = $this->cantidad_fotos();
+				break;
+			case Model_Usuario_Rango::TIPO_COMENTARIOS:
+				$cantidad = $this->cantidad_comentarios();
+				break;
+		}
+
+		// Verifico si puede promover.
+		$nuevo_rango = $this->rango()->puede_promover($tipo, $cantidad);
+
+		// Cambio el rango si es posible.
+		if ($nuevo_rango !== NULL)
+		{
+			// Cambio el rango del usuario.
+			$this->actualizar_campo('rango', $nuevo_rango);
+
+			// Envio el suceso.
+			$suceso = new Model_Suceso;
+			$suceso->crear($this->primary_key['id'], 'usuario_cambio_rango', TRUE, $this->primary_key['id'], $nuevo_rango);
+		}
 	}
 }

@@ -30,7 +30,7 @@
 		<div class="controls">
 			<select name="imagen" id="imagen">
 				{loop="$imagenes_rangos"}
-				<option style="padding-left: 30px; background: transparent url({#THEME_URL#}/assets/img/rangos/{$value}) no-repeat 0 5px;" value="{$value}"{if="$value == $imagen"} selected="selected"{/if}>{$value}</option>
+				<option style="padding-left: 22px; background: transparent url({#THEME_URL#}/assets/img/rangos/{$value}) no-repeat 2px 0;" value="{$value}"{if="$value == $imagen"} selected="selected"{/if}>{$value}</option>
 				{/loop}
 			</select>
 			<span class="help-block">{if="$error_imagen"}{$error_imagen}{/if}</span>
@@ -45,7 +45,37 @@
 		</div>
 	</div>
 
+	<div class="control-group{if="$error_puntos_dar"} error{/if}">
+		<label class="control-label" for="puntos_dar">Puntos por post</label>
+		<div class="controls">
+			<input type="text" value="{$puntos_dar}" name="puntos_dar" id="puntos_dar" class="span10" />
+			<span class="help-block">{if="$error_puntos_dar"}{$error_puntos_dar}{else}Cantidad máxima de puntos a dar por post.{/if}</span>
+		</div>
+	</div>
+
+	<div class="control-group{if="$error_tipo"} error{/if}">
+		<label class="control-label" for="tipo">Tipo</label>
+		<div class="controls">
+			<select name="tipo" id="tipo">
+				<option value="0"{if="$tipo==0"} selected="selected"{/if}>Especial</option>
+				<option value="1"{if="$tipo==1"} selected="selected"{/if}>Puntos</option>
+				<option value="2"{if="$tipo==2"} selected="selected"{/if}>Posts</option>
+				<option value="3"{if="$tipo==3"} selected="selected"{/if}>Fotos</option>
+				<option value="4"{if="$tipo==4"} selected="selected"{/if}>Comentarios</option>
+			</select>
+			<span class="help-block">{if="$error_tipo"}{$error_tipo}{else}Tipo de rango. Especial implica que son rango a asignar manualmente, mientras que el resto son asignado automáticamente al cumplir los requisitos especificados. Solo necesario si el tipo no es especial.{/if}</span>
+		</div>
+	</div>
+
+	<div class="control-group{if="$error_cantidad"} error{/if}">
+		<label class="control-label" for="cantidad">Cantidad</label>
+		<div class="controls">
+			<input type="text" value="{$cantidad}" name="cantidad" id="cantidad" class="span10" />
+			<span class="help-block">{if="$error_cantidad"}{$error_cantidad}{else}Cantidad de post/fotos/comentarios/puntos que debe tener para poder tener este rango.{/if}</span>
+		</div>
+	</div>
+
 	<div class="form-actions">
-		<button type="submit" class="btn btn-large btn-primary">Crear</button>
+		<button type="submit" class="btn btn-large btn-primary">Crear</button> o <a href="/admin/usuario/rangos/">Volver</a>
 	</div>
 </form>

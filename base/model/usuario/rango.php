@@ -42,8 +42,36 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @property-read int $color Color que representa al rango.
  * @property-read string $imagen Imagen del rango.
  * @property-read int $puntos Puntos que se otorgan por día.
+ * @property-read int $puntos_dar Puntos que puede dar por como máximo en un post.
+ * @property-read int $tipo Tipo de rango.
+ * @property-read int $cantidad Cantidad de puntos/comentario/fotos/post necesarios para obtener el rango.
  */
 class Base_Model_Usuario_Rango extends Model_Dataset {
+
+	/**
+	 * Rango que solo puede ser dado por un administrador.
+	 */
+	const TIPO_ESPECIAL = 0;
+
+	/**
+	 * Rango que se obtiene con una cantidad de puntos.
+	 */
+	const TIPO_PUNTOS = 1;
+
+	/**
+	 * Rango que se obtiene con una cantidad de posts.
+	 */
+	const TIPO_POST = 2;
+
+	/**
+	 * Rango que se obtiene con una cantidad de fotos.
+	 */
+	const TIPO_FOTOS = 3;
+
+	/**
+	 * Rango que se obtiene con una cantidad de comentarios.
+	 */
+	const TIPO_COMENTARIOS = 4;
 
 	/**
 	 * Ver las denuncias de usuarios y actuar sobre ellas.
@@ -242,7 +270,10 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 		'nombre' => Database_Query::FIELD_STRING,
 		'color' => Database_Query::FIELD_INT,
 		'imagen' => Database_Query::FIELD_STRING,
-		'puntos' => Database_Query::FIELD_INT
+		'puntos' => Database_Query::FIELD_INT,
+		'puntos_dar' => Database_Query::FIELD_INT,
+		'tipo' => Database_Query::FIELD_INT,
+		'cantidad' => Database_Query::FIELD_INT
 	);
 
 
@@ -412,11 +443,14 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	 * @param int|string $color Color del rango.
 	 * @param string $imagen Imagen del rango.
 	 * @param int $puntos Cantidad de puntos por día.
+	 * @param int $tipo Tipo de rango.
+	 * @param int $cantidad Cantidad de post/fotos/comentarios/puntos para obtener el rango.
+	 * @param int $cantidad_dar Cantidad de puntos que puede dar a un post.
 	 * @param array $permisos Listado de permisos a dar.
 	 * @return bool Resultado de la inserción.
 	 * @throws Exception Ya existe el rango.
 	 */
-	public function nuevo_rango($nombre, $color, $imagen, $puntos, $permisos = array())
+	public function nuevo_rango($nombre, $color, $imagen, $puntos, $tipo = self::TIPO_ESPECIAL, $cantidad = 0, $cantidad_dar = 10, $permisos = array())
 	{
 		// Verificamos no exista un rango con ese nombre.
 		if ($this->db->query('SELECT COUNT(*) FROM usuario_rango WHERE nombre = ?', $nombre)->get_var(Database_Query::FIELD_INT) > 0)
@@ -433,7 +467,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 		}
 
 		// Insertamos el rango.
-		list($id, $cant) = $this->db->insert('INSERT INTO usuario_rango (nombre, color, imagen, orden, puntos) VALUES (?, ?, ?, ?, ?)', array($nombre, $color, $imagen, $maximo, $puntos));
+		list($id, $cant) = $this->db->insert('INSERT INTO usuario_rango (nombre, color, imagen, orden, puntos, tipo, cantidad, cantidad_dar) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', array($nombre, $color, $imagen, $maximo, $puntos, $tipo, $cantidad, $cantidad_dar));
 
 		if ($cant > 0)
 		{
@@ -543,5 +577,65 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 			$lst[] = new Model_Usuario_Rango($v);
 		}
 		return $lst;
+	}
+
+	/**
+	 * Verificamos si el usuario puede cambiar de rango.
+	 * @param int $tipo Tipo completado.
+	 * @param int $cantidad Cantidad de elemento que tiene.
+	 * @param int $actual Rango actual. Si no se especifica se usa el cargado en el objeto.
+	 * @return int|NULL NULL si no se puede, el ID del rango al que debe promover en caso afirmativo.
+	 */
+	public function puede_promover($tipo, $cantidad, $actual = NULL)
+	{
+		// Cargo el actual si no está.
+		if ($actual === NULL)
+		{
+			$actual = $this->as_object();
+		}
+		else
+		{
+			$aux = new Model_Usuario_Rango($actual);
+			$actual = $aux->as_object();
+			unset($aux);
+		}
+
+		// Busco existencia de rango con esas condiciones.
+		$rst = $this->db->query('SELECT id, orden FROM usuario_rango WHERE tipo = ? AND cantidad <= ? ORDER BY cantidad DESC LIMIT 1', array($tipo, $cantidad));
+
+		// Verifico existencia.
+		if ($rst->num_rows() <= 0)
+		{
+			return NULL;
+		}
+		else
+		{
+			// Obtengo el ID.
+			list($rango_id, $rango_orden) = $rst->get_record(Database_Query::FETCH_NUM, array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+
+			// Verifico no sea el actual.
+			if ($rango_id == $actual->id)
+			{
+				return NULL;
+			}
+
+			// Verifico el tipo del actual.
+			if ($actual->tipo == self::TIPO_ESPECIAL)
+			{
+				// Verifico no sea superior.
+				if ($actual->orden < $rango_orden)
+				{
+					return NULL;
+				}
+				else
+				{
+					return $rango_id;
+				}
+			}
+			else
+			{
+				return $rango_id;
+			}
+		}
 	}
 }

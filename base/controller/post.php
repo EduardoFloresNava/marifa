@@ -171,7 +171,7 @@ class Base_Controller_Post extends Controller {
 				{
 					// Obtenemos puntos disponibles.
 					$m_user = Usuario::usuario();
-					$p_d = $m_user->puntos;
+					$p_d = $m_user->puntos < $m_user->rango()->puntos_dar ? $m_user->puntos : $m_user->rango()->puntos_dar;
 
 					$p_arr = array();
 					for ($i = 1; $i <= $p_d; $i++)
@@ -649,6 +649,9 @@ class Base_Controller_Post extends Controller {
 				{
 					$model_suceso->crear($model_post->usuario_id, 'post_comentario_crear', FALSE, $id);
 				}
+
+				// Verifico actualización del rango.
+				Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
 
 				$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
 
@@ -1418,6 +1421,12 @@ class Base_Controller_Post extends Controller {
 			Request::redirect('/post/index/'.$post);
 		}
 
+		if ($tipo)
+		{
+			// Verifico actualización del rango.
+			$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+		}
+
 		// Actualizo el estado.
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_OCULTO);
 
@@ -1731,7 +1740,8 @@ class Base_Controller_Post extends Controller {
 		// Validamos la cantidad.
 		$cantidad = (int) $cantidad;
 
-		if ($cantidad < 1 || $cantidad > 10)
+		// Cantidad de puntos a dar como máximo.
+		if ($cantidad < 1 || $cantidad > Usuario::usuario()->rango()->puntos_dar)
 		{
 			$_SESSION['flash_error'] = 'La petición que has realizado es inválida.';
 			Request::redirect('/');
@@ -1777,6 +1787,9 @@ class Base_Controller_Post extends Controller {
 
 		// Damos los puntos.
 		$model_post->dar_puntos(Usuario::$usuario_id, $cantidad);
+
+		// Verifico actualización del rango.
+		$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_PUNTOS);
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
@@ -1970,6 +1983,9 @@ class Base_Controller_Post extends Controller {
 					// Agrego el suceso.
 					$model_suceso = new Model_Suceso;
 					$model_suceso->crear(Usuario::$usuario_id, 'post_nuevo', FALSE, $post_id);
+
+					// Verifico actualización del rango.
+					Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
 
 					// Informo y voy a post.
 					$_SESSION['flash_success'] = 'El post fue creado correctamente.';

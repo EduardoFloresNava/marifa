@@ -386,9 +386,18 @@ class Base_Suceso_Perfil extends Suceso {
 		$model_rango = new Model_Usuario_Rango( (int) $suceso['objeto_id1']);
 
 		// Cargo el moderador.
-		$model_moderador = new Model_Usuario( (int) $suceso['objeto_id2']);
+		if ($suceso['objeto_id2'] !== NULL)
+		{
+			$model_moderador = new Model_Usuario( (int) $suceso['objeto_id2']);
+			$moderador = $model_moderador->as_array();
+			unset($model_moderador);
+		}
+		else
+		{
+			$moderador = NULL;
+		}
 
-		return array('usuario' => $model_usuario->as_array(), 'rango' => $model_rango->as_array(), 'moderador' => $model_moderador->as_array());
+		return array('usuario' => $model_usuario->as_array(), 'rango' => $model_rango->as_array(), 'moderador' => $moderador);
 	}
 
 	/**
@@ -406,7 +415,7 @@ class Base_Suceso_Perfil extends Suceso {
 
 		return array('usuario' => $model_usuario->as_array(), 'seguidor' => $model_seguidor->as_array());
 	}
-	
+
 	/**
 	 * Suceso producido cuando el usuario deja de seguir a otro.
 	 * @param array $suceso Datos del suceso.

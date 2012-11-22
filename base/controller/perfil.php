@@ -138,7 +138,7 @@ class Base_Controller_Perfil extends Controller {
 		$usuario['posts'] = $this->usuario->cantidad_posts();
 		$usuario['fotos'] = $this->usuario->cantidad_fotos();
 		$usuario['comentarios'] = $this->usuario->cantidad_comentarios();
-		$usuario['rango'] = $this->usuario->rango()->nombre;
+		$usuario['rango'] = $this->usuario->rango()->as_array();
 
 		// Cargamos campos del usuario.
 		$this->usuario->perfil()->load_list(array('nombre', 'mensaje_personal'));
@@ -635,7 +635,7 @@ class Base_Controller_Perfil extends Controller {
 	{
 		// Cargamos el usuario.
 		$this->cargar_usuario($usuario);
-		
+
 		$seguir = (bool) $seguir;
 
 		// Verifico estar logueado.
@@ -665,7 +665,7 @@ class Base_Controller_Perfil extends Controller {
 			}
 			Request::redirect('/perfil/index/'.$this->usuario->nick);
 		}
-		
+
 		// Verificaciones especiales en funcion si lo voy a seguir o dejar de seguir.
 		if ($seguir)
 		{
@@ -675,14 +675,14 @@ class Base_Controller_Perfil extends Controller {
 				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
 				Request::redirect('/perfil/index/'.$this->usuario->nick);
 			}
-	
+
 			// Verifico no sea seguidor.
 			if ($this->usuario->es_seguidor(Usuario::$usuario_id))
 			{
 				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
 				Request::redirect('/perfil/index/'.$this->usuario->nick);
 			}
-			
+
 			// Sigo al usuario.
 			$this->usuario->seguir(Usuario::$usuario_id);
 		}
