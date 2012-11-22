@@ -778,6 +778,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		foreach ($lst as $k => $v)
 		{
 			$lst[$k] = $v->as_array();
+			$lst[$k]['usuarios'] = $v->cantidad_usuarios();
 		}
 
 		// Seteamos listado de rangos.
