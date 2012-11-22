@@ -802,6 +802,83 @@ class Base_Controller_Admin_Usuario extends Controller {
 	}
 
 	/**
+	 * Mostramos el listado de usuarios pertenecientes a un rango.
+	 * @param int $rango ID del rango del cual se muestran los usuarios.
+	 * @param int $pagina Número de página a mostrar.
+	 */
+	public function action_usuarios_rango($rango, $pagina = 1)
+	{
+		// Cargo el rango.
+		$rango = (int) $rango;
+		$model_rango = new Model_Usuario_Rango($rango);
+
+		// Verifico la existencia.
+		if ( ! $model_rango->existe())
+		{
+			$_SESSION['flash_error'] = 'El rango que desea visualizar es incorrecto.';
+			Request::redirect('/admin/usuario/rangos/');
+		}
+
+		// Formato de la página.
+		$pagina = ($pagina > 0) ? ( (int) $pagina) : 1;
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/usuarios_rango');
+
+		// Asigno el rango.
+		$vista->assign('rango', $model_rango->as_array());
+
+		// Cargo el listado.
+		$listado = $model_rango->usuarios($pagina, $cantidad_por_pagina);
+
+		if (count($listado) <= 0 && $pagina > 1)
+		{
+			Request::redirect('/admin/usuario/usuarios_rango/'.$rango);
+		}
+
+		// Cargo el total de usuarios.
+		$total = $model_rango->cantidad_usuarios();
+
+		// Paginación.
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/usuario/usuarios_rango/'.$rango.'/%s/'));
+
+		// Obtenemos datos de los usuarios.
+		foreach ($listado as $k => $v)
+		{
+			$listado[$k] = $v->as_array();
+		}
+
+		// Seteamos listado de usuarios.
+		$vista->assign('usuarios', $listado);
+		unset($listado);
+
+		// Cargamos listado de rangos que podemos asignar.
+		$lst = $model_rango->listado(Usuario::usuario()->rango()->orden);
+		foreach ($lst as $k => $v)
+		{
+			$lst[$k] = $v->as_array();
+		}
+		$vista->assign('rangos', $lst);
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
 	 * Cambiamos el orden de un rango.
 	 * @param int $rango ID del rango al que cambiar su orden.
 	 * @param int $posicion Posición que debe adoptar el nuevo rango. Empieza en 1.

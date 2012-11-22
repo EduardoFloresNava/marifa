@@ -416,16 +416,29 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 
 	/**
 	 * Obtenemos un arreglo con los usuarios que tienen este rango.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de usuarios por página.
 	 * @return array
 	 */
-	public function usuarios()
+	public function usuarios($pagina = 1, $cantidad = 10)
 	{
-		$lst = $this->db->query('SELECT id FROM usuario WHERE rango = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+		$start = ($pagina - 1) * $cantidad;
+
+		$lst = $this->db->query('SELECT id FROM usuario WHERE rango = ? LIMIT '.$start.', '.$cantidad, $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
 		foreach ($lst as $k => $v)
 		{
 			$lst[$k] = new Model_Usuario($v);
 		}
 		return $lst;
+	}
+
+	/**
+	 * Cantidad de usuarios que tiene el rango.
+	 * @return int
+	 */
+	public function cantidad_usuarios()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM usuario WHERE rango = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
