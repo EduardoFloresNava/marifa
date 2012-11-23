@@ -81,7 +81,7 @@ class Base_Controller_Home extends Controller {
 
 		// Cantidad posts y comentarios en posts.
 		$portada->assign('cantidad_posts', $model_post->cantidad(Model_Post::ESTADO_ACTIVO));
-		$portada->assign('cantidad_comentarios_posts', $model_post->cantidad_comentarios());
+		$portada->assign('cantidad_comentarios_posts', $model_post->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
 
 		// Cantidad de elementos por pagina.
 		$model_configuracion = new Model_Configuracion;
@@ -205,11 +205,9 @@ class Base_Controller_Home extends Controller {
 		unset($foto_list);
 
 		// Cantidad fotos y comentarios en fotos.
-		$portada->assign('cantidad_fotos', $model_foto->cantidad());
-		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios());
+		$portada->assign('cantidad_fotos', $model_foto->cantidad(Model_Foto::ESTADO_ACTIVA));
+		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
 		unset($model_foto);
-
-
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());
