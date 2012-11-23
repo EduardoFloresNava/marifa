@@ -136,22 +136,9 @@
 			</ul>
 		{else}
 		<div class="alert alert-success">
-			No hay denuncias pendientes.
-		</div>
-		{/if}
-		
-		
-		
-		
-		
-		
-		
-		{loop="$contenido"}
-		{else}
-		<div class="alert alert-success">
 			No hay contenido esperando ser aprobado.
 		</div>
-		{/loop}
+		{/if}
 	</div>
 </div>
 <div class="row-fluid">
