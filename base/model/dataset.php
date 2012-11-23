@@ -261,4 +261,19 @@ class Base_Model_Dataset extends Model {
 
 		return $this->db->query("SELECT COUNT(*) FROM {$this->table} WHERE ".implode('AND ', $k_list), $primary_key)->get_var(Database_Query::FIELD_INT) > 0;
 	}
+
+	/**
+	 * Borramos el elemento cargado por la clave primaria.
+	 */
+	public function delete()
+	{
+		// Listado de claves.
+		$k_list = array();
+		foreach (array_keys($this->primary_key) as $k)
+		{
+			$k_list[] = "$k = ?";
+		}
+
+		return $this->db->delete("DELETE FROM {$this->table} WHERE ".implode('AND ', $k_list), $this->primary_key);
+	}
 }

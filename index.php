@@ -98,7 +98,7 @@ require_once (APP_BASE.DS.'function.php');
 // Iniciamos el proceso de carga automatica de librerias.
 spl_autoload_register('loader_load');
 
-//Defino la URL del sitio.
+// Defino la URL del sitio.
 define('SITE_URL', get_site_url());
 
 // Verifico que no exista el instalador.

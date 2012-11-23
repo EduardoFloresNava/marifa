@@ -1391,18 +1391,18 @@ class Base_Controller_Post extends Controller {
 			Request::redirect('/usuario/login');
 		}
 
+		// Convertimos el post a ID.
+		$post = (int) $post;
+
+		// Cargamos el post.
+		$model_post = new Model_Post($post);
+
 		// Verifico el usuario y sus permisos.
 		if ($model_post->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_OCULTAR))
 		{
 			$_SESSION['flash_error'] = 'No tienes permiso para ocultar/mostrar posts.';
 			Request::redirect('/');
 		}
-
-		// Convertimos el post a ID.
-		$post = (int) $post;
-
-		// Cargamos el post.
-		$model_post = new Model_Post($post);
 
 		// Verificamos exista el post.
 		if ( ! is_array($model_post->as_array()))

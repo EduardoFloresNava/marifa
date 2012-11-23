@@ -80,7 +80,7 @@ class Base_Controller_Home extends Controller {
 		$model_post = new Model_Post;
 
 		// Cantidad posts y comentarios en posts.
-		$portada->assign('cantidad_posts', $model_post->cantidad());
+		$portada->assign('cantidad_posts', $model_post->cantidad(Model_Post::ESTADO_ACTIVO));
 		$portada->assign('cantidad_comentarios_posts', $model_post->cantidad_comentarios());
 
 		// Cantidad de elementos por pagina.

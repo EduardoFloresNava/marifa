@@ -27,7 +27,7 @@
 	</thead>
 	<tbody>
 		{loop="$rangos"}
-		<tr>
+		<tr{if="$value.id == $rango_defecto"} class="alert-info"{/if}>
 			<td><div class="btn-toolbar">
 					<div class="btn-group">
 						#{$value.orden}
@@ -40,7 +40,7 @@
 					</div>
 				</div>
 			</td>
-			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /> <span style="color: #{function="sprintf('%06s', dechex($value.color))"};">{$value.nombre}</span>{if="$value.id == $rango_defecto"} <span class="label label-info">POR DEFECTO</span>{/if}</td>
+			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /> <span style="color: #{function="sprintf('%06s', dechex($value.color))"};">{$value.nombre}</span></td>
 			<td>{$value.usuarios}</td>
 			<td>{$value.puntos}</td>
 			<td>{$value.puntos_dar}</td>
