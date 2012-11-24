@@ -23,7 +23,7 @@
 	<tbody>
 		{loop="$medallas"}
 		<tr>
-			<td><img src="{#THEME_URL#}/assets/img/medallas/{$value.imagen}" /> {$value.nombre}</td>
+			<td><img src="{#THEME_URL#}/assets/img/medallas/{$value.imagen}" width="16" height="16" /> {$value.nombre}</td>
 			<td>{$value.descripcion}</td>
 			<td>{if="$value.tipo == 0"}Usuario{elseif="$value.tipo == 1"}Post{else}Foto{/if}</td>
 			<td>

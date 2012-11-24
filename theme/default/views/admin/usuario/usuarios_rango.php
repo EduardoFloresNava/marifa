@@ -20,7 +20,7 @@
 	<tbody>
 		{loop="$usuarios"}
 		<tr>
-			<td>{$value.nick}</td>
+			<td><a href="/perfil/index/{$value.nick}">{$value.nick}</a></td>
 			<td>{$value.email}</td>
 			<td>{$value.lastactive->fuzzy()}</td>
 			<td><span class="label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span></td>
