@@ -279,6 +279,9 @@ class Base_Controller_Foto extends Controller {
 			if ($model_foto->visitas !== NULL)
 			{
 				$model_foto->agregar_visita();
+
+				// Actualizamos medallas.
+				$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VISITAS);
 			}
 
 			$view->assign('es_favorito', $model_foto->es_favorito(Usuario::$usuario_id));
@@ -391,6 +394,10 @@ class Base_Controller_Foto extends Controller {
 
 			// Sigo al usuario.
 			$model_usuario->seguir(Usuario::$usuario_id);
+
+			// Actualizo medallas.
+			$model_usuario->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_SEGUIDORES);
+			Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_SIGUIENDO);
 		}
 		else
 		{
@@ -488,6 +495,17 @@ class Base_Controller_Foto extends Controller {
 		// Votamos la foto.
 		$model_foto->votar(Usuario::$usuario_id, $voto);
 
+		// Actualizo medallas.
+		$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VOTOS_NETOS);
+		if ($voto > 0)
+		{
+			$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VOTOS_POSITIVOS);
+		}
+		else
+		{
+			$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VOTOS_NEGATIVOS);
+		}
+
 		// Creamos el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id != $model_foto->usuario_id)
@@ -554,6 +572,9 @@ class Base_Controller_Foto extends Controller {
 
 		// Agrego a favoritos.
 		$model_foto->agregar_favorito(Usuario::$usuario_id);
+
+		// Agregamos medallas.
+		$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_FAVORITOS);
 
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
@@ -635,6 +656,10 @@ class Base_Controller_Foto extends Controller {
 
 			// Verifico actualización del rango.
 			Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
+
+			// Actualizo las medallas.
+			$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_COMENTARIOS);
+			Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_FOTOS);
 
 			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
@@ -1075,6 +1100,9 @@ class Base_Controller_Foto extends Controller {
 					// Verifico actualización del rango.
 					Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
 
+					// Actualizo medalla.
+					Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_FOTOS);
+
 					// Informo el resultado.
 					$_SESSION['flash_success'] = 'Foto creada correctamente.';
 					Request::redirect('/foto/ver/'.$model_foto->id);
@@ -1186,6 +1214,9 @@ class Base_Controller_Foto extends Controller {
 			{
 				// Creo la denuncia.
 				$id = $model_foto->denunciar(Usuario::$usuario_id, $motivo, $comentario);
+
+				// Actualizo medallas.
+				$model_foto->actualizar_medallas(Model_Medalla::CONDICION_POST_DENUNCIAS);
 
 				// Agregamos el suceso.
 				$model_suceso = new Model_Suceso;

@@ -525,12 +525,23 @@ class Base_Model_Usuario extends Model_Dataset {
 
 	/**
 	 * Cantidad de comentarios que realizó el usuario.
+	 * @param bool $foto Contar comentarios en fotos.
+	 * @param bool $post Contar comentarios en posts.
 	 * @return int
 	 */
-	public function cantidad_comentarios()
+	public function cantidad_comentarios($foto = TRUE, $post = TRUE)
 	{
-		$cantidad = $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-		$cantidad += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		$cantidad = 0;
+
+		if ($post)
+		{
+			$cantidad += $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		}
+
+		if ($foto)
+		{
+			$cantidad += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		}
 
 		return $cantidad;
 	}
@@ -1022,5 +1033,103 @@ class Base_Model_Usuario extends Model_Dataset {
 			$suceso = new Model_Suceso;
 			$suceso->crear($this->primary_key['id'], 'usuario_cambio_rango', TRUE, $this->primary_key['id'], $nuevo_rango);
 		}
+	}
+
+	/**
+	 * Cantidad de medallas del usuario.
+	 * @return int
+	 */
+	public function cantidad_medallas()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Agregamos medallas si cumple con los requisitos impuestos.
+	 * @param int $tipo Tipo de acción a controlar.
+	 * @return int|bool FALSE si no hay medalla que asignar, el ID de la medalla si se asignó.
+	 */
+	public function actualizar_medallas($tipo)
+	{
+		switch ($tipo)
+		{
+			case Model_Medalla::CONDICION_USUARIO_PUNTOS:
+				$cantidad = $this->cantidad_puntos();
+				break;
+			case Model_Medalla::CONDICION_USUARIO_SEGUIDORES:
+				$cantidad = $this->cantidad_seguidores();
+				break;
+			case Model_Medalla::CONDICION_USUARIO_SIGUIENDO:
+				$cantidad = $this->cantidad_sigue();
+				break;
+			case Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_POSTS:
+				$cantidad = $this->cantidad_comentarios(FALSE);
+				break;
+			case Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_FOTOS:
+				$cantidad = $this->cantidad_comentarios(TRUE, FALSE);
+				break;
+			case Model_Medalla::CONDICION_USUARIO_POSTS:
+				$cantidad = $this->cantidad_posts();
+				break;
+			case Model_Medalla::CONDICION_USUARIO_FOTOS:
+				$cantidad = $this->cantidad_fotos();
+				break;
+			case Model_Medalla::CONDICION_USUARIO_MEDALLAS:
+				$cantidad = $this->cantidad_medallas();
+				break;
+			//case CONDICION_USUARIO_RANGO: // Sin implementar.
+		}
+
+		// Busco medalla.
+		$rst = $this->db->query('SELECT id FROM medalla WHERE cantidad = ? AND condicion = ?', array($cantidad, $tipo));
+
+		if ($rst->num_rows() > 0)
+		{
+			// Cargo la medalla.
+			$medalla = $rst->get_var(Database_Query::FIELD_INT);
+
+			// Verifico no tener la medalla.
+			if ($this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE medalla_id = ? AND usuario_id = ?', array($medalla, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT) > 0)
+			{
+				return FALSE;
+			}
+			else
+			{
+				// Agrego la medalla.
+				$this->db->insert('INSERT INTO usuario_medalla (medalla_id, usuario_id, fecha) VALUES (?, ?, ?);', array($medalla, $this->primary_key['id'], date('Y/m/d H:i:s')));
+
+				// Envio suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear($this->primary_key['id'], 'usuario_nueva_medalla', TRUE, $medalla);
+
+				return $medalla;
+			}
+		}
+		else
+		{
+			// No hay medallas.
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Listado de medallas del usuario.
+	 * @return array
+	 */
+	public function medallas()
+	{
+		$rst = $this->db->query('SELECT medalla_id, fecha, objeto_id FROM usuario_medalla WHERE usuario_id = ? ORDER BY fecha DESC', $this->primary_key['id']);
+		$rst->set_fetch_type(Database_Query::FETCH_ASSOC);
+		$rst->set_cast_type(array('medalla_id' => Database_Query::FIELD_INT, 'fecha' => Database_Query::FIELD_DATETIME, 'objeto_id' => Database_Query::FIELD_INT));
+
+		// Genero listado.
+		$lst = array();
+		foreach ($rst as $k => $v)
+		{
+			$lst[$k] = $v;
+			$lst[$k]['medalla'] = new Model_Medalla($v['medalla_id']);
+		}
+
+		return $lst;
 	}
 }

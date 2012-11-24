@@ -138,11 +138,23 @@ class Base_Model_Foto extends Model_Dataset {
 
 	/**
 	 * Cantidad de votos de la foto.
+	 * @param int $votos NULL para todos, 1 para positivos y -1 para negativos.
 	 * @return int
 	 */
-	public function votos()
+	public function votos($votos = NULL)
 	{
-		return $this->db->query('SELECT SUM(cantidad) FROM foto_voto WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		if ($votos === NULL)
+		{
+			return $this->db->query('SELECT SUM(cantidad) FROM foto_voto WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		}
+		elseif ($votos < 0)
+		{
+			return $this->db->query('SELECT SUM(cantidad) FROM foto_voto WHERE foto_id = ? AND cantidad < 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			return $this->db->query('SELECT SUM(cantidad) FROM foto_voto WHERE foto_id = ? AND cantidad > 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		}
 	}
 
 	/**
@@ -498,5 +510,90 @@ class Base_Model_Foto extends Model_Dataset {
 				Model_Foto_Denuncia::ESTADO_PENDIENTE
 			));
 		return $id;
+	}
+
+	/**
+	 * Cantidad de medallas del post.
+	 * @return int
+	 */
+	public function cantidad_medallas()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE tipo = ? AND objeto_id = ?', array(Model_Medalla::TIPO_FOTO, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Cantidad de denuncias que tiene la foto.
+	 * @return int
+	 */
+	public function cantidad_denuncias()
+	{
+		return $this->db->insert('SELECT COUNT(*) foto_denuncia WHERE foto_id = ?', $this->primary_key['id']);
+	}
+
+	/**
+	 * Agregamos medallas si cumple con los requisitos impuestos.
+	 * @param int $tipo Tipo de acción a controlar.
+	 * @return int|bool FALSE si no hay medalla que asignar, el ID de la medalla si se asignó.
+	 */
+	public function actualizar_medallas($tipo)
+	{
+		switch ($tipo)
+		{
+			case Model_Medalla::CONDICION_FOTO_VOTOS_POSITIVOS:
+				$cantidad = $this->votos(1);
+				break;
+			case Model_Medalla::CONDICION_FOTO_VOTOS_NEGATIVOS:
+				$cantidad = $this->votos(-1);
+				break;
+			case Model_Medalla::CONDICION_FOTO_VOTOS_NETOS:
+				$cantidad = $this->votos();
+				break;
+			case Model_Medalla::CONDICION_FOTO_COMENTARIOS:
+				$cantidad = $this->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE);
+				break;
+			case Model_Medalla::CONDICION_FOTO_VISITAS:
+				$cantidad = $this->visitas;
+				break;
+			case Model_Medalla::CONDICION_FOTO_MEDALLAS:
+				$cantidad = $this->cantidad_medallas();
+				break;
+			case Model_Medalla::CONDICION_FOTO_FAVORITOS:
+				$cantidad = $this->favoritos();
+				break;
+			case Model_Medalla::CONDICION_FOTO_DENUNCIAS:
+				$cantidad = $this->cantidad_denuncias();
+				break;
+		}
+
+		// Busco medalla.
+		$rst = $this->db->query('SELECT id FROM medalla WHERE cantidad = ? AND condicion = ?', array($cantidad, $tipo));
+
+		if ($rst->num_rows() > 0)
+		{
+			// Cargo la medalla.
+			$medalla = $rst->get_var(Database_Query::FIELD_INT);
+
+			// Verifico no tener la medalla.
+			if ($this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE medalla_id = ? AND usuario_id = ?', array($medalla, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT) > 0)
+			{
+				return FALSE;
+			}
+			else
+			{
+				// Agrego la medalla.
+				$this->db->insert('INSERT INTO usuario_medalla (medalla_id, usuario_id, fecha, objeto_id) VALUES (?, ?, ?, ?);', array($medalla, $this->usuario_id, date('Y/m/d H:i:s'), $this->primary_key['id']));
+
+				// Envio suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear($this->usuario_id, 'usuario_nueva_medalla', TRUE, $medalla);
+
+				return $medalla;
+			}
+		}
+		else
+		{
+			// No hay medallas.
+			return FALSE;
+		}
 	}
 }

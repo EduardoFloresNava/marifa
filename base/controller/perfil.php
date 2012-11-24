@@ -140,6 +140,9 @@ class Base_Controller_Perfil extends Controller {
 		$usuario['comentarios'] = $this->usuario->cantidad_comentarios();
 		$usuario['rango'] = $this->usuario->rango()->as_array();
 
+		// Listado de medallas.
+		$base_view->assign('medallas', array_map(create_function('$v', '$v[\'medalla\'] = $v[\'medalla\']->as_array(); return $v;'), $this->usuario->medallas()));
+
 		// Cargamos campos del usuario.
 		$this->usuario->perfil()->load_list(array('nombre', 'mensaje_personal'));
 
@@ -685,6 +688,10 @@ class Base_Controller_Perfil extends Controller {
 
 			// Sigo al usuario.
 			$this->usuario->seguir(Usuario::$usuario_id);
+
+			// Actualizo medallas.
+			$this->usuario->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_SEGUIDORES);
+			Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_SIGUIENDO);
 		}
 		else
 		{

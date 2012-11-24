@@ -1,7 +1,7 @@
 <ul class="breadcrumb">
     <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
-    <li><a href="/admin/usuarios/">Usuarios</a> <span class="divider">/</span></li>
-    <li><a href="/admin/usuarios/rangos">Rangos</a> <span class="divider">/</span></li>
+    <li><a href="/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
+    <li><a href="/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
     <li class="active">Usuarios en {$rango.nombre}</li>
 </ul>
 <div class="header">
@@ -50,7 +50,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="6">&iexcl;No hay usuarios!</td>
+			<td class="alert" colspan="5">&iexcl;No hay usuarios!</td>
 		</tr>
 		{/loop}
 	</tbody>

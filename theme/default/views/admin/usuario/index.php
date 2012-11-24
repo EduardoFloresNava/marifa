@@ -28,7 +28,7 @@
 	<tbody>
 		{loop="$usuarios"}
 		<tr>
-			<td>{$value.nick}</td>
+			<td><a href="/perfil/index/{$value.nick}">{$value.nick}</a></td>
 			<td>{$value.email}</td>
 			<td>{$value.rango}</td>
 			<td>{$value.lastactive->fuzzy()}</td>

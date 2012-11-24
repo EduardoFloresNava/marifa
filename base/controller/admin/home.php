@@ -109,6 +109,7 @@ class Base_Controller_Admin_Home extends Controller {
 			$listado['usuario'] = array('link' => '/admin/usuario/', 'caption' => 'General', 'active' => FALSE);
 			$listado['usuario_sesiones'] = array('link' => '/admin/usuario/sesiones', 'caption' => 'Sesiones', 'active' => FALSE);
 			$listado['usuario_rangos'] = array('link' => '/admin/usuario/rangos', 'caption' => 'Rangos', 'active' => FALSE);
+			$listado['usuario_medallas'] = array('link' => '/admin/usuario/medallas', 'caption' => 'Medallas', 'active' => FALSE);
 		}
 
 		if (isset($listado[$activo]))

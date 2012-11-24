@@ -1,13 +1,13 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
-    <li class="active">Configuración</li>
+    <li><a href="/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li class="active">Configuraci&oacute;n</li>
 </ul>
 <div class="header">
-	<h2>Configuración</h2>
+	<h2>Configuraci&oacute;n</h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 	<fieldset>
-		<legend>Datos del sitio.</legend>
+		<legend>Datos del sitio:</legend>
 
 		<div class="control-group{if="$error_nombre"} error{elseif="$success_nombre"} success{/if}">
 			<label class="control-label" for="nombre">Nombre del sitio:</label>
@@ -27,7 +27,7 @@
 	</fieldset>
 
 	<fieldset>
-		<legend>Registro de usuarios.</legend>
+		<legend>Registro de usuarios:</legend>
 
 		<div class="control-group{if="$error_registro"} error{elseif="$success_registro"} success{/if}">
 			<label class="control-label" for="registro">Registro de usuarios:</label>
@@ -53,19 +53,19 @@
 		</div>
 
 		<div class="control-group{if="$error_rango_defecto"} error{elseif="$success_rango_defecto"} success{/if}">
-			<label class="control-label" for="rango_defecto">Activación usuarios:</label>
+			<label class="control-label" for="rango_defecto">Rango por defecto:</label>
 			<div class="controls">
 				<select name="rango_defecto" id="rango_defecto">
 					{loop="$rangos_permitidos"}
 					<option value="{$key}"{if="$rango_defecto == $key"} selected="selected"{/if}>{$value}</option>{/loop}
 				</select>
-				<span class="help-inline">{if="$error_rango_defecto"}{$error_rango_defecto}{elseif="$success_rango_defecto"}{$success_rango_defecto}{else}La forma de activar las cuentas de los usuarios. Directa: no requiere ningún tipo de validación. E-Mail: se debe activar por medio de un código enviado por E-Mail. Manual: la cuenta debe ser activada de forma manual por un administrador.{/if}</span>
+				<span class="help-inline">{if="$error_rango_defecto"}{$error_rango_defecto}{elseif="$success_rango_defecto"}{$success_rango_defecto}{else}Rango por defecto que se le asigna a los nuevos usuarios cuando se registran.{/if}</span>
 			</div>
 		</div>
 	</fieldset>
 
 	<fieldset>
-		<legend>Paginación.</legend>
+		<legend>Paginaci&oacute;n:</legend>
 
 		<div class="control-group{if="$error_elementos_pagina"} error{elseif="$success_elementos_pagina"} success{/if}">
 			<label class="control-label" for="elementos_pagina">Elementos por página:</label>

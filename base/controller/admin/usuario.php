@@ -1044,7 +1044,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				//TODO: agregar suceso de administracion.
 
 				// Seteo FLASH message.
-				$_SESSION['rango_correcto'] = 'El rango se creó correctamente';
+				$_SESSION['flash_success'] = 'El rango se creó correctamente';
 
 				// Redireccionamos.
 				Request::redirect('/admin/usuario/rangos');
@@ -1484,5 +1484,424 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$_SESSION['flash_success'] = 'Se terminó correctamente la sessión.';
 		}
 		Request::redirect('/admin/usuario/sesiones');
+	}
+
+	/**
+	 * Mostramos el listado de medallas.
+	 */
+	public function action_medallas($pagina = 1)
+	{
+		// Formato de la página.
+		$pagina = ($pagina > 0) ? ( (int) $pagina) : 1;
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/medallas');
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		unset($model_configuracion);
+
+		// Modelo de medallas.
+		$model_medallas = new Model_Medalla;
+
+		// Cargamos el listado de medallas.
+		$lst = $model_medallas->listado($pagina, $cantidad_por_pagina);
+
+		// Obtenemos datos de las medallas.
+		foreach ($lst as $k => $v)
+		{
+			$lst[$k] = $v->as_array();
+		}
+
+		// Seteamos listado de medallas.
+		$vista->assign('medallas', $lst);
+		unset($lst);
+
+		// Paginación.
+		$paginador = new Paginator(Model_Medalla::cantidad(), $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/usuario/medallas/%s/'));
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Creamos un nuevo rango.
+	 * @todo Agregar soporte para BBCode en la descripción.
+	 */
+	public function action_nueva_medalla()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/nueva_medalla');
+
+		// Valores por defecto y errores.
+		$vista->assign('nombre', '');
+		$vista->assign('error_nombre', FALSE);
+		$vista->assign('descripcion', '');
+		$vista->assign('error_descripcion', FALSE);
+		$vista->assign('imagen', '');
+		$vista->assign('error_imagen', FALSE);
+		$vista->assign('condicion', '');
+		$vista->assign('error_condicion', FALSE);
+		$vista->assign('cantidad', '');
+		$vista->assign('error_cantidad', FALSE);
+
+		// Cargamos el listado de imagenws para las medallas disponibles.
+		$imagenes_medallas = glob(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS.'*_16.{png,jpg,gif}', GLOB_BRACE);
+		if ( ! is_array($imagenes_medallas))
+		{
+			$imagenes_medallas = array();
+		}
+		else
+		{
+			foreach ($imagenes_medallas as $k => $v)
+			{
+				$imagenes_medallas[$k] = substr($v, strlen(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS));
+			}
+		}
+		$vista->assign('imagenes_medallas', $imagenes_medallas);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
+			$descripcion = isset($_POST['descripcion']) ? preg_replace('/\s+/', ' ', trim($_POST['descripcion'])) : NULL;
+			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+			$condicion = isset($_POST['condicion']) ? (int) $_POST['condicion'] : NULL;
+			$cantidad = isset($_POST['cantidad']) ? $_POST['cantidad'] : NULL;
+
+			// Valores para cambios.
+			$vista->assign('nombre', $nombre);
+			$vista->assign('descripcion', $descripcion);
+			$vista->assign('imagen', $imagen);
+			$vista->assign('condicion', $condicion);
+			$vista->assign('cantidad', $cantidad);
+
+			// Verificamos el nombre.
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ ]{5,32}$/iD', $nombre))
+			{
+				$error = TRUE;
+				$vista->assign('error_nombre', 'El nombre de la medalla deben ser entre 5 y 32 caractéres alphanuméricos o espacios.');
+			}
+
+			// Verificamos la descripción.
+			if ( ! isset($descripcion{6}) || isset($descripcion{300}))
+			{
+				$error = TRUE;
+				$vista->assign('error_descripcion', 'La descripción debe tener entre 6 y 300 caractéres.');
+			}
+
+			// Verificamos la imagen.
+			if ( ! in_array($imagen, $imagenes_medallas))
+			{
+				$error = TRUE;
+				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
+			}
+
+			// Verificamos el tipo.
+			if ($condicion < 0 || $condicion > 22)
+			{
+				$error = TRUE;
+				$vista->assign('error_condicion', 'El tipo de medalla es incorrecto.');
+			}
+
+			// Verificamos la cantidad.
+			if ($cantidad <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_cantidad', 'Debe ingresar una cantidad positiva.');
+			}
+
+			if ( ! $error)
+			{
+				// Obtenemos tipo.
+				$tipo = $condicion <= 8 ? 0 : ($condicion > 8 && $condicion <= 16 ? 1 : 2);
+
+				// Creamos la medalla.
+				$model_medalla = new Model_Medalla;
+				$model_medalla->crear($nombre, $descripcion, $imagen, $tipo, $condicion, $cantidad);
+
+				//TODO: agregar suceso de administracion.
+
+				// Seteo FLASH message.
+				$_SESSION['flash_success'] = 'La medalla se creó correctamente';
+
+				// Redireccionamos.
+				Request::redirect('/admin/usuario/medallas/');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Editamos la medalla
+	 * @param int $id ID de la medalla a editar.
+	 * @todo Verificar no existan 2 medallas iguales.
+	 */
+	public function action_editar_medalla($id)
+	{
+		$id = (int) $id;
+		// Cargamos el modelo de la medalla.
+		$model_medalla = new Model_Medalla($id);
+
+		// Verifico existencia.
+		if ( ! $model_medalla->existe())
+		{
+			Request::redirect('/admin/usuario/medallas');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/editar_medalla');
+
+		// Cargamos el listado de imagenws para las medallas disponibles.
+		$img_medallas = glob(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS.'*_32.{png,jpg,gif}', GLOB_BRACE);
+		$imagenes_medallas = array();
+		if (is_array($img_medallas))
+		{
+			foreach ($img_medallas as $v)
+			{
+				$imagenes_medallas[substr($v, strlen(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS), -6).'16'.substr($v, -4)] = substr($v, strlen(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS));
+			}
+		}
+		unset($img_medallas);
+		$vista->assign('imagenes_medallas', $imagenes_medallas);
+
+		// Valores por defecto y errores.
+		$vista->assign('nombre', $model_medalla->nombre);
+		$vista->assign('error_nombre', FALSE);
+		$vista->assign('descripcion', $model_medalla->descripcion);
+		$vista->assign('error_descripcion', FALSE);
+		$vista->assign('imagen', $model_medalla->imagen);
+		$vista->assign('error_imagen', FALSE);
+		$vista->assign('condicion', $model_medalla->condicion);
+		$vista->assign('error_condicion', FALSE);
+		$vista->assign('cantidad', $model_medalla->cantidad);
+		$vista->assign('error_cantidad', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
+			$descripcion = isset($_POST['descripcion']) ? preg_replace('/\s+/', ' ', trim($_POST['descripcion'])) : NULL;
+			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+			$condicion = isset($_POST['condicion']) ? (int) $_POST['condicion'] : NULL;
+			$cantidad = isset($_POST['cantidad']) ? $_POST['cantidad'] : NULL;
+
+			// Valores para cambios.
+			$vista->assign('nombre', $nombre);
+			$vista->assign('descripcion', $descripcion);
+			$vista->assign('imagen', $imagen);
+			$vista->assign('condicion', $condicion);
+			$vista->assign('cantidad', $cantidad);
+
+			// Verificamos el nombre.
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ ]{5,32}$/iD', $nombre))
+			{
+				$error = TRUE;
+				$vista->assign('error_nombre', 'El nombre de la medalla deben ser entre 5 y 32 caractéres alphanuméricos o espacios.');
+			}
+
+			// Verificamos la descripción.
+			if ( ! isset($descripcion{6}) || isset($descripcion{300}))
+			{
+				$error = TRUE;
+				$vista->assign('error_descripcion', 'La descripción debe tener entre 6 y 300 caractéres.');
+			}
+
+			// Verificamos la imagen.
+			if ( ! in_array($imagen, $imagenes_medallas))
+			{
+				$error = TRUE;
+				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
+			}
+
+			// Verificamos el tipo.
+			if ($condicion < 0 || $condicion > 24)
+			{
+				$error = TRUE;
+				$vista->assign('error_condicion', 'El tipo de medalla es incorrecto.');
+			}
+
+			// Verificamos la cantidad.
+			if ($cantidad <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_cantidad', 'Debe ingresar una cantidad positiva.');
+			}
+
+			if ( ! $error)
+			{
+				// Obtenemos tipo.
+				$tipo = $condicion <= 8 ? 0 : ($condicion > 8 && $condicion <= 16 ? 1 : 2);
+
+				// Actualizo nombre.
+				if ($model_medalla->nombre != $nombre)
+				{
+					$model_medalla->actualizar_campo('nombre', $nombre);
+				}
+
+				// Actualizo descripcion.
+				if ($model_medalla->descripcion != $descripcion)
+				{
+					$model_medalla->actualizar_campo('descripcion', $descripcion);
+				}
+
+				// Actualizo el imagen.
+				if ($model_medalla->imagen != $imagen)
+				{
+					$model_medalla->actualizar_campo('imagen', $imagen);
+				}
+
+				// Actualizo el tipo.
+				if ($model_medalla->tipo != $tipo)
+				{
+					$model_medalla->actualizar_campo('tipo', $tipo);
+				}
+
+				// Actualizo el condicion.
+				if ($model_medalla->condicion != $condicion)
+				{
+					$model_medalla->actualizar_campo('condicion', $condicion);
+				}
+
+				// Actualizo la cantidad.
+				if ($model_medalla->cantidad != $cantidad)
+				{
+					$model_medalla->actualizar_campo('cantidad', $cantidad);
+				}
+
+				// Informamos suceso.
+				$vista->assign('success', 'Información actualizada correctamente');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Mostramos el listado de usuarios que poseen una medalla.
+	 * @param int $rango ID de la medalla de la cual se muestran los usuarios.
+	 * @param int $pagina Número de página a mostrar.
+	 */
+	public function action_usuarios_medalla($medalla, $pagina = 1)
+	{
+		// Cargo la medalla.
+		$medalla = (int) $medalla;
+		$model_medalla = new Model_Medalla($medalla);
+
+		// Verifico la existencia.
+		if ( ! $model_medalla->existe())
+		{
+			$_SESSION['flash_error'] = 'La medalla que desea visualizar es incorrecto.';
+			Request::redirect('/admin/usuario/medallas/');
+		}
+
+		// Formato de la página.
+		$pagina = ($pagina > 0) ? ( (int) $pagina) : 1;
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/usuarios_medalla');
+
+		// Asigno el rango.
+		$vista->assign('medalla', $model_medalla->as_array());
+
+		// Cargo el listado.
+		$listado = $model_medalla->usuarios($pagina, $cantidad_por_pagina);
+
+		if (count($listado) <= 0 && $pagina > 1)
+		{
+			Request::redirect('/admin/usuario/usuarios_medalla/'.$medalla);
+		}
+
+		// Cargo el total de usuarios.
+		$total = $model_medalla->cantidad_usuarios();
+
+		// Paginación.
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/usuario/usuarios_medalla/'.$medalla.'/%s/'));
+
+		// Obtenemos datos de los usuarios.
+		foreach ($listado as $k => $v)
+		{
+			$listado[$k] = $v->as_array();
+		}
+
+		// Seteamos listado de usuarios.
+		$vista->assign('usuarios', $listado);
+		unset($listado);
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Borramos una medalla.
+	 * @param int $id ID de la medalla a borrar.
+	 */
+	public function action_borrar_medalla($id)
+	{
+		// Cargamos el modelo de la medalla.
+		$model_medalla = new Model_Medalla( (int) $id);
+
+		// Verificamos exista.
+		if ($model_medalla->existe())
+		{
+			//TODO: Enviar sucesos a los usuarios.
+
+			// Borramos la medalla.
+			$model_medalla->borrar();
+			$_SESSION['flash_success'] = 'Se borró correctamente la medalla.';
+		}
+		Request::redirect('/admin/usuario/medallas');
 	}
 }

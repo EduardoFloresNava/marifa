@@ -175,7 +175,7 @@ class Base_Controller_Moderar_Home extends Controller {
 	{
 		// Cargamos la portada.
 		$portada = View::factory('moderar/home/index');
-		
+
 		// Listado de sucesos de moderacion.
 		//TODO: IMPLEMENTAR.
 		$portada->assign('sucesos', array());
@@ -221,7 +221,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		// Listado de contenido desaprobado.
 		$rst = Database::get_instance()->query('SELECT * FROM ( SELECT \'post\' as type, id, fecha from post WHERE estado = 3 UNION SELECT \'post_comentario\' as type, id, fecha from post_comentario WHERE estado = 1 UNION SELECT \'foto_comentario\' as type, id, fecha from foto_comentario WHERE estado = 1 ) as A ORDER BY fecha DESC LIMIT 10');
 		$rst->set_fetch_type(Database_Query::FETCH_ASSOC);
-		
+
 		$lista = array();
 		foreach ($rst as $v)
 		{

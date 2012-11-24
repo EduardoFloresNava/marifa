@@ -104,6 +104,7 @@ class Base_Controller_Post extends Controller {
 			if (Usuario::$usuario_id != $model_post->as_object()->usuario_id)
 			{
 				$model_post->agregar_vista();
+				$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_VISITAS);
 			}
 
 			// Mi id.
@@ -550,6 +551,9 @@ class Base_Controller_Post extends Controller {
 				// Creo la denuncia.
 				$id = $model_post->denunciar(Usuario::$usuario_id, $motivo, $comentario);
 
+				// Actualizo las medallas.
+				$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_DENUNCIAS);
+
 				$model_suceso = new Model_Suceso;
 				if (Usuario::$usuario_id != $model_post->usuario_id)
 				{
@@ -653,6 +657,10 @@ class Base_Controller_Post extends Controller {
 				// Verifico actualización del rango.
 				Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
 
+				// Verifico actualización de medallas.
+				Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_POSTS);
+				$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_COMENTARIOS);
+
 				$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
 
 				Request::redirect('/post/index/'.$post);
@@ -664,7 +672,7 @@ class Base_Controller_Post extends Controller {
 				// Evitamos la salida de la vista actual.
 				$this->template = NULL;
 
-				Dispatcher::call('/post/index/'.$post, TRUE);
+				//Dispatcher::call('/post/index/'.$post, TRUE);
 			}
 		}
 	}
@@ -718,6 +726,9 @@ class Base_Controller_Post extends Controller {
 
 		// Agrego el post a favoritos.
 		$model_post->favorito(Usuario::$usuario_id);
+
+		// Verifico medallas.
+		$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_FAVORITOS);
 
 		// Creo el suceso.
 		$model_suceso = new Model_Suceso;
@@ -1138,6 +1149,10 @@ class Base_Controller_Post extends Controller {
 
 			// Sigo al usuario.
 			$model_usuario->seguir(Usuario::$usuario_id);
+
+			// Actualizo medallas.
+			$model_usuario->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_SEGUIDORES);
+			Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_SIGUIENDO);
 		}
 		else
 		{
@@ -1218,6 +1233,9 @@ class Base_Controller_Post extends Controller {
 		}
 
 		$model_post->seguir(Usuario::$usuario_id);
+
+		// Actualizo medallas.
+		$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_SEGUIDORES);
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
@@ -1499,6 +1517,12 @@ class Base_Controller_Post extends Controller {
 		// Actualizo el estado.
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_RECHAZADO);
 
+		// Verifico actualización del rango.
+		$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+		// Verifico actualización medallas.
+		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id != $model_post->usuario_id)
@@ -1703,6 +1727,12 @@ class Base_Controller_Post extends Controller {
 			$model_post->actualizar_fecha();
 		}
 
+		// Verifico actualización del rango.
+		$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+		// Verifico actualización medallas.
+		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
 
 		// Enviamos el suceso.
@@ -1790,6 +1820,10 @@ class Base_Controller_Post extends Controller {
 
 		// Verifico actualización del rango.
 		$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_PUNTOS);
+
+		// Verifico actualización medallas.
+		$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_PUNTOS);
+		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_PUNTOS);
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
@@ -1986,6 +2020,9 @@ class Base_Controller_Post extends Controller {
 
 					// Verifico actualización del rango.
 					Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
 
 					// Informo y voy a post.
 					$_SESSION['flash_success'] = 'El post fue creado correctamente.';

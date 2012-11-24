@@ -1,6 +1,6 @@
 <?php
 /**
- * 0.1RC5.php is part of Marifa.
+ * 0.2RC1.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
  *
  * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
- * @since		Versión 0.1
+ * @since		Versión 0.2RC1
  * @filesource
  * @package		Marifa\Installer\Update
  */
@@ -46,7 +46,7 @@ $consultas = array();
 $consultas[] = array(
 	'Versión actual',
 	array(
-		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', '0.1RC5', '0.1RC5'), array('error_no' => 1062))
+		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', '0.2RC1', '0.2RC1'), array('error_no' => 1062))
 	)
 );
 
@@ -81,11 +81,42 @@ $consultas[] = array(
 	)
 );
 
-
+/**
+ * Solucionamos problema del orden de los rangos.
+ */
 $consultas[] = array(
 	'Orden rangos',
 	array(
 		array('ALTER', 'ALTER TABLE usuario_rango DROP INDEX orden', NULL, array('error_no' => 1060))
+	)
+);
+
+// Tabla de medallas.
+$consultas[] = array(
+	'Tabla de medallas',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE  `usuario_medalla` (
+				`usuario_id` int(11) NOT NULL,
+				`medalla_id` int(11) NOT NULL,
+				`objeto_id` int(11) NULL DEFAULT NULL,
+				`fecha` datetime NOT NULL,
+				PRIMARY KEY (`usuario_id`,`medalla_id`),
+				KEY `medalla_id` (`medalla_id`)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050),
+			'ALTER', 'CREATE TABLE  `medalla` (
+				`id` int(11) NOT NULL AUTO_INCREMENT,
+				`nombre` varchar(250) NOT NULL,
+				`descripcion` text NOT NULL,
+				`imagen` varchar(200) NOT NULL,
+				`tipo` int(11) NOT NULL,
+				`condicion` int(11) NOT NULL,
+				`cantidad` int(11) NOT NULL,
+				PRIMARY KEY (`id`),
+				UNIQUE KEY `nombre` (`nombre`),
+				UNIQUE KEY `tipo` (`tipo`, `condicion`, `cantidad`)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+		)
 	)
 );
 

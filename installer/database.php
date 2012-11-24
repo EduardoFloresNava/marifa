@@ -107,7 +107,7 @@ $consultas[] = array(
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('elementos_pagina', 20, 20), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('ip_mantenimiento', serialize(array()), serialize(array())), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('rango_defecto', 3, 3), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', '0.1RC5', '0.1RC5'), array('error_no' => 1062))
+		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', '0.2RC1', '0.2RC1'), array('error_no' => 1062))
 	)
 );
 
@@ -739,6 +739,35 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`usuario_id`,`visitado_id`,`fecha`),
 				KEY `visitado_id` (`visitado_id`)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Tabla de medallas.
+$consultas[] = array(
+	'Tabla de medallas',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE  `usuario_medalla` (
+				`usuario_id` int(11) NOT NULL,
+				`medalla_id` int(11) NOT NULL,
+				`objeto_id` int(11) NULL DEFAULT NULL,
+				`fecha` datetime NOT NULL,
+				PRIMARY KEY (`usuario_id`,`medalla_id`),
+				KEY `medalla_id` (`medalla_id`)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050),
+			'ALTER', 'CREATE TABLE  `medalla` (
+				`id` int(11) NOT NULL AUTO_INCREMENT,
+				`nombre` varchar(250) NOT NULL,
+				`descripcion` text NOT NULL,
+				`imagen` varchar(200) NOT NULL,
+				`tipo` int(11) NOT NULL,
+				`condicion` int(11) NOT NULL,
+				`cantidad` int(11) NOT NULL,
+				PRIMARY KEY (`id`),
+				UNIQUE KEY `nombre` (`nombre`),
+				UNIQUE KEY `tipo` (`tipo`, `condicion`, `cantidad`)
 			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
