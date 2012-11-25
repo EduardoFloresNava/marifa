@@ -208,6 +208,9 @@
  * * **bloquedo_id**: ID del usuario que es bloqueado/desbloqueado.
  * * **tipo**: Tipo de acción: 0 bloquea, 1 desbloquea.
 
+ * **usuario_nueva_medalla** (*medalla_id*): El usuario gana una medalla.
+ * * **medalla_id** ID de la medalla del usuario.
+
 ### Denuncias a usuarios:
 
  * **usuario_denuncia_crear** (*denuncia_id*): Se denuncia un usuario. Implica la creación que luego debe ser verificada por un moderador/administrador para tomar una acción.

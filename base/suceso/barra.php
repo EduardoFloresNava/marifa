@@ -700,4 +700,20 @@ class Base_Suceso_Barra extends Suceso {
  * * **usuario_id**: ID del usuario que rechaza la denuncia.
  */
 
+	/**
+	 * Suceso producido cuando un usuario gana una medalla.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_nueva_medalla($suceso)
+	{
+		// Cargo usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['usuario_id']);
+
+		// Cargo medalla.
+		$model_medalla = new Model_Medalla( (int) $suceso['objeto_id']);
+
+		return array('usuario' => $model_usuario->as_array(), 'medalla' => $model_medalla->as_array());
+	}
+
 }

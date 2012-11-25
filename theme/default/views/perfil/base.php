@@ -11,7 +11,7 @@
 		{if="count($medallas) > 0"}
 		<div class="medallas">
 		{loop="$medallas"}
-			<a href="" rel="tooltip" title="{$value.medalla.nombre}"><img src="{#THEME_URL#}/assets/img/medallas/{$value.medalla.imagen}" alt="{$value.medalla.nombre}"></a></a>
+			<a href="" rel="tooltip" title="{$value.medalla.nombre}"><img src="{#THEME_URL#}/assets/img/medallas/{$value.medalla.imagen}" alt="{$value.medalla.nombre}" /></a>
 		{/loop}
 		</div>
 		{/if}
