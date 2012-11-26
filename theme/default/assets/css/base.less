@@ -656,6 +656,10 @@ ul.dropdown-menu {
                 vertical-align: middle;
             }
 
+            .informacion a {
+                font-weight: bold;
+            }
+
             .btn-toolbar {
                 margin: 0;
                 line-height: 0;
@@ -665,6 +669,21 @@ ul.dropdown-menu {
 
         .comentario-body {
             padding: 10px;
+        }
+    }
+
+    &.highlight {
+        .comentario-data {
+            border-color: #63D0E5;
+
+            .head {
+                border-color: #BCE8F1;
+                background: #D9EDF7;
+
+                a {
+                    color: #3A87AD;
+                }
+            }
         }
     }
 }
@@ -836,4 +855,14 @@ h1.title, h2.title, h3.title {
         margin: 2px 0;
         padding: 2px 0;
     }
+}
+
+#markItUpComentario .preview {
+    background: #F5F5F5;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    min-height: 1em;
+    padding: 5px;
 }

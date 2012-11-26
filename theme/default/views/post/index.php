@@ -103,7 +103,7 @@
 		<div class="row-fluid comentarios">
 			<div class="span12">
 				{loop="$comentarios"}
-				<div class="row-fluid comentario">
+				<div class="row-fluid comentario" id="c-{$value.id}">
 					<div class="span1">
 						<img class="thumbnail" src="{function="Utils::get_gravatar($value.usuario.email, 48, 48)"}" />
 					</div>
@@ -124,7 +124,7 @@
 								</div>
 								{/if}
 								<div class="btn-group">
-									<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}"><i class="icon icon-comment"></i></a>
+									<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}" data-comment="p{$value.id}"><i class="icon icon-comment"></i></a>
 									{if="($me == $value.usuario.id || $comentario_editar) && $value.estado != 2"}<a href="/post/editar_comentario/{$value.id}" class="btn btn-mini btn-primary" rel="tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
 									{if="($me == $value.usuario.id || $comentario_ocultar) && $value.estado == 0"}<a href="/post/ocultar_comentario/{$value.id}/0" class="btn btn-mini btn-inverse" rel="tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
 									{if="$value.estado == 1 && $comentario_ocultar"}<a href="/post/ocultar_comentario/{$value.id}/1" class="btn btn-mini btn-info" rel="tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{/if}
@@ -206,7 +206,7 @@
 					<div class="alert">
 						<strong>&iexcl;Error!</strong> {$comentario_error}
 					</div>{/if}
-					<textarea name="comentario" id="comentario" class="span12" placeholder="Comentario...">{if="isset($comentario_content)"}{$comentario_content}{/if}</textarea>
+					<textarea name="comentario" data-preview="/post/preview/" id="comentario" class="span12" placeholder="Comentario...">{if="isset($comentario_content)"}{$comentario_content}{/if}</textarea>
 				</form>
 				{else}
 					{if="$podemos_comentar"}

@@ -716,4 +716,27 @@ class Base_Suceso_Barra extends Suceso {
 		return array('usuario' => $model_usuario->as_array(), 'medalla' => $model_medalla->as_array());
 	}
 
+	/**
+	 * Suceso producido cuando se realiza una cita de un comentario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_comentario_citado($suceso)
+	{
+		// Cargo usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		// Cargo comentario.
+		if ($suceso['objeto_id2'] == 1)
+		{
+			$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
+		}
+		else
+		{
+			$model_comentario = new Model_Foto_Comentario( (int) $suceso['objeto_id']);
+		}
+
+		return array('usuario' => $model_usuario->as_array(), 'comentario' => $model_comentario->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array());
+	}
+
 }

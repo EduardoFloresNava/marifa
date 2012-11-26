@@ -654,6 +654,9 @@ class Base_Controller_Foto extends Controller {
 			// Insertamos el comentario.
 			$id = $model_foto->comentar(Usuario::$usuario_id, $comentario);
 
+			// Envio sucesos de citas.
+			Decoda::procesar($comentario, FALSE);
+
 			// Verifico actualización del rango.
 			Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
 

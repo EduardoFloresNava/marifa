@@ -4,7 +4,7 @@
     $('.bbcode-bar .btn').tooltip({placement: 'top'});
 
     /* INICIAMOS CON LAS CONFIGURACIONES */
-    $('.bbcode-bar + textarea').markItUp({ previewParserPath: '', onShiftEnter: { keepDefault: false, openWith:'\n\n'}, markupSet:[] });
+    $('.bbcode-bar + textarea').markItUp({ previewParserPath: '/usuario/index.php', previewPosition: 'after', previewAutoRefresh: true , onShiftEnter: { keepDefault: false, openWith:'\n\n'}, markupSet:[] });
 
     /* LISTADO ETIQUETAS */
     $('.bbcode-bar .btn-bold').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Bold', key: 'B', openWith:'[b]', closeWith: '[/b]'}); });
@@ -35,18 +35,90 @@
     $('.bbcode-bar .btn-quote').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Quote', openWith: '[quote]', closeWith: '[/quote]'}); });
     $('.bbcode-bar .btn-code').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Code', openWith: '[code]', closeWith: '[/code]'}); });
 
+    //TODO: Hacer andar.
+    //$('.bbcode-bar .btn-preview').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), className: 'Preview', call: 'preview' }); });
+
+    /* VISTA PRELIMINAR */
+    $('.bbcode-bar .btn-preview').click(function (e){
+        e.preventDefault();
+        // Desactivo el boton.
+        $(this).attr('disabled','disabled');
+
+        // Borro alertas anteriores.
+        $(this).closest('.span12').find('.alert').remove();
+
+        // Seteo cargando.
+        if ($(this).closest('.bbcode-bar').parent().find('textarea').next().is('div.preview'))
+        {
+            $(this).closest('.bbcode-bar').parent().find('textarea').next().html('Cargando...');
+        }
+
+        // Realizo la llamada.
+        $.ajax({
+            url: $(this).closest('.bbcode-bar').parent().find('textarea').attr('data-preview'),
+            context: $(this),
+            dataType: 'html',
+            data: { 'contenido': $(this).closest('.bbcode-bar').parent().find('textarea').val() },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $(this).closest('form').prepend('<div class="alert alert-danger">&iexcl;Error! Error al conectar al servidor: "'+textStatus+'"</div>');
+                $(this).removeAttr('disabled');
+            },
+            success: function (data, textStatus, jqXHR) {
+                // Textarea.
+                var textarea = $(this).closest('.bbcode-bar').parent().find('textarea');
+
+                // Creo donde mostrar el contenido.
+                if ( ! $(textarea).next().is('div.preview'))
+                {
+                    $(textarea).after('<div class="preview"></div>');
+                }
+
+                // Asigno el contenido.
+                $(textarea).next().html(data);
+
+                console.log(textStatus);
+                /**if (data[0] == 'success')
+                {
+                    $("#revisiones").html(data[2]);
+                    show_revision_message('success', data[1]);
+                }
+                else
+                {
+                    if (data[1])
+                    {
+                        show_revision_message('error', data[1]);
+                    }
+                    else
+                    {
+                        show_revision_message('error', 'Error enviando el comentario');
+                    }
+                }*/
+                $(this).removeAttr('disabled');
+            },
+            type: 'POST'
+        });
+    });
+
     /* CITAR COMENTARIOS DE OTROS USUARIOS */
     $('.btn-quote-comment').click(function (e) {
         e.preventDefault();
 
         var attr = $(this).attr('data-user'),
+            comment = $(this).attr('data-comment'),
             contenido = $('.comentario-body', $(this).closest('.comentario')).text();
 
         if (contenido)
         {
             if (attr)
             {
-                $.markItUp({openWith: '[quote="'+attr+'"]'+contenido+'[/quote]'});
+                if (comment)
+                {
+                    $.markItUp({openWith: '[quote="'+attr+'" comment="'+comment+'"]'+contenido+'[/quote]'});
+                }
+                else
+                {
+                    $.markItUp({openWith: '[quote="'+attr+'"]'+contenido+'[/quote]'});
+                }
             }
             else
             {

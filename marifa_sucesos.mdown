@@ -211,6 +211,11 @@
  * **usuario_nueva_medalla** (*medalla_id*): El usuario gana una medalla.
  * * **medalla_id** ID de la medalla del usuario.
 
+ * **usuario_comentario_citado** (*comentario_id*, *usuario_id*, *tipo*): *usuario_id* cita el comentario *comentario_id*.
+ * * **comentario_id**: ID del comentario que se cita.
+ * * **usuario_id**: ID del usuario que cita al comentario.
+ * * **tipo**: 0 Post, 1 Foto.
+
 ### Denuncias a usuarios:
 
  * **usuario_denuncia_crear** (*denuncia_id*): Se denuncia un usuario. Implica la creación que luego debe ser verificada por un moderador/administrador para tomar una acción.

@@ -80,3 +80,10 @@
         e.preventDefault();
     });
 } (jQuery));
+
+(function ($) {
+    if (/#c\-[0-9]+/.test(window.location.hash))
+    {
+        $(window.location.hash).addClass('highlight');
+    }
+} (jQuery));
