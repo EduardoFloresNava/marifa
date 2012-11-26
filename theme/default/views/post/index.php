@@ -142,7 +142,7 @@
 		<div class="row-fluid">
 			<div class="span12">
 				{if="$me != NULL && $podemos_comentar"}
-				<form action="/post/comentar/{$post.id}" method="POST">
+				<form action="/post/comentar/{$post.id}" method="POST" class="comentar">
 					<div class="btn-toolbar bbcode-bar">
 						<div class="btn-group">
 							<a href="#" title="Negrita" class="btn-bold btn btn-small"><i class="icon-bold"></i></a>

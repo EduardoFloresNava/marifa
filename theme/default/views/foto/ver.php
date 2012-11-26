@@ -114,7 +114,7 @@
 			</div>
 		</div>
 		{if="$me != NULL && $puedo_comentar"}
-		<form method="POST" action="/foto/comentar/{$foto.id}">
+		<form method="POST" action="/foto/comentar/{$foto.id}" class="comentar">
 			<div class="btn-toolbar bbcode-bar">
 				<div class="btn-group">
 					<a href="#" title="Negrita" class="btn-bold btn btn-small"><i class="icon-bold"></i></a>
@@ -178,7 +178,7 @@
 			<div class="alert alert-danger">
 				<strong>{@&iexcl;Error!@}</strong> {$comentario_error}
 			</div>{/if}
-			<textarea class="span10" name="comentario" id="comentario" placeholder="Comentario...">{$comentario_content}</textarea>
+			<textarea class="span10" name="comentario" data-preview="/foto/preview/" id="comentario" placeholder="Comentario...">{$comentario_content}</textarea>
 		</form>
 		{else}
 			{if="$puedo_comentar"}

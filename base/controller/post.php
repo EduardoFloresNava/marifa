@@ -2048,11 +2048,8 @@ class Base_Controller_Post extends Controller {
 	 */
 	public function action_preview()
 	{
-		// Obtengo el contenido.
-		$contenido = isset($_POST['contenido']) ? $_POST['contenido'] : '';
-
-		// Evitamos XSS.
-		$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
 
 		// Evito salida por template.
 		$this->template = NULL;

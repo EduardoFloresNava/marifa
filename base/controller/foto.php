@@ -1580,4 +1580,19 @@ class Base_Controller_Foto extends Controller {
 		Request::redirect('/foto/ver/'.$foto);
 	}
 
+	/**
+	 * Vista preliminar de un comentario.
+	 */
+	public function action_preview()
+	{
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Proceso contenido.
+		die(Decoda::procesar($contenido));
+	}
+
 }
