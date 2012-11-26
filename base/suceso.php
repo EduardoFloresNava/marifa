@@ -106,7 +106,7 @@ class Base_Suceso {
 		$class = substr($class, 5);
 
 		// ID de la cache del suceso.
-		$cache_id = 'suceso_data.'.$informacion['id'].'-'.Usuario::$usuario_id;
+		$cache_id = 'suceso_data.'.strtolower($class).'.'.$informacion['id'].'-'.Usuario::$usuario_id;
 
 		// Obtenemos elemento a partir de la cache.
 		$data = Cache::get_instance()->get($cache_id);
