@@ -710,7 +710,7 @@ class Base_Model_Usuario extends Model_Dataset {
 
 		if ($pagina >= 0)
 		{
-			$limit = 'LIMIT '.$start.','.$cantidad;
+			$limit = ' LIMIT '.$start.','.$cantidad;
 		}
 		else
 		{
