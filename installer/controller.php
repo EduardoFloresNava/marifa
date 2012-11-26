@@ -757,6 +757,24 @@ class Installer_Controller {
 				$vista->assign('error_cpassword', 'Las contraseñas ingresadas no coinciden.');
 			}
 
+			// Verifico no exista correo.
+			if ( ! $error)
+			{
+				// Cargo el modelo.
+				$model_usuario = new Model_Usuario;
+
+				// Verifico tenga ese email.
+				$model_usuario->load_by_nick($usuario);
+				if ($model_usuario->existe() && $model_usuario->email !== $email)
+				{
+					if ($model_usuario->existe(array('email' => $email)))
+					{
+						$error = TRUE;
+						$vista->assign('error_email', 'Ya existe un usuario con ese correo, introduce otro.');
+					}
+				}
+			}
+
 			// Actualizo los valores.
 			if ( ! $error)
 			{
