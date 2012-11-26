@@ -781,14 +781,6 @@ $consultas[] = array(
 	'Tabla de medallas',
 	array(
 		array(
-			'ALTER', 'CREATE TABLE  `usuario_medalla` (
-				`usuario_id` int(11) NOT NULL,
-				`medalla_id` int(11) NOT NULL,
-				`objeto_id` int(11) NULL DEFAULT NULL,
-				`fecha` datetime NOT NULL,
-				PRIMARY KEY (`usuario_id`,`medalla_id`),
-				KEY `medalla_id` (`medalla_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050),
 			'ALTER', 'CREATE TABLE  `medalla` (
 				`id` int(11) NOT NULL AUTO_INCREMENT,
 				`nombre` varchar(250) NOT NULL,
@@ -800,6 +792,23 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				UNIQUE KEY `nombre` (`nombre`),
 				UNIQUE KEY `tipo` (`tipo`, `condicion`, `cantidad`)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Tabla de medallas de usuarios.
+$consultas[] = array(
+	'Tabla de medallas',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE  `usuario_medalla` (
+				`usuario_id` int(11) NOT NULL,
+				`medalla_id` int(11) NOT NULL,
+				`objeto_id` int(11) NULL DEFAULT NULL,
+				`fecha` datetime NOT NULL,
+				PRIMARY KEY (`usuario_id`,`medalla_id`),
+				KEY `medalla_id` (`medalla_id`)
 			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
