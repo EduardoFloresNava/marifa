@@ -40,9 +40,7 @@ $consultas = array();
  *        error_no: Si el número de error coincide, se toma como correcta.
  */
 
-/**
- * Categorias con sus valores.
- */
+// Versión instalada para actualizador.
 $consultas[] = array(
 	'Versión actual',
 	array(
@@ -50,9 +48,7 @@ $consultas[] = array(
 	)
 );
 
-/**
- * Categorias con sus valores.
- */
+// Categorias con sus valores.
 $consultas[] = array(
 	'Opciones faltantes a los rangos',
 	array(
@@ -60,13 +56,11 @@ $consultas[] = array(
 		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `puntos_dar` INT NOT NULL DEFAULT 10;', NULL, array('error_no' => 1060)),
 		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `tipo` INT NOT NULL DEFAULT 0;', NULL, array('error_no' => 1060)),
 		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `cantidad` INT NULL DEFAULT NULL;', NULL, array('error_no' => 1060)),
-		array('ALTER', 'ALTER TABLE `usuario` DROP `puntos_disponibles`;', NULL, array('error_no' => 1060))
+		array('ALTER', 'ALTER TABLE `usuario` DROP `puntos_disponibles`;', NULL, array('error_no' => 1091))
 	)
 );
 
-/**
- * Indices faltantes.
- */
+// Indices faltantes.
 $consultas[] = array(
 	'Indices faltantes para mejorar integridad',
 	array(
@@ -77,17 +71,14 @@ $consultas[] = array(
 		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `puntos_dar` INT NOT NULL DEFAULT 10;', NULL, array('error_no' => 1060)),
 		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `tipo` INT NOT NULL DEFAULT 0;', NULL, array('error_no' => 1060)),
 		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `cantidad` INT NULL DEFAULT NULL;', NULL, array('error_no' => 1060)),
-		array('ALTER', 'ALTER TABLE `usuario` DROP `puntos_disponibles`;', NULL, array('error_no' => 1060))
 	)
 );
 
-/**
- * Solucionamos problema del orden de los rangos.
- */
+// Solucionamos problema del orden de los rangos.
 $consultas[] = array(
 	'Orden rangos',
 	array(
-		array('ALTER', 'ALTER TABLE usuario_rango DROP INDEX orden', NULL, array('error_no' => 1060))
+		array('ALTER', 'ALTER TABLE usuario_rango DROP INDEX orden', NULL, array('error_no' => 1091))
 	)
 );
 
