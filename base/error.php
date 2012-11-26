@@ -147,7 +147,7 @@ class Base_Error {
 		{
 			return;
 		}
-		
+
 		// OBTENEMOS EL STACK.
 		$ec = (is_array($errcontext)) ? ((count($errcontext) > 0) ? $errcontext : debug_backtrace()) : debug_backtrace();
 		// CADENA QUE REPRESENTA EL NUMERO DE ERROR
@@ -360,6 +360,12 @@ class Base_Error {
 
 			// Agregamos la descripción del error.
 			$view->assign('descripcion', $description);
+		}
+
+		// Cabeceras de error.
+		if ($number == 404 || $number == 500)
+		{
+			 header(':', TRUE, $number);
 		}
 
 		// Cargo template.
