@@ -157,20 +157,27 @@ class Base_Controller_Home extends Controller {
 		unset($post_top_list, $model_post);
 
 		// Cargamos últimos comentarios.
-		$comentario_list = Model_Post_Comentario::obtener_ultimos();
+		$m_comentarios = new Model_Comentario;
+		$comentario_list = $m_comentarios->listado(1);
 
 		// Extendemos la información de los comentarios.
 		foreach ($comentario_list as $k => $v)
 		{
 			$a = $v->as_array();
 			$a['usuario'] = $v->usuario()->as_array();
-			$a['post'] = $v->post()->as_array();
-
+			if ($v instanceof Model_Foto_Comentario)
+			{
+				$a['foto'] = $v->foto()->as_array();
+			}
+			else
+			{
+				$a['post'] = $v->post()->as_array();
+			}
 			$comentario_list[$k] = $a;
 		}
 
 		$portada->assign('ultimos_comentarios', $comentario_list);
-		unset($comentario_list);
+		unset($comentario_list, $m_comentarios);
 
 		// Cargamos top usuarios.
 		$model_usuario = new Model_Usuario;

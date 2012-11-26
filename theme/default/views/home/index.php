@@ -76,7 +76,11 @@
 			<ol>
 			{loop="$ultimos_comentarios"}
 				<li>
-					<b><a href="/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="/post/index/{$value.post.id}">{$value.post.titulo}</a>
+					{if="isset($value.post)"}
+					<b><a href="/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="/post/index/{$value.post.id}/#c-{$value.id}">{$value.post.titulo}</a>
+					{else}
+					<b><a href="/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="/foto/ver/{$value.foto.id}/#c-{$value.id}">{$value.foto.titulo}</a>
+					{/if}
 				</li>
 			{/loop}
 			</ol>
