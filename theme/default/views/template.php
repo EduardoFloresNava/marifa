@@ -59,6 +59,7 @@
             </div>
         </div>
         <div class="container">
+			{if="isset($noticia)"}<div class="alert alert-info">{$noticia}<a class="close" data-dismiss="alert">×</a></div>{/if}
 			{if="isset($top_bar)"}
 			<ul class="nav nav-tabs">
 				{loop="top_bar"}
@@ -68,7 +69,6 @@
 				{/loop}
 			</ul>
 			{/if}
-			{if="isset($noticia)"}<div class="alert alert-info">{$noticia}<a class="close" data-dismiss="alert">×</a></div>{/if}
 			{if="isset($is_locked) && $is_locked"}<div class="alert alert-info"><b>&iexcl;Importante!</b> El sitio se encuentra en modo mantenimiento, no todos los usuarios pueden acceder a el sitio.<a class="close" data-dismiss="alert">×</a></div>{/if}
 			{if="isset($flash_success)"}<div class="alert alert-success"><a class="close" data-dismiss="alert">×</a>{$flash_success}</div>{/if}
 			{if="isset($flash_error)"}<div class="alert"><a class="close" data-dismiss="alert">×</a>{$flash_error}</div>{/if}

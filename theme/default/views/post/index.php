@@ -22,12 +22,12 @@
 	<div class="span10 contenido">
 		<div class="cabecera">
 			<div class="lineal btn-group">
-				<a href="#" class="btn btn-mini"><i class="icon icon-chevron-left"></i></a>
-				<a href="#" class="btn btn-mini"><i class="icon icon-chevron-right"></i></a>
+				<a href="/post/index/{$post_anterior}" class="btn btn-mini"><i class="icon icon-chevron-left"></i></a>
+				<a href="/post/index/{$post_siguiente}" class="btn btn-mini"><i class="icon icon-chevron-right"></i></a>
 			</div>
 			<h2 class="title">{$post.titulo}</h2>
 			<div class="aleatorio">
-				<a href="#" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
+				<a href="/post/index/{$post_aleatorio}" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
 			</div>
 		</div>
 		<div class="contenido-post">{$post.contenido}</div>

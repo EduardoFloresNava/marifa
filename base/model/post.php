@@ -1335,4 +1335,60 @@ class Base_Model_Post extends Model_Dataset {
 	{
 		return $this->db->delete('DELETE FROM post_favorito WHERE post_id = ? AND usuario_id = ?', array($this->primary_key['id'], $usuario_id));
 	}
+
+	/**
+	 * Obtengo el post anterior al actual.
+	 * @return Model_Post
+	 */
+	public function anterior()
+	{
+		$id = $this->db->query('SELECT id FROM post WHERE fecha < ? AND estado = 0 ORDER BY fecha DESC LIMIT 1', $this->fecha->format('Y/m/d H:i:s'))->get_var(Database_Query::FIELD_INT);
+
+		if ($id !== NULL)
+		{
+			return new Model_Post($id);
+		}
+		else
+		{
+			return $this;
+		}
+	}
+
+	/**
+	 * Obtengo el post siguiente al actual.
+	 * @return Model_Post
+	 */
+	public function siguiente()
+	{
+		$id = $this->db->query('SELECT id FROM post WHERE fecha > ? AND estado = 0 ORDER BY fecha ASC LIMIT 1', $this->fecha->format('Y/m/d H:i:s'))->get_var(Database_Query::FIELD_INT);
+
+		if ($id !== NULL)
+		{
+			return new Model_Post($id);
+		}
+		else
+		{
+			return $this;
+		}
+	}
+
+	/**
+	 * Obtengo un post aleatorio.
+	 * @return Model_Post
+	 */
+	public function aleatorio()
+	{
+		$pos = rand(0, $this->cantidad(Model_Post::ESTADO_ACTIVO) - 1);
+
+		$id = $this->db->query('SELECT id FROM post WHERE estado = 0 LIMIT '.$pos.',1')->get_var(Database_Query::FIELD_INT);
+
+		if ($id !== NULL)
+		{
+			return new Model_Post($id);
+		}
+		else
+		{
+			return $this;
+		}
+	}
 }

@@ -100,6 +100,11 @@ class Base_Controller_Post extends Controller {
 			// Cargamos la vista.
 			$view = View::factory('post/index');
 
+			// Obtengo el post siguiente, el anterior y uno aleatorio.
+			$view->assign('post_anterior', $model_post->anterior()->id);
+			$view->assign('post_siguiente', $model_post->siguiente()->id);
+			$view->assign('post_aleatorio', $model_post->aleatorio()->id);
+
 			// Verifico si debo contabilizar la visita.
 			if (Usuario::$usuario_id != $model_post->as_object()->usuario_id)
 			{
