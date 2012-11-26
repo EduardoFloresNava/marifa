@@ -589,9 +589,13 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
 		),
-		array('INSERT', 'INSERT INTO usuario_rango (id, nombre, color, imagen, orden) VALUES (1, \'Administrador\', 10168064, \'Admin2.png\', 1)', NULL, array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO usuario_rango (id, nombre, color, imagen, orden) VALUES (2, \'Moderador\', 65509, \'moderador.gif\', 2)', NULL, array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO usuario_rango (id, nombre, color, imagen, orden) VALUES (3, \'Usuario\', 10168064, \'user.png\', 3)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO `usuario_rango` (`id`, `nombre`, `color`, `imagen`, `orden`, `puntos`, `tipo`, `cantidad`, `puntos_dar`) VALUES (1, \'Administrador\', 14025483, \'rosette.png\', 1, 50, 0, NULL, 20);', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO `usuario_rango` (`id`, `nombre`, `color`, `imagen`, `orden`, `puntos`, `tipo`, `cantidad`, `puntos_dar`) VALUES (2, \'Moderador\', 16750848, \'shield.png\', 2, 30, 0, NULL, 10);', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO `usuario_rango` (`id`, `nombre`, `color`, `imagen`, `orden`, `puntos`, `tipo`, `cantidad`, `puntos_dar`) VALUES (3, \'Novato\', 1513239, \'novato.gif\', 7, 5, 0, NULL, 5);', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO `usuario_rango` (`id`, `nombre`, `color`, `imagen`, `orden`, `puntos`, `tipo`, `cantidad`, `puntos_dar`) VALUES (4, \'Great User\', 106529, \'star_gold_3.png\', 3, 15, 0, NULL, 11);', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO `usuario_rango` (`id`, `nombre`, `color`, `imagen`, `orden`, `puntos`, `tipo`, `cantidad`, `puntos_dar`) VALUES (5, \'New Full User\', 104679, \'star_bronze_3.png\', 4, 10, 1, 5, 10);', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO `usuario_rango` (`id`, `nombre`, `color`, `imagen`, `orden`, `puntos`, `tipo`, `cantidad`, `puntos_dar`) VALUES (6, \'Full User\', 52479, \'star_silver_3.png\', 5, 20, 1, 70, 20);', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO `usuario_rango` (`id`, `nombre`, `color`, `imagen`, `orden`, `puntos`, `tipo`, `cantidad`, `puntos_dar`) VALUES (7, \'Gold User\', 13395456, \'asterisk_yellow.png\', 6, 25, 1, 120, 25);', NULL, array('error_no' => 1062))
 	)
 );
 
@@ -673,7 +677,35 @@ $consultas[] = array(
 		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (3, 40)', NULL, array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (3, 41)', NULL, array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (3, 60)', NULL, array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (3, 62)', NULL, array('error_no' => 1062))
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (3, 62)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (4, 4)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (4, 20)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (4, 21)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (4, 40)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (4, 41)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (4, 60)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (4, 62)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (5, 4)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (5, 20)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (5, 21)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (5, 40)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (5, 41)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (5, 60)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (5, 62)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (6, 4)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (6, 20)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (6, 21)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (6, 40)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (6, 41)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (6, 60)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (6, 62)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (7, 4)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (7, 20)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (7, 21)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (7, 40)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (7, 41)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (7, 60)', NULL, array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (7, 62)', NULL, array('error_no' => 1062))
 	)
 );
 
