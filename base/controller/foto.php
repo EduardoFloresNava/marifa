@@ -1024,6 +1024,20 @@ class Base_Controller_Foto extends Controller {
 				$error = TRUE;
 			}
 
+			// Verifico titulo.
+			if ( ! $error)
+			{
+				// Formateamos los campos.
+				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
+
+				$model_foto = new Model_Foto;
+				if ($model_foto->existe(array('titulo' => $titulo)))
+				{
+					$view->assign('error_titulo', 'Ya existe una foto con ese título.');
+					$error = TRUE;
+				}
+			}
+
 
 			// Proceso de verificación de método de carga de la imagen.
 			if ( ! $error)
