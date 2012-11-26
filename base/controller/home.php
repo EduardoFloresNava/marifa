@@ -42,8 +42,8 @@ class Base_Controller_Home extends Controller {
 
 		// Listado de elemento OFFLINE.
 		$data['inicio'] = array('link' => '/', 'caption' => 'Inicio', 'active' => FALSE);
-		$data['buscador'] = array('link' => '/buscador', 'caption' => 'Buscador', 'active' => FALSE);
 		$data['usuarios'] = array('link' => '/home/usuarios', 'caption' => 'Usuarios', 'active' => FALSE);
+		$data['buscador'] = array('link' => '/buscador', 'caption' => 'Buscador', 'active' => FALSE);
 
 		// Listado de elementos ONLINE.
 		if (Usuario::is_login())
