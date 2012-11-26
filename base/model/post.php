@@ -1326,4 +1326,13 @@ class Base_Model_Post extends Model_Dataset {
 			return FALSE;
 		}
 	}
+
+	/**
+	 * Quitamos el post de los favoritos del usuario.
+	 * @param int $usuario_id ID del usuario.
+	 */
+	public function quitar_favoritos($usuario_id)
+	{
+		return $this->db->delete('DELETE FROM post_favorito WHERE post_id = ? AND usuario_id = ?', array($this->primary_key['id'], $usuario_id));
+	}
 }

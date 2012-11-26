@@ -596,4 +596,13 @@ class Base_Model_Foto extends Model_Dataset {
 			return FALSE;
 		}
 	}
+
+	/**
+	 * Quitamos la foto de los favoritos del usuario.
+	 * @param int $usuario_id ID del usuario.
+	 */
+	public function quitar_favoritos($usuario_id)
+	{
+		return $this->db->delete('DELETE FROM foto_favorito WHERE foto_id = ? AND usuario_id = ?', array($this->primary_key['id'], $usuario_id));
+	}
 }
