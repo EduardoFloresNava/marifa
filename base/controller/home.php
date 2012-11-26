@@ -43,6 +43,7 @@ class Base_Controller_Home extends Controller {
 		// Listado de elemento OFFLINE.
 		$data['inicio'] = array('link' => '/', 'caption' => 'Inicio', 'active' => FALSE);
 		$data['buscador'] = array('link' => '/buscador', 'caption' => 'Buscador', 'active' => FALSE);
+		$data['usuarios'] = array('link' => '/home/usuarios', 'caption' => 'Usuarios', 'active' => FALSE);
 
 		// Listado de elementos ONLINE.
 		if (Usuario::is_login())
@@ -208,6 +209,42 @@ class Base_Controller_Home extends Controller {
 		$portada->assign('cantidad_fotos', $model_foto->cantidad(Model_Foto::ESTADO_ACTIVA));
 		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
 		unset($model_foto);
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $portada->parse());
+	}
+
+	/**
+	 * Listado de usuarios del sitio.
+	 */
+	public function action_usuarios()
+	{
+		// Cargamos la portada.
+		$portada = View::factory('home/usuarios');
+
+		// Seteo el menu.
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', self::submenu('usuarios'));
+
+		// Cargamos modelo de usuarios.
+		$model_usuario = new Model_Usuario;
+
+		// Cargo usuarios.
+		$listado = $model_usuario->listado(-1);
+
+		// Listado de los online.
+		$online = Model_Session::online_list();
+
+		// Extendemos la información de los usuarios.
+		foreach ($listado as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['online'] = in_array($v->id, $online);
+			$listado[$k] = $a;
+		}
+
+		$portada->assign('usuarios', $listado);
+		unset($listado);
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());

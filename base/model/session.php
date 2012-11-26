@@ -177,6 +177,16 @@ class Base_Model_Session extends Model_Dataset {
 	}
 
 	/**
+	 * Verifico si el usuario está online
+	 * @param int $usuario ID del usuario a verificar.
+	 * @return bool Si está online
+	 */
+	public function is_online($usuario)
+	{
+		return $this->db->query('SELECT COUNT(*) FROM session WHERE usuario_id = ? AND expira >= ?', array($usuario, date('Y/m/d H:i:s')))->get_var(Database_Query::FIELD_INT) > 0;
+	}
+
+	/**
 	 * Cantidad de sessiones activas existentes.
 	 * @return int
 	 */
@@ -192,6 +202,15 @@ class Base_Model_Session extends Model_Dataset {
 	public function cantidad_usuarios()
 	{
 		return (int) $this->db->query('SELECT COUNT( DISTINCT usuario_id ) FROM session WHERE expira >= ?', date('Y/m/d H:i:s'))->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Listado de usuarios online.
+	 * @return array
+	 */
+	public static function online_list()
+	{
+		return Database::get_instance()->query('SELECT DISTINCT usuario_id  FROM session WHERE expira >= ?', array(date('Y/m/d H:i:s')))->get_pairs(Database_Query::FIELD_INT);
 	}
 
 }

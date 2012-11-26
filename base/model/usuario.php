@@ -706,8 +706,17 @@ class Base_Model_Usuario extends Model_Dataset {
 			}
 		}
 
+		if ($pagina >= 0)
+		{
+			$limit = 'LIMIT '.$start.','.$cantidad;
+		}
+		else
+		{
+			$limit = '';
+		}
+
 		$start = ($pagina - 1) * $cantidad;
-		$rst = $this->db->query('SELECT id FROM usuario'.$q.' ORDER BY registro DESC LIMIT '.$start.','.$cantidad, $params)->get_pairs(Database_Query::FIELD_INT);
+		$rst = $this->db->query('SELECT id FROM usuario'.$q.' ORDER BY registro DESC'.$limit, $params)->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
 		foreach ($rst as $v)

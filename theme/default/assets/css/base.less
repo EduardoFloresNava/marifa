@@ -866,3 +866,45 @@ h1.title, h2.title, h3.title {
     min-height: 1em;
     padding: 5px;
 }
+
+.user-wall {
+    .user {
+        float: left;
+        position: relative;
+        margin-top: -2px;
+
+        &.online {
+            border-top: 2px solid #5BB75B;
+            border-bottom: 2px solid #5BB75B;
+
+            h3 {
+                border-top: 2px solid #5BB75B;
+            }
+        }
+
+        &.offline {
+            border-top: 2px solid #DA4F49;
+            border-bottom: 2px solid #DA4F49;
+
+            h3 {
+                border-top: 2px solid #DA4F49;
+            }
+        }
+
+        &:hover {
+            h3 {
+                display: block;
+                background: rgba(0, 0, 0, 0.7);
+                text-align: center;
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                color: #FFFFFF;
+            }
+        }
+
+        h3 {
+            display: none;
+        }
+    }
+}
