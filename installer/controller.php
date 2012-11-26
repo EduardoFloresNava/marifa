@@ -672,11 +672,20 @@ class Installer_Controller {
 		$model_configuracion = new Model_Configuracion;
 
 		// Datos por defecto.
-		foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword', 'bd_password') as $v)
-		{
-			$vista->assign($v, '');
-			$vista->assign('error_'.$v, FALSE);
-		}
+		$vista->assign('nombre', $model_configuracion->get('nombre', ''));
+		$vista->assign('error_nombre', FALSE);
+		$vista->assign('descripcion', $model_configuracion->get('descripcion', ''));
+		$vista->assign('error_descripcion', FALSE);
+		$vista->assign('usuario', '');
+		$vista->assign('error_usuario', FALSE);
+		$vista->assign('email', '');
+		$vista->assign('error_email', FALSE);
+		$vista->assign('password', '');
+		$vista->assign('error_password', FALSE);
+		$vista->assign('cpassword', '');
+		$vista->assign('error_cpassword', FALSE);
+		$vista->assign('bd_password', '');
+		$vista->assign('error_bd_password', FALSE);
 
 		if (Request::method() == 'POST')
 		{
