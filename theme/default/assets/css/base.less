@@ -918,3 +918,27 @@ h1.title, h2.title, h3.title {
         }
     }
 }
+
+.pop-notification {
+    position: fixed;
+    right: 10px;
+    top: 45px;
+    background: #F5F5F5;
+    border: 1px solid #E1E1E1;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+
+    .notification {
+        border-top: none;
+        padding: 10px 15px;
+
+        a.close {
+            margin-left: 10px;
+        }
+    }
+
+    .notification ~ .notification {
+        border-top: 1px solid #E1E1E1;
+    }
+}

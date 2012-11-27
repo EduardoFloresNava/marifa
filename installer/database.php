@@ -437,6 +437,7 @@ $consultas[] = array(
 				`tipo` varchar(50) NOT NULL,
 				`notificar` BIT NOT NULL DEFAULT 0,
 				`visto` BIT NOT NULL DEFAULT 0,
+				`desplegado` BIT(1) NOT NULL DEFAULT 0,
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)

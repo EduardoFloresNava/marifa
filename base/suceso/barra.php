@@ -92,6 +92,36 @@ class Base_Suceso_Barra extends Suceso {
 	}
 
 	/**
+	 * Obtenemos el listado de sucesos sin desplegar a procesar.
+	 * @param int $usuario ID del usuario dueño de los sucesos.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de elementos por página.
+	 * @return array
+	 */
+	public static function obtener_listado_sin_desplegar($usuario, $pagina, $cantidad = 20)
+	{
+		$class = __CLASS__;
+
+		// Obtenemos la lista de sucesos que puede procesar.
+		$rc = new ReflectionClass(substr($class, 5));
+		$ms = $rc->getMethods(ReflectionMethod::IS_STATIC);
+
+		$methods = array();
+		foreach ($ms as $method)
+		{
+			if (substr($method->name, 0, 7) == 'suceso_')
+			{
+				$methods[] = substr($method->name, 7);
+			}
+		}
+		unset($rc, $ms);
+
+		// Cargamos el listado de sucesos.
+		$model_suceso = new Model_Suceso;
+		return $model_suceso->listado($usuario, $pagina, $cantidad, $methods, TRUE, FALSE, FALSE);
+	}
+
+	/**
 	 * Obtenemos los datos para visualizar un suceso.
 	 * @param array|Model_Suceso $informacion Información de un suceso.
 	 * @param string $class Clase para procesar. No debe ser pasado, solo es a fines de compatibilidad de herencias estáticas.
@@ -152,6 +182,32 @@ class Base_Suceso_Barra extends Suceso {
 		// Obtenemos la cantidad.
 		$model_suceso = new Model_Suceso;
 		return $model_suceso->cantidad($usuario, $methods, TRUE);
+	}
+
+	/**
+	 * Obtenemos la cantidad de sucesos que hay sin ser desplegados.
+	 * @param int $usuario ID del usuario dueño de los posts.
+	 * @param string $class Nombre de la clase. No debe ser pasado, solo es a fines de compatibilidad de herencias estáticas.
+	 */
+	public static function cantidad_sin_desplegar($usuario, $class = __CLASS__)
+	{
+		// Obtenemos la lista de sucesos que puede procesar.
+		$rc = new ReflectionClass(substr($class, 5));
+		$ms = $rc->getMethods(ReflectionMethod::IS_STATIC);
+
+		$methods = array();
+		foreach ($ms as $method)
+		{
+			if (substr($method->name, 0, 7) == 'suceso_')
+			{
+				$methods[] = substr($method->name, 7);
+			}
+		}
+		unset($rc, $ms);
+
+		// Obtenemos la cantidad.
+		$model_suceso = new Model_Suceso;
+		return $model_suceso->cantidad($usuario, $methods, TRUE, FALSE, FALSE);
 	}
 
 	/**

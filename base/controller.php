@@ -99,6 +99,9 @@ class Base_Controller {
 		// Cargamos el usuario y sus datos.
 		$vista->assign('usuario', Usuario::usuario()->as_array());
 
+		// Cantidad de sucesos sin desplegar.
+		$vista->assign('cantidad_sucesos', Suceso_Barra::cantidad_sin_desplegar(Usuario::$usuario_id));
+
 		// Sucesos.
 		$lst = Suceso_Barra::obtener_listado(Usuario::$usuario_id, 1, 20);
 
@@ -115,7 +118,7 @@ class Base_Controller {
 			}
 
 			// Obtenemos el tipo de suceso.
-			$tipo = $v->as_object()->tipo;
+			$tipo = $v->tipo;
 
 			// Cargamos la vista.
 			$suceso_vista = View::factory('suceso/barra/'.$tipo);
@@ -130,7 +133,7 @@ class Base_Controller {
 			$suceso_vista->assign('fecha', $v->fecha);
 
 			// Agregamos el evento.
-			$eventos[] = $suceso_vista->parse();
+			$eventos[] = array('id' => $v->id, 'desplegado' => $v->desplegado, 'html' => $suceso_vista->parse());
 		}
 		$vista->assign('sucesos', $eventos);
 		unset($lst, $eventos);

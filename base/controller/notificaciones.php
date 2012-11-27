@@ -84,7 +84,7 @@ class Base_Controller_Notificaciones extends Controller {
 		foreach ($sucesos as $v)
 		{
 			// Obtengo información del suceso.
-			$s_data = Suceso_Perfil::procesar($v);
+			$s_data = Suceso_Barra::procesar($v);
 
 			// Verifico su existencia.
 			if ($s_data === NULL)
@@ -134,5 +134,125 @@ class Base_Controller_Notificaciones extends Controller {
 		// Notifico y redirecciono.
 		$_SESSION['flash_message'] = 'Las notificaciones han sido marcadas como leidas correctamente.';
 		Request::redirect('/notificaciones/');
+	}
+
+	/**
+	 * Marcamos como desplegadas las notificaciones especificadas.
+	 */
+	public function action_desplegadas()
+	{
+		// Solo ajax.
+		/**if ( ! Request::is_ajax())
+		{
+			Request::redirect('/notificaciones/');
+		}*/
+
+		// Solo POST.
+		if (Request::method() != 'POST')
+		{
+			Request::redirect('/notificaciones/');
+		}
+
+		// Evito plantilla base.
+		$this->template = NULL;
+
+		// Listado de sucesos.
+		$sucesos = isset($_POST['sucesos']) ? $_POST['sucesos']: NULL;
+
+		// Verifico parámetro.
+		if ( ! is_array($sucesos))
+		{
+			die('false');
+		}
+
+		// Proceso el listado.
+		$model_suceso = new Model_Suceso;
+
+		$rst = array();
+
+		foreach ($sucesos as $s)
+		{
+			$s = (int) $s;
+
+			// Verifico existencia.
+			if ( ! $model_suceso->existe(array('id' => $s, 'usuario_id' => Usuario::$usuario_id)))
+			{
+				continue;
+			}
+
+			$rst[] = $s;
+
+			// Actualizo el suceso.
+			$model_suceso->desplegado($s);
+		}
+
+		// Informo resultado correcto.
+		die(json_encode($rst));
+	}
+
+	/**
+	 * Obtenemos listado de notificaciones no desplegadas.
+	 */
+	public function action_sin_desplegar()
+	{
+		// Solo ajax.
+		/**if ( ! Request::is_ajax())
+		{
+			Request::redirect('/notificaciones/');
+		}*/
+
+		// Cargamos la portada.
+		$view = View::factory('notificaciones/sin_desplegar');
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Cargamos notificaciones.
+		$sucesos = Suceso_Barra::obtener_listado_sin_desplegar(Usuario::$usuario_id, 1, $cantidad_por_pagina);
+
+		// Proceso el listado de sucesos.
+		$eventos = array();
+		foreach ($sucesos as $v)
+		{
+			// Obtengo información del suceso.
+			$s_data = Suceso_Barra::procesar($v);
+
+			// Verifico su existencia.
+			if ($s_data === NULL)
+			{
+				continue;
+			}
+
+			// Obtenemos el tipo de suceso.
+			$tipo = $v->tipo;
+
+			// Cargamos la vista.
+			$suceso_vista = View::factory('/suceso/barra/'.$tipo);
+
+			// Asigno los datos del usuario actual.
+			$suceso_vista->assign('actual', Usuario::usuario()->as_array());
+
+			// Asigno información del suceso.
+			$suceso_vista->assign('suceso', $s_data);
+
+			// Datos del suceso.
+			$suceso_vista->assign('fecha', $v->fecha);
+			$suceso_vista->assign('visto', $v->visto);
+
+			// Agregamos el evento.
+			$eventos[] = array('id' => $v->id, 'html' => json_encode($suceso_vista->parse()));
+		}
+
+		$view->assign('sucesos', $eventos);
+		unset($sucesos);
+
+		// Evito plantilla base.
+		$this->template = NULL;
+
+		// Envio resultado.
+		$view->show();
+
+		exit;
 	}
 }

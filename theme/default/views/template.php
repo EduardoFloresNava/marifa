@@ -77,6 +77,7 @@
 		<footer class="footer container">
 			<p>{$_SERVER.HTTP_HOST} &copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Basado en <a href="http://www.marifa.com.ar/" rel="folow" title="Marifa">Marifa</a>{if="isset($execution)"} - {$execution}{/if}</p>
 		</footer>
+		<div class="pop-notification"></div>
 
         <!-- Le javascript
         ================================================== -->

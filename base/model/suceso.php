@@ -36,6 +36,7 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @property-read string $tipo Tipo de suceso.
  * @property-read bool $notificar Si se muestra en la barra de sucesos o no.
  * @property-read bool $visto Si fue visto o no.
+ * @property-read bool $desplegado Si se ha visto el suceso en la lista.
  * @property-read fechahora $fecha Cuando se producio el suceso.
  */
 class Base_Model_Suceso extends Model_Dataset {
@@ -64,6 +65,7 @@ class Base_Model_Suceso extends Model_Dataset {
 		'tipo' => Database_Query::FIELD_STRING,
 		'notificar' => Database_Query::FIELD_BOOL,
 		'visto' => Database_Query::FIELD_BOOL,
+		'desplegado' => Database_Query::FIELD_BOOL,
 		'fecha' => Database_Query::FIELD_DATETIME
 	);
 
@@ -123,7 +125,16 @@ class Base_Model_Suceso extends Model_Dataset {
 	 */
 	public function vistas($usuario)
 	{
-		return $this->db->query('UPDATE suceso SET visto = 1 WHERE usuario_id = ?', $usuario);
+		return $this->db->query('UPDATE suceso SET visto = 1, desplegado = 1 WHERE usuario_id = ?', $usuario);
+	}
+
+	/**
+	 * Seteamos la notificación como desplegada
+	 * @param int $id ID de la notificación a setear como desplegada.
+	 */
+	public function desplegado($id)
+	{
+		return $this->db->query('UPDATE suceso SET desplegado = 1 WHERE id = ?', $id);
 	}
 
 	/**
@@ -168,10 +179,11 @@ class Base_Model_Suceso extends Model_Dataset {
 	 * @param int $usuario ID del usuario a dueño de los sucesos. NULL para todos.
 	 * @param array $tipo Arreglo de tipos, NULL para todos.
 	 * @param bool $notificar Si hay mostramos con un tipo de notificar o ninguno.
-	 * @param bool $visto Si hay mostramos con un estado vistor o ninguno.
+	 * @param bool $visto Si hay mostramos con un estado visto o ninguno.
+	 * @param bool $desplegado Si hay mostramos con un estado desplagado o ninguno.
 	 * @return int
 	 */
-	public function cantidad($usuario = NULL, $tipo = NULL, $notificar = NULL, $visto = NULL)
+	public function cantidad($usuario = NULL, $tipo = NULL, $notificar = NULL, $visto = NULL, $desplegado = NULL)
 	{
 		$params = array();
 		$q = array();
@@ -212,6 +224,13 @@ class Base_Model_Suceso extends Model_Dataset {
 			$q[] = 'visto = ?';
 		}
 
+		// Agrego limitacion desplegado.
+		if ($desplegado !== NULL)
+		{
+			$params[] = $desplegado;
+			$q[] = 'desplegado = ?';
+		}
+
 		// Ejecuto la consulta.
 		if (count($params) == 0)
 		{
@@ -230,10 +249,11 @@ class Base_Model_Suceso extends Model_Dataset {
 	 * @param int $cantidad Cantidad de posts por página.
 	 * @param array $tipo Listado de tipos de sucesos a mostrar.
 	 * @param bool $notificar Si hay mostramos con un tipo de notificar o ninguno.
-	 * @param bool $visto Si hay mostramos con un estado vistor o ninguno.
+	 * @param bool $visto Si hay mostramos con un estado visto o ninguno.
+	 * @param bool $desplegado Si hay mostramos con un estado desplagado o ninguno.
 	 * @return array
 	 */
-	public function listado($usuario, $pagina, $cantidad = 10, $tipo = NULL, $notificar = NULL, $visto = NULL)
+	public function listado($usuario, $pagina, $cantidad = 10, $tipo = NULL, $notificar = NULL, $visto = NULL, $desplegado = NULL)
 	{
 		// Elemento de inicio para paginacion.
 		$start = ($pagina - 1) * $cantidad;
@@ -269,6 +289,13 @@ class Base_Model_Suceso extends Model_Dataset {
 		{
 			$params[] = $visto;
 			$q[] = 'visto = ?';
+		}
+
+		// Agrego limitacion desplegado.
+		if ($desplegado !== NULL)
+		{
+			$params[] = $desplegado;
+			$q[] = 'desplegado = ?';
 		}
 
 		// Ejecuto la consulta.

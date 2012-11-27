@@ -13,12 +13,12 @@
         </ul>
     </div>
     <div class="btn-group pull-right">
-        <button class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-bullhorn"></i>{if="count($sucesos) > 0"}<span class="badge badge-important event">{function="count($sucesos)"}</span>{/if}</button><!--SUCESOS GENERALES-->
+        <button class="btn dropdown-toggle" id="suceso-dropdown-button" data-toggle="dropdown"><i class="icon-bullhorn"></i>{if="$cantidad_sucesos > 0"}<span class="badge badge-important event">{$cantidad_sucesos}</span>{/if}</button><!--SUCESOS GENERALES-->
         <div class="dropdown-menu" id="suceso-dropdown">
 			{if="count($sucesos) > 0"}
 			<ul>
 				{loop="$sucesos"}
-				<li>{$value}</li>
+				<li id="suceso-{$value.id}" data-desplegado="{$value.desplegado}">{$value.html}</li>
 				{/loop}
 			</ul>
 			{else}
