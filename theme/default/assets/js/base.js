@@ -113,48 +113,50 @@
     }
 
     // Actualización de listado de sucesos y notificación de nuevos.
-    setInterval(function () {
-        // Borro sucesos viejos.
-        $(".pop-notification div.notification").remove();
+    if ($("#suceso-dropdown-button").length > 0)
+    {
+        setInterval(function () {
+            // Borro sucesos viejos.
+            $(".pop-notification div.notification").remove();
 
-        $.ajax({
-            url: '/notificaciones/sin_desplegar',
-            dataType: 'json',
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(textStatus);
-            },
-            success: function (data, textStatus, jqXHR) {
-                // Cargo los elementos.
-                $.each(data, function(index, value) {
-                    if ($("#suceso-dropdown li#suceso-"+value['id']).length <= 0)
-                    {
-                        // Borro elemento si no existe.
-                        $("#suceso-dropdown .alert").remove();
+            $.ajax({
+                url: '/notificaciones/sin_desplegar',
+                dataType: 'json',
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus);
+                },
+                success: function (data, textStatus, jqXHR) {
+                    // Cargo los elementos.
+                    $.each(data, function(index, value) {
+                        if ($("#suceso-dropdown li#suceso-"+value['id']).length <= 0)
+                        {
+                            // Borro elemento si no existe.
+                            $("#suceso-dropdown .alert").remove();
 
-                        // Agrego a la lista de notificaciones.
-                        $("#suceso-dropdown").prepend('<li data-desplegado="" id="suceso-'+value['id']+'">'+value['html']+'</li>');
+                            // Agrego a la lista de notificaciones.
+                            $("#suceso-dropdown").prepend('<li data-desplegado="" id="suceso-'+value['id']+'">'+value['html']+'</li>');
 
-                        // Notifico en listado.
-                        $(".pop-notification").prepend('<div style="display: none;" class="notification" id="suceso-'+value['id']+'">'+value['html']+'<a class="close" data-dismiss="alert">×</a></div>');
-                    }
-                });
+                            // Notifico en listado.
+                            $(".pop-notification").prepend('<div style="display: none;" class="notification" id="suceso-'+value['id']+'">'+value['html']+'<a class="close" data-dismiss="alert">×</a></div>');
+                        }
+                    });
 
-                // Muestro los nuevos.
-                $(".pop-notification div.notification").slideDown();
+                    // Muestro los nuevos.
+                    $(".pop-notification div.notification").slideDown();
 
-                // Recalculo indice.
-                cantidad_notificaciones($("#suceso-dropdown li").map(function () {
-                    if ($(this).attr('data-desplegado') != 1)
-                    {
-                        return ($(this).attr('id').toString().split('-')[1])*1;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }).get().length);
-            }
-        });
-    }, 20000);
-
+                    // Recalculo indice.
+                    cantidad_notificaciones($("#suceso-dropdown li").map(function () {
+                        if ($(this).attr('data-desplegado') != 1)
+                        {
+                            return ($(this).attr('id').toString().split('-')[1])*1;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }).get().length);
+                }
+            });
+        }, 20000);
+    }
 } (jQuery));
