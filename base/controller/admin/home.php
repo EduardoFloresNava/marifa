@@ -155,7 +155,7 @@ class Base_Controller_Admin_Home extends Controller {
 			usort($rst, create_function('$a, $b', 'return version_compare(substr($b->name, 1), substr($a->name, 1));'));
 
 			$vista->assign('version', $rst[0]->name);
-			$vista->assign('version_new', version_compare(substr($rst[0]->name, 1), VERSION) < 0);
+			$vista->assign('version_new', version_compare(substr($rst[0]->name, 1), VERSION) > 0);
 			$vista->assign('download', array('zip' => $rst[0]->zipball_url, 'tar' => $rst[0]->tarball_url));
 		}
 
