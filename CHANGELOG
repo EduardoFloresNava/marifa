@@ -1,0 +1,17 @@
+Marifa 0.2RC1 [26/11/2012]
+ - FEATURE: Agregados rangos dinámicos.
+ - FEATURE: Agregadas actualizaciones de versiones en el instalador.
+ - FEATURE: Agregada opción para optimizar la base de datos en el panel de administración.
+ - FEATURE: Implementada la portada del panel de administración y de moderación con un resumen de aspectos importantes.
+ - FEATURE: Agregada leyenda en la portada para identificar los colores.
+ - FEATURE: Mejorado el tema por defecto para dar compatibilidad a resoluciones pequeñas.
+ - FEATURE: Terminada la implementación de los puntos de los usuarios.
+ - FEATURE: Vista personalizada para el modo mantenimiento.
+ - FEATURE: Implementadas las medallas para los usuarios.
+ - FEATURE: Vista preliminar de los comentarios.
+ - FEATURE: Agregado suceso de las citas de comentarios.
+ - FEATURE: Listado de usuarios del sitio.
+ - FIX: Fallas en carga de plugins a través de una modificación de las rutas.
+ - FIX: Incompatibilidad de MIME generadas en Windows para PHP < 5.3.
+ - FIX: Directorios temporales en windows pueden no ser correctos.
+ - FIX: Mejoras en el tema por defecto.
