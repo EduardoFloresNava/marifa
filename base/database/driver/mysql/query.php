@@ -66,7 +66,7 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 		$this->query = mysql_query($query, $conn);
 		if ($this->query === FALSE)
 		{
-			throw new Database_Exception('Error ejecutando la consulta: \''.mysql_error($conn).'\'', mysql_errno($conn));
+			throw new Database_Exception('Error ejecutando la consulta \''.$query.'\': \''.mysql_error($conn).'\'', mysql_errno($conn));
 		}
 		PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 	}
