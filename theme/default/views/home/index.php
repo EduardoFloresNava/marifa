@@ -1,13 +1,13 @@
 <div class="row">
 	<div class="span7">
-		<h3 class="title">&Uacute;ltimos posts<small class="pull-right">Leyenda: <span class="leyenda-post fijo">Fijo</span> <span class="leyenda-post patrocinado">Patrocinado</span></small></h3>
+		<h3 class="title">&Uacute;ltimos posts<small class="pull-right">Leyenda: <span class="leyenda-post fijo"><i class="icon icon-bookmark"></i>Fijo</span> <span class="leyenda-post patrocinado"><i class="icon icon-certificate"></i>Patrocinado</span> <span class="leyenda-post privado"><i class="icon icon-lock"></i>Privado</span></small></h3>
 		{loop="$sticky"}
 		<div class="ultimo-post fijo">
 			<div class="categoria hidden-phone">
 				<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
 			</div>
 			<div class="contenido">
-				<a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
+				{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<i class="icon icon-bookmark show-tooltip" title="Fijo"></i> <a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
 				<div class="info">
 					{@Por@}: <a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
 				</div>
@@ -23,7 +23,7 @@
 				<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
 			</div>
 			<div class="contenido">
-				<a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
+				{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
 				<div class="info">
 					{@Por@}: <a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
 				</div>

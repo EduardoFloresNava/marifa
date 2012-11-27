@@ -94,7 +94,7 @@ class Base_Controller_Home extends Controller {
 		if ($pagina == 1)
 		{
 			// Cargo fijos.
-			$post_sticky = $model_post->sticky(Usuario::is_login());
+			$post_sticky = $model_post->sticky(TRUE);
 
 			// Extendemos la información de los posts.
 			foreach ($post_sticky as $k => $v)
