@@ -18,27 +18,27 @@
 							{elseif="$value.motivo == 1"}
 						<span class="label">SPAM</span>
 							{elseif="$value.motivo == 2"}
-						<span class="label">Links muertos</span>
+						<span class="label">LINKS MUERTOS</span>
 							{elseif="$value.motivo == 3"}
-						<span class="label">Irrespetuoso</span>
+						<span class="label">IRRESPETUOSO</span>
 							{elseif="$value.motivo == 4"}
-						<span class="label">Información personal</span>
+						<span class="label">INFORMACIÓN PERSONAL</span>
 							{elseif="$value.motivo == 5"}
-						<span class="label">Titulo mayúscula</span>
+						<span class="label">TITULO MAYÚSCULA</span>
 							{elseif="$value.motivo == 6"}
-						<span class="label">Pedofilia</span>
+						<span class="label">PEDOFILIA</span>
 							{elseif="$value.motivo == 7"}
-						<span class="label">Asqueroso</span>
+						<span class="label">ASQUEROSO</span>
 							{elseif="$value.motivo == 8"}
-						<span class="label">Fuente</span>
+						<span class="label">FUENTE</span>
 							{elseif="$value.motivo == 9"}
-						<span class="label">Pobre</span>
+						<span class="label">POBRE</span>
 							{elseif="$value.motivo == 10"}
-						<span class="label">Foro</span>
+						<span class="label">FORO</span>
 							{elseif="$value.motivo == 11"}
-						<span class="label">Protocolo</span>
+						<span class="label">PROTOCOLO</span>
 							{elseif="$value.motivo == 12"}
-						<span class="label">Personalizada</span>
+						<span class="label">PERSONALIZADA</span>
 							{else}
 						<span class="label label-important">TIPO SIN DEFINIR</span>
 							{/if}
@@ -50,7 +50,7 @@
 						{$value.foto.titulo}
 						<div class="pull-right">
 							{if="$value.motivo == 0"}
-						<span class="label">EXISTE</span>
+						<span class="label">YA PUBLICADA</span>
 							{elseif="$value.motivo == 1"}
 						<span class="label">SPAM</span>
 							{elseif="$value.motivo == 2"}

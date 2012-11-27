@@ -181,7 +181,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		$portada->assign('sucesos', array());
 
 		// Listado de denuncias.
-		$rst = Database::get_instance()->query('SELECT * FROM ( SELECT \'post\' as type, id from post_denuncia WHERE estado = 0 UNION SELECT \'foto\' as type, id from foto_denuncia WHERE estado = 0 UNION SELECT \'usuario\' as type, id from usuario_denuncia WHERE estado = 0 ) as A LIMIT 10');
+		$rst = Database::get_instance()->query('SELECT type, id FROM ( SELECT \'post\' AS type, id, fecha FROM post_denuncia WHERE estado = 0 UNION SELECT \'foto\' AS type, id, fecha FROM foto_denuncia WHERE estado = 0 UNION SELECT \'usuario\' AS type, id, fecha FROM usuario_denuncia WHERE estado = 0 ) as A ORDER BY fecha DESC LIMIT 10');
 		$rst->set_fetch_type(Database_Query::FETCH_ASSOC);
 
 		$lst = array();
@@ -219,7 +219,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		unset($lst, $rst);
 
 		// Listado de contenido desaprobado.
-		$rst = Database::get_instance()->query('SELECT * FROM ( SELECT \'post\' as type, id, fecha from post WHERE estado = 3 UNION SELECT \'post_comentario\' as type, id, fecha from post_comentario WHERE estado = 1 UNION SELECT \'foto_comentario\' as type, id, fecha from foto_comentario WHERE estado = 1 ) as A ORDER BY fecha DESC LIMIT 10');
+		$rst = Database::get_instance()->query('SELECT * FROM ( SELECT \'post\' AS type, id, fecha FROM post WHERE estado = 3 UNION SELECT \'post_comentario\' AS type, id, fecha FROM post_comentario WHERE estado = 1 UNION SELECT \'foto_comentario\' AS type, id, fecha FROM foto_comentario WHERE estado = 1 ) AS A ORDER BY fecha DESC LIMIT 10');
 		$rst->set_fetch_type(Database_Query::FETCH_ASSOC);
 
 		$lista = array();
