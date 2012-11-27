@@ -45,7 +45,6 @@
                         <span class="icon-bar"></span>
                     </a>
                     <a class="brand" href="/">{if="isset($brand)"}{$brand}{else}Marifa{/if}</a>
-                    {if="isset($user_header)"}{$user_header}{/if}
                     <div class="nav-collapse">
                         <ul class="nav">
                             {loop="master_bar"}
@@ -54,11 +53,13 @@
                             </li>
                             {/loop}
                         </ul>
+                        {if="isset($user_header)"}{$user_header}{/if}
                     </div>
                 </div>
             </div>
         </div>
         <div class="container">
+			{if="isset($noticia)"}<div class="alert alert-info">{$noticia}<a class="close" data-dismiss="alert">×</a></div>{/if}
 			{if="isset($top_bar)"}
 			<ul class="nav nav-tabs">
 				{loop="top_bar"}
@@ -68,14 +69,13 @@
 				{/loop}
 			</ul>
 			{/if}
-			{if="isset($noticia)"}<div class="alert alert-info">{$noticia}<a class="close" data-dismiss="alert">×</a></div>{/if}
 			{if="isset($is_locked) && $is_locked"}<div class="alert alert-info"><b>&iexcl;Importante!</b> El sitio se encuentra en modo mantenimiento, no todos los usuarios pueden acceder a el sitio.<a class="close" data-dismiss="alert">×</a></div>{/if}
 			{if="isset($flash_success)"}<div class="alert alert-success"><a class="close" data-dismiss="alert">×</a>{$flash_success}</div>{/if}
 			{if="isset($flash_error)"}<div class="alert"><a class="close" data-dismiss="alert">×</a>{$flash_error}</div>{/if}
 			{$contenido}
 		</div>
 		<footer class="footer container">
-			<p>&copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Equipo desarrollo Marifa {if="isset($execution)"} - {$execution}{/if}</p>
+			<p>{$_SERVER.HTTP_HOST} &copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Basado en <a href="http://www.marifa.com.ar/" rel="folow" title="Marifa">Marifa</a>{if="isset($execution)"} - {$execution}{/if}</p>
 		</footer>
 
         <!-- Le javascript

@@ -1,0 +1,2 @@
+<i class="icon icon-certificate"></i>
+{@Ganaste la medalla@} <img src="{#THEME_URL#}/assets/img/medallas/{$suceso.medalla.imagen}" alt="{$suceso.medalla.nombre}" height="16" width="16" /> {$suceso.medalla.nombre}.

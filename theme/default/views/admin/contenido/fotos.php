@@ -35,7 +35,18 @@
 			<td><a href="/foto/index/{$value.id}">{$value.titulo}</a></td>
 			<td><a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 			<td>{$value.creacion->fuzzy()}</td>
-			<td><span class="label label-{if="$value.estado == 0"}success">VISIBLE{else}important">OCULTA{/if}</span></td>
+			<td>
+				{if="$value.estado == 0"}
+				<span class="label label-success">ACTIVA</span>
+				{elseif="$value.estado == 1"}
+				<span class="label label-info">OCULTA</span>
+				{elseif="$value.estado == 2"}
+				<span class="label label-warning">PAPELERA</span>
+				{elseif="$value.estado == 3"}
+				<span class="label label-important">BORRADA</span>
+				{else}
+				<span class="label label-important">DESCONOCIDO</span>
+				{/if}
 			<td>
 				<div class="btn-group">
 					{if="$value.estado == 0"}<a href="/admin/contenido/ocultar_foto/{$value.id}" class="btn btn-mini btn-info">Ocultar</a>{else}

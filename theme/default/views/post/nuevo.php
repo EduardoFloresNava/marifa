@@ -13,7 +13,7 @@
 			<div class="control-group{if="$error_titulo"} error{/if}">
 				<label class="control-label" for="titulo">T&iacute;tulo</label>
 				<div class="controls">
-					<input type="text" id="titulo" name="titulo" value="{$titulo}" class="span10" />
+					<input type="text" id="titulo" name="titulo" value="{$titulo}" class="input-xxlarge" />
 					<span class="help-block">{if="$error_titulo"}{$error_titulo}{/if}</span>
 				</div>
 			</div>
@@ -75,7 +75,7 @@
 							<a href="#" title="Vista preliminar" class="btn-preview btn btn-small btn-success"><i class="icon-eye-open icon-white"></i></a>
 						</div>
 					</div>
-					<textarea name="contenido" id="contenido" class="span10">{$contenido}</textarea>
+					<textarea name="contenido" id="contenido" data-preview="/post/preview" class="input-xxlarge">{$contenido}</textarea>
 					<span class="help-block">{if="$error_contenido"}{$error_contenido}{/if}</span>
 				</div>
 			</div>
@@ -83,7 +83,7 @@
 			<div class="control-group{if="$error_tags"} error{/if}">
 				<label class="control-label" for="tags">Etiquetas</label>
 				<div class="controls">
-					<input type="text" id="tags" name="tags" value="{$tags}" class="span10" />
+					<input type="text" id="tags" name="tags" value="{$tags}" class="input-xxlarge" />
 					<span class="help-block">{if="$error_tags"}{$error_tags}{else}Listado de etiquetas separadas por ','. Las etiquetas deben ser alphanuméricas y contener espacios.{/if}</span>
 				</div>
 			</div>

@@ -778,6 +778,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		foreach ($lst as $k => $v)
 		{
 			$lst[$k] = $v->as_array();
+			$lst[$k]['usuarios'] = $v->cantidad_usuarios();
 		}
 
 		// Seteamos listado de rangos.
@@ -787,6 +788,83 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Rango por defecto para nuevos usuario, evitamos que se borre.
 		$model_config = new Model_Configuracion;
 		$vista->assign('rango_defecto', (int) $model_config->get('rango_defecto', 1));
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Mostramos el listado de usuarios pertenecientes a un rango.
+	 * @param int $rango ID del rango del cual se muestran los usuarios.
+	 * @param int $pagina Número de página a mostrar.
+	 */
+	public function action_usuarios_rango($rango, $pagina = 1)
+	{
+		// Cargo el rango.
+		$rango = (int) $rango;
+		$model_rango = new Model_Usuario_Rango($rango);
+
+		// Verifico la existencia.
+		if ( ! $model_rango->existe())
+		{
+			$_SESSION['flash_error'] = 'El rango que desea visualizar es incorrecto.';
+			Request::redirect('/admin/usuario/rangos/');
+		}
+
+		// Formato de la página.
+		$pagina = ($pagina > 0) ? ( (int) $pagina) : 1;
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/usuarios_rango');
+
+		// Asigno el rango.
+		$vista->assign('rango', $model_rango->as_array());
+
+		// Cargo el listado.
+		$listado = $model_rango->usuarios($pagina, $cantidad_por_pagina);
+
+		if (count($listado) <= 0 && $pagina > 1)
+		{
+			Request::redirect('/admin/usuario/usuarios_rango/'.$rango);
+		}
+
+		// Cargo el total de usuarios.
+		$total = $model_rango->cantidad_usuarios();
+
+		// Paginación.
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/usuario/usuarios_rango/'.$rango.'/%s/'));
+
+		// Obtenemos datos de los usuarios.
+		foreach ($listado as $k => $v)
+		{
+			$listado[$k] = $v->as_array();
+		}
+
+		// Seteamos listado de usuarios.
+		$vista->assign('usuarios', $listado);
+		unset($listado);
+
+		// Cargamos listado de rangos que podemos asignar.
+		$lst = $model_rango->listado(Usuario::usuario()->rango()->orden);
+		foreach ($lst as $k => $v)
+		{
+			$lst[$k] = $v->as_array();
+		}
+		$vista->assign('rangos', $lst);
 
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
@@ -843,6 +921,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 	/**
 	 * Creamos un nuevo rango.
+	 * @todo Verificar no existan 2 rangos con el mismo tipo y cantidad.
 	 */
 	public function action_nuevo_rango()
 	{
@@ -856,6 +935,14 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('error_color', FALSE);
 		$vista->assign('imagen', '');
 		$vista->assign('error_imagen', FALSE);
+		$vista->assign('puntos', 10);
+		$vista->assign('error_puntos', FALSE);
+		$vista->assign('puntos_dar', 10);
+		$vista->assign('error_puntos_dar', FALSE);
+		$vista->assign('tipo', 0);
+		$vista->assign('error_tipo', FALSE);
+		$vista->assign('cantidad', '');
+		$vista->assign('error_cantidad', FALSE);
 
 		// Cargamos el listado de imagens para rangos disponibles.
 		$imagenes_rangos = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
@@ -872,11 +959,19 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
 			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+			$puntos = isset($_POST['puntos']) ? (int) $_POST['puntos'] : NULL;
+			$puntos_dar = isset($_POST['puntos_dar']) ? (int) $_POST['puntos_dar'] : NULL;
+			$tipo = isset($_POST['tipo']) ? (int) $_POST['tipo'] : NULL;
+			$cantidad = isset($_POST['cantidad']) ? $_POST['cantidad'] : NULL;
 
 			// Valores para cambios.
 			$vista->assign('nombre', $nombre);
 			$vista->assign('color', $color);
 			$vista->assign('imagen', $imagen);
+			$vista->assign('puntos', $puntos);
+			$vista->assign('puntos_dar', $puntos_dar);
+			$vista->assign('tipo', $tipo);
+			$vista->assign('cantidad', $cantidad);
 
 			// Verificamos el nombre.
 			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{5,32}$/iD', $nombre))
@@ -899,19 +994,57 @@ class Base_Controller_Admin_Usuario extends Controller {
 				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
 			}
 
+			// Verificamos los puntos.
+			if ($puntos === NULL || $puntos < 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_puntos', 'La cantidad de puntos debe ser mayor o igual a cero.');
+			}
+
+			// Verificamos los puntos máximos a que se puede dar a un post.
+			if ($puntos === NULL || $puntos <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_puntos', 'La cantidad de puntos a dar en un post debe ser mayor a cero.');
+			}
+
+			// Verificamos el tipo.
+			if ($tipo < 0 || $tipo > 4)
+			{
+				$error = TRUE;
+				$vista->assign('error_tipo', 'El tipo de rango es incorrecto.');
+			}
+
+			// Verificamos la cantidad.
+			if ($tipo !== 0 && $cantidad <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_cantidad', 'Debe ingresar una cantidad positiva.');
+			}
+
 			if ( ! $error)
 			{
 				// Convertimos el color a entero.
 				$color = hexdec($color);
 
+				// Cantidad para tipo especial.
+				if ($tipo == 0)
+				{
+					$cantidad = NULL;
+				}
+				else
+				{
+					$cantidad = (int) $cantidad;
+				}
+
 				// Creamos el rango.
 				$model_rango = new Model_Usuario_Rango;
-				$model_rango->nuevo_rango($nombre, $color, $imagen);
+				$model_rango->nuevo_rango($nombre, $color, $imagen, $puntos, $tipo, $cantidad, $puntos_dar);
 
 				//TODO: agregar suceso de administracion.
 
 				// Seteo FLASH message.
-				$_SESSION['rango_correcto'] = 'El rango se creó correctamente';
+				$_SESSION['flash_success'] = 'El rango se creó correctamente';
 
 				// Redireccionamos.
 				Request::redirect('/admin/usuario/rangos');
@@ -934,6 +1067,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 	/**
 	 * Editamos el rango.
 	 * @param int $id ID del rango a editar.
+	 * @todo Verificar no existan 2 rangos con el mismo tipo y cantidad.
 	 */
 	public function action_editar_rango($id)
 	{
@@ -961,6 +1095,15 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('error_color', FALSE);
 		$vista->assign('imagen', $model_rango->imagen);
 		$vista->assign('error_imagen', FALSE);
+		$vista->assign('puntos', $model_rango->puntos);
+		$vista->assign('error_puntos', FALSE);
+		$vista->assign('puntos_dar', $model_rango->puntos_dar);
+		$vista->assign('error_puntos_dar', FALSE);
+		$vista->assign('tipo', $model_rango->tipo);
+		$vista->assign('error_tipo', FALSE);
+		$vista->assign('cantidad', $model_rango->cantidad);
+		$vista->assign('error_cantidad', FALSE);
+
 
 		if (Request::method() == 'POST')
 		{
@@ -971,11 +1114,19 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
 			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+			$puntos = isset($_POST['puntos']) ? (int) $_POST['puntos'] : NULL;
+			$puntos_dar = isset($_POST['puntos_dar']) ? (int) $_POST['puntos_dar'] : NULL;
+			$tipo = isset($_POST['tipo']) ? (int) $_POST['tipo'] : NULL;
+			$cantidad = isset($_POST['cantidad']) ? $_POST['cantidad'] : NULL;
 
 			// Valores para cambios.
 			$vista->assign('nombre', $nombre);
 			$vista->assign('color', $color);
 			$vista->assign('imagen', $imagen);
+			$vista->assign('puntos', $puntos);
+			$vista->assign('puntos_dar', $puntos_dar);
+			$vista->assign('tipo', $tipo);
+			$vista->assign('cantidad', $cantidad);
 
 			// Verificamos el nombre.
 			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{5,32}$/iD', $nombre))
@@ -998,10 +1149,48 @@ class Base_Controller_Admin_Usuario extends Controller {
 				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
 			}
 
+			// Verificamos los puntos.
+			if ($puntos === NULL || $puntos < 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_puntos', 'La cantidad de puntos debe ser mayor o igual a cero.');
+			}
+
+			// Verificamos los puntos a dar.
+			if ($puntos === NULL || $puntos <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_puntos_dar', 'La cantidad de puntos a dar por post debe ser mayor a cero.');
+			}
+
+			// Verificamos el tipo.
+			if ($tipo < 0 || $tipo > 4)
+			{
+				$error = TRUE;
+				$vista->assign('error_tipo', 'El tipo de rango es incorrecto.');
+			}
+
+			// Verificamos la cantidad.
+			if ($tipo !== 0 && ($cantidad <= 0 || $cantidad === NULL))
+			{
+				$error = TRUE;
+				$vista->assign('error_cantidad', 'Debe ingresar una cantidad positiva.');
+			}
+
 			if ( ! $error)
 			{
 				// Convertimos el color a entero.
 				$color = hexdec($color);
+
+				// Cantidad para tipo especial.
+				if ($tipo == 0)
+				{
+					$cantidad = NULL;
+				}
+				else
+				{
+					$cantidad = (int) $cantidad;
+				}
 
 				// Actualizo el color.
 				if ($model_rango->color != $color)
@@ -1019,6 +1208,30 @@ class Base_Controller_Admin_Usuario extends Controller {
 				if ($model_rango->nombre != $nombre)
 				{
 					$model_rango->renombrar($nombre);
+				}
+
+				// Actualizo los puntos.
+				if ($model_rango->puntos != $puntos)
+				{
+					$model_rango->actualizar_campo('puntos', $puntos);
+				}
+
+				// Actualizo los puntos a dar.
+				if ($model_rango->puntos_dar != $puntos_dar)
+				{
+					$model_rango->actualizar_campo('puntos_dar', $puntos_dar);
+				}
+
+				// Actualizo el tipo.
+				if ($model_rango->tipo != $tipo)
+				{
+					$model_rango->actualizar_campo('tipo', $tipo);
+				}
+
+				// Actualizo la cantidads.
+				if ($model_rango->cantidad != $cantidad)
+				{
+					$model_rango->actualizar_campo('cantidad', $cantidad);
 				}
 
 				// Informamos suceso.
@@ -1057,39 +1270,39 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		// Listado de permisos.
 		$permisos = array();
-		$permisos[0] = array('Permiso usuario ver denuncias', 'Ver las denuncias de usuarios y actuar sobre ellas.');
-		$permisos[1] = array('Permiso usuario suspender', 'Ver suspensiones de usuarios y modificarlas.');
-		$permisos[2] = array('Permiso usuario banear', 'Ver baneos a usuarios y modificarlos.');
-		$permisos[3] = array('Permiso usuario advertir', 'Enviar advertencias a usuarios.');
-		$permisos[4] = array('Permiso usuario revisar contenido', 'Revisar posts y fotos agregadas por el usuario. Es decir, el contenido creado por el usuario va a revisión antes de postearse.');
-		$permisos[5] = array('Permiso usuario administrar', 'Permite realizar tareas de administración de usuarios. Entre ellas está la asignación de rangos, su creación, etc.');
-		$permisos[20] = array('Permiso post crear', 'Puede crear un post.');
-		$permisos[21] = array('Permiso post puntuar', 'Puede dar puntos a un post.');
-		$permisos[22] = array('Permiso post eliminar', 'Eliminar posts de todos los usuarios.');
-		$permisos[23] = array('Permiso post ocultar', 'Oculta/muestra posts de todos los usuarios.');
-		$permisos[24] = array('Permiso post ver denuncias', 'Ver las denuncias de posts y actuar sobre ellas.');
-		$permisos[25] = array('Permiso post ver desaprobado', 'Ver los posts que no se encuentran aprobados.');
-		$permisos[26] = array('Permiso post fijar promover', 'Modificar el parámetro sticky y sponsored de los posts.');
-		$permisos[27] = array('Permiso post editar', 'Editar posts de todos los usuarios.');
-		$permisos[28] = array('Permiso post ver papelera', 'Ver los posts que se encuentran en la papelera de todos los usuarios.');
-		$permisos[40] = array('Permiso foto crear', 'Puede agregar fotos.');
-		$permisos[41] = array('Permiso foto votar', 'Puede votar las fotos.');
-		$permisos[42] = array('Permiso foto eliminar', 'Eliminar fotos de todos los usuarios.');
-		$permisos[43] = array('Permiso foto ocultar', 'Oculta/muestra fotos de todos los usuarios.');
-		$permisos[44] = array('Permiso foto ver denuncias', 'Ver las denuncias y actuar sobre ellas.');
-		$permisos[45] = array('Permiso foto ver desaprobado', 'Ver el contenido que no se encuentra aprobado.');
-		$permisos[46] = array('Permiso foto editar', 'Editar fotos de todos los usuarios.');
-		$permisos[47] = array('Permiso foto ver papelera', 'Ver la papelera de TODOS los usuarios.');
-		$permisos[60] = array('Permiso comentario comentar', 'Crear comentarios.');
-		$permisos[61] = array('Permiso comentario comentar cerrado', 'Comentar aún cuando están cerrados.');
-		$permisos[62] = array('Permiso comentario votar', 'Puede votar comentarios.');
-		$permisos[63] = array('Permiso comentario eliminar', 'Puede eliminar comentarios de todos los usuarios.');
-		$permisos[64] = array('Permiso comentario ocultar', 'Ocultar y mostrar comentarios de todos los usuarios.');
-		$permisos[65] = array('Permiso comentario editar', 'Editar comentarios de todos los usuarios.');
-		$permisos[66] = array('Permiso comentario ver desaprobado', 'Ver los comentarios que se encuentran desaprobados y tomar acciones sobre ellos.');
-		$permisos[80] = array('Permiso sitio acceso mantenimiento', 'Puede ingresar aún con el sitio en mantenimiento.');
-		$permisos[81] = array('Permiso sitio configurar', 'Permisos para modificar configuraciones globales, acciones sobre temas y plugins. modificar la publicidades y todo lo relacionado a configuracion general.');
-		$permisos[82] = array('Permiso sitio administrar contenido', 'Acceso a la administración de contenido del panel de administración.');
+		$permisos[0] = array('Usuario ver denuncias', 'Ver las denuncias de usuarios y actuar sobre ellas.');
+		$permisos[1] = array('Usuario suspender', 'Ver suspensiones de usuarios y modificarlas.');
+		$permisos[2] = array('Usuario banear', 'Ver baneos a usuarios y modificarlos.');
+		$permisos[3] = array('Usuario advertir', 'Enviar advertencias a usuarios.');
+		$permisos[4] = array('Usuario revisar contenido', 'Revisar posts y fotos agregadas por el usuario. Es decir, el contenido creado por el usuario va a revisión antes de postearse.');
+		$permisos[5] = array('Usuario administrar', 'Permite realizar tareas de administración de usuarios. Entre ellas está la asignación de rangos, su creación, etc.');
+		$permisos[20] = array('Post crear', 'Puede crear un post.');
+		$permisos[21] = array('Post puntuar', 'Puede dar puntos a un post.');
+		$permisos[22] = array('Post eliminar', 'Eliminar posts de todos los usuarios.');
+		$permisos[23] = array('Post ocultar', 'Oculta/muestra posts de todos los usuarios.');
+		$permisos[24] = array('Post ver denuncias', 'Ver las denuncias de posts y actuar sobre ellas.');
+		$permisos[25] = array('Post ver desaprobado', 'Ver los posts que no se encuentran aprobados.');
+		$permisos[26] = array('Post fijar promover', 'Modificar el parámetro sticky y sponsored de los posts.');
+		$permisos[27] = array('Post editar', 'Editar posts de todos los usuarios.');
+		$permisos[28] = array('Post ver papelera', 'Ver los posts que se encuentran en la papelera de todos los usuarios.');
+		$permisos[40] = array('Foto crear', 'Puede agregar fotos.');
+		$permisos[41] = array('Foto votar', 'Puede votar las fotos.');
+		$permisos[42] = array('Foto eliminar', 'Eliminar fotos de todos los usuarios.');
+		$permisos[43] = array('Foto ocultar', 'Oculta/muestra fotos de todos los usuarios.');
+		$permisos[44] = array('Foto ver denuncias', 'Ver las denuncias y actuar sobre ellas.');
+		$permisos[45] = array('Foto ver desaprobado', 'Ver el contenido que no se encuentra aprobado.');
+		$permisos[46] = array('Foto editar', 'Editar fotos de todos los usuarios.');
+		$permisos[47] = array('Foto ver papelera', 'Ver la papelera de TODOS los usuarios.');
+		$permisos[60] = array('Comentario comentar', 'Crear comentarios.');
+		$permisos[61] = array('Comentario comentar cerrado', 'Comentar aún cuando están cerrados.');
+		$permisos[62] = array('Comentario votar', 'Puede votar comentarios.');
+		$permisos[63] = array('Comentario eliminar', 'Puede eliminar comentarios de todos los usuarios.');
+		$permisos[64] = array('Comentario ocultar', 'Ocultar y mostrar comentarios de todos los usuarios.');
+		$permisos[65] = array('Comentario editar', 'Editar comentarios de todos los usuarios.');
+		$permisos[66] = array('Comentario ver desaprobado', 'Ver los comentarios que se encuentran desaprobados y tomar acciones sobre ellos.');
+		$permisos[80] = array('Sitio acceso mantenimiento', 'Puede ingresar aún con el sitio en mantenimiento.');
+		$permisos[81] = array('Sitio configurar', 'Permisos para modificar configuraciones globales, acciones sobre temas y plugins. modificar la publicidades y todo lo relacionado a configuracion general.');
+		$permisos[82] = array('Sitio administrar contenido', 'Acceso a la administración de contenido del panel de administración.');
 
 		$vista->assign('permisos', $permisos);
 
@@ -1126,6 +1339,10 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			$vista->assign('success', 'Permisos actualizados correctamente.');
 		}
+
+		// Rango por defecto para nuevos usuario, evitamos que se borre.
+		$model_config = new Model_Configuracion;
+		$vista->assign('rango_defecto', (int) $model_config->get('rango_defecto', 1));
 
 		// Seteamos datos del rango.
 		$vista->assign('rango', $model_rango->as_array());
@@ -1267,5 +1484,424 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$_SESSION['flash_success'] = 'Se terminó correctamente la sessión.';
 		}
 		Request::redirect('/admin/usuario/sesiones');
+	}
+
+	/**
+	 * Mostramos el listado de medallas.
+	 */
+	public function action_medallas($pagina = 1)
+	{
+		// Formato de la página.
+		$pagina = ($pagina > 0) ? ( (int) $pagina) : 1;
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/medallas');
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		unset($model_configuracion);
+
+		// Modelo de medallas.
+		$model_medallas = new Model_Medalla;
+
+		// Cargamos el listado de medallas.
+		$lst = $model_medallas->listado($pagina, $cantidad_por_pagina);
+
+		// Obtenemos datos de las medallas.
+		foreach ($lst as $k => $v)
+		{
+			$lst[$k] = $v->as_array();
+		}
+
+		// Seteamos listado de medallas.
+		$vista->assign('medallas', $lst);
+		unset($lst);
+
+		// Paginación.
+		$paginador = new Paginator(Model_Medalla::cantidad(), $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/usuario/medallas/%s/'));
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Creamos un nuevo rango.
+	 * @todo Agregar soporte para BBCode en la descripción.
+	 */
+	public function action_nueva_medalla()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/nueva_medalla');
+
+		// Valores por defecto y errores.
+		$vista->assign('nombre', '');
+		$vista->assign('error_nombre', FALSE);
+		$vista->assign('descripcion', '');
+		$vista->assign('error_descripcion', FALSE);
+		$vista->assign('imagen', '');
+		$vista->assign('error_imagen', FALSE);
+		$vista->assign('condicion', '');
+		$vista->assign('error_condicion', FALSE);
+		$vista->assign('cantidad', '');
+		$vista->assign('error_cantidad', FALSE);
+
+		// Cargamos el listado de imagenws para las medallas disponibles.
+		$imagenes_medallas = glob(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS.'*_16.{png,jpg,gif}', GLOB_BRACE);
+		if ( ! is_array($imagenes_medallas))
+		{
+			$imagenes_medallas = array();
+		}
+		else
+		{
+			foreach ($imagenes_medallas as $k => $v)
+			{
+				$imagenes_medallas[$k] = substr($v, strlen(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS));
+			}
+		}
+		$vista->assign('imagenes_medallas', $imagenes_medallas);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
+			$descripcion = isset($_POST['descripcion']) ? preg_replace('/\s+/', ' ', trim($_POST['descripcion'])) : NULL;
+			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+			$condicion = isset($_POST['condicion']) ? (int) $_POST['condicion'] : NULL;
+			$cantidad = isset($_POST['cantidad']) ? $_POST['cantidad'] : NULL;
+
+			// Valores para cambios.
+			$vista->assign('nombre', $nombre);
+			$vista->assign('descripcion', $descripcion);
+			$vista->assign('imagen', $imagen);
+			$vista->assign('condicion', $condicion);
+			$vista->assign('cantidad', $cantidad);
+
+			// Verificamos el nombre.
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ ]{5,32}$/iD', $nombre))
+			{
+				$error = TRUE;
+				$vista->assign('error_nombre', 'El nombre de la medalla deben ser entre 5 y 32 caractéres alphanuméricos o espacios.');
+			}
+
+			// Verificamos la descripción.
+			if ( ! isset($descripcion{6}) || isset($descripcion{300}))
+			{
+				$error = TRUE;
+				$vista->assign('error_descripcion', 'La descripción debe tener entre 6 y 300 caractéres.');
+			}
+
+			// Verificamos la imagen.
+			if ( ! in_array($imagen, $imagenes_medallas))
+			{
+				$error = TRUE;
+				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
+			}
+
+			// Verificamos el tipo.
+			if ($condicion < 0 || $condicion > 22)
+			{
+				$error = TRUE;
+				$vista->assign('error_condicion', 'El tipo de medalla es incorrecto.');
+			}
+
+			// Verificamos la cantidad.
+			if ($cantidad <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_cantidad', 'Debe ingresar una cantidad positiva.');
+			}
+
+			if ( ! $error)
+			{
+				// Obtenemos tipo.
+				$tipo = $condicion <= 8 ? 0 : ($condicion > 8 && $condicion <= 16 ? 1 : 2);
+
+				// Creamos la medalla.
+				$model_medalla = new Model_Medalla;
+				$model_medalla->crear($nombre, $descripcion, $imagen, $tipo, $condicion, $cantidad);
+
+				//TODO: agregar suceso de administracion.
+
+				// Seteo FLASH message.
+				$_SESSION['flash_success'] = 'La medalla se creó correctamente';
+
+				// Redireccionamos.
+				Request::redirect('/admin/usuario/medallas/');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Editamos la medalla
+	 * @param int $id ID de la medalla a editar.
+	 * @todo Verificar no existan 2 medallas iguales.
+	 */
+	public function action_editar_medalla($id)
+	{
+		$id = (int) $id;
+		// Cargamos el modelo de la medalla.
+		$model_medalla = new Model_Medalla($id);
+
+		// Verifico existencia.
+		if ( ! $model_medalla->existe())
+		{
+			Request::redirect('/admin/usuario/medallas');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/editar_medalla');
+
+		// Cargamos el listado de imagenws para las medallas disponibles.
+		$img_medallas = glob(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS.'*_32.{png,jpg,gif}', GLOB_BRACE);
+		$imagenes_medallas = array();
+		if (is_array($img_medallas))
+		{
+			foreach ($img_medallas as $v)
+			{
+				$imagenes_medallas[substr($v, strlen(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS), -6).'16'.substr($v, -4)] = substr($v, strlen(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS));
+			}
+		}
+		unset($img_medallas);
+		$vista->assign('imagenes_medallas', $imagenes_medallas);
+
+		// Valores por defecto y errores.
+		$vista->assign('nombre', $model_medalla->nombre);
+		$vista->assign('error_nombre', FALSE);
+		$vista->assign('descripcion', $model_medalla->descripcion);
+		$vista->assign('error_descripcion', FALSE);
+		$vista->assign('imagen', $model_medalla->imagen);
+		$vista->assign('error_imagen', FALSE);
+		$vista->assign('condicion', $model_medalla->condicion);
+		$vista->assign('error_condicion', FALSE);
+		$vista->assign('cantidad', $model_medalla->cantidad);
+		$vista->assign('error_cantidad', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Seteamos sin error.
+			$error = FALSE;
+
+			// Obtenemos los campos.
+			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
+			$descripcion = isset($_POST['descripcion']) ? preg_replace('/\s+/', ' ', trim($_POST['descripcion'])) : NULL;
+			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
+			$condicion = isset($_POST['condicion']) ? (int) $_POST['condicion'] : NULL;
+			$cantidad = isset($_POST['cantidad']) ? $_POST['cantidad'] : NULL;
+
+			// Valores para cambios.
+			$vista->assign('nombre', $nombre);
+			$vista->assign('descripcion', $descripcion);
+			$vista->assign('imagen', $imagen);
+			$vista->assign('condicion', $condicion);
+			$vista->assign('cantidad', $cantidad);
+
+			// Verificamos el nombre.
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ ]{5,32}$/iD', $nombre))
+			{
+				$error = TRUE;
+				$vista->assign('error_nombre', 'El nombre de la medalla deben ser entre 5 y 32 caractéres alphanuméricos o espacios.');
+			}
+
+			// Verificamos la descripción.
+			if ( ! isset($descripcion{6}) || isset($descripcion{300}))
+			{
+				$error = TRUE;
+				$vista->assign('error_descripcion', 'La descripción debe tener entre 6 y 300 caractéres.');
+			}
+
+			// Verificamos la imagen.
+			if ( ! in_array($imagen, $imagenes_medallas))
+			{
+				$error = TRUE;
+				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
+			}
+
+			// Verificamos el tipo.
+			if ($condicion < 0 || $condicion > 24)
+			{
+				$error = TRUE;
+				$vista->assign('error_condicion', 'El tipo de medalla es incorrecto.');
+			}
+
+			// Verificamos la cantidad.
+			if ($cantidad <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_cantidad', 'Debe ingresar una cantidad positiva.');
+			}
+
+			if ( ! $error)
+			{
+				// Obtenemos tipo.
+				$tipo = $condicion <= 8 ? 0 : ($condicion > 8 && $condicion <= 16 ? 1 : 2);
+
+				// Actualizo nombre.
+				if ($model_medalla->nombre != $nombre)
+				{
+					$model_medalla->actualizar_campo('nombre', $nombre);
+				}
+
+				// Actualizo descripcion.
+				if ($model_medalla->descripcion != $descripcion)
+				{
+					$model_medalla->actualizar_campo('descripcion', $descripcion);
+				}
+
+				// Actualizo el imagen.
+				if ($model_medalla->imagen != $imagen)
+				{
+					$model_medalla->actualizar_campo('imagen', $imagen);
+				}
+
+				// Actualizo el tipo.
+				if ($model_medalla->tipo != $tipo)
+				{
+					$model_medalla->actualizar_campo('tipo', $tipo);
+				}
+
+				// Actualizo el condicion.
+				if ($model_medalla->condicion != $condicion)
+				{
+					$model_medalla->actualizar_campo('condicion', $condicion);
+				}
+
+				// Actualizo la cantidad.
+				if ($model_medalla->cantidad != $cantidad)
+				{
+					$model_medalla->actualizar_campo('cantidad', $cantidad);
+				}
+
+				// Informamos suceso.
+				$vista->assign('success', 'Información actualizada correctamente');
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Mostramos el listado de usuarios que poseen una medalla.
+	 * @param int $rango ID de la medalla de la cual se muestran los usuarios.
+	 * @param int $pagina Número de página a mostrar.
+	 */
+	public function action_usuarios_medalla($medalla, $pagina = 1)
+	{
+		// Cargo la medalla.
+		$medalla = (int) $medalla;
+		$model_medalla = new Model_Medalla($medalla);
+
+		// Verifico la existencia.
+		if ( ! $model_medalla->existe())
+		{
+			$_SESSION['flash_error'] = 'La medalla que desea visualizar es incorrecto.';
+			Request::redirect('/admin/usuario/medallas/');
+		}
+
+		// Formato de la página.
+		$pagina = ($pagina > 0) ? ( (int) $pagina) : 1;
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/usuarios_medalla');
+
+		// Asigno el rango.
+		$vista->assign('medalla', $model_medalla->as_array());
+
+		// Cargo el listado.
+		$listado = $model_medalla->usuarios($pagina, $cantidad_por_pagina);
+
+		if (count($listado) <= 0 && $pagina > 1)
+		{
+			Request::redirect('/admin/usuario/usuarios_medalla/'.$medalla);
+		}
+
+		// Cargo el total de usuarios.
+		$total = $model_medalla->cantidad_usuarios();
+
+		// Paginación.
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/usuario/usuarios_medalla/'.$medalla.'/%s/'));
+
+		// Obtenemos datos de los usuarios.
+		foreach ($listado as $k => $v)
+		{
+			$listado[$k] = $v->as_array();
+		}
+
+		// Seteamos listado de usuarios.
+		$vista->assign('usuarios', $listado);
+		unset($listado);
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Borramos una medalla.
+	 * @param int $id ID de la medalla a borrar.
+	 */
+	public function action_borrar_medalla($id)
+	{
+		// Cargamos el modelo de la medalla.
+		$model_medalla = new Model_Medalla( (int) $id);
+
+		// Verificamos exista.
+		if ($model_medalla->existe())
+		{
+			//TODO: Enviar sucesos a los usuarios.
+
+			// Borramos la medalla.
+			$model_medalla->borrar();
+			$_SESSION['flash_success'] = 'Se borró correctamente la medalla.';
+		}
+		Request::redirect('/admin/usuario/medallas');
 	}
 }

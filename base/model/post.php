@@ -324,7 +324,7 @@ class Base_Model_Post extends Model_Dataset {
 	public function dar_puntos($usuario_id, $cantidad)
 	{
 		$this->db->insert('INSERT INTO post_punto (post_id, usuario_id, cantidad) VALUES (?, ?, ?)', array($this->primary_key['id'], $usuario_id, $cantidad));
-		$this->db->update('UPDATE usuario SET puntos_disponibles = puntos_disponibles - ? WHERE id = ?', array($cantidad, $usuario_id));
+		$this->db->update('UPDATE usuario SET puntos = puntos - ? WHERE id = ?', array($cantidad, $usuario_id));
 	}
 
 	/**
@@ -412,6 +412,15 @@ class Base_Model_Post extends Model_Dataset {
 				Model_Post_Denuncia::ESTADO_PENDIENTE
 			));
 		return $id;
+	}
+
+	/**
+	 * Cantidad de denuncias que tiene el post.
+	 * @return int
+	 */
+	public function cantidad_denuncias()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM post_denuncia WHERE post_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -1242,4 +1251,144 @@ class Base_Model_Post extends Model_Dataset {
 		return array($lst, $total);
 	}
 
+	/**
+	 * Cantidad de medallas del post.
+	 * @return int
+	 */
+	public function cantidad_medallas()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE tipo = ? AND objeto_id = ?', array(Model_Medalla::TIPO_POST, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Agregamos medallas si cumple con los requisitos impuestos.
+	 * @param int $tipo Tipo de acción a controlar.
+	 * @return int|bool FALSE si no hay medalla que asignar, el ID de la medalla si se asignó.
+	 */
+	public function actualizar_medallas($tipo)
+	{
+		switch ($tipo)
+		{
+			case Model_Medalla::CONDICION_POST_PUNTOS:
+				$cantidad = $this->puntos();
+				break;
+			case Model_Medalla::CONDICION_POST_SEGUIDORES:
+				$cantidad = $this->cantidad_seguidores();
+				break;
+			case Model_Medalla::CONDICION_POST_COMENTARIOS:
+				$cantidad = $this->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE);
+				break;
+			case Model_Medalla::CONDICION_POST_FAVORITOS:
+				$cantidad = $this->cantidad_favoritos();
+				break;
+			case Model_Medalla::CONDICION_POST_DENUNCIAS:
+				$cantidad = $this->cantidad_denuncias();
+				break;
+			case Model_Medalla::CONDICION_POST_VISITAS:
+				$cantidad = $this->vistas;
+				break;
+			case Model_Medalla::CONDICION_POST_MEDALLAS:
+				$cantidad = $this->cantidad_medallas();
+				break;
+			case Model_Medalla::CONDICION_POST_VECES_COMPARTIDO:
+				$cantidad = $this->veces_compartido();
+				break;
+		}
+
+		// Busco medalla.
+		$rst = $this->db->query('SELECT id FROM medalla WHERE cantidad = ? AND condicion = ?', array($cantidad, $tipo));
+
+		if ($rst->num_rows() > 0)
+		{
+			// Cargo la medalla.
+			$medalla = $rst->get_var(Database_Query::FIELD_INT);
+
+			// Verifico no tener la medalla.
+			if ($this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE medalla_id = ? AND usuario_id = ?', array($medalla, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT) > 0)
+			{
+				return FALSE;
+			}
+			else
+			{
+				// Agrego la medalla.
+				$this->db->insert('INSERT INTO usuario_medalla (medalla_id, usuario_id, fecha, objeto_id) VALUES (?, ?, ?, ?);', array($medalla, $this->usuario_id, date('Y/m/d H:i:s'), $this->primary_key['id']));
+
+				// Envio suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear($this->usuario_id, 'usuario_nueva_medalla', TRUE, $medalla);
+
+				return $medalla;
+			}
+		}
+		else
+		{
+			// No hay medallas.
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Quitamos el post de los favoritos del usuario.
+	 * @param int $usuario_id ID del usuario.
+	 */
+	public function quitar_favoritos($usuario_id)
+	{
+		return $this->db->delete('DELETE FROM post_favorito WHERE post_id = ? AND usuario_id = ?', array($this->primary_key['id'], $usuario_id));
+	}
+
+	/**
+	 * Obtengo el post anterior al actual.
+	 * @return Model_Post
+	 */
+	public function anterior()
+	{
+		$id = $this->db->query('SELECT id FROM post WHERE fecha < ? AND estado = 0 ORDER BY fecha DESC LIMIT 1', $this->fecha->format('Y/m/d H:i:s'))->get_var(Database_Query::FIELD_INT);
+
+		if ($id !== NULL)
+		{
+			return new Model_Post($id);
+		}
+		else
+		{
+			return $this;
+		}
+	}
+
+	/**
+	 * Obtengo el post siguiente al actual.
+	 * @return Model_Post
+	 */
+	public function siguiente()
+	{
+		$id = $this->db->query('SELECT id FROM post WHERE fecha > ? AND estado = 0 ORDER BY fecha ASC LIMIT 1', $this->fecha->format('Y/m/d H:i:s'))->get_var(Database_Query::FIELD_INT);
+
+		if ($id !== NULL)
+		{
+			return new Model_Post($id);
+		}
+		else
+		{
+			return $this;
+		}
+	}
+
+	/**
+	 * Obtengo un post aleatorio.
+	 * @return Model_Post
+	 */
+	public function aleatorio()
+	{
+		$pos = rand(0, $this->cantidad(Model_Post::ESTADO_ACTIVO) - 1);
+
+		$id = $this->db->query('SELECT id FROM post WHERE estado = 0 LIMIT '.$pos.',1')->get_var(Database_Query::FIELD_INT);
+
+		if ($id !== NULL)
+		{
+			return new Model_Post($id);
+		}
+		else
+		{
+			return $this;
+		}
+	}
 }

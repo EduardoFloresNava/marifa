@@ -5,9 +5,15 @@
 			<img src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
 			<h4 class="nick">{$usuario.nick}</h4>
 		</a>
-		{if="!$sigue_usuario"}<div class="row-fluid follow">
-			<a href="/post/seguir_usuario/{$post.id}/{$usuario.id}" class="btn span12" style="min-height: 0;"><i class="icon icon-plus"></i> Seguir usuario</a>
-		</div>{/if}
+		{if="$me !== NULL && $me !== $usuario.id"}
+		<div class="row-fluid follow">
+			{if="!$sigue_usuario"}
+			<a href="/post/seguir_usuario/{$post.id}/{$usuario.id}/1" class="btn span12" style="min-height: 0;"><i class="icon icon-plus"></i> Seguir usuario</a>
+			{else}
+			<a href="/post/seguir_usuario/{$post.id}/{$usuario.id}/0" class="btn span12" style="min-height: 0;"><i class="icon icon-minus"></i> Dejar de seguir</a>
+			{/if}
+		</div>
+		{/if}
 		<div class="well"><i class="icon icon-user"></i><span class="pull-right">{if="$usuario.seguidores > 1"}{$usuario.seguidores} {@seguidores@}{elseif="$usuario.seguidores == 1"}1 {@seguidor@}{else}{@sin@} {@seguidores@}{/if}</span></div>
 		<div class="well"><i class="icon icon-plus"></i><span class="pull-right">{if="$usuario.puntos > 1"}{$usuario.puntos} {@puntos@}{elseif="$usuario.puntos == 1"}1 {@puntos@}{else}{@sin@} {@puntos@}{/if}</span></div>
 		<div class="well"><i class="icon icon-book"></i><span class="pull-right">{if="$usuario.posts > 1"}{$usuario.posts} {@posts@}{elseif="$usuario.posts == 1"}1 {@post@}{else}{@sin@} {@posts@}{/if}</span></div>
@@ -16,12 +22,12 @@
 	<div class="span10 contenido">
 		<div class="cabecera">
 			<div class="lineal btn-group">
-				<a href="#" class="btn btn-mini"><i class="icon icon-chevron-left"></i></a>
-				<a href="#" class="btn btn-mini"><i class="icon icon-chevron-right"></i></a>
+				<a href="/post/index/{$post_anterior}" class="btn btn-mini"><i class="icon icon-chevron-left"></i></a>
+				<a href="/post/index/{$post_siguiente}" class="btn btn-mini"><i class="icon icon-chevron-right"></i></a>
 			</div>
 			<h2 class="title">{$post.titulo}</h2>
 			<div class="aleatorio">
-				<a href="#" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
+				<a href="/post/index/{$post_aleatorio}" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
 			</div>
 		</div>
 		<div class="contenido-post">{$post.contenido}</div>
@@ -97,7 +103,7 @@
 		<div class="row-fluid comentarios">
 			<div class="span12">
 				{loop="$comentarios"}
-				<div class="row-fluid comentario">
+				<div class="row-fluid comentario" id="c-{$value.id}">
 					<div class="span1">
 						<img class="thumbnail" src="{function="Utils::get_gravatar($value.usuario.email, 48, 48)"}" />
 					</div>
@@ -118,7 +124,7 @@
 								</div>
 								{/if}
 								<div class="btn-group">
-									<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}"><i class="icon icon-comment"></i></a>
+									<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}" data-comment="p{$value.id}"><i class="icon icon-comment"></i></a>
 									{if="($me == $value.usuario.id || $comentario_editar) && $value.estado != 2"}<a href="/post/editar_comentario/{$value.id}" class="btn btn-mini btn-primary" rel="tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
 									{if="($me == $value.usuario.id || $comentario_ocultar) && $value.estado == 0"}<a href="/post/ocultar_comentario/{$value.id}/0" class="btn btn-mini btn-inverse" rel="tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
 									{if="$value.estado == 1 && $comentario_ocultar"}<a href="/post/ocultar_comentario/{$value.id}/1" class="btn btn-mini btn-info" rel="tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{/if}
@@ -136,7 +142,7 @@
 		<div class="row-fluid">
 			<div class="span12">
 				{if="$me != NULL && $podemos_comentar"}
-				<form action="/post/comentar/{$post.id}" method="POST">
+				<form action="/post/comentar/{$post.id}" method="POST" class="comentar">
 					<div class="btn-toolbar bbcode-bar">
 						<div class="btn-group">
 							<a href="#" title="Negrita" class="btn-bold btn btn-small"><i class="icon-bold"></i></a>
@@ -200,7 +206,7 @@
 					<div class="alert">
 						<strong>&iexcl;Error!</strong> {$comentario_error}
 					</div>{/if}
-					<textarea name="comentario" id="comentario" class="span12" placeholder="Comentario...">{if="isset($comentario_content)"}{$comentario_content}{/if}</textarea>
+					<textarea name="comentario" data-preview="/post/preview/" id="comentario" class="span12" placeholder="Comentario...">{if="isset($comentario_content)"}{$comentario_content}{/if}</textarea>
 				</form>
 				{else}
 					{if="$podemos_comentar"}

@@ -235,6 +235,16 @@ class Base_Controller_Foto extends Controller {
 		// Mi id.
 		$view->assign('me', Usuario::$usuario_id);
 
+		// Verifico si sigo al usuario.
+		if ($model_foto->usuario_id !== Usuario::$usuario_id)
+		{
+			$view->assign('sigue_usuario', $model_foto->usuario()->es_seguidor(Usuario::$usuario_id));
+		}
+		else
+		{
+			$view->assign('sigue_usuario', TRUE);
+		}
+
 		// Informamos los permisos a la vista.
 		$view->assign('permiso_borrar', Usuario::$usuario_id === $model_foto->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR));
 		$view->assign('permiso_editar', Usuario::$usuario_id === $model_foto->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_EDITAR));
@@ -269,6 +279,9 @@ class Base_Controller_Foto extends Controller {
 			if ($model_foto->visitas !== NULL)
 			{
 				$model_foto->agregar_visita();
+
+				// Actualizamos medallas.
+				$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VISITAS);
 			}
 
 			$view->assign('es_favorito', $model_foto->es_favorito(Usuario::$usuario_id));
@@ -304,6 +317,124 @@ class Base_Controller_Foto extends Controller {
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
+	 * Seguimos a un usuario.
+	 * @param int $foto ID de la foto que estamos viendo.
+	 * @param int $usuario ID del usuario a seguir.
+	 * @param bool $seguir TRUE para seguir, FALSE para dejar de seguir.
+	 */
+	public function action_seguir_usuario($foto, $usuario, $seguir)
+	{
+		$seguir = (bool) $seguir;
+
+		// Verifico estar logueado.
+		if ( ! Usuario::is_login())
+		{
+			if ($seguir)
+			{
+				$_SESSION['flash_error'] = 'Debes estar logueado para poder seguir usuarios.';
+			}
+			else
+			{
+				$_SESSION['flash_error'] = 'Debes estar logueado para poder dejar de seguir usuarios.';
+			}
+			Request::redirect('/usuario/login');
+		}
+
+		// Cargo el usuario.
+		$usuario = (int) $usuario;
+		$model_usuario = new Model_Usuario($usuario);
+
+		// Verifico existencia.
+		if ( ! $model_usuario->existe())
+		{
+			if ($seguir)
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			}
+			else
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+			}
+			Request::redirect('/foto/ver/'.$foto);
+		}
+
+		// Verificamos no sea uno mismo.
+		if (Usuario::$usuario_id == $model_usuario->id)
+		{
+			if ($seguir)
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			}
+			else
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+			}
+			Request::redirect('/foto/ver/'.$foto);
+		}
+
+		// Verificaciones especiales en funcion si lo voy a seguir o dejar de seguir.
+		if ($seguir)
+		{
+			// Verifico el estado.
+			if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+				Request::redirect('/foto/ver/'.$foto);
+			}
+
+			// Verifico no sea seguidor.
+			if ($model_usuario->es_seguidor(Usuario::$usuario_id))
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+				Request::redirect('/foto/ver/'.$foto);
+			}
+
+			// Sigo al usuario.
+			$model_usuario->seguir(Usuario::$usuario_id);
+
+			// Actualizo medallas.
+			$model_usuario->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_SEGUIDORES);
+			Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_SIGUIENDO);
+		}
+		else
+		{
+			// Verifico sea seguidor.
+			if ( ! $model_usuario->es_seguidor(Usuario::$usuario_id))
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+				Request::redirect('/foto/ver/'.$foto);
+			}
+
+			// Dejo de seguir al usuario.
+			$model_usuario->fin_seguir(Usuario::$usuario_id);
+		}
+
+		// Envio el suceso.
+		$tipo = $seguir ? 'usuario_seguir' : 'usuario_fin_seguir';
+		$model_suceso = new Model_Suceso;
+		if ($model_usuario->id != Usuario::$usuario_id)
+		{
+			$model_suceso->crear($model_usuario->id, $tipo, TRUE, $model_usuario->id, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, $tipo, FALSE, $model_usuario->id, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_usuario->id, $tipo, TRUE, $model_usuario->id, Usuario::$usuario_id);
+		}
+
+		// Informo resultado.
+		if ($seguir)
+		{
+			$_SESSION['flash_success'] = 'Comenzaste a seguir al usuario correctamente.';
+		}
+		else
+		{
+			$_SESSION['flash_success'] = 'Dejaste de seguir al usuario correctamente.';
+		}
+		Request::redirect('/foto/ver/'.$foto);
 	}
 
 	/**
@@ -363,6 +494,17 @@ class Base_Controller_Foto extends Controller {
 
 		// Votamos la foto.
 		$model_foto->votar(Usuario::$usuario_id, $voto);
+
+		// Actualizo medallas.
+		$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VOTOS_NETOS);
+		if ($voto > 0)
+		{
+			$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VOTOS_POSITIVOS);
+		}
+		else
+		{
+			$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VOTOS_NEGATIVOS);
+		}
 
 		// Creamos el suceso.
 		$model_suceso = new Model_Suceso;
@@ -431,6 +573,9 @@ class Base_Controller_Foto extends Controller {
 		// Agrego a favoritos.
 		$model_foto->agregar_favorito(Usuario::$usuario_id);
 
+		// Agregamos medallas.
+		$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_FAVORITOS);
+
 		// Envio el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id != $model_foto->usuario_id)
@@ -492,7 +637,7 @@ class Base_Controller_Foto extends Controller {
 
 		// Verificamos el formato.
 		$comentario_clean = preg_replace('/\[.*\]/', '', $comentario);
-		if ( ! isset($comentario_clean{20}) || isset($comentario{400}))
+		if ( ! isset($comentario_clean{10}) || isset($comentario{400}))
 		{
 			$_SESSION['post_comentario_error'] = 'El comentario debe tener entre 20 y 400 caracteres.';
 
@@ -508,6 +653,16 @@ class Base_Controller_Foto extends Controller {
 
 			// Insertamos el comentario.
 			$id = $model_foto->comentar(Usuario::$usuario_id, $comentario);
+
+			// Envio sucesos de citas.
+			Decoda::procesar($comentario, FALSE);
+
+			// Verifico actualización del rango.
+			Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
+
+			// Actualizo las medallas.
+			$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_COMENTARIOS);
+			Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_FOTOS);
 
 			// Envio el suceso.
 			$model_suceso = new Model_Suceso;
@@ -869,6 +1024,20 @@ class Base_Controller_Foto extends Controller {
 				$error = TRUE;
 			}
 
+			// Verifico titulo.
+			if ( ! $error)
+			{
+				// Formateamos los campos.
+				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
+
+				$model_foto = new Model_Foto;
+				if ($model_foto->existe(array('titulo' => $titulo)))
+				{
+					$view->assign('error_titulo', 'Ya existe una foto con ese título.');
+					$error = TRUE;
+				}
+			}
+
 
 			// Proceso de verificación de método de carga de la imagen.
 			if ( ! $error)
@@ -945,6 +1114,12 @@ class Base_Controller_Foto extends Controller {
 					$model_suceso = new Model_Suceso;
 					$model_suceso->crear(Usuario::$usuario_id, 'foto_nueva', FALSE, $model_foto->id);
 
+					// Verifico actualización del rango.
+					Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+
+					// Actualizo medalla.
+					Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_FOTOS);
+
 					// Informo el resultado.
 					$_SESSION['flash_success'] = 'Foto creada correctamente.';
 					Request::redirect('/foto/ver/'.$model_foto->id);
@@ -975,15 +1150,15 @@ class Base_Controller_Foto extends Controller {
 			Request::redirect('/usuario/login/');
 		}
 
+		// Cargamos la foto.
+		$model_foto = new Model_Foto($foto);
+
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
 			$_SESSION['flash_error'] = 'La foto que quieres denunciar no se encuentra disponible.';
 			Request::redirect('/foto/');
 		}
-
-		// Cargamos la foto.
-		$model_foto = new Model_Foto($foto);
 
 		// Verificamos que no sea autor.
 		if ($model_foto->usuario_id === Usuario::$usuario_id)
@@ -1056,6 +1231,9 @@ class Base_Controller_Foto extends Controller {
 			{
 				// Creo la denuncia.
 				$id = $model_foto->denunciar(Usuario::$usuario_id, $motivo, $comentario);
+
+				// Actualizo medallas.
+				$model_foto->actualizar_medallas(Model_Medalla::CONDICION_POST_DENUNCIAS);
 
 				// Agregamos el suceso.
 				$model_suceso = new Model_Suceso;
@@ -1253,6 +1431,9 @@ class Base_Controller_Foto extends Controller {
 		}
 		elseif ($model_foto->estado === Model_Foto::ESTADO_OCULTA)
 		{
+			// Verifico actualización del rango.
+			$model_foto->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+
 			$n_estado = Model_Foto::ESTADO_ACTIVA;
 		}
 		else
@@ -1411,6 +1592,21 @@ class Base_Controller_Foto extends Controller {
 		// Informamos el resultado.
 		$_SESSION['flash_success'] = 'La foto se ha restaurado correctamente.';
 		Request::redirect('/foto/ver/'.$foto);
+	}
+
+	/**
+	 * Vista preliminar de un comentario.
+	 */
+	public function action_preview()
+	{
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Proceso contenido.
+		die(Decoda::procesar($contenido));
 	}
 
 }

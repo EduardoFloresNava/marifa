@@ -5,6 +5,7 @@
 		<tr>
 			<th>Titulo</th>
 			<th>Fecha</th>
+			<th>Acciones</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -12,6 +13,9 @@
 		<tr>
 			<td><a href="/post/index/{$value.id}" class="title"><img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" /> {$value.titulo}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
+			<td>
+				<a href="/favoritos/borrar_post/{$value.id}" rel="tooltip" title="Quitar de favoritos" class="btn btn-mini btn-danger"><i class="icon-white icon-remove"></i></a>
+			</td>
 		</tr>
 	{/loop}
 	</tbody>

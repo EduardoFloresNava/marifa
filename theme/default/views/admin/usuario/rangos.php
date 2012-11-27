@@ -9,19 +9,25 @@
 		<a href="/admin/usuario/nuevo_rango/" class="btn btn-success"><i class="icon-white icon-plus"></i> Nuevo</a>
 	</div>
 </div>
+<div class="alert alert-info">
+	<strong>&iexcl;Importante!</strong> En el caso de que un usuario tenga un rango especial y por un logro pueda pasar a otro rango, solo se va a realizar si el nuevo rango se encuentra con un orden menor (es decir, por arriba).
+</div>
 <table class="table table-bordered">
 	<thead>
 		<tr>
 			<th>Orden</th>
 			<th>Nombre</th>
-			<th>Color</th>
-			<th>Imagen</th>
+			<th>Usuarios</th>
+			<th>Puntos por d&iacute;a</th>
+			<th>Puntos por post</th>
+			<th>Tipo</th>
+			<th>Requerimiento</th>
 			<th>Acciones</th>
 		</tr>
 	</thead>
 	<tbody>
 		{loop="$rangos"}
-		<tr>
+		<tr{if="$value.id == $rango_defecto"} class="alert-info"{/if}>
 			<td><div class="btn-toolbar">
 					<div class="btn-group">
 						#{$value.orden}
@@ -34,14 +40,20 @@
 					</div>
 				</div>
 			</td>
-			<td>{$value.nombre}</td>
-			<td><span style="color: #{function="sprintf('%06s', dechex($value.color))"}; background-color: #{function="Utils::get_contrast_yiq(sprintf('%06s', dechex($value.color)))"};">#{function="strtoupper(sprintf('%06s', dechex($value.color)))"}</span></td>
-			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /></td>
+			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /> <span style="color: #{function="sprintf('%06s', dechex($value.color))"};">{$value.nombre}</span></td>
+			<td>{$value.usuarios}</td>
+			<td>{$value.puntos}</td>
+			<td>{$value.puntos_dar}</td>
+			{if="$value.tipo == 0"}<td colspan="2">Especial</td>
+			{else}<td>{if="$value.tipo == 1"}Puntos{elseif="$value.tipo == 2"}Posts{elseif="$value.tipo == 3"}Fotos{else}Comentarios{/if}</td>
+			<td>{$value.cantidad}</td>
+			{/if}
 			<td>
 				<div class="btn-group">
+					<a href="/admin/usuario/usuarios_rango/{$value.id}" class="btn btn-mini btn-success" title="Listado de usuarios" rel="tooltip"><i class="icon-white icon-user"></i></a>
 					<a href="/admin/usuario/ver_rango/{$value.id}" class="btn btn-mini" title="Permisos" rel="tooltip"><i class="icon icon-lock"></i></a>
 					<a href="/admin/usuario/editar_rango/{$value.id}" class="btn btn-mini btn-info" title="Editar" rel="tooltip"><i class="icon-white icon-pencil"></i></a>
-					{if="$value.id !== $rango_defecto && count($rangos) > 1"}<a href="/admin/usuario/borrar_rango/{$value.id}" class="btn btn-mini btn-danger" title="Borrar" rel="tooltip"><i class="icon-white icon-remove"></i></a>{/if}
+					{if="$value.id !== $rango_defecto && count($rangos) > 1 && $value.usuarios == 0"}<a href="/admin/usuario/borrar_rango/{$value.id}" class="btn btn-mini btn-danger" title="Borrar" rel="tooltip"><i class="icon-white icon-remove"></i></a>{/if}
 				</div>
 			</td>
 		</tr>

@@ -35,8 +35,7 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @property-read string $password Contraseña del usuario.
  * @property-read string $email E-Mail del usuario.
  * @property-read int $rango ID del rango del usuario.
- * @property-read int $puntos Cantidad de puntos que se le dan al usuario.
- * @property-read int $puntos_disponibles Cantidad de puntos que tiene el usuario.
+ * @property-read int $puntos Cantidad de puntos que tiene el usuario.
  * @property-read Fechahora $registro Fecha del registro.
  * @property-read Fechahora $lastlogin Fecha de su último ingreso al sitio.
  * @property-read Fechahora $lastactive Fecha de su última  visita.
@@ -87,7 +86,6 @@ class Base_Model_Usuario extends Model_Dataset {
 		'email' => Database_Query::FIELD_STRING,
 		'rango' => Database_Query::FIELD_INT,
 		'puntos' => Database_Query::FIELD_INT,
-		'puntos_disponibles' => Database_Query::FIELD_INT,
 		'registro' => Database_Query::FIELD_DATETIME,
 		'lastlogin' => Database_Query::FIELD_DATETIME,
 		'lastactive' => Database_Query::FIELD_DATETIME,
@@ -394,10 +392,10 @@ class Base_Model_Usuario extends Model_Dataset {
 		unset($enc);
 
 		// Creamos arreglo con los datos.
-		$info = array($nick, $enc_password, $email, $rango, 10, 10, date('Y/m/d H:i:s'), 0);
+		$info = array($nick, $enc_password, $email, $rango, 10, date('Y/m/d H:i:s'), 0);
 
 		// Creamos la cuenta.
-		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, puntos_disponibles, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', $info);
+		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?)', $info);
 
 		return ($cant > 0) ? $id : FALSE;
 	}
@@ -480,6 +478,15 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * Dejar de seguir.
+	 * @param int $usuario Quien se deja de seguir.
+	 */
+	public function fin_seguir($usuario)
+	{
+		$this->db->query('DELETE FROM usuario_seguidor WHERE usuario_id = ? AND seguidor_id = ?',  array($this->primary_key['id'], $usuario));
+	}
+
+	/**
 	 * Obtenemos la lista de usuarios que sigue.
 	 * @param int $pagina Número de página a mostrar.
 	 * @param int $cantidad Cantidad de elementos por página.
@@ -504,7 +511,7 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_posts()
 	{
-		return (int) $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return (int) $this->db->query('SELECT COUNT(*) FROM post WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
@@ -513,17 +520,28 @@ class Base_Model_Usuario extends Model_Dataset {
 	 */
 	public function cantidad_fotos()
 	{
-		return (int) $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		return (int) $this->db->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**
 	 * Cantidad de comentarios que realizó el usuario.
+	 * @param bool $foto Contar comentarios en fotos.
+	 * @param bool $post Contar comentarios en posts.
 	 * @return int
 	 */
-	public function cantidad_comentarios()
+	public function cantidad_comentarios($foto = TRUE, $post = TRUE)
 	{
-		$cantidad = $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
-		$cantidad += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		$cantidad = 0;
+
+		if ($post)
+		{
+			$cantidad += $this->db->query('SELECT COUNT(*) FROM post_comentario WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		}
+
+		if ($foto)
+		{
+			$cantidad += $this->db->query('SELECT COUNT(*) FROM foto_comentario WHERE usuario_id = ? AND estado = 0', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		}
 
 		return $cantidad;
 	}
@@ -689,7 +707,17 @@ class Base_Model_Usuario extends Model_Dataset {
 		}
 
 		$start = ($pagina - 1) * $cantidad;
-		$rst = $this->db->query('SELECT id FROM usuario'.$q.' ORDER BY registro DESC LIMIT '.$start.','.$cantidad, $params)->get_pairs(Database_Query::FIELD_INT);
+
+		if ($pagina >= 0)
+		{
+			$limit = ' LIMIT '.$start.','.$cantidad;
+		}
+		else
+		{
+			$limit = '';
+		}
+
+		$rst = $this->db->query('SELECT id FROM usuario'.$q.' ORDER BY registro DESC'.$limit, $params)->get_pairs(Database_Query::FIELD_INT);
 
 		$lst = array();
 		foreach ($rst as $v)
@@ -804,7 +832,7 @@ class Base_Model_Usuario extends Model_Dataset {
 			$where = '';
 		}
 
-		return $this->db->query('SELECT SUM(post_punto.cantidad) AS puntos, usuario.nick FROM usuario INNER JOIN post ON post.usuario_id = usuario.id LEFT JOIN post_punto ON post.id = post_punto.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0 AND usuario.estado = 1'.$where.' GROUP BY post.id ORDER BY puntos DESC LIMIT 10', $params)
+		return $this->db->query('SELECT SUM(puntos) as puntos, nick FROM (SELECT SUM(post_punto.cantidad) AS puntos, usuario.nick FROM usuario INNER JOIN post ON post.usuario_id = usuario.id LEFT JOIN post_punto ON post.id = post_punto.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0 AND usuario.estado = 1'.$where.' GROUP BY post.id ORDER BY puntos DESC LIMIT 10) as A GROUP BY nick ORDER BY puntos DESC', $params)
 			->get_records(Database_Query::FETCH_ASSOC, array(
 				'puntos' => Database_Query::FIELD_INT,
 				'nick' => Database_Query::FIELD_STRING
@@ -974,6 +1002,142 @@ class Base_Model_Usuario extends Model_Dataset {
 		foreach ($rst as $v)
 		{
 			$lst[] = new Model_Usuario( (int) $v[0]);
+		}
+
+		return $lst;
+	}
+
+	/**
+	 * Verificamos y realizamos el cambio de rango automático según el tipo provisto.
+	 * @param int $tipo Tipo de rango a verificar.
+	 */
+	public function actualizar_rango($tipo)
+	{
+		// Cuento la cantidad que tiene.
+		switch ($tipo)
+		{
+			case Model_Usuario_Rango::TIPO_PUNTOS:
+				$cantidad = $this->cantidad_puntos();
+				break;
+			case Model_Usuario_Rango::TIPO_POST:
+				$cantidad = $this->cantidad_posts();
+				break;
+			case Model_Usuario_Rango::TIPO_FOTOS:
+				$cantidad = $this->cantidad_fotos();
+				break;
+			case Model_Usuario_Rango::TIPO_COMENTARIOS:
+				$cantidad = $this->cantidad_comentarios();
+				break;
+		}
+
+		// Verifico si puede promover.
+		$nuevo_rango = $this->rango()->puede_promover($tipo, $cantidad);
+
+		// Cambio el rango si es posible.
+		if ($nuevo_rango !== NULL)
+		{
+			// Cambio el rango del usuario.
+			$this->actualizar_campo('rango', $nuevo_rango);
+
+			// Envio el suceso.
+			$suceso = new Model_Suceso;
+			$suceso->crear($this->primary_key['id'], 'usuario_cambio_rango', TRUE, $this->primary_key['id'], $nuevo_rango);
+		}
+	}
+
+	/**
+	 * Cantidad de medallas del usuario.
+	 * @return int
+	 */
+	public function cantidad_medallas()
+	{
+		return $this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Agregamos medallas si cumple con los requisitos impuestos.
+	 * @param int $tipo Tipo de acción a controlar.
+	 * @return int|bool FALSE si no hay medalla que asignar, el ID de la medalla si se asignó.
+	 */
+	public function actualizar_medallas($tipo)
+	{
+		switch ($tipo)
+		{
+			case Model_Medalla::CONDICION_USUARIO_PUNTOS:
+				$cantidad = $this->cantidad_puntos();
+				break;
+			case Model_Medalla::CONDICION_USUARIO_SEGUIDORES:
+				$cantidad = $this->cantidad_seguidores();
+				break;
+			case Model_Medalla::CONDICION_USUARIO_SIGUIENDO:
+				$cantidad = $this->cantidad_sigue();
+				break;
+			case Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_POSTS:
+				$cantidad = $this->cantidad_comentarios(FALSE);
+				break;
+			case Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_FOTOS:
+				$cantidad = $this->cantidad_comentarios(TRUE, FALSE);
+				break;
+			case Model_Medalla::CONDICION_USUARIO_POSTS:
+				$cantidad = $this->cantidad_posts();
+				break;
+			case Model_Medalla::CONDICION_USUARIO_FOTOS:
+				$cantidad = $this->cantidad_fotos();
+				break;
+			case Model_Medalla::CONDICION_USUARIO_MEDALLAS:
+				$cantidad = $this->cantidad_medallas();
+				break;
+			//case CONDICION_USUARIO_RANGO: // Sin implementar.
+		}
+
+		// Busco medalla.
+		$rst = $this->db->query('SELECT id FROM medalla WHERE cantidad = ? AND condicion = ?', array($cantidad, $tipo));
+
+		if ($rst->num_rows() > 0)
+		{
+			// Cargo la medalla.
+			$medalla = $rst->get_var(Database_Query::FIELD_INT);
+
+			// Verifico no tener la medalla.
+			if ($this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE medalla_id = ? AND usuario_id = ?', array($medalla, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT) > 0)
+			{
+				return FALSE;
+			}
+			else
+			{
+				// Agrego la medalla.
+				$this->db->insert('INSERT INTO usuario_medalla (medalla_id, usuario_id, fecha) VALUES (?, ?, ?);', array($medalla, $this->primary_key['id'], date('Y/m/d H:i:s')));
+
+				// Envio suceso.
+				$model_suceso = new Model_Suceso;
+				$model_suceso->crear($this->primary_key['id'], 'usuario_nueva_medalla', TRUE, $medalla);
+
+				return $medalla;
+			}
+		}
+		else
+		{
+			// No hay medallas.
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Listado de medallas del usuario.
+	 * @return array
+	 */
+	public function medallas()
+	{
+		$rst = $this->db->query('SELECT medalla_id, fecha, objeto_id FROM usuario_medalla WHERE usuario_id = ? ORDER BY fecha DESC', $this->primary_key['id']);
+		$rst->set_fetch_type(Database_Query::FETCH_ASSOC);
+		$rst->set_cast_type(array('medalla_id' => Database_Query::FIELD_INT, 'fecha' => Database_Query::FIELD_DATETIME, 'objeto_id' => Database_Query::FIELD_INT));
+
+		// Genero listado.
+		$lst = array();
+		foreach ($rst as $k => $v)
+		{
+			$lst[$k] = $v;
+			$lst[$k]['medalla'] = new Model_Medalla($v['medalla_id']);
 		}
 
 		return $lst;

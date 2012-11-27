@@ -100,10 +100,16 @@ class Base_Controller_Post extends Controller {
 			// Cargamos la vista.
 			$view = View::factory('post/index');
 
+			// Obtengo el post siguiente, el anterior y uno aleatorio.
+			$view->assign('post_anterior', $model_post->anterior()->id);
+			$view->assign('post_siguiente', $model_post->siguiente()->id);
+			$view->assign('post_aleatorio', $model_post->aleatorio()->id);
+
 			// Verifico si debo contabilizar la visita.
 			if (Usuario::$usuario_id != $model_post->as_object()->usuario_id)
 			{
 				$model_post->agregar_vista();
+				$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_VISITAS);
 			}
 
 			// Mi id.
@@ -171,7 +177,7 @@ class Base_Controller_Post extends Controller {
 				{
 					// Obtenemos puntos disponibles.
 					$m_user = Usuario::usuario();
-					$p_d = $m_user->puntos_disponibles;
+					$p_d = $m_user->puntos < $m_user->rango()->puntos_dar ? $m_user->puntos : $m_user->rango()->puntos_dar;
 
 					$p_arr = array();
 					for ($i = 1; $i <= $p_d; $i++)
@@ -550,6 +556,9 @@ class Base_Controller_Post extends Controller {
 				// Creo la denuncia.
 				$id = $model_post->denunciar(Usuario::$usuario_id, $motivo, $comentario);
 
+				// Actualizo las medallas.
+				$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_DENUNCIAS);
+
 				$model_suceso = new Model_Suceso;
 				if (Usuario::$usuario_id != $model_post->usuario_id)
 				{
@@ -619,7 +628,7 @@ class Base_Controller_Post extends Controller {
 
 		// Verificamos el formato.
 		$comentario_clean = preg_replace('/\[.*\]/', '', $comentario);
-		if ( ! isset($comentario_clean{20}) || isset($comentario{400}))
+		if ( ! isset($comentario_clean{10}) || isset($comentario{400}))
 		{
 			$_SESSION['post_comentario_error'] = 'El comentario debe tener entre 20 y 400 caracteres.';
 
@@ -650,6 +659,16 @@ class Base_Controller_Post extends Controller {
 					$model_suceso->crear($model_post->usuario_id, 'post_comentario_crear', FALSE, $id);
 				}
 
+				// Envio sucesos de citas.
+				Decoda::procesar($comentario, FALSE);
+
+				// Verifico actualización del rango.
+				Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
+
+				// Verifico actualización de medallas.
+				Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_POSTS);
+				$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_COMENTARIOS);
+
 				$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
 
 				Request::redirect('/post/index/'.$post);
@@ -661,7 +680,7 @@ class Base_Controller_Post extends Controller {
 				// Evitamos la salida de la vista actual.
 				$this->template = NULL;
 
-				Dispatcher::call('/post/index/'.$post, TRUE);
+				//Dispatcher::call('/post/index/'.$post, TRUE);
 			}
 		}
 	}
@@ -715,6 +734,9 @@ class Base_Controller_Post extends Controller {
 
 		// Agrego el post a favoritos.
 		$model_post->favorito(Usuario::$usuario_id);
+
+		// Verifico medallas.
+		$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_FAVORITOS);
 
 		// Creo el suceso.
 		$model_suceso = new Model_Suceso;
@@ -1064,13 +1086,23 @@ class Base_Controller_Post extends Controller {
 	 * Seguimos a un usuario.
 	 * @param int $post ID del post que estamos viendo.
 	 * @param int $usuario ID del usuario a seguir.
+	 * @param bool $seguir TRUE para seguir, FALSE para dejar de seguir.
 	 */
-	public function action_seguir_usuario($post, $usuario)
+	public function action_seguir_usuario($post, $usuario, $seguir)
 	{
+		$seguir = (bool) $seguir;
+
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes estar logueado para poder seguir usuarios.';
+			if ($seguir)
+			{
+				$_SESSION['flash_error'] = 'Debes estar logueado para poder seguir usuarios.';
+			}
+			else
+			{
+				$_SESSION['flash_error'] = 'Debes estar logueado para poder dejar de seguir usuarios.';
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -1081,48 +1113,90 @@ class Base_Controller_Post extends Controller {
 		// Verifico existencia.
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			if ($seguir)
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			}
+			else
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+			}
 			Request::redirect('/post/index/'.$post);
 		}
 
 		// Verificamos no sea uno mismo.
 		if (Usuario::$usuario_id == $model_usuario->id)
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			if ($seguir)
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+			}
+			else
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+			}
 			Request::redirect('/post/index/'.$post);
 		}
 
-		// Verifico el estado.
-		if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
+		// Verificaciones especiales en funcion si lo voy a seguir o dejar de seguir.
+		if ($seguir)
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
-			Request::redirect('/post/index/'.$post);
-		}
+			// Verifico el estado.
+			if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+				Request::redirect('/post/index/'.$post);
+			}
 
-		// Verifico no sea seguidor.
-		if ($model_usuario->es_seguidor(Usuario::$usuario_id))
-		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
-			Request::redirect('/post/index/'.$post);
-		}
+			// Verifico no sea seguidor.
+			if ($model_usuario->es_seguidor(Usuario::$usuario_id))
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+				Request::redirect('/post/index/'.$post);
+			}
 
-		// Sigo al usuario.
-		$model_usuario->seguir(Usuario::$usuario_id);
+			// Sigo al usuario.
+			$model_usuario->seguir(Usuario::$usuario_id);
 
-		// Envio el suceso.
-		$model_suceso = new Model_Suceso;
-		if ($model_usuario->id != Usuario::$usuario_id)
-		{
-			$model_suceso->crear($model_usuario->id, 'usuario_seguir', TRUE, $model_usuario->id, Usuario::$usuario_id);
-			$model_suceso->crear(Usuario::$usuario_id, 'usuario_seguir', FALSE, $model_usuario->id, Usuario::$usuario_id);
+			// Actualizo medallas.
+			$model_usuario->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_SEGUIDORES);
+			Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_SIGUIENDO);
 		}
 		else
 		{
-			$model_suceso->crear($model_usuario->id, 'usuario_seguir', TRUE, $model_usuario->id, Usuario::$usuario_id);
+			// Verifico sea seguidor.
+			if ( ! $model_usuario->es_seguidor(Usuario::$usuario_id))
+			{
+				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+				Request::redirect('/post/index/'.$post);
+			}
+
+			// Dejo de seguir al usuario.
+			$model_usuario->fin_seguir(Usuario::$usuario_id);
+		}
+
+		// Envio el suceso.
+		$tipo = $seguir ? 'usuario_seguir' : 'usuario_fin_seguir';
+		$model_suceso = new Model_Suceso;
+		if ($model_usuario->id != Usuario::$usuario_id)
+		{
+			$model_suceso->crear($model_usuario->id, $tipo, TRUE, $model_usuario->id, Usuario::$usuario_id);
+			$model_suceso->crear(Usuario::$usuario_id, $tipo, FALSE, $model_usuario->id, Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_suceso->crear($model_usuario->id, $tipo, TRUE, $model_usuario->id, Usuario::$usuario_id);
 		}
 
 		// Informo resultado.
-		$_SESSION['flash_success'] = 'Comenzaste a seguir al usuario correctamente.';
+		if ($seguir)
+		{
+			$_SESSION['flash_success'] = 'Comenzaste a seguir al usuario correctamente.';
+		}
+		else
+		{
+			$_SESSION['flash_success'] = 'Dejaste de seguir al usuario correctamente.';
+		}
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -1167,6 +1241,9 @@ class Base_Controller_Post extends Controller {
 		}
 
 		$model_post->seguir(Usuario::$usuario_id);
+
+		// Actualizo medallas.
+		$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_SEGUIDORES);
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
@@ -1340,18 +1417,18 @@ class Base_Controller_Post extends Controller {
 			Request::redirect('/usuario/login');
 		}
 
+		// Convertimos el post a ID.
+		$post = (int) $post;
+
+		// Cargamos el post.
+		$model_post = new Model_Post($post);
+
 		// Verifico el usuario y sus permisos.
 		if ($model_post->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_OCULTAR))
 		{
 			$_SESSION['flash_error'] = 'No tienes permiso para ocultar/mostrar posts.';
 			Request::redirect('/');
 		}
-
-		// Convertimos el post a ID.
-		$post = (int) $post;
-
-		// Cargamos el post.
-		$model_post = new Model_Post($post);
 
 		// Verificamos exista el post.
 		if ( ! is_array($model_post->as_array()))
@@ -1368,6 +1445,12 @@ class Base_Controller_Post extends Controller {
 		{
 			$_SESSION['flash_error'] = 'El post que quieres ocultar/mostrar no se encuentra disponible';
 			Request::redirect('/post/index/'.$post);
+		}
+
+		if ($tipo)
+		{
+			// Verifico actualización del rango.
+			$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
 		}
 
 		// Actualizo el estado.
@@ -1441,6 +1524,12 @@ class Base_Controller_Post extends Controller {
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado($tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_RECHAZADO);
+
+		// Verifico actualización del rango.
+		$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+		// Verifico actualización medallas.
+		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
@@ -1646,6 +1735,12 @@ class Base_Controller_Post extends Controller {
 			$model_post->actualizar_fecha();
 		}
 
+		// Verifico actualización del rango.
+		$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+		// Verifico actualización medallas.
+		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 		$_SESSION['flash_success'] = '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.';
 
 		// Enviamos el suceso.
@@ -1683,7 +1778,8 @@ class Base_Controller_Post extends Controller {
 		// Validamos la cantidad.
 		$cantidad = (int) $cantidad;
 
-		if ($cantidad < 1 || $cantidad > 10)
+		// Cantidad de puntos a dar como máximo.
+		if ($cantidad < 1 || $cantidad > Usuario::usuario()->rango()->puntos_dar)
 		{
 			$_SESSION['flash_error'] = 'La petición que has realizado es inválida.';
 			Request::redirect('/');
@@ -1721,7 +1817,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verificamos la cantidad de puntos.
-		if (Usuario::usuario()->puntos_disponibles < $cantidad)
+		if (Usuario::usuario()->puntos < $cantidad)
 		{
 			$_SESSION['flash_error'] = 'El post que desea puntuar ya ha sido puntuado por usted.';
 			Request::redirect('/post/index/'.$post);
@@ -1729,6 +1825,13 @@ class Base_Controller_Post extends Controller {
 
 		// Damos los puntos.
 		$model_post->dar_puntos(Usuario::$usuario_id, $cantidad);
+
+		// Verifico actualización del rango.
+		$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_PUNTOS);
+
+		// Verifico actualización medallas.
+		$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_PUNTOS);
+		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_PUNTOS);
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
@@ -1877,9 +1980,6 @@ class Base_Controller_Post extends Controller {
 				// Evitamos XSS.
 				$contenido = htmlentities($contenido, ENT_NOQUOTES, 'UTF-8');
 
-				// Formateamos los campos.
-				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
-
 				// Verifico si es borrador.
 				$borrador = isset($_POST['submit']) ? ($_POST['submit'] == 'borrador') : FALSE;
 
@@ -1923,6 +2023,12 @@ class Base_Controller_Post extends Controller {
 					$model_suceso = new Model_Suceso;
 					$model_suceso->crear(Usuario::$usuario_id, 'post_nuevo', FALSE, $post_id);
 
+					// Verifico actualización del rango.
+					Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo y voy a post.
 					$_SESSION['flash_success'] = 'El post fue creado correctamente.';
 					Request::redirect('/post/index/'.$post_id);
@@ -1940,5 +2046,20 @@ class Base_Controller_Post extends Controller {
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
+	 * Vista preliminar de un comentario.
+	 */
+	public function action_preview()
+	{
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Proceso contenido.
+		die(Decoda::procesar($contenido));
 	}
 }

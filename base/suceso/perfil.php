@@ -386,13 +386,22 @@ class Base_Suceso_Perfil extends Suceso {
 		$model_rango = new Model_Usuario_Rango( (int) $suceso['objeto_id1']);
 
 		// Cargo el moderador.
-		$model_moderador = new Model_Usuario( (int) $suceso['objeto_id2']);
+		if ($suceso['objeto_id2'] !== NULL)
+		{
+			$model_moderador = new Model_Usuario( (int) $suceso['objeto_id2']);
+			$moderador = $model_moderador->as_array();
+			unset($model_moderador);
+		}
+		else
+		{
+			$moderador = NULL;
+		}
 
-		return array('usuario' => $model_usuario->as_array(), 'rango' => $model_rango->as_array(), 'moderador' => $model_moderador->as_array());
+		return array('usuario' => $model_usuario->as_array(), 'rango' => $model_rango->as_array(), 'moderador' => $moderador);
 	}
 
 	/**
-	 * Suceso producido cuando el usuario cambia de rango.
+	 * Suceso producido cuando el usuario sigue a otro.
 	 * @param array $suceso Datos del suceso.
 	 * @return array
 	 */
@@ -407,4 +416,58 @@ class Base_Suceso_Perfil extends Suceso {
 		return array('usuario' => $model_usuario->as_array(), 'seguidor' => $model_seguidor->as_array());
 	}
 
+	/**
+	 * Suceso producido cuando el usuario deja de seguir a otro.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_fin_seguir($suceso)
+	{
+		// Cargo datos del usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id']);
+
+		// Cargo datos del seguidor.
+		$model_seguidor = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('usuario' => $model_usuario->as_array(), 'seguidor' => $model_seguidor->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando un usuario gana una medalla.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_nueva_medalla($suceso)
+	{
+		// Cargo usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['usuario_id']);
+
+		// Cargo medalla.
+		$model_medalla = new Model_Medalla( (int) $suceso['objeto_id']);
+
+		return array('usuario' => $model_usuario->as_array(), 'medalla' => $model_medalla->as_array());
+	}
+
+	/**
+	 * Suceso producido cuando se realiza una cita de un comentario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_comentario_citado($suceso)
+	{
+		// Cargo usuario.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		// Cargo comentario.
+		if ($suceso['objeto_id2'] == 1)
+		{
+			$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
+		}
+		else
+		{
+			$model_comentario = new Model_Foto_Comentario( (int) $suceso['objeto_id']);
+		}
+
+		return array('usuario' => $model_usuario->as_array(), 'comentario' => $model_comentario->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array());
+	}
 }

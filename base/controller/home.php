@@ -42,6 +42,7 @@ class Base_Controller_Home extends Controller {
 
 		// Listado de elemento OFFLINE.
 		$data['inicio'] = array('link' => '/', 'caption' => 'Inicio', 'active' => FALSE);
+		$data['usuarios'] = array('link' => '/home/usuarios', 'caption' => 'Usuarios', 'active' => FALSE);
 		$data['buscador'] = array('link' => '/buscador', 'caption' => 'Buscador', 'active' => FALSE);
 
 		// Listado de elementos ONLINE.
@@ -80,8 +81,8 @@ class Base_Controller_Home extends Controller {
 		$model_post = new Model_Post;
 
 		// Cantidad posts y comentarios en posts.
-		$portada->assign('cantidad_posts', $model_post->cantidad());
-		$portada->assign('cantidad_comentarios_posts', $model_post->cantidad_comentarios());
+		$portada->assign('cantidad_posts', $model_post->cantidad(Model_Post::ESTADO_ACTIVO));
+		$portada->assign('cantidad_comentarios_posts', $model_post->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
 
 		// Cantidad de elementos por pagina.
 		$model_configuracion = new Model_Configuracion;
@@ -156,20 +157,27 @@ class Base_Controller_Home extends Controller {
 		unset($post_top_list, $model_post);
 
 		// Cargamos últimos comentarios.
-		$comentario_list = Model_Post_Comentario::obtener_ultimos();
+		$m_comentarios = new Model_Comentario;
+		$comentario_list = $m_comentarios->listado(1);
 
 		// Extendemos la información de los comentarios.
 		foreach ($comentario_list as $k => $v)
 		{
 			$a = $v->as_array();
 			$a['usuario'] = $v->usuario()->as_array();
-			$a['post'] = $v->post()->as_array();
-
+			if ($v instanceof Model_Foto_Comentario)
+			{
+				$a['foto'] = $v->foto()->as_array();
+			}
+			else
+			{
+				$a['post'] = $v->post()->as_array();
+			}
 			$comentario_list[$k] = $a;
 		}
 
 		$portada->assign('ultimos_comentarios', $comentario_list);
-		unset($comentario_list);
+		unset($comentario_list, $m_comentarios);
 
 		// Cargamos top usuarios.
 		$model_usuario = new Model_Usuario;
@@ -205,11 +213,45 @@ class Base_Controller_Home extends Controller {
 		unset($foto_list);
 
 		// Cantidad fotos y comentarios en fotos.
-		$portada->assign('cantidad_fotos', $model_foto->cantidad());
-		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios());
+		$portada->assign('cantidad_fotos', $model_foto->cantidad(Model_Foto::ESTADO_ACTIVA));
+		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
 		unset($model_foto);
 
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $portada->parse());
+	}
 
+	/**
+	 * Listado de usuarios del sitio.
+	 */
+	public function action_usuarios()
+	{
+		// Cargamos la portada.
+		$portada = View::factory('home/usuarios');
+
+		// Seteo el menu.
+		$this->template->assign('master_bar', parent::base_menu('posts'));
+		$this->template->assign('top_bar', self::submenu('usuarios'));
+
+		// Cargamos modelo de usuarios.
+		$model_usuario = new Model_Usuario;
+
+		// Cargo usuarios.
+		$listado = $model_usuario->listado(-1);
+
+		// Listado de los online.
+		$online = Model_Session::online_list();
+
+		// Extendemos la información de los usuarios.
+		foreach ($listado as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['online'] = in_array($v->id, $online);
+			$listado[$k] = $a;
+		}
+
+		$portada->assign('usuarios', $listado);
+		unset($listado);
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());

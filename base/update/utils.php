@@ -71,6 +71,13 @@ class Base_Update_Utils {
      */
     public static function sys_get_temp_dir()
     {
+		// Verificamos system_path para PHP>5.2.1.
+		if (function_exists('sys_get_temp_dir'))
+		{
+			return sys_get_temp_dir();
+		}
+
+		// Verifico variable de entorno para el resto.
 		foreach (array('TMP', 'TEMP', 'TMPDIR') as $t)
 		{
 			$temp = getenv($t);
@@ -80,6 +87,7 @@ class Base_Update_Utils {
 			}
 		}
 
+		// Verifico los permisos de escritura.
 		$temp = tempnam(__FILE__, '');
 		if (file_exists($temp))
 		{
@@ -211,14 +219,34 @@ class Base_Update_Utils {
 	 */
 	public static function get_mime($path)
 	{
-		if (file_exists('finfo_open'))
+		if (function_exists('finfo_open'))
 		{
 			$finfo = new finfo(FILEINFO_MIME);
 			return $finfo->file($path);
 		}
-		else
+		elseif (function_exists('mime_content_type'))
 		{
 			return mime_content_type($path);
+		}
+		else
+		{
+			// Obtengo la extensión.
+			$ext = pathinfo($path, PATHINFO_EXTENSION);
+
+			// Verifico el tipo.
+			//TODO: implementar mime's extra.
+			switch ($ext) {
+				case 'zip':
+					return 'application/zip';
+				case 'tar':
+					return 'application/x-tar';
+				case 'gz':
+					return 'application/x-gzip';
+				case 'bz2':
+					return 'application/x-bzip2';
+				default:
+					return 'application/octet-stream';
+			}
 		}
 	}
 

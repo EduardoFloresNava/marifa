@@ -295,7 +295,7 @@ class Base_Controller_Mensaje extends Controller {
 
 			// Verificamos el contenido.
 			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
-			if ( ! isset($contenido_clean{20}) || isset($contenido{600}))
+			if ( ! isset($contenido_clean{10}) || isset($contenido{600}))
 			{
 				$view->assign('error_contenido', 'El mensaje debe tener entre 20 y 600 caractéres.');
 				$error = TRUE;

@@ -719,6 +719,12 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			}
 		}
 
+		// Cargo listado de compresores disponibles.
+		$vista->assign('compresores', Update_Compresion::get_list());
+
+		// Directorio de los plugins.
+		$vista->assign('plugin_dir', DS.PLUGINS_PATH.DS);
+
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
@@ -1091,7 +1097,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	{
 		// Cargamos la vista.
 		$vista = View::factory('admin/configuracion/correo');
-		
+
 		// Verifico si está configurado.
 		if ( ! file_exists(CONFIG_PATH.DS.'email.php'))
 		{
@@ -1101,10 +1107,10 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		{
 			// Cargo la configuración actual.
 			$configuracion = configuracion_obtener(CONFIG_PATH.DS.'email.php');
-					
+
 			// Envio la configuración.
 			$vista->assign('configuracion', $configuracion);
-			
+
 			// Mi correo.
 			$vista->assign('email', $correo !== NULL ? urldecode($correo) : Usuario::usuario()->email);
 		}
@@ -1121,7 +1127,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
-	
+
 	/**
 	 * Enviamos un correo de prueba para verificar que todo sea correcto.
 	 */
@@ -1133,14 +1139,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			$_SESSION['flash_error'] = 'No puedes enviar un correo de prueba si no especificas el destinatario.';
 			Request::redirect('/admin/configuracion/correo');
 		}
-		
+
 		// Verifico que se encuentre configurado.
 		if ( ! file_exists(CONFIG_PATH.DS.'email.php'))
 		{
 			$_SESSION['flash_error'] = 'No puedes enviar un correo de prueba ya que no has lo has configurado.';
 			Request::redirect('/admin/configuracion/correo');
 		}
-		
+
 		// Verifico el correo enviado.
 		if ( ! isset($_POST['email']) || ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $_POST['email']))
 		{
@@ -1150,7 +1156,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 		// Cargo el modelo de configuraciones.
 		$model_config = new Model_Configuracion;
-		
+
 		// Creo el mensaje de correo.
 		$message = Email::get_message();
 		$message->setSubject('Verificación configuración correos de '.$model_config->get('nombre', 'Marifa'));
@@ -1165,9 +1171,63 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Envio el email.
 		$mailer = Email::get_mailer();
 		$mailer->send($message);
-		
+
 		// Informo el resultado.
 		$_SESSION['flash_success'] = 'El correo de prueba se ha enviado correctamente.';
 		Request::redirect('/admin/configuracion/correo');
+	}
+
+	/**
+	 * Realizamos optimizaciones del sitio.
+	 * Por ejemplo, desfragmentar base de datos, limpiar cache, comprimir logs, etc.
+	 */
+	public function action_optimizar()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/configuracion/optimizar');
+
+		if (Request::method() == 'POST')
+		{
+			$tipo = isset($_POST['submit']) ? $_POST['submit'] : '';
+			switch ($tipo)
+			{
+				case 'database': // Obtimizamos las tablas.
+					$db = Database::get_instance();
+
+					foreach (array('categoria', 'configuracion', 'noticia', 'post_tag', 'session', 'suceso', 'rango', 'rango_permiso') as $tabla)
+					{
+						try {
+							$db->update("REPAIR TABLE $tabla;");
+						} catch (Database_Exception $e) {}
+
+						try {
+							$db->update("ANALYZE TABLE $tabla;");
+						} catch (Database_Exception $e) {}
+
+						try {
+							$db->update("OPTIMIZE TABLE $tabla;");
+						} catch (Database_Exception $e) {}
+					}
+
+					$_SESSION['flash_success'] = 'Optimización de la base de datos realizada correctamente.';
+					Request::redirect('/admin/configuracion/optimizar');
+					break;
+				//case 'cache':
+			}
+		}
+
+
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_optimizar'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
 	}
 }

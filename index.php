@@ -38,6 +38,11 @@ else
 	// PARA PRODUCCION DEBE SER FALSE.
 }
 
+/**
+ * Defino versión de marifa.
+ */
+define('VERSION', '0.2RC1');
+
 // Suprimimos advertencias de DateTime. Si lo deseas puedes poner una TZ estatica.
 date_default_timezone_set('UTC');
 
@@ -93,7 +98,7 @@ require_once (APP_BASE.DS.'function.php');
 // Iniciamos el proceso de carga automatica de librerias.
 spl_autoload_register('loader_load');
 
-//Defino la URL del sitio.
+// Defino la URL del sitio.
 define('SITE_URL', get_site_url());
 
 // Verifico que no exista el instalador.
@@ -148,8 +153,10 @@ if ($lock->is_locked())
 {
 	if ($lock->is_locked_for(IP::get_ip_addr()))
 	{
-		//TODO: utilizar vista para dar flexibilidad.
-		die("Modo mantenimiento activado.");
+		// Cargo la vista.
+		$view = View::factory('mantenimiento');
+		$view->show();
+		exit;
 	}
 }
 

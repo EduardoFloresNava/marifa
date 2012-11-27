@@ -5,9 +5,15 @@
 			<img src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
 			<h4 class="nick">{$usuario.nick}</h4>
 		</a>
-		{if="$me != NULL && $me != $usuario.id"}<div class="row-fluid">
-			<a href="#" class="btn span12" style="min-height: 0;">Seguir usuario</a>
-		</div>{/if}
+		{if="$me !== NULL && $me !== $usuario.id"}
+		<div class="row-fluid follow">
+			{if="!$sigue_usuario"}
+			<a href="/foto/seguir_usuario/{$foto.id}/{$usuario.id}/1" class="btn span12" style="min-height: 0;"><i class="icon icon-plus"></i> Seguir usuario</a>
+			{else}
+			<a href="/foto/seguir_usuario/{$foto.id}/{$usuario.id}/0" class="btn span12" style="min-height: 0;"><i class="icon icon-minus"></i> Dejar de seguir</a>
+			{/if}
+		</div>
+		{/if}
 		<div class="well"><i class="icon icon-user"></i><span class="pull-right">{if="$usuario.seguidores > 1"}{$usuario.seguidores} {@seguidores@}{elseif="$usuario.seguidores == 1"}1 {@seguidor@}{else}{@sin@} {@seguidores@}{/if}</span></div>
 		<div class="well"><i class="icon icon-plus"></i><span class="pull-right">{if="$usuario.puntos > 1"}{$usuario.puntos} {@puntos@}{elseif="$usuario.puntos == 1"}1 {@puntos@}{else}{@sin@} {@puntos@}{/if}</span></div>
 		<div class="well"><i class="icon icon-book"></i><span class="pull-right">{if="$usuario.posts > 1"}{$usuario.posts} {@posts@}{elseif="$usuario.posts == 1"}1 {@post@}{else}{@sin@} {@posts@}{/if}</span></div>
@@ -65,14 +71,14 @@
 			</div>{/if}
 			{if="$me != NULL && $foto.usuario_id != $me"}
 			<div class="btn-group pull-right">
-				<a href="#" class="btn btn-danger">{@Denunciar@}</a>
+				<a href="/foto/denunciar/{$foto.id}" class="btn btn-danger">{@Denunciar@}</a>
 			</div>
 			{/if}
 		</div>
 		<div class="row-fluid comentarios">
 			<div class="span12">
 				{loop="$comentarios"}
-				<div class="row-fluid comentario">
+				<div class="row-fluid comentario" id="c-{$value.id}">
 					<div class="span1">
 						<img class="thumbnail" src="{function="Utils::get_gravatar($value.usuario.email, 48, 48)"}" />
 					</div>
@@ -86,7 +92,7 @@
 							{if="$me != NULL"}
 							<div class="btn-toolbar pull-right acciones">
 								<div class="btn-group">
-									<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}"><i class="icon icon-comment"></i></a>
+									<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}" data-comment="f{$value.id}"><i class="icon icon-comment"></i></a>
 									{if="($me == $value.usuario.id || $comentario_editar) && $value.estado != 2"}<a href="/foto/editar_comentario/{$value.id}" class="btn btn-mini btn-primary" rel="tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
 									{if="($me == $value.usuario.id || $comentario_ocultar) && $value.estado == 0"}<a href="/foto/ocultar_comentario/{$value.id}/0" class="btn btn-mini btn-inverse" rel="tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
 									{if="$value.estado == 1 && $comentario_ocultar"}<a href="/foto/ocultar_comentario/{$value.id}/1" class="btn btn-mini btn-info" rel="tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{/if}
@@ -108,7 +114,7 @@
 			</div>
 		</div>
 		{if="$me != NULL && $puedo_comentar"}
-		<form method="POST" action="/foto/comentar/{$foto.id}">
+		<form method="POST" action="/foto/comentar/{$foto.id}" class="comentar">
 			<div class="btn-toolbar bbcode-bar">
 				<div class="btn-group">
 					<a href="#" title="Negrita" class="btn-bold btn btn-small"><i class="icon-bold"></i></a>
@@ -172,7 +178,7 @@
 			<div class="alert alert-danger">
 				<strong>{@&iexcl;Error!@}</strong> {$comentario_error}
 			</div>{/if}
-			<textarea class="span10" name="comentario" id="comentario" placeholder="Comentario...">{$comentario_content}</textarea>
+			<textarea class="span10" name="comentario" data-preview="/foto/preview/" id="comentario" placeholder="Comentario...">{$comentario_content}</textarea>
 		</form>
 		{else}
 			{if="$puedo_comentar"}

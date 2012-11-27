@@ -85,7 +85,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		catch (PDOException $e)
 		{
 			// Generamos la excepcion de base de datos.
-			throw new Database_Exception("No se pudo conectar a la base de datos: '{$e->getMessage()}'", $e->getCode(), $e);
+			throw new Database_Exception("No se pudo conectar a la base de datos: '{$e->getMessage()}'", $e->getCode());
 			// Mostramos que no nos pudimos conectar.
 			$this->dbh = NULL;
 			// Hubo un problema en la coneccion.
@@ -159,7 +159,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		}
 		catch(PDOException $e)
 		{
-			throw new Database_Exception("Error generando la consulta: '{$e->getMessage()}'", $e->getCode(), $e);
+			throw new Database_Exception("Error generando la consulta: '{$e->getMessage()}'", $e->getCode());
 		}
 
 		// Asignamos todos los campos.

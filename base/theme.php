@@ -176,9 +176,9 @@ class Base_Theme {
 		if (isset($_SESSION['preview-theme']))
 		{
 			// Verifico exista.
-			if (file_exists(APP_BASE.DS.VIEW_PATH.Sesssion::get('preview-theme')))
+			if (file_exists(APP_BASE.DS.VIEW_PATH.$_SESSION('preview-theme')))
 			{
-				return Sesssion::get('preview-theme');
+				return $_SESSION('preview-theme');
 			}
 		}
 		return NULL;

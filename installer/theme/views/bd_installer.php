@@ -8,10 +8,16 @@
 	</thead>
 	<tbody>
 		{loop="$consultas"}
+		{if="is_array($value)"}
 		<tr{if="isset($value.error)"} class="err"{/if}{if="isset($value.success)"} class="ok"{/if}>
 			<td>{$value.titulo}</td>
 			<td>{if="isset($value.error)"}{$value.error}{/if}{if="isset($value.success)"}OK{/if}</td>
 		</tr>
+		{else}
+		<tr>
+			<th colspan="2">Actualización a {$value}:</th>
+		</tr>
+		{/if}
 		{/loop}
 	</tbody>
 </table>

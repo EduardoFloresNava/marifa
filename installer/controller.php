@@ -222,6 +222,10 @@ class Installer_Controller {
 		// Cargo la vista.
 		$vista = View::factory('requerimientos');
 
+		// Intento crear /plugin/plugins.php y /config/database.php para solucionar problema de verificación de permisos.
+		@touch(APP_BASE.'/plugin/plugin.php');
+		@touch(APP_BASE.'/config/database.php');
+
 		// Listado de requerimientos.
 		$reqs = array(
 			array('titulo' => 'Versión PHP', 'requerido' => '> 5.2', 'actual' => phpversion(), 'estado' => version_compare(PHP_VERSION, '5.2.0', '>=')),
@@ -230,7 +234,7 @@ class Installer_Controller {
 			array('titulo' => 'MySQL', 'requerido' => 'ON', 'actual' => function_exists('mysql_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysql_connect'), 'opcional' => class_exists('pdo')),
 			array('titulo' => 'PDO', 'requerido' => 'ON', 'actual' => class_exists('pdo') ? 'ON' : 'OFF', 'estado' => class_exists('pdo'), 'opcional' => function_exists('mysql_connect')),
 			'Cache',
-			array('titulo' => 'File', 'requerido' => 'ON', 'actual' => 'ON', 'estado' => TRUE, 'opcional' => TRUE),
+			array('titulo' => 'File', 'requerido' => 'ON', 'actual' => 'ON', 'estado' => is_writable(CACHE_PATH.DS.'file'), 'opcional' => TRUE),
 			array('titulo' => 'APC', 'requerido' => 'ON', 'actual' => (extension_loaded('apc') && function_exists('apc_store')) ? 'ON' : 'OFF', 'estado' => (extension_loaded('apc') && function_exists('apc_store')), 'opcional' => TRUE),
 			array('titulo' => 'Memcached', 'requerido' => 'ON', 'actual' => extension_loaded('memcached') ? 'ON' : 'OFF', 'estado' => extension_loaded('memcached'), 'opcional' => TRUE),
 			'Sistema de actualizaciones',
@@ -243,8 +247,6 @@ class Installer_Controller {
 			array('titulo' => '/plugin/plugin.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/plugin/plugin.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/plugin/plugin.php')),
 			array('titulo' => '/config/database.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/config/database.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/config/database.php')),
 		);
-
-		//TODO: verificar cache FILE.
 
 		// Seteo el listado de requerimientos.
 		$vista->assign('requerimientos', $reqs);
@@ -530,6 +532,36 @@ class Installer_Controller {
 			$lst[$k] = array('titulo' => $v[0]);
 		}
 
+		// Obtengo versión actual.
+		$version_actual = Database::get_instance()->query('SELECT valor FROM configuracion WHERE clave = \'version_actual\';')->get_var();
+
+		// Obtengo el listado de actualizaciones.
+		$aux = scandir(APP_BASE.DS.'installer'.DS.'update'.DS);
+		foreach ($aux as $u)
+		{
+			// Verifico sea un archivo válido.
+			if (substr($u, (-1) * strlen(FILE_EXT)) !== FILE_EXT)
+			{
+				continue;
+			}
+
+			// Verifico si debe ser importada.
+			if (version_compare($version_actual, substr($u, 0, (-1) * (strlen(FILE_EXT) + 1))) < 0)
+			{
+				// Agrego el título.
+				$lst[] = substr($u, 0, (-1) * (strlen(FILE_EXT) + 1));
+
+				// Listado de titulos.
+				$upd_aux_list = require(APP_BASE.DS.'installer'.DS.'update'.DS.$u);
+
+				foreach ($upd_aux_list as $k => $item)
+				{
+					$lst[$u.$k] = array('titulo' => $item[0]);
+					$database_list[$u.$k] = $item;
+				}
+			}
+		}
+
 		// Ejecuto el listado de consultas.
 		if (Request::method() == 'POST')
 		{
@@ -640,11 +672,20 @@ class Installer_Controller {
 		$model_configuracion = new Model_Configuracion;
 
 		// Datos por defecto.
-		foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword', 'bd_password') as $v)
-		{
-			$vista->assign($v, '');
-			$vista->assign('error_'.$v, FALSE);
-		}
+		$vista->assign('nombre', $model_configuracion->get('nombre', ''));
+		$vista->assign('error_nombre', FALSE);
+		$vista->assign('descripcion', $model_configuracion->get('descripcion', ''));
+		$vista->assign('error_descripcion', FALSE);
+		$vista->assign('usuario', '');
+		$vista->assign('error_usuario', FALSE);
+		$vista->assign('email', '');
+		$vista->assign('error_email', FALSE);
+		$vista->assign('password', '');
+		$vista->assign('error_password', FALSE);
+		$vista->assign('cpassword', '');
+		$vista->assign('error_cpassword', FALSE);
+		$vista->assign('bd_password', '');
+		$vista->assign('error_bd_password', FALSE);
 
 		if (Request::method() == 'POST')
 		{
@@ -663,9 +704,9 @@ class Installer_Controller {
 			{
 				$vista->assign($v, $$v);
 			}
-			
+
 			$error = FALSE;
-			
+
 			// Verifico la clave de la base de datos.
 			$cfg = configuracion_obtener(CONFIG_PATH.DS.'database.php');
 			if ($bd_password !== $cfg['password'])
@@ -716,6 +757,24 @@ class Installer_Controller {
 				$vista->assign('error_cpassword', 'Las contraseñas ingresadas no coinciden.');
 			}
 
+			// Verifico no exista correo.
+			if ( ! $error)
+			{
+				// Cargo el modelo.
+				$model_usuario = new Model_Usuario;
+
+				// Verifico tenga ese email.
+				$model_usuario->load_by_nick($usuario);
+				if ($model_usuario->existe() && $model_usuario->email !== $email)
+				{
+					if ($model_usuario->existe(array('email' => $email)))
+					{
+						$error = TRUE;
+						$vista->assign('error_email', 'Ya existe un usuario con ese correo, introduce otro.');
+					}
+				}
+			}
+
 			// Actualizo los valores.
 			if ( ! $error)
 			{
@@ -735,6 +794,15 @@ class Installer_Controller {
 					$model_usuario->actualizar_campo('rango', 1);
 					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
 					$model_usuario->actualizar_campo('email', $email);
+				}
+				elseif ($model_usuario->exists_email($email))
+				{
+					// Actualizo los datos.
+					$model_usuario->load_by_email($email);
+					$model_usuario->actualizar_contrasena($password);
+					$model_usuario->actualizar_campo('rango', 1);
+					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
+					$model_usuario->actualizar_campo('nick', $usuario);
 				}
 				else
 				{

@@ -192,7 +192,7 @@ class Base_Assets {
 		}
 
 		// Verifico si se puede escribir.
-		if ( ! @is_writable($target))
+		if ($target !== NULL && ! is_writable(dirname($target)))
 		{
 			Log::warning("No se puede generar la cache del asset '$file' en '$target'. Verifique los permisos de escritura.");
 			$target = NULL;

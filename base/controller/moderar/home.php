@@ -176,6 +176,85 @@ class Base_Controller_Moderar_Home extends Controller {
 		// Cargamos la portada.
 		$portada = View::factory('moderar/home/index');
 
+		// Listado de sucesos de moderacion.
+		//TODO: IMPLEMENTAR.
+		$portada->assign('sucesos', array());
+
+		// Listado de denuncias.
+		$rst = Database::get_instance()->query('SELECT * FROM ( SELECT \'post\' as type, id from post_denuncia WHERE estado = 0 UNION SELECT \'foto\' as type, id from foto_denuncia WHERE estado = 0 UNION SELECT \'usuario\' as type, id from usuario_denuncia WHERE estado = 0 ) as A LIMIT 10');
+		$rst->set_fetch_type(Database_Query::FETCH_ASSOC);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			switch ($v['type'])
+			{
+				case 'post':
+					$denuncia = new Model_Post_Denuncia( (int) $v['id']);
+					$obj = $denuncia->as_array();
+					$obj['usuario'] = $denuncia->usuario()->as_array();
+					$obj['tipo'] = 'post';
+					$obj['post'] = $denuncia->post()->as_array();
+					$lst[] = $obj;
+					break;
+				case 'foto':
+					$denuncia = new Model_Foto_Denuncia( (int) $v['id']);
+					$obj = $denuncia->as_array();
+					$obj['usuario'] = $denuncia->usuario()->as_array();
+					$obj['tipo'] = 'foto';
+					$obj['foto'] = $denuncia->foto()->as_array();
+					$lst[] = $obj;
+					break;
+				case 'usuario':
+					$denuncia = new Model_Usuario_Denuncia( (int) $v['id']);
+					$obj = $denuncia->as_array();
+					$obj['usuario'] = $denuncia->usuario()->as_array();
+					$obj['tipo'] = 'usuario';
+					$obj['denunciado'] = $denuncia->denunciado()->as_array();
+					$lst[] = $obj;
+					break;
+			}
+		}
+		$portada->assign('denuncias', $lst);
+		unset($lst, $rst);
+
+		// Listado de contenido desaprobado.
+		$rst = Database::get_instance()->query('SELECT * FROM ( SELECT \'post\' as type, id, fecha from post WHERE estado = 3 UNION SELECT \'post_comentario\' as type, id, fecha from post_comentario WHERE estado = 1 UNION SELECT \'foto_comentario\' as type, id, fecha from foto_comentario WHERE estado = 1 ) as A ORDER BY fecha DESC LIMIT 10');
+		$rst->set_fetch_type(Database_Query::FETCH_ASSOC);
+
+		$lista = array();
+		foreach ($rst as $v)
+		{
+			switch ($v['type'])
+			{
+				case 'post':
+					$post = new Model_Post( (int) $v['id']);
+					$obj = $post->as_array();
+					$obj['usuario'] = $post->usuario()->as_array();
+					$obj['tipo'] = 'post';
+					$lista[] = $obj;
+					break;
+				case 'post_comentario':
+					$post = new Model_Post_Comentario( (int) $v['id']);
+					$obj = $post->as_array();
+					$obj['post'] = $post->post()->as_array();
+					$obj['usuario'] = $post->usuario()->as_array();
+					$obj['tipo'] = 'post_comentario';
+					$lista[] = $obj;
+					break;
+				case 'foto_comentario':
+					$post = new Model_Foto_Comentario( (int) $v['id']);
+					$obj = $post->as_array();
+					$obj['foto'] = $post->foto()->as_array();
+					$obj['usuario'] = $post->usuario()->as_array();
+					$obj['tipo'] = 'foto_comentario';
+					$lista[] = $obj;
+					break;
+			}
+		}
+		$portada->assign('contenido', $lista);
+		unset($lista);
+
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 

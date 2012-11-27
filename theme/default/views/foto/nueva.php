@@ -14,7 +14,7 @@
 			<div class="control-group{if="$error_titulo"} error{/if}">
 				<label class="control-label" for="titulo">T&iacute;tulo</label>
 				<div class="controls">
-					<input type="text" id="titulo" name="titulo" value="{$titulo}" class="span10" />
+					<input type="text" id="titulo" name="titulo" value="{$titulo}" class="input-xxlarge" />
 					<span class="help-block">{if="$error_titulo"}{$error_titulo}{/if}</span>
 				</div>
 			</div>
@@ -22,9 +22,9 @@
 			<div class="control-group{if="$error_url"} error{/if}">
 				<label class="control-label" for="url">URL</label>
 				<div class="controls">
-					<input type="text" id="url" name="url" value="{$url}" class="span4" />
+					<input type="text" id="url" name="url" value="{$url}" class="input-large" />
 					o
-					<input type="file" id="img" name="img" class="span5" />
+					<input type="file" id="img" name="img" class="input-xxlarge" />
 					<span class="help-block">{if="$error_url"}{$error_url}{/if}</span>
 				</div>
 			</div>
@@ -86,7 +86,7 @@
 							<a href="#" title="Vista preliminar" class="btn-preview btn btn-small btn-success"><i class="icon-eye-open icon-white"></i></a>
 						</div>
 					</div>
-					<textarea name="descripcion" id="descripcion" class="span10">{$descripcion}</textarea>
+					<textarea name="descripcion" id="descripcion" data-preview="/foto/preview" class="input-xxlarge">{$descripcion}</textarea>
 					<span class="help-block">{if="$error_descripcion"}{$error_descripcion}{/if}</span>
 				</div>
 			</div>
@@ -94,7 +94,7 @@
 			<div class="control-group{if="$error_categoria"} error{/if}">
 				<label class="control-label" for="categoria">Categor&iacute;a</label>
 				<div class="controls">
-					<select class="span10" name="categoria" id="categoria" size="10">
+					<select class="input-xxlarge" name="categoria" id="categoria" size="10">
 						{loop="$categorias"}
 						<option value="{$value.seo}"{if="$categoria == $value.seo"}selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
 					</select>

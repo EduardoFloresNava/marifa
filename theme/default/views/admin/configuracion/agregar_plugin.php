@@ -4,7 +4,10 @@
     <li class="active">Importar plugin</li>
 </ul>
 <div class="header">
-	<h2 class="title">Importar plugin</h2>
+	<h2>Importar plugin</h2>
+</div>
+<div class="alert alert-info">
+	<i class="icon icon-info-sign"></i> Si lo desea puede directamente colocar el plugin en <code>{$plugin_dir}</code>.
 </div>
 <form method="POST" enctype="multipart/form-data" class="form-horizontal" action="">
 
@@ -12,7 +15,7 @@
 		<label class="control-label" for="plugin">Plugin a importar</label>
 		<div class="controls">
 			<input type="file" name="plugin" id="plugin" />
-			<span class="help-block">{if="$error_carga"}{$error_carga}{/if}</span>
+			<span class="help-block">{if="$error_carga"}{$error_carga}{else}Compresiones disponibles: {function="implode(', ', $compresores)"}.{/if}</span>
 		</div>
 	</div>
 
