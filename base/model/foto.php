@@ -527,7 +527,7 @@ class Base_Model_Foto extends Model_Dataset {
 	 */
 	public function cantidad_denuncias()
 	{
-		return $this->db->insert('SELECT COUNT(*) foto_denuncia WHERE foto_id = ?', $this->primary_key['id']);
+		return $this->db->query('SELECT COUNT(*) FROM foto_denuncia WHERE foto_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
 	}
 
 	/**

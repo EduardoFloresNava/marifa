@@ -1233,7 +1233,7 @@ class Base_Controller_Foto extends Controller {
 				$id = $model_foto->denunciar(Usuario::$usuario_id, $motivo, $comentario);
 
 				// Actualizo medallas.
-				$model_foto->actualizar_medallas(Model_Medalla::CONDICION_POST_DENUNCIAS);
+				$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_DENUNCIAS);
 
 				// Agregamos el suceso.
 				$model_suceso = new Model_Suceso;
