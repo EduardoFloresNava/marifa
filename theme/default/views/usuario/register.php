@@ -40,10 +40,18 @@
             </div>
         </div>
 
+		<div class="control-group{if="$error_captcha"} error{/if}">
+            <label class="control-label" for="captcha">CAPTCHA</label>
+            <div class="controls">
+                <input type="text" id="captcha" name="captcha" value="{$captcha}" />
+				<img src="/home/captcha" style="display: block;" />
+            </div>
+        </div>
+
         <div class="form-actions">
             <button class="btn btn-primary">Registrarse</button>
             o
-            <a href="/usuario/login/">&iquest;Iniciar session?</a>
+            <a href="/usuario/login/">&iquest;Iniciar sesión?</a>
         </div>
     </fieldset>
 </form>

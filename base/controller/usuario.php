@@ -173,7 +173,7 @@ class Base_Controller_Usuario extends Controller {
 		$view_usuario = View::factory('usuario/register');
 
 		// Pasamos toda la información a la vista.
-		foreach (array('nick', 'email', 'password', 'c_password') as $field)
+		foreach (array('nick', 'email', 'password', 'c_password', 'captcha') as $field)
 		{
 			$view_usuario->assign($field, in_array($field, array('nick', 'email')) ? (isset($_POST[$field]) ? $_POST[$field] : ''): '');
 			$view_usuario->assign('error_'.$field, FALSE);
@@ -184,7 +184,7 @@ class Base_Controller_Usuario extends Controller {
 		{
 			// Verificamos los datos enviados.
 			$error = FALSE;
-			foreach (array('nick', 'email', 'password', 'c_password') as $field)
+			foreach (array('nick', 'email', 'password', 'c_password', 'captcha') as $field)
 			{
 				if ( ! isset($_POST[$field]) || empty($_POST[$field]))
 				{
@@ -200,7 +200,7 @@ class Base_Controller_Usuario extends Controller {
 			else
 			{
 				// Pasamos toda la información a la vista.
-				foreach (array('nick', 'email') as $field)
+				foreach (array('nick', 'email', 'captcha') as $field)
 				{
 					$view_usuario->assign($field, $_POST[$field]);
 				}
@@ -236,6 +236,15 @@ class Base_Controller_Usuario extends Controller {
 						$view_usuario->assign('error_c_password', TRUE);
 						$error = TRUE;
 					}
+				}
+
+				// Verifico CAPTCHA.
+				include_once(VENDOR_PATH.'securimage'.DS.'securimage.php');
+				$securimage = new securimage;
+				if ($securimage->check($_POST['captcha']) === FALSE)
+				{
+					$view_usuario->assign('error_captcha', TRUE);
+					$error = TRUE;
 				}
 
 				if ($error)

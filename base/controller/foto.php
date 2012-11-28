@@ -961,9 +961,10 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('categorias', $categorias);
 
 		// Elementos por defecto.
-		foreach (array('titulo', 'url', 'descripcion', 'comentarios', 'visitantes', 'categoria', 'error_titulo', 'error_url', 'error_descripcion', 'error_categoria') as $k)
+		foreach (array('captcha', 'titulo', 'url', 'descripcion', 'comentarios', 'visitantes', 'categoria', 'error_titulo', 'error_url', 'error_descripcion', 'error_categoria') as $k)
 		{
 			$view->assign($k, '');
+			$view->assign('error_'.$k, FALSE);
 		}
 
 		// Menu.
@@ -1021,6 +1022,15 @@ class Base_Controller_Foto extends Controller {
 			if ( ! $model_categorias->existe_seo($categoria))
 			{
 				$view->assign('error_categoria', 'La categoria seleccionada es incorrecta.');
+				$error = TRUE;
+			}
+
+			// Verifico CAPTCHA.
+			include_once(VENDOR_PATH.'securimage'.DS.'securimage.php');
+			$securimage = new securimage;
+			if ($securimage->check($captcha) === FALSE)
+			{
+				$view->assign('error_captcha', TRUE);
 				$error = TRUE;
 			}
 
