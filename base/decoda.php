@@ -60,6 +60,8 @@ class Base_Decoda extends Decoda_Decoda {
 		$this->addFilter(new ListFilter);
 		$this->addFilter(new QuoteFilter($preview));
 		$this->addFilter(new UrlFilter);
+		$this->addHook(new EmoticonHook(array('path' => THEME_URL.DS.'assets'.DS.'emoticons'.DS)));
+		$this->addHook(new ClickableHook);
 		$this->whitelist(
 				'b',
 				'i',
