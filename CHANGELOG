@@ -1,3 +1,12 @@
+Marifa 0.2RC2 []
+ - FEATURE: Páginas estáticas con DCMA, protocolo, declaración de privacidad y términos y condiciones.
+ - FEATURE: Mejora de la portada.
+ - FEATURE: Implementación de AJAX para los Sucesos.
+ - FEATURE: Se muestra la consulta cuando se produce un error en el driver MySQL.
+ - FIX: Solucionado error en Model_Dataset con claves compuestas.
+ - FIX: Error en por medallas en denuncias de fotos.
+ - FIX: Mostramos posts privados en la portada con simbolo para identificarlos.
+
 Marifa 0.2RC1 [26/11/2012]
  - FEATURE: Agregados rangos dinámicos.
  - FEATURE: Agregadas actualizaciones de versiones en el instalador.
