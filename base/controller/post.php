@@ -1879,9 +1879,10 @@ class Base_Controller_Post extends Controller {
 		$view->assign('permisos_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER));
 
 		// Elementos por defecto.
-		foreach (array('titulo', 'contenido', 'categoria', 'privado', 'patrocinado', 'sticky', 'comentar', 'tags', 'error_titulo', 'error_contenido', 'error_categoria', 'error_tags') as $k)
+		foreach (array('captcha', 'titulo', 'contenido', 'categoria', 'privado', 'patrocinado', 'sticky', 'comentar', 'tags', 'error_titulo', 'error_contenido', 'error_categoria', 'error_tags') as $k)
 		{
 			$view->assign($k, '');
+			$view->assign('error_'.$k, FALSE);
 		}
 
 		// Listado de categorias.
@@ -1900,7 +1901,7 @@ class Base_Controller_Post extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los datos y seteamos valores.
-			foreach (array('titulo', 'contenido', 'categoria', 'tags') as $k)
+			foreach (array('titulo', 'contenido', 'categoria', 'tags', 'captcha') as $k)
 			{
 				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
 				$view->assign($k, $$k);
@@ -1950,6 +1951,15 @@ class Base_Controller_Post extends Controller {
 			if ( ! preg_match('/^[a-zA-Z0-9áéíóúñÑÁÉÍÓÚ, ]{0,}$/D', $tags))
 			{
 				$view->assign('error_tags', 'Las etiquetas ingresadas con son alphanuméricas.');
+				$error = TRUE;
+			}
+
+			// Verifico CAPTCHA.
+			include_once(VENDOR_PATH.'securimage'.DS.'securimage.php');
+			$securimage = new securimage;
+			if ($securimage->check($captcha) === FALSE)
+			{
+				$view->assign('error_captcha', TRUE);
 				$error = TRUE;
 			}
 

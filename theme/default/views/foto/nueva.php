@@ -91,6 +91,15 @@
 				</div>
 			</div>
 
+			<div class="control-group{if="$error_captcha"} error{/if}">
+				<label class="control-label" for="captcha">CAPTCHA</label>
+				<div class="controls">
+					<input type="text" id="captcha" name="captcha" value="{$captcha}" />
+					<span class="help-block">{if="$error_captcha"}{$error_captcha}{else}Ingresa el código que aparece a continuación.{/if}</span>
+					<img src="/home/captcha" style="display: block;" />
+				</div>
+			</div>
+
 			<div class="control-group{if="$error_categoria"} error{/if}">
 				<label class="control-label" for="categoria">Categor&iacute;a</label>
 				<div class="controls">
