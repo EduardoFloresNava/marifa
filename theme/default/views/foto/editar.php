@@ -76,7 +76,7 @@
 							<a href="#" title="Vista preliminar" class="btn-preview btn btn-small btn-success"><i class="icon-eye-open icon-white"></i></a>
 						</div>
 					</div>
-					<textarea name="descripcion" id="descripcion" class="span10">{$descripcion}</textarea>
+					<textarea name="descripcion" id="descripcion" class="span10" data-preview="/foto/preview">{$descripcion}</textarea>
 					<span class="help-block">{if="$error_descripcion"}{$error_descripcion}{/if}</span>
 				</div>
 			</div>
