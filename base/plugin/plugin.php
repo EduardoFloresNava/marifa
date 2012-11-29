@@ -112,7 +112,7 @@ class Base_Plugin_Plugin {
 		$data->nombre = (string) $props['nombre'];
 		$data->descripcion = (string) $props['descripcion'];
 		$data->version = (int) $props['version'];
-		
+
 		// TODO: ver arreglo.
 		$data->autor = (string) $props['autor'];
 
@@ -193,7 +193,7 @@ class Base_Plugin_Plugin {
 			else
 			{
 				// Armamos el nombre de la clase.
-				$class_name = preg_replace('/([\/])\s*(\w)/e', 'strtoupper(\'$1$2\')', ucfirst(strtolower($base)));
+				$class_name = preg_replace('/([\/])\s*(\w)/e', 'strtoupper(\'$1$2\')', ucfirst(strtolower($base.$file)));
 				$class_name = str_replace('.'.FILE_EXT, '', $class_name);
 				$class_name = str_replace('/', '_', $class_name);
 
@@ -272,7 +272,7 @@ class Base_Plugin_Plugin {
 			else
 			{
 				// Armamos el nombre de la clase.
-				$class_name = preg_replace('/([\/])\s*(\w)/e', 'strtoupper(\'$1$2\')', ucfirst(strtolower($base)));
+				$class_name = preg_replace('/([\/])\s*(\w)/e', 'strtoupper(\'$1$2\')', ucfirst(strtolower($base.$file)));
 				$class_name = str_replace('.'.FILE_EXT, '', $class_name);
 				$class_name = str_replace('/', '_', $class_name);
 
@@ -349,7 +349,7 @@ class Base_Plugin_Plugin {
 			else
 			{
 				// Armamos el nombre de la clase.
-				$class_name = preg_replace('/([\/])\s*(\w)/e', 'strtoupper(\'$1$2\')', ucfirst(strtolower($base)));
+				$class_name = preg_replace('/([\/])\s*(\w)/e', 'strtoupper(\'$1$2\')', ucfirst(strtolower($base.$file)));
 				$class_name = str_replace('.'.FILE_EXT, '', $class_name);
 				$class_name = str_replace('/', '_', $class_name);
 
