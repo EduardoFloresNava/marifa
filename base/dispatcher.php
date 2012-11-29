@@ -54,7 +54,7 @@ class Base_Dispatcher {
 		{
 			$url = '';
 		}
-				
+
 		// Verificamos assets tema.
 		if (preg_match('/^(\/){0,1}(theme)\/([a-z0-9_]+)\/(assets)\/(css|js)\/([a-z0-9_\.]+)(\.css|\.js)$/D', $url))
 		{
@@ -67,11 +67,11 @@ class Base_Dispatcher {
 			{
 				$p = APP_BASE.DS.$url;
 			}
-						
+
 			// Compilo el asset.
 			Assets::reverse_compile($p, ! DEBUG);
 		}
-		
+
 		// Verificamos assets en plugins.
 		if (preg_match('/^(\/){0,1}(plugins)\/([a-z0-9]+)\/(assets)\/((css|js)\/){0,1}([a-z0-9_\.]+)(\.css|\.js)$/D', $url))
 		{
@@ -173,7 +173,7 @@ class Base_Dispatcher {
 				}
 				return FALSE;
 			}
-			
+
 			// Formateo el plugins.
 			$p_name = strtolower($segmentos[1]);
 
@@ -289,7 +289,7 @@ class Base_Dispatcher {
 						}
 					}
 				}
-				
+
 				// Realizo la llamada.
 				return self::call_controller($controller_name, $accion, $args, $p_name);
 			}
@@ -422,7 +422,7 @@ class Base_Dispatcher {
 				}
 			}
 		}
-		
+
 		// Realizo la llamada.
 		return self::call_controller($controller_name, $accion, $args);
 	}
@@ -439,7 +439,7 @@ class Base_Dispatcher {
 	{
 		// Creo instancia del objeto.
 		$cont = new $controller;
-		
+
 		// Obtenemos la cantidad de parámetros necesaria.
 		$r_m = new ReflectionMethod($cont, 'action_'.$accion);
 		$p_n = $r_m->getNumberOfRequiredParameters();
@@ -452,22 +452,28 @@ class Base_Dispatcher {
 
 		// Agrego a Stack.
 		Request::add_stack(NULL, $controller, $accion, $args, $plugin);
-		
+
 		// Llamo pre-llamada.
-		call_user_func(array($cont, 'before'));
-		
+		if (method_exists($cont, 'before'))
+		{
+			call_user_func(array($cont, 'before'));
+		}
+
 		// Llamo la acción.
 		$rst = call_user_func_array(array(
 				$cont,
 				'action_'.$accion
 		), $args);
-		
+
 		// Llamo post-llamada.
-		call_user_func(array($cont, 'after'));
-		
+		if (method_exists($cont, 'before'))
+		{
+			call_user_func(array($cont, 'after'));
+		}
+
 		// Quito del Stack.
 		Request::pop_stack();
-		
+
 		// Retorno el valor.
 		return $rst;
 	}
