@@ -33,31 +33,12 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Mantenimiento {
 
 	/**
-	 * Archivo utilizado para indicar el bloqueo.
-	 * @var type
-	 */
-	protected $lock_file;
-
-	/**
-	 * Cargamos clase de bloqueo.
-	 * @param string $lock_file Archivo donde guardar el bloqueo.
-	 */
-	public function __construct($lock_file = NULL)
-	{
-		if ($lock_file === NULL)
-		{
-			$lock_file = APP_BASE.DS.'lock.tmp';
-		}
-		$this->lock_file = $lock_file;
-	}
-
-	/**
 	 * Verificamos si hay un bloqueo activo.
 	 * @return bool
 	 */
-	public function is_locked()
+	public static function is_locked()
 	{
-		return file_exists($this->lock_file) && is_file($this->lock_file);
+		return file_exists(APP_BASE.DS.'lock.tmp') && is_file(APP_BASE.DS.'lock.tmp');
 	}
 
 	/**
@@ -65,7 +46,7 @@ class Base_Mantenimiento {
 	 * @param string $ip
 	 * @return bool
 	 */
-	public function is_locked_for($ip)
+	public static function is_locked_for($ip)
 	{
 		if ( ! $this->is_locked())
 		{
@@ -73,7 +54,7 @@ class Base_Mantenimiento {
 		}
 
 		// Cargamos los rangos.
-		$range_list = file($this->lock_file);
+		$range_list = file(APP_BASE.DS.'lock.tmp');
 
 		// Verificamos.
 		foreach ($range_list as $range)
@@ -95,22 +76,22 @@ class Base_Mantenimiento {
 	 * Es decir, no le dan importancia al bloqueo.
 	 * @return bool
 	 */
-	public function lock($for = array())
+	public static function lock($for = array())
 	{
 		// Generamos el listado de rangos.
 		$range = implode(PHP_EOL, $for);
 
 		// Guardamos la información
-		return file_put_contents($this->lock_file, $range);
+		return file_put_contents(APP_BASE.DS.'lock.tmp', $range);
 	}
 
 	/**
 	 * Desbloqueamos.
 	 * @return bool
 	 */
-	public function unlock()
+	public static function unlock()
 	{
-		return @unlink($this->lock_file);
+		return @unlink(APP_BASE.DS.'lock.tmp');
 	}
 
 }

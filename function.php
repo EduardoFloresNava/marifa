@@ -364,3 +364,25 @@ if ( ! function_exists('date_diff'))
 	}
 
 }
+
+/**
+ * Obtenemos el IP de la petición.
+ * @return string
+ */
+function get_ip_addr()
+{
+   if ( ! empty($_SERVER['HTTP_CLIENT_IP']))
+   {
+	   // Check ip from share internet
+	   return $_SERVER['HTTP_CLIENT_IP'];
+   }
+   elseif ( ! empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+   {
+		// To check ip is pass from proxy
+	   return $_SERVER['HTTP_X_FORWARDED_FOR'];
+   }
+   else
+   {
+	   return $_SERVER['REMOTE_ADDR'];
+   }
+}

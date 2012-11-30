@@ -148,10 +148,9 @@ define('THEME', Theme::actual());
 Error::get_instance()->start(DEBUG);
 
 // Verificamos bloqueos.
-$lock = new Mantenimiento;
-if ($lock->is_locked())
+if (Mantenimiento::is_locked())
 {
-	if ($lock->is_locked_for(IP::get_ip_addr()))
+	if (Mantenimiento::is_locked_for(get_ip_addr()))
 	{
 		// Cargo la vista.
 		$view = View::factory('mantenimiento');
@@ -169,9 +168,6 @@ if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
 	//TODO: lo mandamos al instalador.
 	die("Falta configurar la base de datos");
 }
-
-// Cargamos la cache.
-Cache::get_instance();
 
 // Cargamos las configuraciones del gestor de actualizaciones.
 if (file_exists(CONFIG_PATH.DS.'update.php'))

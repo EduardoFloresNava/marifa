@@ -215,7 +215,7 @@ class Base_Model_Usuario extends Model_Dataset {
 					}
 				case self::ESTADO_ACTIVA: // Cuenta activa.
 					// IP del usuario.
-					$ip = ip2long(IP::get_ip_addr());
+					$ip = ip2long(get_ip_addr());
 
 					// Seteamos el usuario actual.
 					$this->primary_key['id'] = $data['id'];

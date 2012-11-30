@@ -257,9 +257,6 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/configuracion/mantenimiento');
 
-		// Cargo manejador del modo mantenimiento.
-		$mantenimiento = new Mantenimiento;
-
 		// Cargo listado de IP's que pueden acceder en modo mantenimiento.
 		$model_configuracion = new Model_Configuracion;
 		$ips_matenimiento = unserialize($model_configuracion->get('ip_mantenimiento', 'a:0:{}'));
@@ -325,9 +322,9 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					$ips_matenimiento = $ips;
 
 					// Actualizo si es necesario.
-					if ($mantenimiento->is_locked())
+					if (Mantenimiento::is_locked())
 					{
-						$mantenimiento->lock($ips);
+						Mantenimiento::lock($ips);
 					}
 
 					// Informo resultado.
@@ -337,15 +334,15 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		}
 
 		// Verifico si está habilitado el bloqueo.
-		$vista->assign('is_locked', $mantenimiento->is_locked());
-		if ($mantenimiento->is_locked())
+		$vista->assign('is_locked', Mantenimiento::is_locked());
+		if (Mantenimiento::is_locked())
 		{
-			$locked_for_me = $mantenimiento->is_locked_for(IP::get_ip_addr());
+			$locked_for_me = Mantenimiento::is_locked_for(get_ip_addr());
 		}
 		else
 		{
 			$locked_for_me = TRUE;
-			$my_ip = IP::get_ip_addr();
+			$my_ip = get_ip_addr();
 			foreach ($ips_matenimiento as $ip)
 			{
 				if ($my_ip == $ip || IP::ip_in_range($my_ip, $ip))
@@ -380,10 +377,8 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	{
 		$tipo = (bool) $tipo;
 
-		$mantenimiento = new Mantenimiento;
-
 		// Verifico la acción.
-		if ($tipo == $mantenimiento->is_locked())
+		if ($tipo == Mantenimiento::is_locked())
 		{
 			$_SESSION['flash_error'] = 'El modo mantenimiento ya posee ese estado.';
 		}
@@ -395,12 +390,12 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				$_SESSION['flash_success'] = 'Modo mantenimiento activado correctamente.';
 				$c = new Model_Configuracion;
 				//TODO: Verificar que alguien pueda acceder.
-				$mantenimiento->lock(unserialize($c->get('ip_mantenimiento', 'a:0:{}')));
+				Mantenimiento::lock(unserialize($c->get('ip_mantenimiento', 'a:0:{}')));
 			}
 			else
 			{
 				$_SESSION['flash_success'] = 'Modo mantenimiento activado correctamente.';
-				$mantenimiento->unlock();
+				Mantenimiento::unlock();
 			}
 		}
 		Request::redirect('/admin/configuracion/mantenimiento');
