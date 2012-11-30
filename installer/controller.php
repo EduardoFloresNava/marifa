@@ -533,7 +533,13 @@ class Installer_Controller {
 		}
 
 		// Obtengo versión actual.
-		$version_actual = Database::get_instance()->query('SELECT valor FROM configuracion WHERE clave = \'version_actual\';')->get_var();
+		try {
+			$version_actual = Database::get_instance()->query('SELECT valor FROM configuracion WHERE clave = \'version_actual\';')->get_var();
+		}
+		catch (Database_Exception $e)
+		{
+			$version_actual = VERSION;
+		}
 
 		// Obtengo el listado de actualizaciones.
 		$aux = scandir(APP_BASE.DS.'installer'.DS.'update'.DS);

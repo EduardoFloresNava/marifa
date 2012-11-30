@@ -24,6 +24,11 @@
  */
 
 /**
+ * Defino versión de marifa.
+ */
+define('VERSION', '0.2RC1');
+
+/**
  * Cargamos el modo de depuración desde una variable de entorno.
  * Se puede setear esta variable desde htaccess.
  */
