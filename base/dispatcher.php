@@ -89,7 +89,7 @@ class Base_Dispatcher {
 			Assets::reverse_compile($p, ! DEBUG);
 		}
 
-		return self::route($url);
+		return self::rewrite_urls($url);
 	}
 
 	/**
@@ -122,7 +122,7 @@ class Base_Dispatcher {
 			ob_clean();
 
 			// Procesamos la consulta y terminamos.
-			die(self::route($url, TRUE));
+			die(self::rewrite_urls($url, TRUE));
 		}
 		else
 		{
@@ -131,7 +131,7 @@ class Base_Dispatcher {
 			ob_start();
 
 			// Realizamos la llamada.
-			$rst = self::route($url, TRUE);
+			$rst = self::rewrite_urls($url, TRUE);
 
 			// Si no hubo respuesta probamos con lo que tenemos el en buffer.
 			if ($rst === NULL)
@@ -147,6 +147,186 @@ class Base_Dispatcher {
 	}
 
 	/**
+	 * Realizamos la reescritura de URL mediante el router.
+	 * @param string $url URL actual.
+	 * @param bool $throw Si en caso de error debe generar una excepción o mostrar un error.
+	 */
+	private static function rewrite_urls($url, $throw = FALSE)
+	{
+		// Verifico empiece con /.
+		if ($url === '' || $url{0} !== '/')
+		{
+			$url = '/'.$url;
+		}
+
+		// Cargo enrutador.
+		$router = new Router;
+
+		// Cargo rutas del sistema.
+		if (file_exists(APP_BASE.DS.'routes.php'))
+		{
+			$routes = include(APP_BASE.DS.'routes.'.FILE_EXT);
+			foreach ($routes as $route)
+			{
+				call_user_func_array(array($router, 'map'), $route);
+			}
+		}
+
+		// Obtengo listado de plugins activos.
+		$pl = Plugin_Manager::get_instance()->get_actives();
+
+		// Cargo URL's si hay plugins.
+		if (count($pl) > 0)
+		{
+			if (count($pl) == 1)
+			{
+				// Cargo ruta del único plugin.
+				if (file_exists(APP_BASE.DS.PLUGINS_PATH.DS.$pl[0].DS.'routes.'.FILE_EXT))
+				{
+					$routes = include(APP_BASE.DS.PLUGINS_PATH.DS.$pl[0].DS.'routes.'.FILE_EXT);
+					foreach ($routes as $route)
+					{
+						call_user_func_array(array($router, 'map'), $route);
+					}
+				}
+			}
+			else
+			{
+				// Cargo las rutas que existan.
+				foreach (glob(APP_BASE.DS.PLUGINS_PATH.DS.'{'.(implode(',', $pl)).'}'.DS.'routes.'.FILE_EXT, GLOB_BRACE) as $v)
+				{
+					$routes = include($v);
+					foreach ($routes as $route)
+					{
+						call_user_func_array(array($router, 'map'), $route);
+					}
+				}
+			}
+		}
+		//$router->map('/login', array('controller' => 'usuario', 'action' => 'login'));
+		//$router->map('/login', '/usuario/login');
+		//TODO: Agregar rutas sistema.
+		//TODO: Agregar rutas plugins.
+
+
+		// Realizo enrutado.
+		//TODO: Métodos personalizados.
+		$matched = $router->match($url, Request::method());
+		if ($matched !== FALSE)
+		{
+			// Obtengo el target.
+			$target = $matched->getTarget();
+
+			if (is_array($target))
+			{
+				// Genero nombre del controlador.
+				if (isset($t['plugin']))
+				{
+					// Formateo nombre del plugin.
+					$p_name = strtolower($t['plugin']);
+
+					// Validamos que tenga el formato requerido.
+					if (preg_match('/^[a-z0-9]+$/D', $p_name) < 1)
+					{
+						if ( ! $throw)
+						{
+							Error::show_error('Petición inválida', 404);
+						}
+						else
+						{
+							throw new Exception('Petición inválida', 404);
+						}
+						return FALSE;
+					}
+
+					// Verifico su existencia y que este activo.
+					$p_obj = Plugin_Manager::get_instance()->get($p_name);
+
+					if ($p_obj === NULL || ! $p_obj->estado())
+					{
+						if ( ! $throw)
+						{
+							Error::show_error('Plugin inexistente', 404);
+						}
+						else
+						{
+							throw new Exception('Plugin inexistente', 404);
+						}
+						return FALSE;
+					}
+
+					// Nombre del controlador.
+					$controller = 'Plugin_'.ucfirst($p_name).'_Controller_'.ucfirst($target['controller']);
+				}
+				else
+				{
+					if (isset($target['directory']))
+					{
+						$controller = 'Controller_'.ucfirst($target['directory']).'_'.ucfirst($target['controller']);
+					}
+					else
+					{
+						$controller = 'Controller_'.ucfirst($target['controller']);
+					}
+				}
+
+
+			}
+			else
+			{
+				// Reproceso la URL.
+				$target = trim($target, '/');
+
+				// En caso de ser /, la transformamos en vacia.
+				if ($target === '/')
+				{
+					$target = '';
+				}
+
+				// Llamo al routeo.
+				return self::route($target);
+			}
+
+			// Nombre de la acción.
+			$accion = $target['action'];
+
+			//Instanciamos el controllador
+			if ( ! class_exists($controller))
+			{
+				if ( ! $throw)
+				{
+					Error::show_error("No existe el controlador: '$controller'", 404);
+				}
+				else
+				{
+					throw new Exception("No existe el controlador: '$controller'", 404);
+				}
+			}
+			else
+			{
+				// Verificamos exista método.
+				$r_c = new ReflectionClass($controller);
+				if ( ! $r_c->hasMethod('action_'.$accion))
+				{
+					if ( ! $throw)
+					{
+						Error::show_error("No existe la acción '$accion' para el controlador '$controller'", 404);
+					}
+					else
+					{
+						throw new Exception("No existe la acción '$accion' para el controlador '$controller'", 404);
+					}
+				}
+			}
+
+			// Realizo la llamada.
+			return self::call_controller($controller, $accion, $matched->getParameters(), isset($p_name) ? $p_name : NULL);
+		}
+
+		self::route($url, $throw);
+	}
+
+	/**
 	 * Función encargada de enrutar una petición a controlador indicado.
 	 * @param string $url URL de la petición.
 	 * @param bool $throw Si en caso de error debe generar una excepción o mostrar un error.
@@ -155,7 +335,7 @@ class Base_Dispatcher {
 	private static function route($url, $throw = FALSE)
 	{
 		// Obtenemos los segmentos de la URL
-		$segmentos = explode('/', $url);
+		$segmentos = explode('/', trim($url, '/'));
 
 		// Verificamos si es un plugin.
 		if (strtolower($segmentos[0]) === 'plugins')

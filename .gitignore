@@ -6,7 +6,7 @@ config/database.php
 config/update.php
 config/upload.php
 config/cache.php
-router.php
+php_router.php
 /phpdoc/
 /cache/file/
 EXAMPLE
