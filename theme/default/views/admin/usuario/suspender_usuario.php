@@ -4,7 +4,7 @@
     <li class="active">Suspender</li>
 </ul>
 <div class="header">
-	<h2 class="title">Suspender a <a href="/perfil/index/{$usuario.nick}">{$usuario.nick}</a></h2>
+	<h2>Suspender a <a href="/perfil/index/{$usuario.nick}">{$usuario.nick}</a></h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 
@@ -65,7 +65,7 @@
 					<a href="#" title="Vista preliminar" class="btn-preview btn btn-small btn-success"><i class="icon-eye-open icon-white"></i></a>
 				</div>
 			</div>
-			<textarea name="motivo" id="motivo" class="span10">{$motivo}</textarea>
+			<textarea name="motivo" id="motivo" data-preview="/admin/usuario/preview" class="span10">{$motivo}</textarea>
 			<span class="help-block">{if="$error_motivo"}{$error_motivo}{/if}</span>
 		</div>
 	</div>

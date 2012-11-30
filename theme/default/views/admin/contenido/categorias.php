@@ -24,8 +24,8 @@
 			<td>{$value.nombre}</td>
 			<td style="text-align: center;">
 				<div class="btn-group">
-					<a href="/admin/contenido/editar_categoria/{$value.id}" class="btn btn-mini btn-success">Editar</a>
-					<a href="/admin/contenido/eliminar_categoria/{$value.id}" class="btn btn-mini btn-danger">Eliminar</a>
+					<a href="/admin/contenido/editar_categoria/{$value.id}" class="btn btn-mini btn-success show-tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>
+					<a href="/admin/contenido/eliminar_categoria/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Eliminar"><i class="icon-white icon-remove"></i></a>
 				</div>
 			</td>
 		</tr>

@@ -4,7 +4,7 @@
     <li class="active">Banear</li>
 </ul>
 <div class="header">
-	<h2 class="title">Banear a <a href="/perfil/index/{$usuario.nick}">{$usuario.nick}</a></h2>
+	<h2>Banear a <a href="/perfil/index/{$usuario.nick}">{$usuario.nick}</a></h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 
@@ -65,7 +65,7 @@
 					<a href="#" title="Vista preliminar" class="btn-preview btn btn-small btn-success"><i class="icon-eye-open icon-white"></i></a>
 				</div>
 			</div>
-			<textarea name="razon" id="razon" class="span10">{$razon}</textarea>
+			<textarea name="razon" id="razon" data-preview="/admin/usuario/preview" class="span10">{$razon}</textarea>
 			<span class="help-block">{if="$error_razon"}{$error_razon}{/if}</span>
 		</div>
 	</div>

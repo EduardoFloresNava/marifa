@@ -5,7 +5,7 @@
 <div class="clearfix header">
 	<h2 class="pull-left">Temas</h2>
 	<div class="btn-group pull-right">
-		<a href="/admin/configuracion/instalar_tema/" class="btn btn-success">Instalar tema</a>
+		<a href="/admin/configuracion/instalar_tema/" class="btn btn-success"><i class="icon-white icon-plus"></i> Instalar tema</a>
 		{if="$preview !== ''"}<a class="btn btn-info" href="/admin/configuracion/terminar_preview_tema"><i class="icon-white icon-eye-close"></i> Terminar previsualización</a>{/if}
 	</div>
 </div>

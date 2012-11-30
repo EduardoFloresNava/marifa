@@ -1287,6 +1287,21 @@ class Base_Controller_Admin_Contenido extends Controller {
 	}
 
 	/**
+	 * Vista preliminar de una noticia.
+	 */
+	public function action_preview()
+	{
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Proceso contenido.
+		die(Decoda::procesar($contenido));
+	}
+
+	/**
 	 * Activamos o desactivamos una noticia.
 	 * @param int $id
 	 * @param int $estado
@@ -1372,6 +1387,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$vista = View::factory('admin/contenido/editar_noticia');
 
 		// Valores por defecto y errores.
+		$vista->assign('noticia', $model_noticia->id);
 		$vista->assign('contenido', $model_noticia->contenido);
 		$vista->assign('error_contenido', FALSE);
 

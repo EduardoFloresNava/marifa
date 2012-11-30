@@ -4,7 +4,7 @@
     <li class="active">Instalar tema</li>
 </ul>
 <div class="header">
-	<h2 class="title">Instalar tema</h2>
+	<h2>Instalar tema</h2>
 </div>
 <form method="POST" enctype="multipart/form-data" class="form-horizontal" action="">
 

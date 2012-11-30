@@ -57,6 +57,21 @@ class Base_Controller_Admin_Usuario extends Controller {
 	}
 
 	/**
+	 * Vista preliminar de BBCode para denuncias, etc.
+	 */
+	public function action_preview()
+	{
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Proceso contenido.
+		die(Decoda::procesar($contenido));
+	}
+
+	/**
 	 * Listado de usuarios.
 	 * @param int $pagina Número de página.
 	 * @param int $tipo Tipo de usuarios a mostrar.
@@ -138,7 +153,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		{
 			$a = $v->as_array();
 			$a['rango_id'] = $v->rango;
-			$a['rango'] = $v->rango()->nombre;
+			$a['rango'] = $v->rango()->as_array();
 			$lst[$k] = $a;
 		}
 
@@ -407,12 +422,12 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $id)
 			{
-				$model_suceso->crear($id, 'usuario_fin_suspension', TRUE, $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
-				$model_suceso->crear(Usuario::$usuario_id, 'usuario_fin_suspension', FALSE, $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
+				$model_suceso->crear($id, 'usuario_fin_suspension', TRUE, $id, Usuario::$usuario_id);
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_fin_suspension', FALSE, $id, Usuario::$usuario_id);
 			}
 			else
 			{
-				$model_suceso->crear($id, 'usuario_fin_suspension', FALSE, $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
+				$model_suceso->crear($id, 'usuario_fin_suspension', FALSE, $id, Usuario::$usuario_id);
 			}
 		}
 		// Informo el resultado.

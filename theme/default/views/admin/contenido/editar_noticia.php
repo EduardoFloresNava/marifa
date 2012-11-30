@@ -5,7 +5,7 @@
     <li class="active">Nueva</li>
 </ul>
 <div class="header">
-	<h2>Nueva noticia</h2>
+	<h2>Editar noticia #{$noticia}</h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 
@@ -68,7 +68,7 @@
 					<a href="#" title="Vista preliminar" class="btn-preview btn btn-small btn-success"><i class="icon-eye-open icon-white"></i></a>
 				</div>
 			</div>
-			<textarea name="contenido" id="contenido" class="span10">{$contenido}</textarea>
+			<textarea name="contenido" id="contenido" data-preview="/admin/contenido/preview" class="span10">{$contenido}</textarea>
 			<span class="help-block">{if="$error_contenido"}{$error_contenido}{/if}</span>
 		</div>
 	</div>

@@ -4,7 +4,7 @@
     <li class="active">Advertir</li>
 </ul>
 <div class="header">
-	<h2 class="title">Advertir a <a href="/perfil/index/{$usuario.nick}">{$usuario.nick}</a></h2>
+	<h2>Advertir a <a href="/perfil/index/{$usuario.nick}">{$usuario.nick}</a></h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 
@@ -73,7 +73,7 @@
 					<a href="#" title="Vista preliminar" class="btn-preview btn btn-small btn-success"><i class="icon-eye-open icon-white"></i></a>
 				</div>
 			</div>
-			<textarea name="contenido" id="contenido" class="span10" placeholder="Mensaje...">{$contenido}</textarea>
+			<textarea name="contenido" id="contenido" class="span10" data-preview="/admin/usuario/preview" placeholder="Mensaje...">{$contenido}</textarea>
 			<span class="help-block">{if="$error_contenido"}{$error_contenido}{/if}</span>
 		</div>
 	</div>
