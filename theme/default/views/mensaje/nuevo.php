@@ -93,7 +93,7 @@
 							<a href="#" title="Vista preliminar" class="btn-preview btn btn-small btn-success"><i class="icon-eye-open icon-white"></i></a>
 						</div>
 					</div>
-					<textarea name="contenido" id="contenido" class="span10" placeholder="Mensaje...">{$contenido}</textarea>
+					<textarea name="contenido" id="contenido" class="span10" data-preview="/mensaje/preview" placeholder="Mensaje...">{$contenido}</textarea>
 					<span class="help-block">{if="$error_contenido"}{$error_contenido}{/if}</span>
 				</div>
 			</div>
