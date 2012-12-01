@@ -3,9 +3,20 @@ Marifa 0.2RC2 []
  - FEATURE: Mejora de la portada.
  - FEATURE: Implementación de AJAX para los Sucesos.
  - FEATURE: Se muestra la consulta cuando se produce un error en el driver MySQL.
+ - FEATURE: Las URL's se convierten a links clickeables automáticamente.
+ - FEATURE: Agregado el soporte de emoticones.
+ - FEATURE: Se permiten agregar clases al núcleo desde plugins.
+ - FEATURE: Mejora de la administración de usuarios.
+ - FEATURE: Se agrupan los mensajes de error por tipo.
+ - FEAUTRE: Se mejora la administración de usuarios.
+ - FIX: Error en el instalador producto del nuevo sistema de actualización.
+ - FIX: Error en el primer logueo producto del calculo de puntos.
+ - FIX: Solucionado problema de inserción de clases del núcleo para plugins.
+ - FIX: Vista preliminar cuando se editan post's y fotos.
+ - FIX: Problema de parseo de URL's en el BBCode.
  - FIX: Solucionado error en Model_Dataset con claves compuestas.
  - FIX: Error en por medallas en denuncias de fotos.
- - FIX: Mostramos posts privados en la portada con simbolo para identificarlos.
+ - FIX: Mostramos posts privados en la portada con símbolo para identificarlos.
 
 Marifa 0.2RC1 [26/11/2012]
  - FEATURE: Agregados rangos dinámicos.
