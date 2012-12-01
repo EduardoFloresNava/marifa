@@ -18,7 +18,6 @@
 	<thead>
 		<tr>
 			<th>Nick</th>
-			<th>E-Mail</th>
 			<th>Rango</th>
 			<th>Ultima vez activo</th>
 			<th>Estado</th>
@@ -29,19 +28,31 @@
 		{loop="$usuarios"}
 		<tr>
 			<td><a href="/perfil/index/{$value.nick}">{$value.nick}</a></td>
-			<td>{$value.email}</td>
-			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.rango.imagen}" /> <span style="color: #{function="sprintf('%06s', dechex($value.rango.color))"};">{$value.rango.nombre}</span></td>
-			<td>{$value.lastactive->fuzzy()}</td>
-			<td><span class="label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span></td>
+			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.rango.imagen}" /> <strong style="color: #{function="sprintf('%06s', dechex($value.rango.color))"};">{$value.rango.nombre}</strong></td>
+			<td>{if="$value.lastactive == NULL"}<span class="label">NUNCA</span>{else}{$value.lastactive->fuzzy()}{/if}</td>
+			<td>
+				<span class="label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning show-tooltip" title="Restante: {$value.restante|secs_to_h}">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span>
+				{if="$value.avisos !== 0"}<a href="/admin/usuario/advertencias_usuario/{$value.id}"><span class="label">{$value.avisos} advertencia{if="$value.avisos > 1"}s{/if}</span></a>{/if}
+			</td>
 			<td>
 				<div class="btn-toolbar">
 					<div class="btn-group">
-						{if="$value.estado == 0"}<a href="/admin/usuario/activar_usuario/{$value.id}" class="btn btn-mini btn-success show-tooltip" title="Activar cuenta"><i class="icon-white icon-ok"></i></a>{/if}
-						{if="$value.estado == 0 || $value.estado == 1"}<a href="/admin/usuario/suspender_usuario/{$value.id}" class="btn btn-mini btn-info show-tooltip" title="Suspender"><i class="icon-white icon-warning-sign"></i></a>{/if}
-						{if="$value.estado == 2"}<a href="/admin/usuario/quitar_suspension_usuario/{$value.id}" class="btn btn-mini btn-success show-tooltip" title="Quitar suspensión"><i class="icon-white icon-ok"></i></a>{/if}
-						{if="$value.estado == 1"}<a href="/admin/usuario/advertir_usuario/{$value.id}" class="btn btn-mini btn-warning show-tooltip" title="Advertir"><i class="icon-white icon-bell"></i></a>{/if}
-						{if="$value.estado == 0 || $value.estado == 1 || $value.estado == 2"}<a href="/admin/usuario/banear_usuario/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Banear"><i class="icon-white icon-ban-circle"></i></a>{/if}
-						{if="$value.estado == 3"}<a href="/admin/usuario/desbanear_usuario/{$value.id}" class="btn btn-mini btn-success show-tooltip" title="Desbanear"><i class="icon-white icon-ok"></i></a>{/if}
+						{if="$value.estado == 0"}
+						<a href="/admin/usuario/activar_usuario/{$value.id}" class="btn btn-mini btn-success show-tooltip" title="Activar cuenta"><i class="icon-white icon-ok"></i></a>
+						<a href="/admin/usuario/suspender_usuario/{$value.id}" class="btn btn-mini btn-warning show-tooltip" title="Suspender"><i class="icon-white icon-warning-sign"></i></a>
+						<a href="/admin/usuario/banear_usuario/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Banear"><i class="icon-white icon-ban-circle"></i></a>
+						{elseif="$value.estado == 1"}
+						<a href="/admin/usuario/suspender_usuario/{$value.id}" class="btn btn-mini btn-warning show-tooltip" title="Suspender"><i class="icon-white icon-warning-sign"></i></a>
+						<a href="/admin/usuario/advertir_usuario/{$value.id}" class="btn btn-mini btn-inverse show-tooltip" title="Advertir"><i class="icon-white icon-bell"></i></a>
+						<a href="/admin/usuario/banear_usuario/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Banear"><i class="icon-white icon-ban-circle"></i></a>
+						{elseif="$value.estado == 2"}
+						<a href="/admin/usuario/quitar_suspension_usuario/{$value.id}" class="btn btn-mini btn-success show-tooltip" title="Terminar suspensión"><i class="icon-white icon-ok"></i></a>
+						<a href="/admin/usuario/detalles_suspension_usuario/{$value.id}" class="btn btn-mini btn-info show-tooltip" title="Detalles de la suspensión"><i class="icon-white icon-info-sign"></i></a>
+						<a href="/admin/usuario/banear_usuario/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Banear"><i class="icon-white icon-ban-circle"></i></a>
+						{elseif="$value.estado == 3"}
+						<a href="/admin/usuario/desbanear_usuario/{$value.id}" class="btn btn-mini btn-success show-tooltip" title="Desbanear"><i class="icon-white icon-ok"></i></a>
+						<a href="/admin/usuario/detalles_baneo_usuario/{$value.id}" class="btn btn-mini btn-info show-tooltip" title="Detalles baneo"><i class="icon-white icon-info-sign"></i></a>
+						{/if}
 					</div>
 					<div class="btn-group">
 						<a href="/admin/usuario/cambiar_rango/{$value.id}" class="btn btn-mini btn-primary">Cambiar rango</a>
@@ -50,7 +61,7 @@
 							{$uid_aux=$value.id}
 							{$rango_aux=$value.rango_id}
 							{loop="$rangos"}
-							{if="$rango_aux !== $value.id"}<li><a href="/admin/usuario/cambiar_rango/{$uid_aux}/{$value.id}/">{$value.nombre}</a></li>{/if}
+							{if="$rango_aux !== $value.id"}<li><a href="/admin/usuario/cambiar_rango/{$uid_aux}/{$value.id}/"><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /> {$value.nombre}</a></li>{/if}
 							{/loop}
 						</ul>
 					</div>

@@ -188,11 +188,23 @@ class Base_Model_Suceso extends Model_Dataset {
 		$params = array();
 		$q = array();
 
-		// Agrego limitacion usuario.
-		if ($usuario !== NULL)
+		// Arreglo de parametros.
+		if (is_array($usuario))
 		{
-			$params[] = $usuario;
-			$q[] = 'usuario_id = ?';
+			$params = $usuario;
+
+			$qa = 'usuario_id IN(';
+			for ($i = 0; $i < count($params); $i++)
+			{
+				$qa .= '?, ';
+			}
+			$q = array(substr($qa, 0, -2).')');
+			unset($qa);
+		}
+		else
+		{
+			$params = array($usuario);
+			$q = array('usuario_id = ?');
 		}
 
 		// Agrego limitacion tipo.
@@ -259,8 +271,24 @@ class Base_Model_Suceso extends Model_Dataset {
 		$start = ($pagina - 1) * $cantidad;
 
 		// Arreglo de parametros.
-		$params = array($usuario);
-		$q = array('usuario_id = ?');
+		if (is_array($usuario))
+		{
+			$params = $usuario;
+
+			$qa = 'usuario_id IN(';
+			for ($i = 0; $i < count($params); $i++)
+			{
+				$qa .= '?, ';
+			}
+			$q = array(substr($qa, 0, -2).')');
+			unset($qa);
+		}
+		else
+		{
+			$params = array($usuario);
+			$q = array('usuario_id = ?');
+		}
+
 
 		// Agrego limitacion tipo.
 		if ($tipo !== NULL)

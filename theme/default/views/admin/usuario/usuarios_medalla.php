@@ -2,10 +2,10 @@
     <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
     <li><a href="/admin/usuario/medallas">Medallas</a> <span class="divider">/</span></li>
-    <li class="active">Usuarios en {$medalla.nombre}</li>
+    <li class="active">Usuarios con la medalla <strong>{$medalla.nombre}</strong></li>
 </ul>
 <div class="header">
-	<h2>Usuarios en {$medalla.nombre}</h2>
+	<h2>Usuarios con la medalla <img class="show-tooltip" title="{$medalla.nombre}" src="{#THEME_URL#}/assets/img/medallas/{$medalla.imagen}" width="20" height="20" /></h2>
 </div>
 <table class="table table-bordered">
 	<thead>

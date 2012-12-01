@@ -71,14 +71,12 @@ class Base_Controller {
 		$this->template->assign('contenido', '');
 
 		// Eventos flash.
-		if (isset($_SESSION['flash_success']))
+		foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
 		{
-			$this->template->assign('flash_success', get_flash('flash_success'));
-		}
-
-		if (isset($_SESSION['flash_error']))
-		{
-			$this->template->assign('flash_error', get_flash('flash_error'));
+			if (isset($_SESSION[$k]))
+			{
+				$this->template->assign($k, get_flash($k));
+			}
 		}
 
 		// Seteo si es mantenimiento.

@@ -160,3 +160,16 @@
         }, 20000);
     }
 } (jQuery));
+
+$('a[data-dismiss="alert"]').click(function (e) {
+    if ($(this).parent().parent().is('.alert-container'))
+    {
+        if ($(this).parent().parent().children('div.alert-item').length == 1)
+        {
+            $(this).parent().parent().remove();
+        }
+    }
+
+    $(this).parent().remove();
+    e.preventDefault();
+});

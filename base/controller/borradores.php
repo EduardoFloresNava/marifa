@@ -40,7 +40,7 @@ class Base_Controller_Borradores extends Controller {
 		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder ver los borradores.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder ver los borradores.');
 			Request::redirect('/usuario/login');
 		}
 		parent::before();

@@ -40,14 +40,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para acceder a esta sección.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para acceder a esta sección.');
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
 		{
-			$_SESSION['flash_error'] = 'No tienes permisos para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -207,14 +207,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_post = new Model_Post($id);
 		if ( ! $model_post->existe())
 		{
-			$_SESSION['flash_error'] = 'El post que deseas eliminar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El post que deseas eliminar no se encuentra disponible.');
 			Request::redirect('/admin/contenido/posts/');
 		}
 
 		// Verifico cual es el estado actual.
 		if ($model_post->estado === Model_Post::ESTADO_BORRADO)
 		{
-			$_SESSION['flash_error'] = 'El post que deseas eliminar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El post que deseas eliminar no se encuentra disponible.');
 			Request::redirect('/admin/contenido/posts/');
 		}
 
@@ -286,7 +286,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 				}
 
 				// Informamos el resultado.
-				$_SESSION['flash_success'] = 'Post borrado correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'Post borrado correctamente.');
 				Request::redirect('/admin/contenido/posts/');
 			}
 		}
@@ -319,7 +319,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_post->existe())
 		{
-			$_SESSION['flash_error'] = 'El post al cual le quiere cambiar el estado no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El post al cual le quiere cambiar el estado no se encuentra disponible.');
 			Request::redirect('/admin/contenido/posts');
 		}
 
@@ -347,7 +347,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'El post se a eliminado correctamente.';
+					add_flash_message(FLASH_SUCCESS, 'El post se a eliminado correctamente.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == Model_Post::ESTADO_OCULTO)
@@ -370,7 +370,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 5)
@@ -393,7 +393,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 6)
@@ -416,13 +416,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
@@ -447,19 +447,19 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
 			case 2: // Borrado
 				// No hay acciones posibles a este punto.
-				$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+				add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
 				Request::redirect('/admin/contenido/posts');
 				break;
 			case 3: // Pendiente
@@ -483,7 +483,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 5)
@@ -506,7 +506,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 2)
@@ -529,13 +529,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
@@ -560,7 +560,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 2)
@@ -583,13 +583,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
@@ -614,7 +614,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 2)
@@ -637,13 +637,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
@@ -668,7 +668,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == 2)
@@ -691,13 +691,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 					}
 
 					// Informo el resultado
-					$_SESSION['flash_success'] = 'Actualización correcta.';
+					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					$_SESSION['flash_error'] = 'No puedes realizar esa acción.';
+					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
@@ -802,14 +802,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_foto->existe())
 		{
-			$_SESSION['flash_error'] = 'No existe la foto que quiere ocultar.';
+			add_flash_message(FLASH_ERROR, 'No existe la foto que quiere ocultar.');
 			Request::redirect('/admin/contenido/fotos');
 		}
 
 		// Verifico que esté activa.
 		if ($model_foto->estado == Model_Foto::ESTADO_OCULTA)
 		{
-			$_SESSION['flash_error'] = 'La foto ya se encuentra oculta.';
+			add_flash_message(FLASH_ERROR, 'La foto ya se encuentra oculta.');
 			Request::redirect('/admin/contenido/fotos');
 		}
 
@@ -829,7 +829,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Informamos.
-		$_SESSION['flash_success'] = 'Foto ocultada correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'Foto ocultada correctamente.');
 		Request::redirect('/admin/contenido/fotos');
 	}
 
@@ -845,14 +845,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_foto->existe())
 		{
-			$_SESSION['flash_error'] = 'No existe la foto que quiere mostrar.';
+			add_flash_message(FLASH_ERROR, 'No existe la foto que quiere mostrar.');
 			Request::redirect('/admin/contenido/fotos');
 		}
 
 		// Verifico que esté oculta.
 		if ($model_foto->estado == Model_Foto::ESTADO_ACTIVA)
 		{
-			$_SESSION['flash_error'] = 'La foto ya se encuentra visible.';
+			add_flash_message(FLASH_ERROR, 'La foto ya se encuentra visible.');
 			Request::redirect('/admin/contenido/fotos');
 		}
 
@@ -872,7 +872,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Informamos.
-		$_SESSION['flash_success'] = 'Foto seteada como visible correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'Foto seteada como visible correctamente.');
 		Request::redirect('/admin/contenido/fotos');
 	}
 
@@ -888,7 +888,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_foto->existe())
 		{
-			$_SESSION['flash_error'] = 'No existe la foto que quiere mostrar.';
+			add_flash_message(FLASH_ERROR, 'No existe la foto que quiere mostrar.');
 			Request::redirect('/admin/contenido/fotos');
 		}
 
@@ -908,7 +908,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Informamos.
-		$_SESSION['flash_success'] = 'Foto borrrada correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'Foto borrrada correctamente.');
 		Request::redirect('/admin/contenido/fotos');
 	}
 
@@ -1008,7 +1008,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 				// Creo la categoria.
 				$model_categoria->nueva($nombre, $imagen);
 
-				$_SESSION['flash_success'] = 'Categoria creada correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'Categoria creada correctamente.');
 				Request::redirect('/admin/contenido/categorias');
 			}
 		}
@@ -1038,21 +1038,21 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_categoria->existe())
 		{
-			$_SESSION['flash_error'] = 'No exista la categoria que quiere borrar.';
+			add_flash_message(FLASH_ERROR, 'No exista la categoria que quiere borrar.');
 			Request::redirect('/admin/contenido/categorias');
 		}
 
 		// Verifico no tenga posts ni fotos.
 		if ($model_categoria->tiene_fotos() || $model_categoria->tiene_posts())
 		{
-			$_SESSION['flash_error'] = 'No se puede borrar la categoria porque tiene fotos y/o posts asociados.';
+			add_flash_message(FLASH_ERROR, 'No se puede borrar la categoria porque tiene fotos y/o posts asociados.');
 			Request::redirect('/admin/contenido/categorias');
 		}
 
 		// Verifico existan otras categorias.
 		if ($model_categoria->cantidad() <= 1)
 		{
-			$_SESSION['flash_error'] = 'No se puede borrar la categoría porque es la única existente.';
+			add_flash_message(FLASH_ERROR, 'No se puede borrar la categoría porque es la única existente.');
 			Request::redirect('/admin/contenido/categorias');
 		}
 
@@ -1060,7 +1060,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_categoria->borrar();
 
 		// Informamos.
-		$_SESSION['flash_success'] = 'Categoria eliminada correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'Categoria eliminada correctamente.');
 		Request::redirect('/admin/contenido/categorias');
 	}
 
@@ -1076,7 +1076,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_categoria->existe())
 		{
-			$_SESSION['flash_error'] = 'No exista la categoria que quiere editar.';
+			add_flash_message(FLASH_ERROR, 'No exista la categoria que quiere editar.');
 			Request::redirect('/admin/contenido/categorias');
 		}
 
@@ -1266,7 +1266,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 				//TODO: agregar suceso de administracion.
 
 				// Seteo FLASH message.
-				$_SESSION['flash_success'] = 'La noticia se creó correctamente';
+				add_flash_message(FLASH_SUCCESS, 'La noticia se creó correctamente');
 
 				// Redireccionamos.
 				Request::redirect('/admin/contenido/noticias');
@@ -1336,7 +1336,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 	{
 		$model_noticia = new Model_Noticia;
 		$model_noticia->desactivar_todas();
-		$_SESSION['flash_success'] = 'Se han ocultado correctamente todas las noticias.';
+		add_flash_message(FLASH_SUCCESS, 'Se han ocultado correctamente todas las noticias.');
 		Request::redirect('/admin/contenido/noticias');
 	}
 
@@ -1365,7 +1365,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 	{
 		$model_noticia = new Model_Noticia;
 		$model_noticia->eliminar_todas();
-		$_SESSION['flash_success'] = 'Se han borrado correctamente todas las noticias.';
+		add_flash_message(FLASH_SUCCESS, 'Se han borrado correctamente todas las noticias.');
 		Request::redirect('/admin/contenido/noticias');
 	}
 
@@ -1379,7 +1379,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_noticia = new Model_Noticia( (int) $id);
 		if ( ! $model_noticia->existe())
 		{
-			$_SESSION['flash_error'] = 'Noticia incorrecta.';
+			add_flash_message(FLASH_ERROR, 'Noticia incorrecta.');
 			Request::redirect('/admin/contenido/noticias');
 		}
 

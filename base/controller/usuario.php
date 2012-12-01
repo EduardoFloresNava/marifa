@@ -105,7 +105,16 @@ class Base_Controller_Usuario extends Controller {
 							$model_usuario->actualizar_campo('puntos', $model_usuario->puntos + $model_usuario->rango()->puntos);
 						}
 
-						$_SESSION['flash_success'] = 'Bienvenido.';
+						// Verifico si tiene advertencias si visualizar.
+						if ($model_usuario->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO) > 0)
+						{
+							add_flash_message(FLASH_INFO, 'Tienes advertencias nuevas. Puedes verlas desde <a href="/cuenta/avisos/">aquí</a>.');
+						}
+
+						// Envio mensaje de bienvenida.
+						add_flash_message(FLASH_SUCCESS, 'Bienvenido.');
+
+						// Lo envio a la portada.
 						Request::redirect('/', FALSE, TRUE);
 						break;
 					case Model_Usuario::ESTADO_PENDIENTE:  // Cuenta por activar.
@@ -152,7 +161,7 @@ class Base_Controller_Usuario extends Controller {
 		if (Usuario::is_login())
 		{
 			// Lo enviamos a la portada.
-			$_SESSION['flash_error'] = 'No puedes registrarte si ya estás logueado.';
+			add_flash_message(FLASH_ERROR, 'No puedes registrarte si ya estás logueado.');
 			Request::redirect('/');
 		}
 
@@ -162,7 +171,7 @@ class Base_Controller_Usuario extends Controller {
 		// Verifico si está abierto el registro.
 		if ( ! (bool) $model_config->get('registro', TRUE))
 		{
-			$_SESSION['flash_error'] = 'El registro se encuentra cerrado, no se pueden crear nuevas cuentas.';
+			add_flash_message(FLASH_ERROR, 'El registro se encuentra cerrado, no se pueden crear nuevas cuentas.');
 			Request::redirect('/usuario/login/');
 		}
 
@@ -337,14 +346,14 @@ class Base_Controller_Usuario extends Controller {
 		if (Usuario::is_login())
 		{
 			// Lo enviamos a la portada.
-			$_SESSION['flash_error'] = 'No puedes registrarte si ya estás logueado.';
+			add_flash_message(FLASH_ERROR, 'No puedes registrarte si ya estás logueado.');
 			Request::redirect('/');
 		}
 
 		// Verifico formato del token.
 		if ( ! preg_match('/^[a-zA-Z0-9]{32}$/D', $token))
 		{
-			$_SESSION['flash_error'] = 'La clave de activación no es correcta.';
+			add_flash_message(FLASH_ERROR, 'La clave de activación no es correcta.');
 			Request::redirect('/');
 		}
 
@@ -352,7 +361,7 @@ class Base_Controller_Usuario extends Controller {
 		$model_recuperacion = new Model_Usuario_Recuperacion;
 		if ( ! $model_recuperacion->es_valido($token, Model_Usuario_Recuperacion::TIPO_ACTIVACION))
 		{
-			$_SESSION['flash_error'] = 'La clave de activación ha caducado.';
+			add_flash_message(FLASH_ERROR, 'La clave de activación ha caducado.');
 			Request::redirect('/');
 		}
 
@@ -371,7 +380,7 @@ class Base_Controller_Usuario extends Controller {
 		// Borramos el token.
 		$model_recuperacion->borrar();
 
-		$_SESSION['flash_success'] = 'La cuenta se ha activado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'La cuenta se ha activado correctamente.');
 		Request::redirect('/usuario/login');
 	}
 
@@ -384,7 +393,7 @@ class Base_Controller_Usuario extends Controller {
 		if (Usuario::is_login())
 		{
 			// Lo enviamos a la portada.
-			$_SESSION['flash_error'] = 'No puedes registrarte si ya estás logueado.';
+			add_flash_message(FLASH_ERROR, 'No puedes registrarte si ya estás logueado.');
 			Request::redirect('/');
 		}
 
@@ -394,7 +403,7 @@ class Base_Controller_Usuario extends Controller {
 		// Verifico el tipo de activación.
 		if ( (int) $model_config->get('activacion_usuario', 1) !== 1)
 		{
-			$_SESSION['flash_error'] = 'No se pueden pedir correos de activación, este método no es correcto.';
+			add_flash_message(FLASH_ERROR, 'No se pueden pedir correos de activación, este método no es correcto.');
 			Request::redirect('/usuario/login/');
 		}
 
@@ -597,7 +606,7 @@ class Base_Controller_Usuario extends Controller {
 		// Verifico formato del token.
 		if ( ! preg_match('/^[a-zA-Z0-9]{32}$/D', $token))
 		{
-			$_SESSION['flash_error'] = 'La clave de restauración no es correcta.';
+			add_flash_message(FLASH_ERROR, 'La clave de restauración no es correcta.');
 			Request::redirect('/usuario/recuperar/');
 		}
 
@@ -605,7 +614,7 @@ class Base_Controller_Usuario extends Controller {
 		$model_recuperacion = new Model_Usuario_Recuperacion;
 		if ( ! $model_recuperacion->es_valido($token, Model_Usuario_Recuperacion::TIPO_RECUPERACION))
 		{
-			$_SESSION['flash_error'] = 'La clave de restauración ha caducado.';
+			add_flash_message(FLASH_ERROR, 'La clave de restauración ha caducado.');
 			Request::redirect('/usuario/recuperar/');
 		}
 
@@ -655,7 +664,7 @@ class Base_Controller_Usuario extends Controller {
 				$model_recuperacion->borrar();
 
 				// Notifico y envio al login.
-				$_SESSION['flash_success'] = 'La contraseña se ha restaurado correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'La contraseña se ha restaurado correctamente.');
 				Request::redirect('/usuario/login/');
 			}
 		}
@@ -670,7 +679,7 @@ class Base_Controller_Usuario extends Controller {
 	public function action_logout()
 	{
 		Usuario::logout();
-		$_SESSION['flash_success'] = 'Gracias por su visita.';
+		add_flash_message(FLASH_SUCCESS, 'Gracias por su visita.');
 		Request::redirect('/');
 	}
 }

@@ -40,7 +40,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -56,7 +56,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -137,7 +137,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -150,7 +150,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico exista.
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'La denuncia que deseas visualizar no es correcta.';
+			add_flash_message(FLASH_ERROR, 'La denuncia que deseas visualizar no es correcta.');
 			Request::redirect('/modedar/denuncias/posts');
 		}
 
@@ -185,7 +185,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -196,14 +196,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_denuncia = new Model_Post_Denuncia($denuncia);
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Post_Denuncia::ESTADO_PENDIENTE)
 		{
-			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
@@ -225,7 +225,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informo resultado.
-			$_SESSION['flash_success'] = 'Denuncia rechazada correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'Denuncia rechazada correctamente.');
 		}
 		else
 		{
@@ -245,7 +245,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informo resultado.
-			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'Denuncia aceptada correctamente.');
 		}
 		Request::redirect('/moderar/denuncias/posts');
 	}
@@ -259,7 +259,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -270,21 +270,21 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico existencia del post.
 		if ( ! $model_post->existe())
 		{
-			$_SESSION['flash_error'] = 'El post que deseas borrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El post que deseas borrar no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
 		// Verifico los permisos.
 		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permisos para realizar esa acción.';
+			add_flash_message(FLASH_ERROR, 'No tienes permisos para realizar esa acción.');
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
 		// Verifico el estado.
 		if ($model_post->estado === Model_Post::ESTADO_BORRADO)
 		{
-			$_SESSION['flash_error'] = 'El post que deseas borrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El post que deseas borrar no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
@@ -304,7 +304,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		}
 
 		// Informamos el resultado.
-		$_SESSION['flash_success'] = 'Post eliminado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'Post eliminado correctamente.');
 		Request::redirect('/moderar/denuncias/posts');
 	}
 
@@ -318,7 +318,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -398,7 +398,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -411,7 +411,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico exista.
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'La denuncia que deseas visualizar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La denuncia que deseas visualizar no se encuentra disponible.');
 			Request::redirect('/modedar/denuncias/fotos');
 		}
 
@@ -446,7 +446,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -457,14 +457,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_denuncia = new Model_Foto_Denuncia($denuncia);
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Foto_Denuncia::ESTADO_PENDIENTE)
 		{
-			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
@@ -486,7 +486,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informamos el resultado.
-			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'Denuncia aceptada correctamente.');
 		}
 		else
 		{
@@ -506,7 +506,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informamos el resultado.
-			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'Denuncia aceptada correctamente.');
 		}
 		Request::redirect('/moderar/denuncias/fotos');
 	}
@@ -520,7 +520,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -531,21 +531,21 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico existencia del post.
 		if ( ! $model_foto->existe())
 		{
-			$_SESSION['flash_error'] = 'La foto que deseas borrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La foto que deseas borrar no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
 		// Verifico los permisos.
 		if (Usuario::$usuario_id !== $model_foto->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_FOTOS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permisos para realizar esa acción.';
+			add_flash_message(FLASH_ERROR, 'No tienes permisos para realizar esa acción.');
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
 		// Verifico el estado.
 		if ($model_foto->estado === Model_Foto::ESTADO_BORRADA)
 		{
-			$_SESSION['flash_error'] = 'La foto que deseas borrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La foto que deseas borrar no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
@@ -565,7 +565,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		}
 
 		// Informamos el resultado.
-		$_SESSION['flash_success'] = 'Post eliminado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'Post eliminado correctamente.');
 		Request::redirect('/moderar/denuncias/fotos');
 	}
 
@@ -579,7 +579,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -659,7 +659,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -672,7 +672,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico exista.
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'La denuncia que deseas visualizar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La denuncia que deseas visualizar no se encuentra disponible.');
 			Request::redirect('/modedar/denuncias/usuarios');
 		}
 
@@ -707,7 +707,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -718,14 +718,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_denuncia = new Model_Usuario_Denuncia($denuncia);
 		if ( ! $model_denuncia->existe())
 		{
-			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/usuarios');
 		}
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Usuario_Denuncia::ESTADO_PENDIENTE)
 		{
-			$_SESSION['flash_error'] = 'La denuncia que deseas cerrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/usuarios');
 		}
 
@@ -747,7 +747,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informamos el resultado.
-			$_SESSION['flash_success'] = 'Denuncia rechazada correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'Denuncia rechazada correctamente.');
 		}
 		else
 		{
@@ -767,7 +767,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informamos el resultado.
-			$_SESSION['flash_success'] = 'Denuncia aceptada correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'Denuncia aceptada correctamente.');
 		}
 		Request::redirect('/moderar/denuncias/usuarios');
 	}
@@ -781,14 +781,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = 'El usuario que deseas advertir no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que deseas advertir no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -799,7 +799,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario que deseas advertir no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que deseas advertir no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -867,7 +867,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 				}
 
 				// Informamos el resultado.
-				$_SESSION['flash_success'] = 'Advertencia enviada correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'Advertencia enviada correctamente.');
 				Request::redirect('/moderar/denuncias/usuarios/');
 			}
 		}
@@ -894,14 +894,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = 'No puedes enviarte una advertencia a vos mismo.';
+			add_flash_message(FLASH_ERROR, 'No puedes enviarte una advertencia a vos mismo.');
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -912,7 +912,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario que deseas suspender no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que deseas suspender no se encuentra disponible.');
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -926,7 +926,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 			else
 			{
-				$_SESSION['flash_error'] = 'El usuario que deseas suspender no se encuentra disponible.';
+				add_flash_message(FLASH_ERROR, 'El usuario que deseas suspender no se encuentra disponible.');
 				Request::redirect('/moderar/denuncias/usuarios/');
 			}
 		}
@@ -1006,7 +1006,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 				}
 
 				// Seteamos mensaje flash y volvemos.
-				$_SESSION['flash_success'] = 'Usuario suspendido correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'Usuario suspendido correctamente.');
 				Request::redirect('/moderar/denuncias/usuarios/');
 			}
 		}

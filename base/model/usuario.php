@@ -651,6 +651,54 @@ class Base_Model_Usuario extends Model_Dataset {
 	}
 
 	/**
+	 * Listado de avisos del usuario.
+	 * @param int|array $estado Estado de los avisos, NULL para cualquier estado.
+	 * @return array
+	 */
+	public function avisos($estado = NULL)
+	{
+		// Cargo listado.
+		if ($estado === NULL)
+		{
+			$lst = $this->db->query('SELECT id FROM usuario_aviso WHERE usuario_id = ? ORDER BY fecha DESC', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			if (is_array($estado))
+			{
+				$estado = implode(', ', $estado);
+			}
+			$lst = $this->db->query('SELECT id FROM usuario_aviso WHERE usuario_id = ? AND estado IN('.$estado.') ORDER BY fecha DESC', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+		}
+
+		// Armo listado de objetos.
+		foreach($lst as $k => $v)
+		{
+			$lst[$k] = new Model_Usuario_Aviso($v);
+		}
+
+		// Devuelvo la lista.
+		return $lst;
+	}
+
+	/**
+	 * Cantidad de avisos que tiene el usuario.
+	 * @param int $estado Estado de los avisos, NULL para cualquier estado.
+	 * @return
+	 */
+	public function cantidad_avisos($estado = NULL)
+	{
+		if ($estado === NULL)
+		{
+			return $this->db->query('SELECT COUNT(*) FROM usuario_aviso WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			return $this->db->query('SELECT COUNT(*) FROM usuario_aviso WHERE usuario_id = ? AND estado = ?', array($this->primary_key['id'], $estado))->get_var(Database_Query::FIELD_INT);
+		}
+	}
+
+	/**
 	 * Cantidad de usuarios activos en el último minuto.
 	 * @return int
 	 */

@@ -40,7 +40,7 @@ class Base_Controller_Notificaciones extends Controller {
 	{
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a tus notificaciones.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a tus notificaciones.');
 			Request::redirect('/usuario/login');
 		}
 		parent::before();

@@ -60,7 +60,7 @@ class Base_Controller_Perfil extends Controller {
 			// Verificamos si estamos logueados.
 			if ( ! Usuario::is_login())
 			{
-				$_SESSION['flash_error'] = 'El usuario del que quieres ver el perfil no está disponible.';
+				add_flash_message(FLASH_ERROR, 'El usuario del que quieres ver el perfil no está disponible.');
 				Request::redirect('/');
 			}
 			$model_usuario = Usuario::usuario();
@@ -80,14 +80,14 @@ class Base_Controller_Perfil extends Controller {
 				// Tratamos de cargar el usuario por su nick
 				if ( ! $model_usuario->load_by_nick($usuario))
 				{
-					$_SESSION['flash_error'] = 'El usuario del que quieres ver el perfil no está disponible.';
+					add_flash_message(FLASH_ERROR, 'El usuario del que quieres ver el perfil no está disponible.');
 					Request::redirect('/');
 				}
 
 				// Verifico bloqueo.
 				if ($model_usuario->esta_bloqueado(Usuario::$usuario_id))
 				{
-					$_SESSION['flash_error'] = 'El usuario del que quieres ver el perfil te tiene bloqueado.';
+					add_flash_message(FLASH_ERROR, 'El usuario del que quieres ver el perfil te tiene bloqueado.');
 					Request::redirect('/');
 				}
 			}
@@ -527,21 +527,21 @@ class Base_Controller_Perfil extends Controller {
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes estar logueado para poder realizar denuncias.';
+			add_flash_message(FLASH_ERROR, 'Debes estar logueado para poder realizar denuncias.');
 			Request::redirect('/usuario/login');
 		}
 
 		// Verificamos no sea uno mismo.
 		if (Usuario::$usuario_id == $this->usuario->id)
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres denunciar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres denunciar no se encuentra disponible.');
 			Request::redirect('/perfil/index/'.$this->usuario->nick);
 		}
 
 		// Verifico el estado.
 		if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres denunciar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres denunciar no se encuentra disponible.');
 			Request::redirect('/perfil/index/'.$this->usuario->nick);
 		}
 
@@ -616,7 +616,7 @@ class Base_Controller_Perfil extends Controller {
 				}
 
 				// Informo el resultado.
-				$_SESSION['flash_success'] = 'El usuario ha sido denunciado correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'El usuario ha sido denunciado correctamente.');
 				Request::redirect('/perfil/index/'.$this->usuario->nick);
 			}
 		}
@@ -646,11 +646,11 @@ class Base_Controller_Perfil extends Controller {
 		{
 			if ($seguir)
 			{
-				$_SESSION['flash_error'] = 'Debes estar logueado para poder seguir usuarios.';
+				add_flash_message(FLASH_ERROR, 'Debes estar logueado para poder seguir usuarios.');
 			}
 			else
 			{
-				$_SESSION['flash_error'] = 'Debes estar logueado para poder dejar de seguir usuarios.';
+				add_flash_message(FLASH_ERROR, 'Debes estar logueado para poder dejar de seguir usuarios.');
 			}
 			Request::redirect('/usuario/login');
 		}
@@ -660,11 +660,11 @@ class Base_Controller_Perfil extends Controller {
 		{
 			if ($seguir)
 			{
-				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
 			}
 			else
 			{
-				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres dejar de seguir no se encuentra disponible.');
 			}
 			Request::redirect('/perfil/index/'.$this->usuario->nick);
 		}
@@ -675,14 +675,14 @@ class Base_Controller_Perfil extends Controller {
 			// Verifico el estado.
 			if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 			{
-				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
 				Request::redirect('/perfil/index/'.$this->usuario->nick);
 			}
 
 			// Verifico no sea seguidor.
 			if ($this->usuario->es_seguidor(Usuario::$usuario_id))
 			{
-				$_SESSION['flash_error'] = 'El usuario al cual quieres seguir no se encuentra disponible.';
+				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
 				Request::redirect('/perfil/index/'.$this->usuario->nick);
 			}
 
@@ -698,7 +698,7 @@ class Base_Controller_Perfil extends Controller {
 			// Verifico sea seguidor.
 			if ( ! $this->usuario->es_seguidor(Usuario::$usuario_id))
 			{
-				$_SESSION['flash_error'] = 'El usuario al cual quieres dejar de seguir no se encuentra disponible.';
+				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres dejar de seguir no se encuentra disponible.');
 				Request::redirect('/perfil/index/'.$this->usuario->nick);
 			}
 
@@ -722,11 +722,11 @@ class Base_Controller_Perfil extends Controller {
 		// Informo resultado.
 		if ($seguir)
 		{
-			$_SESSION['flash_success'] = 'Comenzaste a seguir al usuario correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'Comenzaste a seguir al usuario correctamente.');
 		}
 		else
 		{
-			$_SESSION['flash_success'] = 'Dejaste de seguir al usuario correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'Dejaste de seguir al usuario correctamente.');
 		}
 		Request::redirect('/perfil/index/'.$this->usuario->nick);
 	}
@@ -743,28 +743,28 @@ class Base_Controller_Perfil extends Controller {
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes estar logueado para poder bloquear usuarios.';
+			add_flash_message(FLASH_ERROR, 'Debes estar logueado para poder bloquear usuarios.');
 			Request::redirect('/usuario/login');
 		}
 
 		// Verificamos no sea uno mismo.
 		if (Usuario::$usuario_id == $this->usuario->id)
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres bloquear no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres bloquear no se encuentra disponible.');
 			Request::redirect('/perfil/index/'.$usuario->nick);
 		}
 
 		// Verifico el estado.
 		if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres bloquear no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres bloquear no se encuentra disponible.');
 			Request::redirect('/perfil/index/'.$this->usuario->nick);
 		}
 
 		// Verifico no esté bloqueado.
 		if (Usuario::usuario()->esta_bloqueado($this->usuario->id))
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres bloquear no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres bloquear no se encuentra disponible.');
 			Request::redirect('/perfil/index/'.$this->usuario->nick);
 		}
 
@@ -784,7 +784,7 @@ class Base_Controller_Perfil extends Controller {
 		}
 
 		// Informo resultado.
-		$_SESSION['flash_success'] = 'El usuario se ha bloqueado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El usuario se ha bloqueado correctamente.');
 		Request::redirect('/perfil/index/'.$this->usuario->nick);
 	}
 
@@ -800,28 +800,28 @@ class Base_Controller_Perfil extends Controller {
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes estar logueado para poder desbloquear usuarios.';
+			add_flash_message(FLASH_ERROR, 'Debes estar logueado para poder desbloquear usuarios.');
 			Request::redirect('/usuario/login');
 		}
 
 		// Verificamos no sea uno mismo.
 		if (Usuario::$usuario_id == $this->usuario->id)
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres desbloquear no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres desbloquear no se encuentra disponible.');
 			Request::redirect('/perfil/index/'.$usuario->nick);
 		}
 
 		// Verifico el estado.
 		if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres desbloquear no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres desbloquear no se encuentra disponible.');
 			Request::redirect('/perfil/index/'.$this->usuario->nick);
 		}
 
 		// Verifico esté bloqueado.
 		if ( ! Usuario::usuario()->esta_bloqueado($this->usuario->id))
 		{
-			$_SESSION['flash_error'] = 'El usuario al cual quieres desbloquear no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres desbloquear no se encuentra disponible.');
 			Request::redirect('/perfil/index/'.$this->usuario->nick);
 		}
 
@@ -841,7 +841,7 @@ class Base_Controller_Perfil extends Controller {
 		}
 
 		// Informo resultado.
-		$_SESSION['flash_success'] = 'El usuario se ha desbloqueado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El usuario se ha desbloqueado correctamente.');
 		Request::redirect('/perfil/index/'.$this->usuario->nick);
 	}
 

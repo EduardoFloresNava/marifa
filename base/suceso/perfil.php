@@ -42,7 +42,18 @@ class Base_Suceso_Perfil extends Suceso {
 	 */
 	public static function obtener_listado($usuario, $pagina, $cantidad = 20, $class = __CLASS__)
 	{
-		return parent::obtener_listado($usuario, $pagina, $cantidad, $class);
+		if ($usuario == Usuario::$usuario_id)
+		{
+			// Genero listado de usuarios a partir del actual y de quien sigue.
+			$usuarios = Database::get_instance()->query('SELECT usuario_id FROM usuario_seguidor WHERE seguidor_id = ?', $usuario)->get_pairs(Database_Query::FIELD_INT);
+			$usuarios[] = $usuario;
+		}
+		else
+		{
+			$usuarios = $usuario;
+		}
+
+		return parent::obtener_listado($usuarios, $pagina, $cantidad, $class);
 	}
 
 	/**
@@ -52,7 +63,18 @@ class Base_Suceso_Perfil extends Suceso {
 	 */
 	public static function cantidad($usuario, $class = __CLASS__)
 	{
-		return parent::cantidad($usuario, $class);
+		if ($usuario == Usuario::$usuario_id)
+		{
+			// Genero listado de usuarios a partir del actual y de quien sigue.
+			$usuarios = Database::get_instance()->query('SELECT usuario_id FROM usuario_seguidor WHERE seguidor_id = ?', $usuario)->get_pairs(Database_Query::FIELD_INT);
+			$usuarios[] = $usuario;
+		}
+		else
+		{
+			$usuarios = $usuario;
+		}
+
+		return parent::cantidad($usuarios, $class);
 	}
 
 	/**
