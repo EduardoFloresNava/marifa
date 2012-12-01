@@ -37,5 +37,5 @@ return array(
 	array('/login', array('controller' => 'usuario', 'action' => 'login')), // Atajo al login.
 	array('/logout', array('controller' => 'usuario', 'action' => 'logout')), // Atajo al logout.
 	array('/register/', array('controller' => 'usuario', 'action' => 'register')), // Atajo al registro.
-	array('/perfil/:usuario/', array('controller' => 'perfil', 'action' => 'index')), // Atajo al perfil del usuario.
+	//array('/perfil/:usuario/', array('controller' => 'perfil', 'action' => 'index'), array('filters' => array('usuario' => '()')), // Atajo al perfil del usuario.
 );

@@ -117,7 +117,7 @@ class Base_Controller_Perfil extends Controller {
 			'informacion' => array('link' => '/perfil/informacion/'.$usuario, 'caption' => __('Información', FALSE), 'active' =>  $activo == 'informacion'),
 			'posts' => array('link' => '/perfil/posts/'.$usuario, 'caption' => __('Posts', FALSE), 'active' =>  $activo == 'posts'),
 			'seguidores' => array('link' => '/perfil/seguidores/'.$usuario, 'caption' => __('Seguidores', FALSE), 'active' =>  $activo == 'seguidores'),
-			// 'medallas' => array('link' => '/perfil/medallas/'.$usuario, 'caption' => __('Medallas', FALSE), 'active' =>  $activo == 'medallas'),
+			'medallas' => array('link' => '/perfil/medallas/'.$usuario, 'caption' => __('Medallas', FALSE), 'active' =>  $activo == 'medallas'),
 		);
 	}
 
@@ -843,6 +843,42 @@ class Base_Controller_Perfil extends Controller {
 		// Informo resultado.
 		add_flash_message(FLASH_SUCCESS, 'El usuario se ha desbloqueado correctamente.');
 		Request::redirect('/perfil/index/'.$this->usuario->nick);
+	}
+
+	/**
+	 * Medallas del usuario.
+	 * @param int $usuario ID del usuario.
+	 */
+	public function action_medallas($usuario)
+	{
+		// Cargamos el usuario.
+		$this->cargar_usuario($usuario);
+
+		// Cargamos la vista de información.
+		$information_view = View::factory('perfil/medallas');
+
+		// Información del usuario actual.
+		$information_view->assign('usuario', $this->usuario->as_array());
+
+		// Listado de medallas.
+		$medallas = $this->usuario->medallas();
+
+		// Las proceso.
+		foreach ($medallas as $k => $v)
+		{
+			$medallas[$k]['medalla'] = $v['medalla']->as_array();
+		}
+
+		// Envio las medallas a la vista.
+		$information_view->assign('medallas', $medallas);
+		unset($medallas);
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $this->header_block($information_view->parse()));
+		unset($information_view);
+
+		// Seteamos el titulo.
+		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick').' - Medallas');
 	}
 
 }

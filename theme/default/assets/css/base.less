@@ -184,7 +184,7 @@ td .btn-toolbar {
     }
 
     .medallas {
-        margin-top: 10px;
+        margin: 10px 0;
         background-color: #F5F5F5;
         border: 1px solid rgba(0, 0, 0, 0.05);
         padding: 5px;
@@ -993,5 +993,32 @@ h1.title, h2.title, h3.title {
 
     td, th {
         border-color: #84C2E0;
+    }
+}
+
+.lista-medallas {
+    border: 1px solid #D1D1D1;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+
+    .medalla {
+        padding: 2px 0;
+
+        img {
+            margin: 5px;
+        }
+
+        h4 small {
+            margin-left: 5px;
+        }
+
+        &:hover {
+            background: #F5F5F5;
+        }
+    }
+
+    .medalla ~ .medalla {
+        border-top: 1px solid #D1D1D1;
     }
 }
