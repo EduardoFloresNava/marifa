@@ -22,7 +22,7 @@
 					</p>
 					<p class="sumario clearfix">
 						{if="$value.votos != 0"}<span class="{if="$value.votos > 0"}positivo{else}negativo{/if}">{function="abs($value.votos)"} {if="abs($value.votos) != 1"}{@votos@}{else}{@voto@}{/if}</span>{/if}
-						{if="$value.votos != 0 && $value.favoritos != 0"}<span> - </span>{/if}
+						{if="$value.votos != 0 && ($value.favoritos != 0 || $value.comentarios != 0)"}<span> - </span>{/if}
 						{if="$value.favoritos != 0"}<span>{$value.favoritos} {if="abs($value.favoritos) != 1"}{@favoritos@}{else}{@favorito@}{/if}</span>{/if}
 						{if="$value.favoritos != 0 && $value.comentarios != 0"}<span> - </span>{/if}
 						{if="$value.comentarios != 0"}<span>{$value.comentarios} {if="abs($value.comentarios) != 1"}{@comentarios@}{else}{@comentarios@}{/if}</span>{/if}

@@ -22,7 +22,7 @@
 				{/loop}
 			</ul>
 			{else}
-			<div class="alert alert-info">No tienes sucesos.</div>
+			<div class="alert alert-info">&iexcl;No tienes sucesos nuevos!</div>
 			{/if}
 			<div class="actions">
 				<a href="/notificaciones/">Ver todos</a>
@@ -50,7 +50,7 @@
 				{/loop}
 			</ul>
 			{else}
-			<div class="alert alert-info">No tienes mensajes esperando.</div>
+			<div class="alert alert-info">&iexcl;No tienes mensajes esperando!</div>
 			{/if}
 			<div class="actions">
 				<a href="/mensaje/">Bandeja de entrada</a>
