@@ -1,42 +1,44 @@
 <div class="row">
 	<div class="span7">
-		<h3 class="title">&Uacute;ltimos posts<small class="pull-right">Leyenda: <span class="leyenda-post fijo"><i class="icon icon-bookmark"></i>Fijo</span> <span class="leyenda-post patrocinado"><i class="icon icon-certificate"></i>Patrocinado</span> <span class="leyenda-post privado"><i class="icon icon-lock"></i>Privado</span></small></h3>
-		{loop="$sticky"}
-		<div class="ultimo-post fijo">
-			<div class="categoria hidden-phone">
-				<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
-			</div>
-			<div class="contenido">
-				{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<i class="icon icon-bookmark show-tooltip" title="Fijo"></i> <a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
-				<div class="info">
-					{@Por@}: <a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
-				</div>
-			</div>
-			<div class="fecha visible-desktop">
-				{$value.fecha->fuzzy()}
-			</div>
-		</div>
-		{/loop}
-		{loop="$ultimos_posts"}
-		<div class="ultimo-post{if="$value.sponsored"} patrocinado{/if}">
-			<div class="categoria hidden-phone">
-				<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
-			</div>
-			<div class="contenido">
-				{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
-				<div class="info">
-					{@Por@}: <a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
-				</div>
-			</div>
-			<div class="fecha visible-desktop">
-				{$value.fecha->fuzzy()}
-			</div>
-		</div>
-		{else}
-			{if="count($sticky) == 0"}
+		<h3 class="title">&Uacute;ltimos posts<small class="pull-right leyenda">Leyenda: <span><i class="icon icon-bookmark"></i>Fijo - <i class="icon icon-certificate"></i>Patrocinado - <i class="icon icon-lock"></i>Privado</span></small></h3>
+		{if="count($sticky) == 0 && count($ultimos_posts) == 0"}
 		<div class="alert">No hay posts aún.</div>
-			{/if}
-		{/loop}
+		{else}
+		<div class="ultimo-post-list">
+			{loop="$sticky"}
+			<div class="ultimo-post fijo">
+				<div class="categoria hidden-phone">
+					<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
+				</div>
+				<div class="contenido">
+					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<i class="icon icon-bookmark show-tooltip" title="Fijo"></i> <a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
+					<div class="info">
+						{@Por@}: <a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
+					</div>
+				</div>
+				<div class="fecha visible-desktop">
+					{$value.fecha->fuzzy()}
+				</div>
+			</div>
+			{/loop}
+			{loop="$ultimos_posts"}
+			<div class="ultimo-post{if="$value.sponsored"} patrocinado{/if}">
+				<div class="categoria hidden-phone">
+					<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
+				</div>
+				<div class="contenido">
+					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
+					<div class="info">
+						{@Por@}: <a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
+					</div>
+				</div>
+				<div class="fecha visible-desktop">
+					{$value.fecha->fuzzy()}
+				</div>
+			</div>
+			{/loop}
+		</div>
+		{/if}
 		{$paginacion}
 	</div>
 	<div class="span3">

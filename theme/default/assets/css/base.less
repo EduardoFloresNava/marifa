@@ -23,11 +23,15 @@ td .btn-toolbar {
     margin: 0;
 }
 
+.alert i.icon {
+    margin-left: -6px;
+}
+
 .alert-container {
     padding: 0;
 
     .alert-item {
-        padding: 8px 35px 8px 8px;
+        padding: 8px 35px 8px 14px;
         border-top-width: 0;
         border-top-style: solid;
     }
@@ -206,74 +210,52 @@ td .btn-toolbar {
     }
 }
 
-.ultimo-post {
-    margin: 5px 0px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    padding: 0px;
+.ultimo-post-list {
+    border: 1px solid #D1D1D1;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
 
-
-    .categoria {
-        display: inline-block;
-        background: rgba(0, 0, 0, 0.05);
-        border-right: 1px solid rgba(0, 0, 0, 0.15);
-        padding: 10px;
-        float: left;
-    }
-
-    .contenido {
-        display: inline-block;
-        margin: 0 10px;
-
-        .titulo {
-            font-size: 16px;
-            line-height: 23px;
-        }
-
-        .info {
-            font-size: 11px;
-            line-height: 12px;
-        }
-    }
-
-    .fecha {
-        line-height: 38px;
-        float: right;
-        margin: 0 10px 0 5px;
-    }
-
-    &.patrocinado {
-        border-color: #0088CC;
+    .ultimo-post {
+        padding: 0px;
 
         .categoria {
-            border-color: #0088CC;
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.05);
+            border-right: 1px solid rgba(0, 0, 0, 0.15);
+            padding: 10px;
+            float: left;
+        }
+
+        .contenido {
+            display: inline-block;
+            margin: 0 10px;
+
+            .titulo {
+                font-size: 16px;
+                line-height: 23px;
+            }
+
+            .info {
+                font-size: 11px;
+                line-height: 12px;
+            }
+        }
+
+        .fecha {
+            line-height: 38px;
+            float: right;
+            margin: 0 10px 0 5px;
         }
     }
 
-    &.fijo {
-        border-color: #D28C00;
-
-        .categoria {
-            border-color: #D28C00;
-        }
+    .ultimo-post ~ .ultimo-post {
+        border-top: 1px solid #D1D1D1;
     }
 }
 
-.leyenda-post {
-    &.patrocinado {
-        color: #0088CC;
-        border-bottom: 2px solid #0088CC;
-    }
-
-    &.fijo {
-        color: #D28C00;
-        border-bottom: 2px solid #D28C00;
-    }
-
-    &.privado {
-        color: #000000;
-        border-bottom: 2px solid #000000;
-    }
+.leyenda span {
+    color: #000000;
 }
 
 .sucesos {

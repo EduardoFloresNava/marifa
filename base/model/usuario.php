@@ -392,7 +392,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		unset($enc);
 
 		// Creamos arreglo con los datos.
-		$info = array($nick, $enc_password, $email, $rango, 10, date('Y/m/d H:i:s'), 0);
+		$info = array($nick, $enc_password, $email, $rango, 0, date('Y/m/d H:i:s'), 0);
 
 		// Creamos la cuenta.
 		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?)', $info);

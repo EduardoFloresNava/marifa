@@ -107,7 +107,7 @@ $consultas[] = array(
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('elementos_pagina', 20, 20), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('ip_mantenimiento', serialize(array()), serialize(array())), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('rango_defecto', 3, 3), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', '0.2RC1', '0.2RC1'), array('error_no' => 1062))
+		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', '0.2RC2', '0.2RC2'), array('error_no' => 1062))
 	)
 );
 
@@ -456,7 +456,7 @@ $consultas[] = array(
 				`password` varchar(64) NOT NULL,
 				`email` varchar(50) NOT NULL,
 				`rango` int(11) NOT NULL DEFAULT 1,
-				`puntos` int(11) NOT NULL DEFAULT 10,
+				`puntos` int(11) NOT NULL DEFAULT 0,
 				`registro` datetime NOT NULL,
 				`lastlogin` datetime NULL DEFAULT NULL,
 				`lastactive` datetime NULL DEFAULT NULL,
