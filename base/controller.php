@@ -70,15 +70,6 @@ class Base_Controller {
 		}
 		$this->template->assign('contenido', '');
 
-		// Eventos flash.
-		foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
-		{
-			if (isset($_SESSION[$k]))
-			{
-				$this->template->assign($k, get_flash($k));
-			}
-		}
-
 		// Seteo si es mantenimiento.
 		$m = new Mantenimiento;
 		$this->template->assign('is_locked', $m->is_locked());
@@ -177,6 +168,15 @@ class Base_Controller {
 	 */
 	public function after()
 	{
+		// Eventos flash.
+		foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
+		{
+			if (isset($_SESSION[$k]))
+			{
+				$this->template->assign($k, get_flash($k));
+			}
+		}
+
 		if (is_object($this->template) && ! Request::is_ajax())
 		{
 			DEBUG || $this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
