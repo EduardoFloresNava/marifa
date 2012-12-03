@@ -1049,9 +1049,16 @@ class Base_Controller_Perfil extends Controller {
 			$id = $model_shout->comentar(Usuario::$usuario_id, $comentario);
 
 			// Enviamos suceso.
-			//TODO: Ver sucesos de comentarios.
-			//$model_suceso = new Model_Suceso;
-			//if (Usuario::$usuario_id)
+			$model_suceso = new Model_Suceso;
+			if (Usuario::$usuario_id == $model_shout->usuario_id)
+			{
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_shout_comentario', FALSE, $model_shout->id, Usuario::$usuario_id, $id);
+			}
+			else
+			{
+				$model_suceso->crear($model_shout->usuario_id, 'usuario_shout_comentario', TRUE, $model_shout->id, Usuario::$usuario_id, $id);
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_shout_comentario', FALSE, $model_shout->id, Usuario::$usuario_id, $id);
+			}
 
 			// Informo resultado.
 			add_flash_message(FLASH_SUCCESS, 'El comentario se ha realizado correctamente.');
@@ -1113,6 +1120,11 @@ class Base_Controller_Perfil extends Controller {
 			$model_shout->quitar_voto(Usuario::$usuario_id);
 		}
 
+		// Agregamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear($model_shout->usuario_id, 'usuario_shout_voto', TRUE, $model_shout->id, Usuario::$usuario_id, $voto);
+		$model_suceso->crear(Usuario::$usuario_id, 'usuario_shout_voto', FALSE, $model_shout->id, Usuario::$usuario_id, $voto);
+
 		//TODO: Agregar suceso.
 
 		add_flash_message(FLASH_SUCCESS, 'El voto se ha realizado correctamente.');
@@ -1173,7 +1185,10 @@ class Base_Controller_Perfil extends Controller {
 			$model_shout->quitar_favorito(Usuario::$usuario_id);
 		}
 
-		//TODO: Agregar suceso.
+		// Agregamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear($model_shout->usuario_id, 'usuario_shout_favorito', TRUE, $model_shout->id, Usuario::$usuario_id, $agregar);
+		$model_suceso->crear(Usuario::$usuario_id, 'usuario_shout_favorito', FALSE, $model_shout->id, Usuario::$usuario_id, $agregar);
 
 		// Notifico el resultado.
 		add_flash_message(FLASH_SUCCESS, 'La publicación se ha agregado/quitado de los favoritos correctamente.');
