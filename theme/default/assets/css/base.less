@@ -187,16 +187,6 @@ td .btn-toolbar {
             font-size: 14px;
         }
     }
-
-    .medallas {
-        margin: 10px 0;
-        background-color: #F5F5F5;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        padding: 5px;
-        border-radius: 4px;
-        -moz-border-radius: 4px;
-        -webkit-border-radius: 4px;
-    }
 }
 
 .profile-data {
@@ -208,6 +198,27 @@ td .btn-toolbar {
     table th {
         width: 1px;
         white-space: nowrap;
+    }
+
+    .comentarios {
+        margin: 0 0 10px 0;
+
+        .comentario .content {
+            margin-left: 82px;
+        }
+    }
+
+    .comentario ~ .comentario {
+        margin-top: 10px;
+    }
+
+    .contenido-shout {
+        padding: 5px 10px;
+        margin: 0 0 10px 0;
+    }
+
+    .links-shout {
+        margin-bottom: 10px;
     }
 }
 
@@ -271,20 +282,36 @@ td .btn-toolbar {
         .icono {
             display: inline-block;
             background: rgba(0, 0, 0, 0.05);
-            border-right: 1px solid rgba(0, 0, 0, 0.15);
+            border-right: 1px solid #D1D1D1;
             padding: 10px;
         }
 
         .contenido {
             display: inline-block;
-            line-height: 38px;
+            line-height: 34px;
             margin: 0 10px;
         }
 
         .fecha {
-            line-height: 38px;
+            line-height: 34px;
             float: right;
             margin: 0 10px 0 5px;
+        }
+
+        .links {
+            border-top: 1px solid #D1D1D1;
+
+            .btn-group a {
+                border-radius: 0;
+                -moz-border-radius: 0;
+                -webkit-border-radius: 0;
+                border-bottom: 0;
+                border-top: 0;
+
+                &.btn-success {
+                    border-right: none;
+                }
+            }
         }
 
         &.nuevo {
@@ -884,7 +911,7 @@ footer, .footer {
     }
 }
 
-h1.title, h2.title, h3.title {
+h1.title, h2.title, h3.title, h4.title {
     margin-bottom: 10px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 
@@ -1013,3 +1040,28 @@ h1.title, h2.title, h3.title {
         border-top: 1px solid #D1D1D1;
     }
 }
+
+.small-user-list {
+    padding: 0;
+    margin: 0 0 10px 0;
+    list-style: none;
+
+    li {
+        float: left;
+    }
+}
+
+.publicar {
+    .nav {
+        margin-bottom: 2px;
+    }
+
+    .alert {
+        margin: 8px 0 6px;
+    }
+
+    .btn-large {
+        padding: 7px 14px;
+    }
+}
+

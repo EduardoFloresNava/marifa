@@ -228,3 +228,14 @@
  * **usuario_denuncia_rechazar** (*denuncia_id*, *usuario_id*): Rechazamos una denuncia.
  * * **denuncia_id**: ID de la denuncia a rechazar.
  * * **usuario_id**: ID del usuario que rechaza la denuncia.
+
+### Shouts de usuarios:
+
+ * **usuario_shout** (*shout_id*, *usuario_id*): Se publica un shout en el perfil del usuario.
+ * * **shout_id**: ID del shout que se publica.
+ * * **usuario_id**: ID del perfil donde se publica el shout.
+
+ * **usuario_shout_compartir** (*shout_id*, *comparte_id*, *usuario_id*): usuario_id comparte el shout shout_id a través de usuario_id.
+ * * **shout_id**: ID del shout que se comparte.
+ * * **comparte_id**: ID del usuario que comparte el shout.
+ * * **usuario_id**: ID del usuario a través del cual se comparte el shout.

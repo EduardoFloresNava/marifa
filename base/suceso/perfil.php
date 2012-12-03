@@ -492,4 +492,55 @@ class Base_Suceso_Perfil extends Suceso {
 
 		return array('usuario' => $model_usuario->as_array(), 'comentario' => $model_comentario->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array());
 	}
+
+	/**
+	 * Suceso producido por un shout creado por un usuario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_shout($suceso)
+	{
+		// Cargo shout.
+		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
+		$shout = $model_shout->as_array();
+
+		// Campos extra.
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+		$shout['votos'] = $model_shout->cantidad_votos();
+		$shout['comentario'] = $model_shout->cantidad_comentarios();
+		$shout['favoritos'] = $model_shout->cantidad_favoritos();
+		$shout['compartido'] = $model_shout->cantidad_compartido();
+
+		// Cargo usuario a quien se publica.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('usuario' => $model_usuario->as_array(), 'shout' => $shout);
+	}
+
+	/**
+	 * Suceso producido por un shout compartido por un usuario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_shout_compartir($suceso)
+	{
+		// Cargo shout.
+		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
+		$shout = $model_shout->as_array();
+
+		// Campos extra.
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+		$shout['votos'] = $model_shout->cantidad_votos();
+		$shout['comentario'] = $model_shout->cantidad_comentarios();
+		$shout['favoritos'] = $model_shout->cantidad_favoritos();
+		$shout['compartido'] = $model_shout->cantidad_compartido();
+
+		// Cargo datos de quien comparte.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		// Cargo usuario a través del cual se comparte.
+		$model_usuario_comparte = new Model_Usuario( (int) $suceso['objeto_id2']);
+
+		return array('usuario' => $model_usuario->as_array(), 'usuario_comparte' => $model_usuario_comparte->as_array(), 'shout' => $shout);
+	}
 }

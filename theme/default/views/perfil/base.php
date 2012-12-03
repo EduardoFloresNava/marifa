@@ -8,13 +8,6 @@
 		{if="Usuario::is_login() && $usuario.id !== Usuario::$usuario_id"}<a href="/perfil/denunciar/{$usuario.nick}" class="btn btn-warning"><i class="icon-white icon-exclamation-sign"></i> Denunciar</a>
 		{if="Usuario::is_login()"}{if="!$bloqueado"}<a href="/perfil/bloquear/{$usuario.nick}/" class="btn btn-danger"><i class="icon-white icon-ban-circle"></i> Bloquear</a>{else}<a href="/perfil/desbloquear/{$usuario.nick}/" class="btn btn-success"><i class="icon-white icon-ok-sign"></i> Desbloquear</a>{/if}
 		{if="$seguidor"}<a href="/perfil/seguir/{$usuario.nick}/0" class="btn btn-primary"><i class="icon-white icon-minus"></i> Dejar de seguir</a>{else}<a href="/perfil/seguir/{$usuario.nick}/1" class="btn btn-primary"><i class="icon-white icon-plus"></i> Seguir</a>{/if}{/if}{/if}
-		{if="count($medallas) > 0"}
-		<div class="medallas">
-		{loop="$medallas"}
-			<a href="" rel="tooltip" title="{$value.medalla.nombre}"><img src="{#THEME_URL#}/assets/img/medallas/{$value.medalla.imagen}" alt="{$value.medalla.nombre}" /></a>
-		{/loop}
-		</div>
-		{/if}
 	</div>
 	<div class="span4 profile-statistics">
 		<div class="row-fluid">
@@ -43,7 +36,49 @@
 	</div>
 </div>
 <div class="row profile-data">
-	<div class="span12">
+	<div class="span8">
 		{$contenido}
+	</div>
+	<div class="span4">
+		<h3 class="title">Medallas<small>{function="count($medallas)"}</small></h3>
+		{if="count($medallas) > 0"}
+		<ul class="small-user-list clearfix">
+			{loop="$medallas"}
+			<li>
+				<a href="" rel="tooltip" title="{$value.medalla.nombre}"><img src="{#THEME_URL#}/assets/img/medallas/{$value.medalla.imagen}" alt="{$value.medalla.nombre}" /></a>
+			</li>
+			{/loop}
+		</ul>
+		{else}
+		<div class="alert alert-info">&iexcl;{$usuario.nick} a&uacute;n no tiene ninguna medalla!</div>
+		{/if}
+		<h3 class="title">Seguidores<small>{$usuario.seguidores}</small></h3>
+		{if="count($seguidores) > 0"}
+		<ul class="small-user-list clearfix">
+			{loop="$seguidores"}
+			<li>
+				<a href="/perfil/index/{$value.nick}" class="show-tooltip" title="{$value.nick}">
+					<img src="{function="Utils::get_gravatar($value.email, 74, 74)"}" width="74" height="74" />
+				</a>
+			</li>
+			{/loop}
+		</ul>
+		{else}
+		<div class="alert alert-info">&iexcl;A&uacute;n no hay usuarios siguiendo a {$usuario.nick}!</div>
+		{/if}
+		<h3 class="title">Siguiendo<small>{$usuario.sigue}</small></h3>
+		{if="count($sigue) > 0"}
+		<ul class="small-user-list clearfix">
+			{loop="$sigue"}
+			<li>
+				<a href="/perfil/index/{$value.nick}" class="show-tooltip" title="{$value.nick}">
+					<img src="{function="Utils::get_gravatar($value.email, 74, 74)"}" width="74" height="74" />
+				</a>
+			</li>
+			{/loop}
+		</ul>
+		{else}
+		<div class="alert alert-info">&iexcl;{$usuario.nick} a&uacute;n no sigue a ning&uacute;n usuario!</div>
+		{/if}
 	</div>
 </div>
