@@ -1,4 +1,4 @@
-<h2 class="title">{@Publicación de @} {$shout.usuario.nick}</h2>
+<h2 class="title">{@Publicación de@} {$shout.usuario.nick}</h2>
 <div class="well contenido-shout">{$shout.mensaje}</div>
 <div class="btn-group links-shout">
 	{if="Usuario::is_login() && Usuario::$usuario_id !== $usuario.id"}
@@ -30,11 +30,11 @@
 {if="$shout.comentario > 0"}
 <div class="comentarios">
 	{loop="$shout.comentarios"}
-	<div class="comentario clearfix">
+	<div class="comentario clearfix" id="c-{$value.id}">
 		<a href="/perfil/index/{$value.usuario.nick}"><img class="thumbnail pull-left" src="{function="Utils::get_gravatar($value.usuario.email, 64, 64)"}" /></a>
 		<div class="content">
 			<h4 class="title"><a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a><small>{$value.fecha->fuzzy()}</small></h4>
-			<div>{$value.comentario}</div>
+			<div class="body">{$value.comentario}</div>
 		</div>
 	</div>
 	{/loop}
