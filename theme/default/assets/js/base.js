@@ -115,6 +115,9 @@
     // Actualización de listado de sucesos y notificación de nuevos.
     if ($("#suceso-dropdown-button").length > 0)
     {
+        /**
+         * Cargamos las nuevas notificaciones.
+         */
         setInterval(function () {
             // Borro sucesos viejos.
             $(".pop-notification div.notification").remove();
@@ -158,6 +161,54 @@
                 }
             });
         }, 20000);
+
+        /**
+         * Marcamos como desplegados.
+         */
+        $('#suceso-dropdown-button').click(function(e) {
+            // Cargo listado de sucesos nuevos.
+            var sucesos = $("#suceso-dropdown li").map(function () {
+                if ($(this).attr('data-desplegado') != 1)
+                {
+                    return ($(this).attr('id').toString().split('-')[1])*1;
+                }
+                else
+                {
+                    return null;
+                }
+            }).get();
+
+            // Verifico si hay que marcar como desplegados.
+            if (sucesos.length > 0 && $("#suceso-dropdown").css('display') == 'none') {
+                $.ajax({
+                    url: '/notificaciones/desplegadas',
+                    type: 'POST',
+                    data: {sucesos: sucesos},
+                    dataType: 'json',
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data, textStatus, jqXHR) {
+                        // Marco elementos como desplegados.
+                        $.each(data, function(index, value) {
+                            $("#suceso-dropdown li#suceso-"+value).attr('data-desplegado', 1);
+                        });
+
+                        // Recalculo indice.
+                        cantidad_notificaciones($("#suceso-dropdown li").map(function () {
+                            if ($(this).attr('data-desplegado') != 1)
+                            {
+                                return ($(this).attr('id').toString().split('-')[1])*1;
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }).get().length);
+                    }
+                });
+            }
+        });
     }
 } (jQuery));
 
