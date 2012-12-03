@@ -3,10 +3,10 @@
 <div class="publicar">
 	<form action="/perfil/index/{$usuario.nick}/" method="POST">
 		<ul class="nav nav-pills">
-			<li class="active"><a href="#" id="">{if="$usuario.id !== Usuario::$usuario_id"}Publicación{else}Estado{/if}</a></li>
-			<li><a href="#" id="">Foto</a></li>
-			<li><a href="#" id="">Enlace</a></li>
-			<li><a href="#" id="">Video</a></li>
+			<li class="active"><a href="#" id=""><i class="icon-white icon-pencil"></i> {if="$usuario.id !== Usuario::$usuario_id"}Publicación{else}Estado{/if}</a></li>
+			<li><a href="#" id=""><i class="icon icon-picture"></i> Foto</a></li>
+			<li><a href="#" id=""><i class="icon icon-retweet"></i> Enlace</a></li>
+			<li><a href="#" id=""><i class="icon icon-play"></i> Video</a></li>
 			<li class="pull-right"><input type="submit" class="btn btn-large btn-primary" value="Publicar" /></li>
 		</ul>
 		{if="isset($error_publicacion)"}<div class="alert">{$error_publicacion}</div>{/if}
