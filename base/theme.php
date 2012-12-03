@@ -89,13 +89,16 @@ class Base_Theme {
 	 */
 	public static function lista($regenerar = FALSE)
 	{
+		// Verifico si hay que regenerar la cache.
 		if ($regenerar || ! file_exists(APP_BASE.DS.VIEW_PATH.'theme.php'))
 		{
 			return self::generar_cache();
 		}
 		$themes = array();
 
+		// Abro archivo de temas.
 		$fp = fopen(APP_BASE.DS.VIEW_PATH.'theme.php', 'rb');
+
 		// Cargo el actual si no hay previsualizacion.
 		$p = self::get_preview();
 		if ($p !== NULL)
@@ -107,6 +110,7 @@ class Base_Theme {
 			self::$theme = trim(fgets($fp));
 		}
 		unset($p);
+
 		// Obtengo el listado restante.
 		while ( ! feof($fp))
 		{
@@ -125,7 +129,7 @@ class Base_Theme {
 	 */
 	private static function generar_cache($actual = NULL)
 	{
-		// Busco plugins.
+		// Busco temas existentes..
 		$themes = array();
 		$dir = scandir(APP_BASE.DS.VIEW_PATH);
 		foreach ($dir as $d)
@@ -140,6 +144,8 @@ class Base_Theme {
 				$themes[] = trim($d);
 			}
 		}
+
+		// Verifico si existe actual, sino seteo el primero.
 		if ($actual === NULL)
 		{
 			if (file_exists(APP_BASE.DS.VIEW_PATH.'theme.php'))
@@ -152,7 +158,11 @@ class Base_Theme {
 			}
 		}
 		self::$theme = $actual;
+
+		// Guardo listado de temas.
 		file_put_contents(APP_BASE.DS.VIEW_PATH.'theme.php', $actual.PHP_EOL.implode(PHP_EOL, $themes));
+
+		// Devuelvo los temas.
 		return $themes;
 	}
 
@@ -176,9 +186,9 @@ class Base_Theme {
 		if (isset($_SESSION['preview-theme']))
 		{
 			// Verifico exista.
-			if (file_exists(APP_BASE.DS.VIEW_PATH.$_SESSION('preview-theme')))
+			if (file_exists(APP_BASE.DS.VIEW_PATH.$_SESSION['preview-theme']))
 			{
-				return $_SESSION('preview-theme');
+				return $_SESSION['preview-theme'];
 			}
 		}
 		return NULL;
