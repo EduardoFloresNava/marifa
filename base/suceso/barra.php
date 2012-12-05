@@ -878,4 +878,21 @@ class Base_Suceso_Barra extends Suceso {
 		return array('usuario' => $model_usuario->as_array(), 'comentario_id' => (int) $suceso['objeto_id2'], 'shout' => $shout);
 	}
 
+	/**
+	 * Suceso producido cuando se cita a un usuario en un shout.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	public static function suceso_usuario_shout_cita($suceso)
+	{
+		// Cargo shout.
+		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
+		$shout = $model_shout->as_array();
+
+		// Información extendida del shout.
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+
+		return array('shout' => $shout);
+	}
+
 }

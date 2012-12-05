@@ -37,9 +37,8 @@ class Base_Decoda extends Decoda_Decoda {
 	 * Contructor de la clase.
 	 * Configuramos Decoda para homogeneizar su comportamiento.
 	 * @param string $string Cadena a procesar.
-	 * @param bool $preview Si es preview o no. En preview no se envian sucesos.
 	 */
-	public function __construct($string = '', $preview = TRUE)
+	public function __construct($string = '')
 	{
 		// Llamamos constructor.
 		parent::__construct($string);
@@ -50,8 +49,17 @@ class Base_Decoda extends Decoda_Decoda {
 
 		$this->setTemplateEngine($engine);
 
-		// Cargamos los Filtros y las configuraciones por defecto.
+		// Seteo XHTML.
 		$this->setXhtml(TRUE);
+	}
+
+	/**
+	 * Cargo filtros y configuraciones por defecto.
+	 * @param bool $preview Si es preview o no. En preview no se envian sucesos.
+	 */
+	public function load_defaults($preview = TRUE)
+	{
+		// Cargamos los Filtros y las configuraciones por defecto.
 		$this->addFilter(new BlockFilter);
 		$this->addFilter(new CodeFilter);
 		$this->addFilter(new TextFilter);
@@ -110,7 +118,8 @@ class Base_Decoda extends Decoda_Decoda {
 	public static function procesar($string, $preview = TRUE)
 	{
 		// Procesamos BBCode.
-		$decoda = new Decoda($string, $preview);
+		$decoda = new Decoda($string);
+		$decoda->load_defaults($preview);
 		return $decoda->parse(FALSE);
 	}
 }

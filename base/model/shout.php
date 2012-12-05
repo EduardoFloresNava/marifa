@@ -92,6 +92,79 @@ class Base_Model_Shout extends Model_Dataset {
 	}
 
 	/**
+	 * Procesamos las etiquetas.
+	 * @param string $mensaje Mensaje que será procesado.
+	 * @return array Listado de etiquetas encontradas.
+	 */
+	public function procesar_etiquetas(&$mensaje)
+	{
+		// Obtengo listado de etiquetas.
+		$keys = array();
+		preg_match_all('/#([^\s]{1,50})/', $mensaje, $keys);
+
+		// Agrego espacios para simplificar expresión regular.
+		$mensaje = " $mensaje ";
+
+		// Las reemplazo por una etiqueta BBCode.
+		foreach ($keys[0] as $v)
+		{
+			$mensaje = preg_replace('/(\s)('.preg_quote($v).')(\s)/', "$1[tag]{$v}[/tag]$3", $mensaje);
+		}
+
+		// Borro espacios extra.
+		$mensaje = trim($mensaje);
+
+		// Devuelvo las etiquetas.
+		return $keys[1];
+	}
+
+	/**
+	 * Procesamos links de usuarios.
+	 * @param string $mensaje Mensaje que será procesado.
+	 * @return array Listado de etiquetas encontradas.
+	 */
+	public function procesar_usuarios(&$mensaje)
+	{
+		// Obtengo listado de etiquetas.
+		$keys = array();
+		preg_match_all('/@([a-zA-Z0-9]{4,16})/', $mensaje, $keys);
+
+		// Armo consulta para buscar usuarios existentes.
+		$c = count($keys[1]);
+		$q = array();
+		for ($i = 0; $i < $c; $i++)
+		{
+			$q[] = '?';
+		}
+		$u_list = $this->db->query('SELECT nick, id FROM usuario WHERE nick IN ('.implode(', ', $q).')', $keys[1])->get_pairs(Database_Query::FIELD_STRING, Database_Query::FIELD_INT);
+
+		// Proceso la lista de usuarios.
+		$users = array();
+		foreach ($keys[1] as $v)
+		{
+			if (isset($u_list[$v]))
+			{
+				$users[$v] = $u_list[$v];
+			}
+		}
+
+		// Agrego espacios para simplificar expresión regular.
+		$mensaje = " $mensaje ";
+
+		// Reemplazo etiquetas.
+		foreach ($users as $k => $v)
+		{
+			$mensaje = preg_replace('/(\s)(@'.preg_quote($k).')(\s)/', "$1[user=\"{$v}\"]@{$k}[/user]$3", $mensaje);
+			//$mensaje = str_replace('@'.$k, "[user=$v]@$k\[/user]", $mensaje);
+		}
+
+		// Borro espacios extra.
+		$mensaje = trim($mensaje);
+
+		return $users;
+	}
+
+	/**
 	 * Comentamos una publicación.
 	 * @param int $usuario_id ID del usuario que realiza el comentario.
 	 * @param int $mensaje Contenido del comentario.

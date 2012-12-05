@@ -254,3 +254,7 @@
  * * **shout_id**: ID del shout que se vota.
  * * **usuario_id**: ID del usuario hace la votación.
  * * **comentario_id**: ID del comentario que se crea.
+
+ * **usuario_shout_cita** (*shout_id*, *usuario_id*): usuario_id te ha citado en el shout shout_id.
+ * * **shout_id**: ID del shout donde se hizo la cita.
+ * * **usuario_id**: ID del usuario que realiza la cita.

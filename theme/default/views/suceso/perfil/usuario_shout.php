@@ -1,16 +1,18 @@
 <div class="suceso clearfix">
-	<div class="icono hidden-phone">
-		<i class="icon icon-comment"></i>
-	</div>
-	<div class="contenido">
-		{if="$actual.id == $suceso.usuario.id"}
-		<a href="/perfil/index/{$suceso.shout.usuario.nick}">{$suceso.shout.usuario.nick}</a> {@ha publicado@}: {$suceso.shout.mensaje}
-		{else}
-		<a href="/perfil/index/{$suceso.usuario.nick}">{$suceso.usuario.nick}</a> {@ha publicado un@} <a href="/perfil/publicacion/{$suceso.shout.usuario.nick}/{$suceso.shout.id}">{@shout@}</a> {@en el perfil de @} <a href="/perfil/index/{$actual.nick}">{$actual.nick}</a>.
-		{/if}
-	</div>
-	<div class="fecha visible-desktop">
-		{function="$fecha->fuzzy()"}
+	<div class="clearfix">
+		<div class="icono hidden-phone">
+			<i class="icon icon-comment"></i>
+		</div>
+		<div class="contenido">
+			{if="$actual.id == $suceso.usuario.id"}
+			<a href="/perfil/index/{$suceso.shout.usuario.nick}">{$suceso.shout.usuario.nick}</a> {@ha publicado@}: {$suceso.shout.mensaje_bbcode}
+			{else}
+			<a href="/perfil/index/{$suceso.usuario.nick}">{$suceso.usuario.nick}</a> {@ha publicado un@} <a href="/perfil/publicacion/{$suceso.shout.usuario.nick}/{$suceso.shout.id}">{@shout@}</a> {@en el perfil de @} <a href="/perfil/index/{$actual.nick}">{$actual.nick}</a>.
+			{/if}
+		</div>
+		<div class="fecha visible-desktop">
+			{function="$fecha->fuzzy()"}
+		</div>
 	</div>
 	{if="$actual.id == $suceso.usuario.id"}
 	<div class="links">

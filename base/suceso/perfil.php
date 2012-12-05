@@ -504,6 +504,12 @@ class Base_Suceso_Perfil extends Suceso {
 		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
 		$shout = $model_shout->as_array();
 
+		// Proceso BBCode.
+		$decoda = new Decoda($shout['mensaje']);
+		$decoda->addFilter(new TagFilter());
+		$decoda->addFilter(new UserFilter());
+		$shout['mensaje_bbcode'] = $decoda->parse(FALSE);
+
 		// Campos extra.
 		$shout['usuario'] = $model_shout->usuario()->as_array();
 		$shout['votos'] = $model_shout->cantidad_votos();
@@ -602,5 +608,22 @@ class Base_Suceso_Perfil extends Suceso {
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
 		return array('usuario' => $model_usuario->as_array(), 'comentario_id' => (int) $suceso['objeto_id2'], 'shout' => $shout);
+	}
+
+	/**
+	 * Suceso producido cuando se cita a un usuario en un shout.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	public static function suceso_usuario_shout_cita($suceso)
+	{
+		// Cargo shout.
+		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
+		$shout = $model_shout->as_array();
+
+		// Información extendida del shout.
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+
+		return array('shout' => $shout);
 	}
 }

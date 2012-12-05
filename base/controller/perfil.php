@@ -491,12 +491,31 @@ class Base_Controller_Perfil extends Controller {
 				// Evitamos XSS.
 				$publicacion = htmlentities($publicacion, ENT_NOQUOTES, 'UTF-8');
 
-				// Creo el shout.
+				// Cargo modelo del shout.
 				$model_shout = new Model_Shout;
+
+				// Obtengo citas.
+				$tags = $model_shout->procesar_etiquetas($publicacion);
+
+				// Obtengo citas.
+				$users = $model_shout->procesar_usuarios($publicacion);
+
+				// Creo la publicación.
 				$id = $model_shout->crear(Usuario::$usuario_id, $publicacion);
 
-				// Envio el suceso correspondiente.
+				// Cargo modelo de sucesos.
 				$model_suceso = new Model_Suceso;
+
+				// Envio sucesos de citas a los usuarios.
+				foreach ($users as $v)
+				{
+					if ($v !== Usuario::$usuario_id && $v !== $this->usuario->id)
+					{
+						$model_suceso->crear($v, 'usuario_shout_cita', TRUE, $id, $this->usuario->id);
+					}
+				}
+
+				// Envio el suceso correspondiente.
 				if ($this->usuario->id !== Usuario::$usuario_id)
 				{
 					$model_suceso->crear($this->usuario->id, 'usuario_shout', TRUE, $id, $this->usuario->id);
