@@ -241,7 +241,7 @@ class Base_Usuario {
 	private static function start_session()
 	{
 		// Fuerzo inicio de la sessión
-		if ( ! isset($_SESSION))
+		if (session_status() !== PHP_SESSION_ACTIVE)
 		{
 			session_start();
 		}
