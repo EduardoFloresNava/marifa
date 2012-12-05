@@ -1,5 +1,6 @@
 <h3 class="title">{@Actividad de@} {$usuario.nick}</h3>
-{if="Usuario::is_login() && (Usuario::$usuario_id == $usuario.id || Usuario::puedo_referirlo($usuario.id))"}
+{if="Usuario::is_login()"}
+{if="Usuario::$usuario_id === $usuario.id || Usuario::puedo_referirlo($usuario.id)"}
 <div class="publicar">
 	<form action="/perfil/index/{$usuario.nick}/" method="POST">
 		<ul class="nav nav-pills">
@@ -13,6 +14,9 @@
 		<textarea id="publicacion" name="publicacion" class="span8">{if="isset($publicacion)"}{$publicacion}{/if}</textarea>
 	</form>
 </div>
+{elseif="Usuario::$usuario_id !== $usuario.id"}
+<div class="alert alert-info"><i class="icon icon-info-sign"></i> Para poder publicar en el perfil de {$usuario.nick} debes seguirlo o él debe ser tu seguidor. Si ya cumples ese requisito tal vez estés bloqueado.</div>
+{/if}
 {/if}
 <div class="sucesos">
 {loop="$eventos"}{$value}{else}<div class="alert">No hay sucesos para este usuario.</div>{/loop}

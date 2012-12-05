@@ -1,5 +1,5 @@
 <h2 class="title">{@Publicación de@} {$shout.usuario.nick}</h2>
-<div class="well contenido-shout">{$shout.mensaje}</div>
+<div class="well contenido-shout">{$shout.mensaje_bbcode}</div>
 <div class="btn-group links-shout">
 	{if="Usuario::is_login() && Usuario::$usuario_id !== $usuario.id"}
 		{if="Model_Shout::s_ya_voto($shout.id, Usuario::$usuario_id)"}
