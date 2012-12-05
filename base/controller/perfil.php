@@ -1001,6 +1001,14 @@ class Base_Controller_Perfil extends Controller {
 
 		// Cargamos datos.
 		$shout = $model_shout->as_array();
+
+		// Proceso BBCode.
+		$decoda = new Decoda($shout['mensaje']);
+		$decoda->addFilter(new TagFilter());
+		$decoda->addFilter(new UserFilter());
+		$shout['mensaje_bbcode'] = $decoda->parse(FALSE);
+
+		// Datos extra
 		$shout['usuario'] = $model_shout->usuario()->as_array();
 		$shout['votos'] = $model_shout->cantidad_votos();
 		$shout['comentario'] = $model_shout->cantidad_comentarios();
