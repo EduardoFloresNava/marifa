@@ -6,7 +6,7 @@
 		{else}
 		<div class="ultimo-post-list">
 			{loop="$sticky"}
-			<div class="ultimo-post fijo">
+			<div class="ultimo-post clearfix fijo">
 				<div class="categoria hidden-phone">
 					<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
 				</div>
@@ -22,7 +22,7 @@
 			</div>
 			{/loop}
 			{loop="$ultimos_posts"}
-			<div class="ultimo-post{if="$value.sponsored"} patrocinado{/if}">
+			<div class="ultimo-post clearfix{if="$value.sponsored"} patrocinado{/if}">
 				<div class="categoria hidden-phone">
 					<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
 				</div>
