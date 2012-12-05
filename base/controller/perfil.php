@@ -471,6 +471,13 @@ class Base_Controller_Perfil extends Controller {
 		// Procesamos publicaciones.
 		if (Usuario::is_login() && Request::method() == 'POST')
 		{
+			// Verifico si puedo publicar.
+			if ( ! Usuario::puedo_referirlo($this->usuario->id))
+			{
+				add_flash_message(FLASH_ERROR, 'No puedes publicar en el muro de ese usuario.');
+				Request::redirect('/perfil/index/'.$this->usuario->nick);
+			}
+
 			// Obtengo publicacion.
 			$publicacion = isset($_POST['publicacion']) ? trim($_POST['publicacion']) : '';
 
@@ -495,7 +502,7 @@ class Base_Controller_Perfil extends Controller {
 				$model_shout = new Model_Shout;
 
 				// Obtengo citas.
-				$tags = $model_shout->procesar_etiquetas($publicacion);
+				$model_shout->procesar_etiquetas($publicacion);
 
 				// Obtengo citas.
 				$users = $model_shout->procesar_usuarios($publicacion);

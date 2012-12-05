@@ -1,5 +1,5 @@
 <h3 class="title">{@Actividad de@} {$usuario.nick}</h3>
-{if="Usuario::is_login()"}
+{if="Usuario::is_login() && (Usuario::$usuario_id == $usuario.id || Usuario::puedo_referirlo($usuario.id))"}
 <div class="publicar">
 	<form action="/perfil/index/{$usuario.nick}/" method="POST">
 		<ul class="nav nav-pills">

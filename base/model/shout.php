@@ -142,9 +142,15 @@ class Base_Model_Shout extends Model_Dataset {
 		$users = array();
 		foreach ($keys[1] as $v)
 		{
+			// Verifico sea válido.
 			if (isset($u_list[$v]))
 			{
-				$users[$v] = $u_list[$v];
+				// Verifico si se puede procesar.
+				if ($u_list[$v] !== Usuario::$usuario_id && Usuario::puedo_referirlo($u_list[$v]))
+				{
+					// Lo agrego para ser procesado.
+					$users[$v] = $u_list[$v];
+				}
 			}
 		}
 

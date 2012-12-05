@@ -57,6 +57,12 @@ class Base_Usuario {
 	private static $permisos;
 
 	/**
+	 * Cache de usuarios que permite referir el usuario.
+	 * @var array
+	 */
+	private static $usuarios_permitidos;
+
+	/**
 	 * Obtenemos si hay un usuario logueado o no.
 	 * @return bool
 	 */
@@ -160,6 +166,27 @@ class Base_Usuario {
 		{
 			return FALSE;
 		}
+	}
+
+	/**
+	 * Verifico si puedo hacer una referencia al usuario (@usaurio) o publicar en su perfil.
+	 * Debo seguirlo o el me debe seguir pero no puede estar bloqueandome.
+	 * @param int $usuario_id ID del usuario a verificar.
+	 * @return bool
+	 */
+	public static function puedo_referirlo($usuario_id)
+	{
+		if ( ! is_array(self::$usuarios_permitidos))
+		{
+			// Cargo la cache.
+			self::$usuarios_permitidos = Database::get_instance()->query(
+				'SELECT `id` FROM ( ( SELECT `seguidor_id` AS `id` FROM `usuario_seguidor` WHERE `usuario_id` = ?) UNION (SELECT `usuario_id` AS `id` FROM `usuario_seguidor` WHERE `seguidor_id` = ?)) AS ul WHERE `id` NOT IN (SELECT `usuario_id` FROM `usuario_bloqueo` WHERE `bloqueado_id` = ? AND `usuario_id` IN (SELECT `id` FROM ((SELECT `seguidor_id` AS `id` FROM `usuario_seguidor` WHERE `usuario_id` = ?) UNION (SELECT `usuario_id` AS `id` FROM `usuario_seguidor` WHERE `seguidor_id` = ?)) AS ul))',
+				array(Usuario::$usuario_id, Usuario::$usuario_id, Usuario::$usuario_id, Usuario::$usuario_id, Usuario::$usuario_id)
+			)->get_pairs(Database_Query::FIELD_INT);
+		}
+
+		// Verifico si está disponible.
+		return in_array($usuario_id, self::$usuarios_permitidos);
 	}
 
 	/**
