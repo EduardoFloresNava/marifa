@@ -212,6 +212,9 @@
     }
 } (jQuery));
 
+/**
+ * Limpieza de alertas anidadas de mensajes FLASH.
+ */
 $('a[data-dismiss="alert"]').click(function (e) {
     if ($(this).parent().parent().is('.alert-container'))
     {
@@ -224,3 +227,247 @@ $('a[data-dismiss="alert"]').click(function (e) {
     $(this).parent().remove();
     e.preventDefault();
 });
+
+/**
+ * Sugerencias de usuarios para citas(@usuario) en publicaciones a los perfiles.
+ */
+(function ($) {
+    /**
+     * Helper para posición del cursor.
+     */
+    $.fn.getCursorPosition = function() {
+        var el = $(this).get(0);
+        var pos = 0;
+        if('selectionStart' in el) {
+            pos = el.selectionStart;
+        } else if('selection' in document) {
+            el.focus();
+            var Sel = document.selection.createRange();
+            var SelLength = document.selection.createRange().text.length;
+            Sel.moveStart('character', -el.value.length);
+            pos = Sel.text.length - SelLength;
+        }
+        return pos;
+    }
+
+    /**
+     * Inicio autocompletado.
+     */
+    $("#publicacion").textext({
+        plugins: 'autocomplete ajax filter',
+        useSuggestionsToFilter: true,
+        html: {
+            wrap: '<div class="autocomplete-textext"></div>',
+            dropdown: '<ul class="dropdown-menu"></ul>'
+        },
+        autocomplete: {
+            dropdown: {
+                maxHeight: 'none'
+            }
+        },
+        ajax: {
+            url: window.site_url+'perfil/usuarios_permitidos/',
+            dataType: 'json',
+            cacheResults : true
+        },
+        keys: {
+            8   : 'backspace',
+            9   : 'tab',
+            13  : 'enter',
+            27  : 'escape!',
+            37  : 'left',
+            38  : 'up',
+            39  : 'right',
+            40  : 'down',
+            46  : 'delete',
+            108 : 'numpadEnter'
+        },
+        ext: {
+            autocomplete: {
+                addDropdownItem: function (html) {
+                    var self = this,
+                        container = self.containerElement(),
+                        node = $('<li class="text-suggestion"><a href="#" class="text-label"></a></li>');
+
+                    node.find('.text-label').html(html);
+                    node.find('.text-label').click(function (e) { e.preventDefault(); });
+                    container.append(node);
+                    return node;
+                },
+                clearItems: function () {
+                    this.containerElement().find('li').remove();
+                },
+                /**onHideDropdown: function () {
+                    this.hideDropdown();
+                    this.input().focus();
+                },*/
+                onUpKeyDown: function (e) {
+                    if (this.isDropdownVisible())
+                    {
+                        this.togglePreviousSuggestion();
+                    }
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                },
+                onDownKeyDown: function (e) {
+                    if (this.isDropdownVisible())
+                    {
+                        this.toggleNextSuggestion();
+                    }
+                    else
+                    {
+                        this.getSuggestions()
+                    }
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                },
+                onUpKeyEnter: function (e) {
+                    if (this.isDropdownVisible())
+                    {
+                        e.stopPropagation();
+                        this.selectFromDropdown();
+                    }
+                },
+                toggleNextSuggestion: function () {
+                    var self = this,
+                        selected = self.selectedSuggestionElement(),
+                        next;
+
+                    if(selected.length > 0) {
+                        next = selected.next();
+
+                        if(next.length > 0) {
+                            selected.removeClass('active');
+                        }
+                    }
+                    else
+                    {
+                        next = self.suggestionElements().first();
+                    }
+
+                    next.addClass('active');
+                    self.scrollSuggestionIntoView(next);
+                },
+                togglePreviousSuggestion: function () {
+                    var self = this,
+                        selected = self.selectedSuggestionElement(),
+                        prev = selected.prev();
+
+                    if(prev.length == 0)
+                        return;
+
+                    self.clearSelected();
+                    prev.addClass('active');
+                    self.scrollSuggestionIntoView(prev);
+                },
+                clearSelected: function() {
+                    this.suggestionElements().removeClass('active');
+                },
+                selectedSuggestionElement: function () {
+                    return this.containerElement().find('li.active');
+                },
+                selectFromDropdown: function() {
+                    var to_append = this.selectedSuggestionElement().text()+' ',
+                        input = this.input(),
+                        contenido = input.val();
+
+                    // Obtengo última etiqueta.
+                    var inicio = contenido.lastIndexOf('@');
+
+                    // Verifico si hay más contenido.
+                    if (inicio < 0)
+                    {
+                        input.val('@'.to_append);
+                        return;
+                    }
+
+                    // Verifico si hay espacio luego final.
+                    var fin = contenido.indexOf(' ', inicio);
+
+                    // No tengo espacios.
+                    if (fin < 0)
+                    {
+                        input.val(contenido.substr(0, inicio)+'@'+to_append);
+                    }
+                    else
+                    {
+                        input.val(contenido.substr(0, inicio)+'@'+to_append+contenido.substr(fin));
+                    }
+
+                    this.hideDropdown();
+                    return;
+                }
+            },
+            itemManager: {
+                compareItems: function (item1, item2) {
+                    return item1 == item2;
+                },
+                filter: function (list, query) {
+                    // Obtengo linea actual.
+                    var query_actual = query.substr(0, $("#publicacion").getCursorPosition()),
+                        inicio_linea = query_actual.lastIndexOf('\n');
+
+                    // Verifico inicio de linea correcto.
+                    if (inicio_linea < 0)
+                    {
+                        inicio_linea = 0;
+                    }
+
+                    // Trunco a solo linea actual.
+                    query_actual = query_actual.substr(inicio_linea);
+
+                    // Obtengo inicial.
+                    var ss = query_actual.lastIndexOf(" ");
+
+                    // Verifico existencia.
+                    if (ss < 0)
+                    {
+                        ss = 0;
+                    }
+
+                    // Dejo última palabra.
+                    query_actual = query_actual.substr(ss).trim();
+
+                    // Verifico si comienza con @.
+                    if (query_actual[0] == '@') {
+                        q = query_actual.substr(1);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+
+                    // No proceso vacia, envio todas.
+                    if (q == '')
+                    {
+                        return list;
+                    }
+
+                    // Devuelvo todas las que concuerden.
+                    return $.map(list, function(value, index) {
+                        if (value.substr(0, q.length) == q)
+                        {
+                            return value;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    });
+                },
+                itemContains: function (item, needle) {
+                    return item.indexOf(needle) > 0;
+                },
+                itemToString: function (item) {
+                    return item;
+                },
+                stringToItem: function (str) {
+                    return str;
+                }
+            }
+        }
+    });
+
+    // Elimino evento.
+    $("#publicacion").removeAttr('style');
+}(jQuery));

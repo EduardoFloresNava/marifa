@@ -1277,4 +1277,20 @@ class Base_Controller_Perfil extends Controller {
 		add_flash_message(FLASH_SUCCESS, 'La publicación se ha compartido correctamente.');
 		Request::redirect("/perfil/publicacion/$usuario/$shout");
 	}
+
+	/**
+	 * Lista de usuarios para autocompletado AJAX.
+	 */
+	public function action_usuarios_permitidos()
+	{
+		// Verifico estar conectado.
+		if ( ! Usuario::is_login())
+		{
+			header(':', TRUE, 403);
+			die('Forbiden');
+		}
+
+		// Envio el listado.
+		die (json_encode(Usuario::usuarios_referir()));
+	}
 }
