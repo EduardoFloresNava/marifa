@@ -148,16 +148,7 @@
                     $(".pop-notification div.notification").slideDown();
 
                     // Recalculo indice.
-                    cantidad_notificaciones($("#suceso-dropdown li").map(function () {
-                        if ($(this).attr('data-desplegado') != 1)
-                        {
-                            return ($(this).attr('id').toString().split('-')[1])*1;
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }).get().length);
+                    cantidad_notificaciones($("#suceso-dropdown li").length);
                 }
             });
         }, 20000);
@@ -193,18 +184,6 @@
                         $.each(data, function(index, value) {
                             $("#suceso-dropdown li#suceso-"+value).attr('data-desplegado', 1);
                         });
-
-                        // Recalculo indice.
-                        cantidad_notificaciones($("#suceso-dropdown li").map(function () {
-                            if ($(this).attr('data-desplegado') != 1)
-                            {
-                                return ($(this).attr('id').toString().split('-')[1])*1;
-                            }
-                            else
-                            {
-                                return null;
-                            }
-                        }).get().length);
                     }
                 });
             }

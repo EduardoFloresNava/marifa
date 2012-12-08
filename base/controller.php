@@ -88,9 +88,6 @@ class Base_Controller {
 		// Cargamos el usuario y sus datos.
 		$vista->assign('usuario', Usuario::usuario()->as_array());
 
-		// Cantidad de sucesos sin desplegar.
-		$vista->assign('cantidad_sucesos', Suceso_Barra::cantidad_sin_desplegar(Usuario::$usuario_id));
-
 		// Sucesos.
 		$lst = Suceso_Barra::obtener_listado(Usuario::$usuario_id, 1, 20);
 
@@ -125,6 +122,9 @@ class Base_Controller {
 			$eventos[] = array('id' => $v->id, 'desplegado' => $v->desplegado, 'html' => $suceso_vista->parse());
 		}
 		$vista->assign('sucesos', $eventos);
+
+		// Cantidad de sucesos nuevos.
+		$vista->assign('cantidad_sucesos', count($eventos));
 		unset($lst, $eventos);
 
 		// Listado de mensajes.
@@ -207,7 +207,7 @@ class Base_Controller {
 		// Listado elemento por permisos.
 		if (Controller_Moderar_Home::permisos_acceso())
 		{
-			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'icon' => 'eye-open', 'active' => FALSE);
+			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'icon' => 'eye-open', 'active' => FALSE, 'tipo' => 'important', 'cantidad' => Controller_Moderar_Home::cantidad_pendiente());
 		}
 
 		if (Controller_Admin_Home::permisos_acceso())

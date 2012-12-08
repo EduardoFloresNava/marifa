@@ -16,8 +16,20 @@ body {
     padding: 9px 0;
 }
 
-.navbar-fixed-top .btn-toolbar {
-    margin: 0;
+.navbar-fixed-top {
+    .btn-toolbar {
+        margin: 0;
+    }
+
+    ul.nav li {
+        position: relative;
+
+        span.badge {
+            position: absolute;
+            bottom: -10px;
+            left: 40%;
+        }
+    }
 }
 
 td .btn-toolbar {

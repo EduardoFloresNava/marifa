@@ -76,6 +76,58 @@ class Base_Controller_Moderar_Home extends Controller {
 	}
 
 	/**
+	 * Cantidad de elementos que están esperando supervición.
+	 * @return int
+	 */
+	public static function cantidad_pendiente()
+	{
+		$cantidad = 0;
+
+		// TODO: REALIZAR CACHE PARA OPTIMIZAR.
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
+		{
+			$cantidad += Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
+		{
+			$cantidad += Model_Foto_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
+		{
+			$cantidad += Model_Usuario_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
+		{
+			$cantidad += Model_Usuario_Suspension::cantidad();
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
+		{
+			$cantidad += Model_Post::s_cantidad(Model_Post::ESTADO_PAPELERA);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
+		{
+			$cantidad += Model_Foto::s_cantidad(Model_Foto::ESTADO_PAPELERA);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
+		{
+			$cantidad += Model_Post::s_cantidad(Model_Post::ESTADO_PENDIENTE) + Model_Post::s_cantidad(Model_Post::ESTADO_RECHAZADO);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
+		{
+			$cantidad +=  Model_Comentario::cantidad(Model_Comentario::ESTADO_OCULTO);
+		}
+
+		return $cantidad;
+	}
+
+	/**
 	 * Submenu de la moderación.
 	 * @param string $activo Sección actual.
 	 * @return array
