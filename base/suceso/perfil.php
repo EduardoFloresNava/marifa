@@ -510,6 +510,17 @@ class Base_Suceso_Perfil extends Suceso {
 		$decoda->addFilter(new UserFilter());
 		$shout['mensaje_bbcode'] = $decoda->parse(FALSE);
 
+		// Proceso valor si es tipo especial.
+		if ($model_shout->tipo == Model_Shout::TIPO_VIDEO)
+		{
+			// Obtengo clase de video.
+			$shout['valor'] = explode(':', $model_shout->valor);
+		}
+		elseif($model_shout->tipo == Model_Shout::TIPO_ENLACE)
+		{
+			$shout['valor'] = unserialize($shout['valor']);
+		}
+
 		// Campos extra.
 		$shout['usuario'] = $model_shout->usuario()->as_array();
 		$shout['votos'] = $model_shout->cantidad_votos();

@@ -258,7 +258,8 @@ $('a[data-dismiss="alert"]').click(function (e) {
         useSuggestionsToFilter: true,
         html: {
             wrap: '<div class="autocomplete-textext"></div>',
-            dropdown: '<ul class="dropdown-menu"></ul>'
+            dropdown: '<ul class="dropdown-menu"></ul>',
+            hidden: ''
         },
         autocomplete: {
             dropdown: {
@@ -468,6 +469,70 @@ $('a[data-dismiss="alert"]').click(function (e) {
         }
     });
 
-    // Elimino evento.
+    // Elimino estilo.
     $("#publicacion").removeAttr('style');
+
+    // Vuelvo a agregar nombre.
+    $("#publicacion").attr('name', 'publicacion');
 }(jQuery));
+
+/**
+ * Publicación de links, fotos y videos.
+ */
+(function ($) {
+    $("#publicacion-tipo-texto, #publicacion-tipo-foto, #publicacion-tipo-enlace, #publicacion-tipo-video").click(function (e) {
+        var tipo = $(this).attr('id').substr(17);
+        if ($('#publicacion-contenido input[name="tipo"]').val() != tipo)
+        {
+            // Actualizo valores de la barra.
+            $('#publicacion-contenido input[name="tipo"]').val(tipo);
+            $(this).closest('.nav').find('li.active').each(function () {
+                $(this).removeClass('active');
+                $(this), $(this).children('a').children('i').removeClass('icon-white').addClass('icon');
+            });
+            $(this).parent().addClass('active');
+            $(this).children('i').removeClass('icon').addClass('icon-white');
+
+            // Actualizo marcado.
+            switch (tipo) {
+                case 'texto':
+                    $('#publicacion-contenido .url').hide();
+                    break;
+                case 'foto':
+                    if ($('#publicacion-contenido .url').length <= 0)
+                    {
+                        // Agrego el elemento.
+                        $('#publicacion-contenido').prepend('<input type="text" name="url" class="url span8" placeholder="URL de la imagen..." />');
+                    }
+                    else
+                    {
+                        $('#publicacion-contenido .url').attr('placeholder', 'URL de la imagen...').show();
+                    }
+                    break;
+                case 'enlace':
+                    if ($('#publicacion-contenido .url').length <= 0)
+                    {
+                        // Agrego el elemento.
+                        $('#publicacion-contenido').prepend('<input type="text" name="url" class="url span8" placeholder="URL a publicar..." />');
+                    }
+                    else
+                    {
+                        $('#publicacion-contenido .url').attr('placeholder', 'URL a publicar...').show();
+                    }
+                    break;
+                case 'video':
+                    if ($('#publicacion-contenido .url').length <= 0)
+                    {
+                        // Agrego el elemento.
+                        $('#publicacion-contenido').prepend('<input type="text" name="url" class="url span8" placeholder="URL del video a publicar..." />');
+                    }
+                    else
+                    {
+                        $('#publicacion-contenido .url').attr('placeholder', 'URL del video a publicar...').show();
+                    }
+                    break;
+            }
+        }
+        e.preventDefault();
+    });
+} (jQuery));

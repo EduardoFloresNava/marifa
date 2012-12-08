@@ -1103,3 +1103,98 @@ h1.title, h2.title, h3.title, h4.title {
 .autocomplete-textext {
     position: relative;
 }
+
+/**
+ * Estilo de los sucesos de los perfiles.
+ */
+.profile-data .sucesos {
+    border: none;
+    border-radius: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+
+    .suceso {
+        margin-bottom: 10px;
+
+        a.usuario {
+            float: left;
+        }
+
+        .cuerpo {
+            margin: 0 0 0 75px;
+            border: 1px solid #D1D1D1;
+            border-left-width: 4px;
+            position: relative;
+            border-radius: 6px;
+            -moz-border-radius: 6px;
+            -webkit-border-radius: 6px;
+
+            &:before {
+                border-bottom: 8px solid transparent;
+                border-right: 8px solid #D1D1D1;
+                border-top: 8px solid transparent;
+                content: " ";
+                height: 0;
+                left: -12px;
+                position: absolute;
+                top: 6px;
+                width: 0;
+            }
+
+            .cabecera {
+                padding: 5px;
+                border-bottom: 1px dashed #D1D1D1;
+                background: #F5F5F5;
+                background: rgba(0, 0, 0, 0.07);
+
+
+                .fecha {
+                    line-height: 18px;
+                    margin: 0;
+                }
+            }
+
+            .contenido {
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                line-height: 18px;
+
+                .wrapper {
+                    padding: 5px;
+                }
+
+                iframe {
+                    width: 100%;
+                }
+            }
+
+            .pie {
+                border-top: 1px dashed #D1D1D1;
+                background: #F5F5F5;
+                background: rgba(0, 0, 0, 0.07);
+
+                ul {
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                li {
+                    display: inline-block;
+                    padding: 3px 7px;
+                    float: right;
+                    border-left: 1px dashed #D1D1D1;
+
+                    &.active {
+                        color: #D28C00;
+                    }
+                }
+            }
+        }
+    }
+
+    .suceso ~ .suceso {
+        border: none;
+    }
+}

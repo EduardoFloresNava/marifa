@@ -32,9 +32,31 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @property-read string $id ID del shout.
  * @property-read int $usuario_id ID del usuario que creó el shout.
  * @property-read string $mensaje Mensaje que contiene el shout.
+ * @property-read int $tipo Tipo de shout (texto, imagen, video, link).
+ * @property-read string $valor Campo opcional para tipos especiales. Como ID del video, URL del enlace o imagen.
  * @property-read Fechahora $fecha Fecha en la cual se creó el shout.
  */
 class Base_Model_Shout extends Model_Dataset {
+
+	/**
+	 * Shout de tipo texto.
+	 */
+	const TIPO_TEXTO = 0;
+
+	/**
+	 * Shout con una imagen.
+	 */
+	const TIPO_IMAGEN = 1;
+
+	/**
+	 * Shout con un enlace.
+	 */
+	const TIPO_ENLACE = 2;
+
+	/**
+	 * Shout con un video.
+	 */
+	const TIPO_VIDEO = 3;
 
 	/**
 	 * Nombre de la tabla para el dataset
@@ -55,6 +77,8 @@ class Base_Model_Shout extends Model_Dataset {
 		'id' => Database_Query::FIELD_STRING,
 		'usuario_id' => Database_Query::FIELD_INT,
 		'mensaje' => Database_Query::FIELD_STRING,
+		'tipo' => Database_Query::FIELD_INT,
+		'valor' => Database_Query::FIELD_STRING,
 		'fecha' => Database_Query::FIELD_DATETIME
 	);
 
@@ -82,11 +106,13 @@ class Base_Model_Shout extends Model_Dataset {
 	 * Creamos un nuevo shout.
 	 * @param int $usuario ID del usuario dueño del shout.
 	 * @param string $mensaje Mensaje que contiene el shout
+	 * @param int $tipo Tipo de shout a crear.
+	 * @param string $valor Valor necesario para el shout. Para texto NULL.
 	 * @return int ID del shout creado.
 	 */
-	public function crear($usuario, $mensaje)
+	public function crear($usuario, $mensaje, $tipo = self::TIPO_TEXTO, $valor = NULL)
 	{
-		list($id,) = $this->db->insert('INSERT INTO shout (usuario_id, mensaje, fecha) VALUES (?, ?, ?)', array($usuario, $mensaje, date('y/m/d H:i:s')));
+		list($id,) = $this->db->insert('INSERT INTO shout (usuario_id, mensaje, tipo, valor, fecha) VALUES (?, ?, ?, ?, ?)', array($usuario, $mensaje, $tipo, $valor, date('y/m/d H:i:s')));
 		$this->primary_key['id'] = $id;
 		return $id;
 	}
@@ -128,6 +154,11 @@ class Base_Model_Shout extends Model_Dataset {
 		// Obtengo listado de etiquetas.
 		$keys = array();
 		preg_match_all('/@([a-zA-Z0-9]{4,16})/', $mensaje, $keys);
+
+		if (count($keys[1]) == 0)
+		{
+			return array();
+		}
 
 		// Armo consulta para buscar usuarios existentes.
 		$c = count($keys[1]);

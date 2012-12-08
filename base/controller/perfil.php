@@ -468,33 +468,182 @@ class Base_Controller_Perfil extends Controller {
 		// Cargamos la vista de información.
 		$information_view = View::factory('perfil/muro');
 
+		// Seteo valores por defecto.
+		$information_view->assign('publicacion', '');
+		$information_view->assign('tipo', 'texto');
+		$information_view->assign('url', '');
+
 		// Procesamos publicaciones.
 		if (Usuario::is_login() && Request::method() == 'POST')
 		{
 			// Verifico si puedo publicar.
-			if ( ! Usuario::puedo_referirlo($this->usuario->id))
+			if ($this->usuario->id !== Usuario::$usuario_id && ! Usuario::puedo_referirlo($this->usuario->id))
 			{
 				add_flash_message(FLASH_ERROR, 'No puedes publicar en el muro de ese usuario.');
 				Request::redirect('/perfil/index/'.$this->usuario->nick);
 			}
 
-			// Obtengo publicacion.
+			// Obtengo datos.
 			$publicacion = isset($_POST['publicacion']) ? trim($_POST['publicacion']) : '';
+			$tipo = isset($_POST['tipo']) ? trim($_POST['tipo']) : '';
+			$url = isset($_POST['url']) ? trim($_POST['url']) : '';
+
+			// Los seteo en la vista.
+			$information_view->assign('publicacion', $publicacion);
+			$information_view->assign('tipo', $tipo);
+			$information_view->assign('url', $url);
 
 			$error = FALSE;
 
-			// Verificamos el contenido.
-			$publicacion_clean = preg_replace('/\[([^\[\]]+)\]/', '', $publicacion);
-			if ( ! isset($publicacion_clean{10}) || isset($publicacion{600}))
+			// Verifico tipo.
+			if ( ! in_array($tipo, array('texto', 'foto', 'enlace', 'video')))
 			{
-				$information_view->assign('error_publicacion', 'La publicación debe tener entre 10 y 400 caractéres.');
+				$information_view->assign('error_publicacion', 'La publicación no es correcta.');
 				$error = TRUE;
 			}
-			unset($publicacion_clean);
+			else
+			{
+				// Verificamos el contenido.
+				$publicacion_clean = preg_replace('/\[([^\[\]]+)\]/', '', $publicacion);
+				if ( ( ! isset($publicacion_clean{10}) && $tipo == 'texto') || isset($publicacion{600}))
+				{
+					$information_view->assign('error_publicacion', 'La publicación debe tener entre 10 y 400 caractéres.');
+					$error = TRUE;
+				}
+				unset($publicacion_clean);
+
+				// Verifico URL y tipo si no es texto.
+				if ($tipo !== 'texto')
+				{
+					// Verifico sea una URL válida.
+					if (isset($url{200}) || ! preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/Di', $url))
+					{
+						$information_view->assign('error_url', 'La URL ingresada no es válida, la misma no debe superar los 200 caracteres.');
+						$error = TRUE;
+					}
+					else
+					{
+						switch ($tipo)
+						{
+							case 'foto':
+								// Tamaño de la imagen (también verificamos si es válida).
+								$size = @getimagesize($url);
+								if ( ! is_array($size))
+								{
+									$information_view->assign('error_url', 'La URL ingresada no es una foto válida.');
+									$error = TRUE;
+								}
+								else
+								{
+									// Verificar TAMAÑO.
+									if ($size[0] < 100 || $size[1] < 100)
+									{
+										$information_view->assign('error_url', 'La imagen debe tener como mínimo un tamaño de 100x100px.');
+										$error = TRUE;
+									}
+									elseif ($size[0] > 1600 || $size[1] > 1600)
+									{
+										$information_view->assign('error_url', 'La imagen debe tener como máximo un tamaño de 1600x1600px.');
+										$error = TRUE;
+									}
+									else
+									{
+										$valor = $url;
+									}
+								}
+								break;
+							case 'enlace':
+								// Obtengo HTML del sitio.
+								$html = Utils::remote_call($url);
+
+								// Obtengo titulo.
+								if (isset($html{0}))
+								{
+									if (preg_match("/\<title\>(.*)\<\/title\>/",$html, $title))
+									{
+										// Genero valor.
+										$valor = serialize(array($url, htmlspecialchars(substr($title[1], 0, 200))));
+									}
+									else
+									{
+										$information_view->assign('error_url', 'La URL no es un sitio válido.');
+										$error = TRUE;
+									}
+								}
+								else
+								{
+									$information_view->assign('error_url', 'La URL no es un sitio válido.');
+									$error = TRUE;
+								}
+								break;
+							case 'video':
+								preg_match('@^(?:(http|https)://)?([^/]+)@i', $url, $matches);
+								$domain = isset($matches[2]) ? $matches[2] : '';
+
+								// Proceso según el tipo de video.
+								switch ($domain) {
+									case 'www.youtube.com':
+									case 'youtube.com':
+										if ( ! preg_match('#^http://\w{0,3}.?youtube+\.\w{2,3}/watch\?v=([\w-]{11})#', $url, $match))
+										{
+											$information_view->assign('error_url', 'La URL del video de youtube no es válida.');
+											$error = TRUE;
+										}
+										else
+										{
+											$valor = 'youtube:'.$match[1];
+										}
+										break;
+									case 'vimeo.com':
+									case 'player.vimeo.com':
+										if ( ! preg_match('#http://(?:\w+.)?vimeo.com/(?:video/|moogaloop\.swf\?clip_id=|)(\w+)#i', $url, $match))
+										{
+											$information_view->assign('error_url', 'La URL del video de vimeo no es válida.');
+											$error = TRUE;
+										}
+										else
+										{
+											if (preg_match('/^[0-9]+$/', $match[1]))
+											{
+												$valor = 'vimeo:'.$match[1];
+											}
+											else
+											{
+												$information_view->assign('error_url', 'La URL del video de vimeo no es válida.');
+												$error = TRUE;
+											}
+										}
+										break;
+									default:
+										$information_view->assign('error_url', 'La URL del video no es válida.');
+										$error = TRUE;
+								}
+								break;
+						}
+					}
+				}
+			}
 
 			//TODO: Implementar BBCode reducido.
 			if ( ! $error)
 			{
+				// Transformo el tipo.
+				switch ($tipo)
+				{
+					case 'texto':
+						$tipo = 0;
+						break;
+					case 'foto':
+						$tipo = 1;
+						break;
+					case 'enlace':
+						$tipo = 2;
+						break;
+					case 'video':
+						$tipo = 3;
+						break;
+				}
+
 				// Evitamos XSS.
 				$publicacion = htmlentities($publicacion, ENT_NOQUOTES, 'UTF-8');
 
@@ -508,7 +657,7 @@ class Base_Controller_Perfil extends Controller {
 				$users = $model_shout->procesar_usuarios($publicacion);
 
 				// Creo la publicación.
-				$id = $model_shout->crear(Usuario::$usuario_id, $publicacion);
+				$id = $model_shout->crear(Usuario::$usuario_id, $publicacion, $tipo, isset($valor) ? $valor : NULL);
 
 				// Cargo modelo de sucesos.
 				$model_suceso = new Model_Suceso;
@@ -535,6 +684,9 @@ class Base_Controller_Perfil extends Controller {
 
 				// Notifico que fue correcto.
 				add_flash_message(FLASH_SUCCESS, 'Publicación realizada correctamente.');
+
+				// Redirecciono para evitar re-post.
+				Request::redirect('/perfil/index/'.$this->usuario->nick);
 			}
 			else
 			{
@@ -1007,6 +1159,17 @@ class Base_Controller_Perfil extends Controller {
 		$decoda->addFilter(new TagFilter());
 		$decoda->addFilter(new UserFilter());
 		$shout['mensaje_bbcode'] = $decoda->parse(FALSE);
+
+		// Proceso valor si es tipo especial.
+		if ($model_shout->tipo == Model_Shout::TIPO_VIDEO)
+		{
+			// Obtengo clase de video.
+			$shout['valor'] = explode(':', $model_shout->valor);
+		}
+		elseif($model_shout->tipo == Model_Shout::TIPO_ENLACE)
+		{
+			$shout['valor'] = unserialize($shout['valor']);
+		}
 
 		// Datos extra
 		$shout['usuario'] = $model_shout->usuario()->as_array();
