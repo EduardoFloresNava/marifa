@@ -381,4 +381,37 @@ class Base_Model_Shout extends Model_Dataset {
 		return $this->db->query('SELECT COUNT(*) FROM suceso WHERE objeto_id = ? AND tipo = \'usuario_shout_compartir\' AND usuario_id = ?', array($this->primary_key['id'], $this->usuario_id))->get_var(Database_Query::FIELD_INT);
 	}
 
+	/**
+	 * Obtenemos el listado de shout's que tienen una etiqueta.
+	 * @param string $tag Etiqueta que deben tener.
+	 * @param int $pagina Número de página a mostrar.
+	 * @param int $cantidad Cantidad de shout's por página.
+	 * @return array
+	 */
+	public function get_by_tag($tag, $pagina, $cantidad = 10)
+	{
+		// Primer elemento.
+		$start = ($pagina - 1) * $cantidad;
+
+		// Obtengo cantidd.
+		$total = $this->db->query('SELECT COUNT(shout_id) FROM shout_tag WHERE tag = ?', $tag)->get_var(Database_Query::FIELD_INT);
+
+		// Verifico existan.
+		if ($total == 0)
+		{
+			return array($total, array());
+		}
+
+		// Obtengo el listado.
+		$rst = $this->db->query('SELECT shout_id FROM shout_tag INNER JOIN shout ON shout.id = shout_tag.shout_id WHERE tag = ?  ORDER BY fecha DESC LIMIT '.$start.','.$cantidad, $tag)->get_pairs(Database_Query::FIELD_INT);
+
+		// Genero lista de objeto.
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = new Model_Shout($v);
+		}
+		return array($total, $lst);
+	}
+
 }

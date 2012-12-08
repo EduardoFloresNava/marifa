@@ -28,7 +28,7 @@
 <div class="alert alert-info"><i class="icon icon-info-sign"></i> Para poder publicar en el perfil de {$usuario.nick} debes seguirlo o él debe ser tu seguidor. Si ya cumples ese requisito tal vez estés bloqueado.</div>
 {/if}
 {/if}
-<div class="sucesos">
+<div class="publicaciones">
 {loop="$eventos"}{$value}{else}<div class="alert">No hay sucesos para este usuario.</div>{/loop}
 </div>
 {$paginacion}

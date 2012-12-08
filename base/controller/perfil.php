@@ -651,7 +651,7 @@ class Base_Controller_Perfil extends Controller {
 				$model_shout = new Model_Shout;
 
 				// Obtengo citas.
-				$model_shout->procesar_etiquetas($publicacion);
+				$tags = $model_shout->procesar_etiquetas($publicacion);
 
 				// Obtengo citas.
 				$users = $model_shout->procesar_usuarios($publicacion);
@@ -669,6 +669,12 @@ class Base_Controller_Perfil extends Controller {
 					{
 						$model_suceso->crear($v, 'usuario_shout_cita', TRUE, $id, $this->usuario->id);
 					}
+				}
+
+				// Agrego etiquetas.
+				foreach ($tags as $tag)
+				{
+					Database::get_instance()->insert('INSERT INTO shout_tag (tag, shout_id) VALUES (?, ?)', array($tag, $id));
 				}
 
 				// Envio el suceso correspondiente.
