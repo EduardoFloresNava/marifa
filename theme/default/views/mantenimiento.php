@@ -36,10 +36,7 @@
 				</div>
 			</div>
 		</div>
-		<footer class="footer container">
-			<p>Contacto - <a href="/pages/protocolo">Protocolo</a> - <a href="/pages/tyc">T&eacute;rminos y condiciones</a> - <a href="/pages/privacidad">Privacidad de datos</a> - <a href="/pages/dmca">Report Abuse - DMCA</a></p>
-			<p>{$_SERVER.HTTP_HOST} &copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Basado en <a href="http://www.marifa.com.ar/" rel="folow" title="Marifa">Marifa</a>{if="isset($execution)"} - {$execution}{/if}</p>
-		</footer>
+		{include="footer"}
 
         <!-- Le javascript
         ================================================== -->
