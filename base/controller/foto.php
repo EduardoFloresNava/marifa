@@ -136,7 +136,7 @@ class Base_Controller_Foto extends Controller {
 	public function action_mis_fotos($pagina)
 	{
 		// Verificamos si esta conectado.
-		if ( ! isset($_SESSION['usuario_id']))
+		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder ver esta sección.');
 			Request::redirect('/usuario/login');
@@ -222,7 +222,7 @@ class Base_Controller_Foto extends Controller {
 		// Verifico el estado.
 		if ($model_foto->usuario_id !== Usuario::$usuario_id && $model_foto->estado !== Model_Foto::ESTADO_ACTIVA && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DESAPROBADO) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			$_SESSION['flash_error'] == 'La foto a la que intentas acceder no está disponible.';
+			add_flash_message(FLASH_ERROR, 'La foto a la que intentas acceder no está disponible.');
 			Request::redirect('/foto/');
 		}
 

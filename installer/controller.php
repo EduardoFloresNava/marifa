@@ -237,6 +237,8 @@ class Installer_Controller {
 			array('titulo' => 'File', 'requerido' => 'ON', 'actual' => 'ON', 'estado' => is_writable(CACHE_PATH.DS.'file'), 'opcional' => TRUE),
 			array('titulo' => 'APC', 'requerido' => 'ON', 'actual' => (extension_loaded('apc') && function_exists('apc_store')) ? 'ON' : 'OFF', 'estado' => (extension_loaded('apc') && function_exists('apc_store')), 'opcional' => TRUE),
 			array('titulo' => 'Memcached', 'requerido' => 'ON', 'actual' => extension_loaded('memcached') ? 'ON' : 'OFF', 'estado' => extension_loaded('memcached'), 'opcional' => TRUE),
+			'Procesamiento de imagenes',
+			array('titulo' => 'GD', 'requerido' => 'ON', 'actual' => function_exists('gd_info') ? 'ON' : 'OFF', 'estado' => function_exists('gd_info')),
 			'Sistema de actualizaciones',
 			array('titulo' => 'CUrl', 'requerido' => 'ON', 'actual' => function_exists('curl_init') ? 'ON' : 'OFF', 'estado' => function_exists('curl_init'), 'opcional' => TRUE),
 			array('titulo' => 'External open', 'requerido' => 'ON', 'actual' => ini_get('allow_url_fopen') ? 'ON' : 'OFF', 'estado' => ini_get('allow_url_fopen'), 'opcional' => TRUE),

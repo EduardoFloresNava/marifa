@@ -1457,7 +1457,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				}
 
 				// Informamos suceso.
-				$vista->assign('success', 'Información actualizada correctamente');
+				add_flash_message(FLASH_SUCCESS, 'Información actualizada correctamente');
 			}
 		}
 
@@ -1559,7 +1559,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				$model_rango->agregar_permiso($q);
 			}
 
-			$vista->assign('success', 'Permisos actualizados correctamente.');
+			add_flash_message(FLASH_SUCCESS, 'Permisos actualizados correctamente.');
 		}
 
 		// Rango por defecto para nuevos usuario, evitamos que se borre.
@@ -2020,7 +2020,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				}
 
 				// Informamos suceso.
-				$vista->assign('success', 'Información actualizada correctamente');
+				add_flash_message(FLASH_SUCCESS, 'Información actualizada correctamente');
 			}
 		}
 

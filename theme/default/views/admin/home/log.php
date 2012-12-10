@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
     <li class="active">Logs</li>
 </ul>
 <div class="header">
@@ -7,9 +7,9 @@
 </div>
 <div class="btn-group" style="margin-bottom: 10px;">
 	{loop="$file_list"}{if="!isset($actual) || $value != $actual"}
-	<a href="/admin/home/logs/{$value}/" class="btn btn-mini">{$value}</a><a href="/admin/home/borrar_log/{$value}/" class="btn btn-mini btn-danger"><i class="icon-white icon-remove"></i></a>
+	<a href="{#SITE_URL#}/admin/home/logs/{$value}/" class="btn btn-mini">{$value}</a><a href="{#SITE_URL#}/admin/home/borrar_log/{$value}/" class="btn btn-mini btn-danger show-tooltip" title="Borrar log"><i class="icon-white icon-remove"></i></a>
 	{else}
-	<a href="" class="btn btn-mini" disabled="disabled">{$value}</a><a href="/admin/home/borrar_log/{$value}/" class="btn btn-mini btn-danger"><i class="icon-white icon-remove"></i></a>
+	<a href="" class="btn btn-mini" disabled="disabled">{$value}</a><a href="{#SITE_URL#}/admin/home/borrar_log/{$value}/" class="btn btn-mini btn-danger show-tooltip" title="Borrar log"><i class="icon-white icon-remove"></i></a>
 	{/if}{/loop}
 </div>
 {if="isset($lineas)"}

@@ -115,15 +115,16 @@
 			{/if}
 			{$contenido}
 		</div>
-		<footer class="footer container">
-			<p>Contacto - <a href="/pages/protocolo">Protocolo</a> - <a href="/pages/tyc">T&eacute;rminos y condiciones</a> - <a href="/pages/privacidad">Privacidad de datos</a> - <a href="/pages/dmca">Report Abuse - DMCA</a></p>
-			<p>{$_SERVER.HTTP_HOST} &copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Basado en <a href="http://www.marifa.com.ar/" rel="folow" title="Marifa">Marifa</a>{if="isset($execution)"} - {$execution}{/if}</p>
-		</footer>
+		{include="footer"}
 		<div class="pop-notification"></div>
 
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript">
+			window.site_url = "{#SITE_URL#}/";
+			window.theme_url = "{#THEME_URL#}/";
+		</script>
         <script src="{#THEME_URL#}/assets/js/jquery.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-transition.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-alert.js"></script>
@@ -140,6 +141,7 @@
 		<script src="{#THEME_URL#}/assets/js/jquery.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/bbcode.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.masonry.min.js"></script>
+		<script src="{#THEME_URL#}/assets/js/jquery.textext.min.js"></script>
 		<script src="{#THEME_URL#}/assets/js/base.js"></script>
         {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}
     </body>

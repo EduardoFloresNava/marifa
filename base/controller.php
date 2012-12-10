@@ -70,15 +70,6 @@ class Base_Controller {
 		}
 		$this->template->assign('contenido', '');
 
-		// Eventos flash.
-		foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
-		{
-			if (isset($_SESSION[$k]))
-			{
-				$this->template->assign($k, get_flash($k));
-			}
-		}
-
 		// Seteo si es mantenimiento.
 		$m = new Mantenimiento;
 		$this->template->assign('is_locked', $m->is_locked());
@@ -96,9 +87,6 @@ class Base_Controller {
 
 		// Cargamos el usuario y sus datos.
 		$vista->assign('usuario', Usuario::usuario()->as_array());
-
-		// Cantidad de sucesos sin desplegar.
-		$vista->assign('cantidad_sucesos', Suceso_Barra::cantidad_sin_desplegar(Usuario::$usuario_id));
 
 		// Sucesos.
 		$lst = Suceso_Barra::obtener_listado(Usuario::$usuario_id, 1, 20);
@@ -134,6 +122,9 @@ class Base_Controller {
 			$eventos[] = array('id' => $v->id, 'desplegado' => $v->desplegado, 'html' => $suceso_vista->parse());
 		}
 		$vista->assign('sucesos', $eventos);
+
+		// Cantidad de sucesos nuevos.
+		$vista->assign('cantidad_sucesos', count($eventos));
 		unset($lst, $eventos);
 
 		// Listado de mensajes.
@@ -177,6 +168,15 @@ class Base_Controller {
 	 */
 	public function after()
 	{
+		// Eventos flash.
+		foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
+		{
+			if (isset($_SESSION[$k]))
+			{
+				$this->template->assign($k, get_flash($k));
+			}
+		}
+
 		if (is_object($this->template) && ! Request::is_ajax())
 		{
 			DEBUG || $this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
@@ -207,7 +207,7 @@ class Base_Controller {
 		// Listado elemento por permisos.
 		if (Controller_Moderar_Home::permisos_acceso())
 		{
-			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'icon' => 'eye-open', 'active' => FALSE);
+			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'icon' => 'eye-open', 'active' => FALSE, 'tipo' => 'important', 'cantidad' => Controller_Moderar_Home::cantidad_pendiente());
 		}
 
 		if (Controller_Admin_Home::permisos_acceso())

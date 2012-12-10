@@ -4,19 +4,6 @@
 			<fieldset>
 				<legend>Cambiar contrase&ntilde;a</legend>
 
-				{if="isset($error)"}
-				<div class="alert">
-					<a class="close" data-dismiss="alert">×</a>
-					<strong>Error: </strong>{$error}
-				</div>
-				{/if}
-				{if="isset($success)"}
-				<div class="alert alert-success">
-					<a class="close" data-dismiss="alert">×</a>
-					<strong>Felicitaciones: </strong>{$success}
-				</div>
-				{/if}
-
 				<div class="control-group{if="isset($error_current)"} error{/if}">
 					<label class="control-label" for="current">Actual</label>
 					<div class="controls">

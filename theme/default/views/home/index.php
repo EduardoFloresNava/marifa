@@ -6,14 +6,14 @@
 		{else}
 		<div class="ultimo-post-list">
 			{loop="$sticky"}
-			<div class="ultimo-post fijo">
+			<div class="ultimo-post clearfix fijo">
 				<div class="categoria hidden-phone">
 					<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
 				</div>
 				<div class="contenido">
-					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<i class="icon icon-bookmark show-tooltip" title="Fijo"></i> <a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
+					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<i class="icon icon-bookmark show-tooltip" title="Fijo"></i> <a class="titulo" href="{#SITE_URL#}/post/index/{$value.id}/">{$value.titulo}</a>
 					<div class="info">
-						{@Por@}: <a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
+						{@Por@}: <a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
 					</div>
 				</div>
 				<div class="fecha visible-desktop">
@@ -22,14 +22,14 @@
 			</div>
 			{/loop}
 			{loop="$ultimos_posts"}
-			<div class="ultimo-post{if="$value.sponsored"} patrocinado{/if}">
+			<div class="ultimo-post clearfix{if="$value.sponsored"} patrocinado{/if}">
 				<div class="categoria hidden-phone">
 					<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
 				</div>
 				<div class="contenido">
-					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<a class="titulo" href="/post/index/{$value.id}/">{$value.titulo}</a>
+					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<a class="titulo" href="{#SITE_URL#}/post/index/{$value.id}/">{$value.titulo}</a>
 					<div class="info">
-						{@Por@}: <a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoria: {$value.categoria.nombre}
+						{@Por@}: <a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categor&iacute;a: {$value.categoria.nombre}
 					</div>
 				</div>
 				<div class="fecha visible-desktop">
@@ -51,16 +51,16 @@
 				<h3>Buscador</h3>
 			</div>
 			<div class="row-fluid contenido">
-				<form action="/buscador/q/" method="POST" enctype="multipart/form-data">
+				<form action="{#SITE_URL#}/buscador/q/" method="POST" enctype="multipart/form-data">
 					<input type="text" class="span8" name="q" id="q" placeholder="Contenido a buscar...">
 					<button type="submit" class="btn span4">Buscar</button>
 				</form>
 			</div>
-			<a class="more-options" href="/buscador/">Opciones</a>
+			<a class="more-options" href="{#SITE_URL#}/buscador/">Opciones</a>
 		</div>
 		<div class="home-statistics">
 			<div class="row-fluid">
-				<div class="span6"><i class="icon icon-user"></i>{$cantidad_usuarios_online} online</div>
+				<div class="span6"><i class="icon icon-user"></i>{$cantidad_usuarios_online} conectados</div>
 				<div class="span6"><i class="icon icon-user"></i>{$cantidad_usuarios}</div>
 			</div>
 			<div class="row-fluid">
@@ -79,9 +79,9 @@
 			{loop="$ultimos_comentarios"}
 				<li>
 					{if="isset($value.post)"}
-					<b><a href="/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="/post/index/{$value.post.id}/#c-{$value.id}">{$value.post.titulo}</a>
+					<b><a href="{#SITE_URL#}/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="{#SITE_URL#}/post/index/{$value.post.id}/#c-{$value.id}">{$value.post.titulo}</a>
 					{else}
-					<b><a href="/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="/foto/ver/{$value.foto.id}/#c-{$value.id}">{$value.foto.titulo}</a>
+					<b><a href="{#SITE_URL#}/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="{#SITE_URL#}/foto/ver/{$value.foto.id}/#c-{$value.id}">{$value.foto.titulo}</a>
 					{/if}
 				</li>
 			{/loop}
@@ -95,7 +95,7 @@
 			{if="count($top_posts) > 0"}
 			<ol>
 			{loop="$top_posts"}
-				<li><a href="/post/index/{$value.id}">{$value.titulo}<span class="badge pull-right">{$value.puntos}</a></li>
+				<li><a href="{#SITE_URL#}/post/index/{$value.id}">{$value.titulo}<span class="badge pull-right">{$value.puntos}</a></li>
 
 			{/loop}
 			</ol>
@@ -107,7 +107,7 @@
 			<h3 class="title">TOPs usuarios</h3>
 			<ol>
 			{loop="$usuario_top"}
-				<li><a href="/perfil/index/{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.puntos}</a></li>
+				<li><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.puntos}</a></li>
 			{/loop}
 			</ol>
 		</div>
@@ -117,7 +117,7 @@
 			<h3 class="title">&Uacute;ltimas fotos</h3>
 			{if="isset($ultimas_fotos[0])"}
 			<!--170x150-->
-			<a href="/foto/ver/{$ultimas_fotos.0.id}">
+			<a href="{#SITE_URL#}/foto/ver/{$ultimas_fotos.0.id}">
 				<div class="thumbnail" style="min-height: 50px;">
 					<img src="{$ultimas_fotos.0.url}" />
 				</div>

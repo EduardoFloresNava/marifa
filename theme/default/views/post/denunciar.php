@@ -2,13 +2,6 @@
 	<div class="span12">
 		<form method="POST" class="form-horizontal" action="">
 
-			{loop="$error"}
-			<div class="alert">
-				<a class="close" data-dismiss="alert">×</a>
-				<strong>Error: </strong>{$value}
-			</div>
-			{/loop}
-
 			<div class="control-group{if="$error_motivo"} error{/if}">
 				<label class="control-label" for="motivo">Motivo</label>
 				<div class="controls">
@@ -40,7 +33,7 @@
 			</div>
 
 			<div class="form-actions">
-				<button type="submit" name="submit" value="enviar" class="btn btn-large btn-primary">Crear</button> o <a href="/post/index/{$post}">Volver</a>
+				<button type="submit" name="submit" value="enviar" class="btn btn-large btn-primary">Crear</button> o <a href="{#SITE_URL#}/post/index/{$post}">Volver</a>
 			</div>
 		</form>
 	</div>

@@ -8,7 +8,7 @@
 	<ol>
 		<li>
 			<strong>Voluntariedad en la entrega de datos.</strong>
-			<p>La presente Pol&iacute;tica est&aacute; destinada a informar a los usuarios acerca del tratamiento de datos personales llevado adelante por {$nombre}, con el objeto que libre y voluntariamente determinen la entrega o no, de sus datos personales cuando les sean requeridos o que se puedan obtener a partir de la utilizaci&oacute;n de alguno de los servicios disponibles en "{$_SERVER.HTTP_HOST}".</p>
+			<p>La presente Pol&iacute;tica est&aacute; destinada a informar a los usuarios acerca del tratamiento de datos personales llevado adelante por {$nombre}, con el objeto que libre y voluntariamente determinen la entrega o no, de sus datos personales cuando les sean requeridos o que se puedan obtener a partir de la utilizaci&oacute;n de alguno de los servicios disponibles en "{#SITE_URL|parse_url:PHP_URL_HOST#}".</p>
 			<p>Por regla general, cuando para utilizar un servicio o acceder a cierto contenido se solicite alg&uacute;n dato personal, la entrega del mismo no es obligatoria, con excepci&oacute;n de aquellos casos donde espec&iacute;ficamente se indicara que es un dato requerido para la prestaci&oacute;n del servicio o el acceso al contenido.</p>
 		</li>
 		<li>

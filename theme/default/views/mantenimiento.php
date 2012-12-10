@@ -36,9 +36,7 @@
 				</div>
 			</div>
 		</div>
-		<footer class="footer container">
-			<p>&copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Equipo desarrollo Marifa {if="isset($execution)"} - {$execution}{/if}</p>
-		</footer>
+		{include="footer"}
 
         <!-- Le javascript
         ================================================== -->

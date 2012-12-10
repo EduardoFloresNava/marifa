@@ -1,5 +1,5 @@
 <div class="administracion">
-	<h1 class="title">Panel de administración</h1>
+	<h1 class="title">Panel de administraci&oacute;n</h1>
 	{if="isset($top_bar)"}
 	<div class="row-fluid">
 		<div class="span2 menu">

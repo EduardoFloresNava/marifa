@@ -1148,7 +1148,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 				}
 
 				// Informamos suceso.
-				$vista->assign('success', 'Información actualizada correctamente');
+				add_flash_message(FLASH_SUCCESS, 'Información actualizada correctamente');
 			}
 		}
 
@@ -1318,12 +1318,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 			if ($estado)
 			{
 				$model_noticia->activar();
-				$_SESSION['flash_success'] = 'Se habilitó correctamente la noticia #'.$id;
+				add_flash_message(FLASH_SUCCESS, 'Se habilitó correctamente la noticia #'.$id);
 			}
 			else
 			{
 				$model_noticia->desactivar();
-				$_SESSION['flash_success'] = 'Se ocultó correctamente la noticia #'.$id;
+				add_flash_message(FLASH_SUCCESS, 'Se ocultó correctamente la noticia #'.$id);
 			}
 		}
 		Request::redirect('/admin/contenido/noticias');
@@ -1353,7 +1353,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		{
 			// Borramos la noticia.
 			$model_noticia->eliminar();
-			$_SESSION['flash_success'] = 'Se borró correctamente la noticia #'.$id;
+			add_flash_message(FLASH_SUCCESS, 'Se borró correctamente la noticia #'.$id);
 		}
 		Request::redirect('/admin/contenido/noticias');
 	}
@@ -1414,7 +1414,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 				// Actualizamos el contenido.
 				$model_noticia->actualizar_contenido($contenido);
 				$vista->assign('contenido', $model_noticia->contenido);
-				$vista->assign('success', 'Contenido actualizado correctamente');
+				add_flash_message(FLASH_SUCCESS, 'Contenido actualizado correctamente');
 			}
 			unset($contenido_clean);
 		}

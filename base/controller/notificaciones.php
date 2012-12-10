@@ -132,7 +132,7 @@ class Base_Controller_Notificaciones extends Controller {
 		$model_suceso->vistas(Usuario::$usuario_id);
 
 		// Notifico y redirecciono.
-		$_SESSION['flash_message'] = 'Las notificaciones han sido marcadas como leidas correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'Las notificaciones han sido marcadas como leidas correctamente.');
 		Request::redirect('/notificaciones/');
 	}
 

@@ -21,8 +21,8 @@
 		<div class="form-actions">
 			<button class="btn btn-primary">Cambiar clave</button>
 			o
-			<a href="/usuario/login/">&iquest;Tienes una cuenta?</a>
-			<a href="/usuario/register/">&iquest;Necesitas una cuenta?</a>
+			<a href="{#SITE_URL#}/usuario/login/">&iquest;Tienes una cuenta?</a>
+			<a href="{#SITE_URL#}/usuario/register/">&iquest;Necesitas una cuenta?</a>
 		</div>
 
 	</fieldset>

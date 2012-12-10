@@ -2,19 +2,6 @@
 	<div class="span10">
 		<form class="form-horizontal" method="POST" action="">
 
-			{loop="$error"}
-			<div class="alert">
-				<a class="close" data-dismiss="alert">×</a>
-				<strong>Error: </strong>{$value}
-			</div>
-			{/loop}
-			{if="isset($success)"}
-			<div class="alert alert-success">
-				<a class="close" data-dismiss="alert">×</a>
-				<strong>Felicitaciones: </strong>{$success}
-			</div>
-			{/if}
-
 			<fieldset>
 				<legend>M&aacute;s sobre mi</legend>
 

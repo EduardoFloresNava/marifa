@@ -76,6 +76,58 @@ class Base_Controller_Moderar_Home extends Controller {
 	}
 
 	/**
+	 * Cantidad de elementos que están esperando supervición.
+	 * @return int
+	 */
+	public static function cantidad_pendiente()
+	{
+		$cantidad = 0;
+
+		// TODO: REALIZAR CACHE PARA OPTIMIZAR.
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
+		{
+			$cantidad += Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
+		{
+			$cantidad += Model_Foto_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
+		{
+			$cantidad += Model_Usuario_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
+		{
+			$cantidad += Model_Usuario_Suspension::cantidad();
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
+		{
+			$cantidad += Model_Post::s_cantidad(Model_Post::ESTADO_PAPELERA);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
+		{
+			$cantidad += Model_Foto::s_cantidad(Model_Foto::ESTADO_PAPELERA);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
+		{
+			$cantidad += Model_Post::s_cantidad(Model_Post::ESTADO_PENDIENTE) + Model_Post::s_cantidad(Model_Post::ESTADO_RECHAZADO);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
+		{
+			$cantidad +=  Model_Comentario::cantidad(Model_Comentario::ESTADO_OCULTO);
+		}
+
+		return $cantidad;
+	}
+
+	/**
 	 * Submenu de la moderación.
 	 * @param string $activo Sección actual.
 	 * @return array
@@ -266,5 +318,20 @@ class Base_Controller_Moderar_Home extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Previsualización de bbcode.
+	 */
+	public function action_preview()
+	{
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Proceso contenido.
+		die(Decoda::procesar($contenido));
 	}
 }

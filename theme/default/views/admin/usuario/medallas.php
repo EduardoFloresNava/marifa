@@ -1,22 +1,22 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
-    <li><a href="/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
     <li class="active">Medallas</li>
 </ul>
 <div class="clearfix header">
 	<h2 class="pull-left">Medallas</h2>
 	<div class="btn-group pull-right">
-		<a href="/admin/usuario/nueva_medalla/" class="btn btn-success"><i class="icon-white icon-plus"></i> Nueva</a>
+		<a href="{#SITE_URL#}/admin/usuario/nueva_medalla/" class="btn btn-success"><i class="icon-white icon-plus"></i> Nueva</a>
 	</div>
 </div>
-<div class="alert"><strong>&iexcl;Advertencia!</strong> Si borra una medalla, automáticamente todos los usuarios que tengan la medalla la perderán.</div>
+<div class="alert"><strong>&iexcl;Advertencia!</strong> Si borra una medalla, autom&aacute;ticamente todos los usuarios que tengan la medalla la perder&aacute;n.</div>
 <table class="table table-bordered">
 	<thead>
 		<tr>
 			<th>Nombre</th>
-			<th>Descripción</th>
+			<th>Descripci&oacute;n</th>
 			<th>Tipo</th>
-			<th>Condición</th>
+			<th>Condici&oacute;n</th>
 			<th>Acciones</th>
 		</tr>
 	</thead>
@@ -48,9 +48,9 @@
 				{/if}</td>
 			<td>
 				<div class="btn-group">
-					<a href="/admin/usuario/usuarios_medalla/{$value.id}" class="btn btn-mini btn-success" title="Listado de usuarios" rel="tooltip"><i class="icon-white icon-user"></i></a>
-					<a href="/admin/usuario/editar_medalla/{$value.id}" class="btn btn-mini btn-info" title="Editar" rel="tooltip"><i class="icon-white icon-pencil"></i></a>
-					<a href="/admin/usuario/borrar_medalla/{$value.id}" class="btn btn-mini btn-danger" title="Borrar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
+					<a href="{#SITE_URL#}/admin/usuario/usuarios_medalla/{$value.id}" class="btn btn-mini btn-success" title="Listado de usuarios" rel="tooltip"><i class="icon-white icon-user"></i></a>
+					<a href="{#SITE_URL#}/admin/usuario/editar_medalla/{$value.id}" class="btn btn-mini btn-info" title="Editar" rel="tooltip"><i class="icon-white icon-pencil"></i></a>
+					<a href="{#SITE_URL#}/admin/usuario/borrar_medalla/{$value.id}" class="btn btn-mini btn-danger" title="Borrar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
 				</div>
 			</td>
 		</tr>

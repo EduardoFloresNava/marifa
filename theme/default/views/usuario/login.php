@@ -1,21 +1,14 @@
 <div class="row-fluid">
 	<div class="span12">
-		<form class="form-horizontal" action="/usuario/login" method="POST">
+		<form class="form-horizontal" action="{#SITE_URL#}/usuario/login" method="POST">
 			<fieldset>
-				<legend>Inicio de Sessi&oacute;n</legend>
-
-				{if="isset($error)"}
-				<div class="alert alert-danger">
-					<a class="close" data-dismiss="alert">×</a>
-					<strong>Error: </strong>{$error}
-				</div>
-				{/if}
+				<legend>Inicio de Sesi&oacute;n</legend>
 
 				<div class="control-group{if="$error_nick"} error{/if}">
 					<label class="control-label" for="nick">E-Mail o Usuario</label>
 					<div class="controls">
 						<input type="text" class="input-xlarge" id="nick" name="nick" value="{$nick}" />
-						<span class="help-inline">Tu nick actual o tu E-Mail. Si has cambiado tu nick, debes colocar el último.</span>
+						<span class="help-inline">Tu nick actual o tu E-Mail. Si has cambiado tu nick, debes colocar el &uacute;ltimo.</span>
 					</div>
 				</div>
 
@@ -23,15 +16,15 @@
 					<label class="control-label" for="password">Contrase&ntilde;a</label>
 					<div class="controls">
 						<input type="password" class="input-xlarge" id="password" name="password" />
-						<span class="help-inline">La contraseña de acceso a tu cuenta.</span>
+						<span class="help-inline">La contrase&ntilde;a de acceso a tu cuenta.</span>
 					</div>
 				</div>
 
 				<div class="form-actions">
 					<button class="btn btn-primary">Ingresar</button>
 					o
-					<a href="/usuario/register/">&iquest;Necesitas una cuenta?</a>
-					<a href="/usuario/recuperar/">&iquest;Perdio su contrase&ntilde;a?</a>
+					<a href="{#SITE_URL#}/usuario/register/">&iquest;Necesitas una cuenta?</a>
+					<a href="{#SITE_URL#}/usuario/recuperar/">&iquest;Perdi&oacute; su contrase&ntilde;a?</a>
 				</div>
 
 			</fieldset>

@@ -2,19 +2,6 @@
 	<div class="span10">
 		<form method="POST" class="form-horizontal" action="">
 
-			{loop="$error"}
-			<div class="alert">
-				<a class="close" data-dismiss="alert">×</a>
-				<strong>Error: </strong>{$value}
-			</div>
-			{/loop}
-			{if="isset($success)"}
-			<div class="alert alert-success">
-				<a class="close" data-dismiss="alert">×</a>
-				<strong>Felicitaciones: </strong>{$success}
-			</div>
-			{/if}
-
 			<div class="control-group{if="$estado_email == -1"} error{elseif="$estado_email == 1"} success{/if}">
 				<label class="control-label" for="email">E-Mail</label>
 				<div class="controls">
@@ -104,7 +91,7 @@
 						<option value="12"{if="isset($nacimiento.1) && $nacimiento.1 == 12"} selected="selected"{/if}>Diciembre</option>
 					</select>
 					<input type="text" class="span1" id="ano" name="ano" placeholder="A&ntilde;o..." value="{if="isset($nacimiento.0)"}{$nacimiento.0}{/if}" />
-					<p class="help-inline">Su apellido, se permiten caracteres alphanuméricos, espacios y '.</p>
+					<p class="help-inline">Su apellido, se permiten caracteres alphanum&eacute;ricos, espacios y '.</p>
 				</div>
 			</div>
 

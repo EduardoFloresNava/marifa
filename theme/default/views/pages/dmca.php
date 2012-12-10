@@ -8,7 +8,7 @@
 	<p>The DMCA provides a legal procedure by which you can request any Online Service Provider to disable access to a website where your copyrighted work(s) are appearing without your permission. There are two parts to the legal procedure: (1) Writing a Proper DMCA Notice, and (2) Sending the Proper DMCA Notice to Alphaupload Designated Agent.</p>
 
 	<h3>How to Write a Proper DMCA Notice</h3>
-	<p>A Proper DMCA Notice will notify {$_SERVER.HTTP_HOST} of particular facts in a document signed under penalty of perjury. We refer to this as a "Proper DMCA Notice". To Write a Proper DMCA notice, please provide the following information:</p>
+	<p>A Proper DMCA Notice will notify {#SITE_URL|parse_url:PHP_URL_HOST#} of particular facts in a document signed under penalty of perjury. We refer to this as a "Proper DMCA Notice". To Write a Proper DMCA notice, please provide the following information:</p>
 	<ul>
 		<li>Identify yourself as either:
 			<ul>
@@ -25,15 +25,15 @@
 	</ul>
 
 	<h3>Sending The Proper DMCA Notice to the Designated Agent</h3>
-	<p>To exercise your DMCA rights, you must send your Proper DMCA Notice to the following agent designated by {$_SERVER.HTTP_HOST} (the "Designated Agent".) The contact information for {$nombre}'s Designated Agent is: denuncias@{$_SERVER.HTTP_HOST}				What We Do When We Receive A Proper DMCA Notice</p>
-	<p>{$_SERVER.HTTP_HOST} will follow the procedures provided in the DCMA, which prescribed a notice and takedown procedure, subject to the webmaster's right to submit a Counter-notification claiming lawful use of the disabled works.</p>
+	<p>To exercise your DMCA rights, you must send your Proper DMCA Notice to the following agent designated by {#SITE_URL|parse_url:PHP_URL_HOST#} (the "Designated Agent".) The contact information for {$nombre}'s Designated Agent is: denuncias@{#SITE_URL|parse_url:PHP_URL_HOST#}				What We Do When We Receive A Proper DMCA Notice</p>
+	<p>{#SITE_URL|parse_url:PHP_URL_HOST#} will follow the procedures provided in the DCMA, which prescribed a notice and takedown procedure, subject to the webmaster's right to submit a Counter-notification claiming lawful use of the disabled works.</p>
 
 	<h3>Notice and Takedown Procedure</h3>
-	<p>It is expected that all users of any part of the {$_SERVER.HTTP_HOST} system will comply with applicable copyright laws. However, if {$_SERVER.HTTP_HOST} is notified of claimed copyright infringement, or otherwise becomes aware of facts and circumstances from which infringement is apparent, it will respond expeditiously by removing, or disabling access to, the material that is claimed to be infringing or to be the subject of infringing activity. {$_SERVER.HTTP_HOST} will comply with the appropriate provisions of the DMCA in the event a counter notification is received by its Designated Agent. Notice to Users of {$_SERVER.HTTP_HOST} Systems</p>
-	<p>Pursuant to the Terms of Service Agreement you agreed to when you were permitted to become a System User, you are required to use only lawfully-acquired creative works as website content, and your website may be disabled upon receipt of notice that infringing material is appearing there. {$_SERVER.HTTP_HOST} also respects the legitimate interests of webmasters in utilizing media content lawfully, being permitted to present a response to claims of infringement, and obtaining timely restoration of access to a website that has been disabled due to a copyright complaint. Your System Use privileges will also be suspended. You may protest a DMCA notice by submitting a Counter-notification as described below.</p>
+	<p>It is expected that all users of any part of the {#SITE_URL|parse_url:PHP_URL_HOST#} system will comply with applicable copyright laws. However, if {#SITE_URL|parse_url:PHP_URL_HOST#} is notified of claimed copyright infringement, or otherwise becomes aware of facts and circumstances from which infringement is apparent, it will respond expeditiously by removing, or disabling access to, the material that is claimed to be infringing or to be the subject of infringing activity. {#SITE_URL|parse_url:PHP_URL_HOST#} will comply with the appropriate provisions of the DMCA in the event a counter notification is received by its Designated Agent. Notice to Users of {#SITE_URL|parse_url:PHP_URL_HOST#} Systems</p>
+	<p>Pursuant to the Terms of Service Agreement you agreed to when you were permitted to become a System User, you are required to use only lawfully-acquired creative works as website content, and your website may be disabled upon receipt of notice that infringing material is appearing there. {#SITE_URL|parse_url:PHP_URL_HOST#} also respects the legitimate interests of webmasters in utilizing media content lawfully, being permitted to present a response to claims of infringement, and obtaining timely restoration of access to a website that has been disabled due to a copyright complaint. Your System Use privileges will also be suspended. You may protest a DMCA notice by submitting a Counter-notification as described below.</p>
 
 	<h3>Writing and Submitting a Counter-notification</h3>
-	<p>If access to your website is disabled due to operation of the {$_SERVER.HTTP_HOST} notice and takedown procedure described above, and you believe the takedown was improper, you must submit a Counter-notification.</p>
+	<p>If access to your website is disabled due to operation of the {#SITE_URL|parse_url:PHP_URL_HOST#} notice and takedown procedure described above, and you believe the takedown was improper, you must submit a Counter-notification.</p>
 
 	<h3>Writing a Counter-notification</h3>
 	<p>To Write a Proper Counter-notification, please provide the following information:</p>
@@ -51,13 +51,13 @@
 	</ul>
 
 	<h3>Sending the Counter-notification</h3>
-	<p>To exercise your DMCA rights, you must send your Counter-notification to the "Designated Agent" for {$_SERVER.HTTP_HOST}, whose contact information is: denuncias@{$_SERVER.HTTP_HOST}</p>
+	<p>To exercise your DMCA rights, you must send your Counter-notification to the "Designated Agent" for {#SITE_URL|parse_url:PHP_URL_HOST#}, whose contact information is: denuncias@{#SITE_URL|parse_url:PHP_URL_HOST#}</p>
 
 	<h3>Repeat Infringers</h3>
-	<p>{$_SERVER.HTTP_HOST} may, in its discretion, use all appropriate means to terminate user access to its system or network who are repeat infringers. Accommodation of Standard Technical Measures</p>
+	<p>{#SITE_URL|parse_url:PHP_URL_HOST#} may, in its discretion, use all appropriate means to terminate user access to its system or network who are repeat infringers. Accommodation of Standard Technical Measures</p>
 	<p>It is {$nombre}'s policy to accommodate and not interfere with standard technical measures it determines are reasonable under the circumstances, i.e., technical measures that are used by copyright owners to identify or protect copyrighted works.</p>
 
 	<h3>Policy With Regard To Non-Compliant Communications</h3>
-	<p>{$_SERVER.HTTP_HOST} has discretion to handle non-compliant notices in whatever manner appears to be reasonable given the circumstances presented. Submission of Misleading Information</p>
+	<p>{#SITE_URL|parse_url:PHP_URL_HOST#} has discretion to handle non-compliant notices in whatever manner appears to be reasonable given the circumstances presented. Submission of Misleading Information</p>
 	<p>The submission of misleading information of any sort in a notification or counter-notification submitted to Taringa.net voids any claim of right made by the submitting party.</p>
 </div>

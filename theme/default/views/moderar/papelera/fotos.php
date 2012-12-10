@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
-    <li><a href="/moderar/">Moderación</a> <span class="divider">/</span></li>
-    <li><a href="/moderar/papelera/">Papelera de reciclaje</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/">Moderaci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/papelera/">Papelera de reciclaje</a> <span class="divider">/</span></li>
     <li class="active">Fotos</li>
 </ul>
 <div class="header">
@@ -18,15 +18,15 @@
 	<tbody>
 		{loop="$fotos"}
 		<tr>
-			<td><a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
-			<td><a href="/foto/ver/{$value.id}">{$value.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/foto/ver/{$value.id}">{$value.titulo}</a></td>
 			<td>{$value.creacion->fuzzy()}</td>
 			<td>
 				<div class="btn-group">
-					<a href="/foto/ver/{$value.id}" class="btn btn-mini btn-info" rel="tooltip" title="Ver foto"><i class="icon-white icon-eye-close"></i></a>
-					<a href="/foto/editar/{$value.id}" class="btn btn-mini btn-primary" rel="tooltip" title="Editar foto"><i class="icon-white icon-pencil"></i></a>
-					<a href="/moderar/papelera/restaurar_foto/{$value.id}" class="btn btn-mini btn-success" rel="tooltip" title="Restaurar foto"><i class="icon-white icon-refresh"></i></a>
-					<a href="/moderar/papelera/borrar_foto/{$value.id}" class="btn btn-mini btn-danger" rel="tooltip" title="Borrar foto"><i class="icon-white icon-remove"></i></a>
+					<a href="{#SITE_URL#}/foto/ver/{$value.id}" class="btn btn-mini btn-info show-tooltip" title="Ver foto"><i class="icon-white icon-eye-close"></i></a>
+					<a href="{#SITE_URL#}/foto/editar/{$value.id}" class="btn btn-mini btn-primary show-tooltip" title="Editar foto"><i class="icon-white icon-pencil"></i></a>
+					<a href="{#SITE_URL#}/moderar/papelera/restaurar_foto/{$value.id}" class="btn btn-mini btn-success show-tooltip" title="Restaurar foto"><i class="icon-white icon-refresh"></i></a>
+					<a href="{#SITE_URL#}/moderar/papelera/borrar_foto/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Borrar foto"><i class="icon-white icon-remove"></i></a>
 				</div>
 			</td>
 		</tr>

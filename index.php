@@ -98,7 +98,11 @@ require_once (APP_BASE.DS.'function.php');
 // Iniciamos el proceso de carga automatica de librerias.
 spl_autoload_register('loader_load');
 
-// Defino la URL del sitio.
+/**
+ * Defino la URL del sitio. Puede definirla manualemente. No debe terminar en /.
+ * Por ejemplo:
+ * define('SITE_URL', 'http://demo.marifa.com.ar');
+ */
 define('SITE_URL', get_site_url());
 
 // Verifico que no exista el instalador.

@@ -274,7 +274,7 @@ class Base_Controller_Mensaje extends Controller {
 						if ($model_usuario->exists_nick($u))
 						{
 							$model_usuario->load_by_nick($u);
-							if ($model_usuario->id == $_SESSION['usuario_id'])
+							if ($model_usuario->id == Usuario::$usuario_id)
 							{
 								$view->assign('error_para', "No puedes enviarte mensaje a ti mismo.");
 								$error = TRUE;

@@ -139,7 +139,7 @@ function get_site_url()
 	// URL del servidor.
 	$server_name = $_SERVER['SERVER_NAME'];
 
-	return ($https ? 'https' : 'http').'://'.$server_name.((($https && ($puerto == 443)) || ( ! $https && ($puerto == 80))) ? '' : (':'.$puerto)).'/';
+	return ($https ? 'https' : 'http').'://'.$server_name.((($https && ($puerto == 443)) || ( ! $https && ($puerto == 80))) ? '' : (':'.$puerto));
 }
 
 /**

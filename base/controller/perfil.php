@@ -135,6 +135,7 @@ class Base_Controller_Perfil extends Controller {
 		$usuario = $this->usuario->as_array();
 		$usuario['puntos'] = $this->usuario->cantidad_puntos();
 		$usuario['seguidores'] = $this->usuario->cantidad_seguidores();
+		$usuario['sigue'] = $this->usuario->cantidad_sigue();
 		$usuario['posts'] = $this->usuario->cantidad_posts();
 		$usuario['fotos'] = $this->usuario->cantidad_fotos();
 		$usuario['comentarios'] = $this->usuario->cantidad_comentarios();
@@ -142,6 +143,22 @@ class Base_Controller_Perfil extends Controller {
 
 		// Listado de medallas.
 		$base_view->assign('medallas', array_map(create_function('$v', '$v[\'medalla\'] = $v[\'medalla\']->as_array(); return $v;'), $this->usuario->medallas()));
+
+		// Listado de seguidores.
+		$seguidores = $this->usuario->seguidores(1, 10);
+		foreach ($seguidores as $k => $v)
+		{
+			$seguidores[$k] = $v->as_array();
+		}
+		$base_view->assign('seguidores', $seguidores);
+
+		// Listado de quienes sigue.
+		$sigue = $this->usuario->sigue(1, 10);
+		foreach ($sigue as $k => $v)
+		{
+			$sigue[$k] = $v->as_array();
+		}
+		$base_view->assign('sigue', $sigue);
 
 		// Cargamos campos del usuario.
 		$this->usuario->perfil()->load_list(array('nombre', 'mensaje_personal'));
@@ -439,6 +456,7 @@ class Base_Controller_Perfil extends Controller {
 
 	/**
 	 * Muro del usuario.
+	 * Puede publicar un estado/foto/link/video si se envia por POST.
 	 * @param int $usuario ID del usuario.
 	 * @param int $pagina Número de página a mostrar.
 	 */
@@ -449,6 +467,238 @@ class Base_Controller_Perfil extends Controller {
 
 		// Cargamos la vista de información.
 		$information_view = View::factory('perfil/muro');
+
+		// Seteo valores por defecto.
+		$information_view->assign('publicacion', '');
+		$information_view->assign('tipo', 'texto');
+		$information_view->assign('url', '');
+
+		// Procesamos publicaciones.
+		if (Usuario::is_login() && Request::method() == 'POST')
+		{
+			// Verifico si puedo publicar.
+			if ($this->usuario->id !== Usuario::$usuario_id && ! Usuario::puedo_referirlo($this->usuario->id))
+			{
+				add_flash_message(FLASH_ERROR, 'No puedes publicar en el muro de ese usuario.');
+				Request::redirect('/perfil/index/'.$this->usuario->nick);
+			}
+
+			// Obtengo datos.
+			$publicacion = isset($_POST['publicacion']) ? trim($_POST['publicacion']) : '';
+			$tipo = isset($_POST['tipo']) ? trim($_POST['tipo']) : '';
+			$url = isset($_POST['url']) ? trim($_POST['url']) : '';
+
+			// Los seteo en la vista.
+			$information_view->assign('publicacion', $publicacion);
+			$information_view->assign('tipo', $tipo);
+			$information_view->assign('url', $url);
+
+			$error = FALSE;
+
+			// Verifico tipo.
+			if ( ! in_array($tipo, array('texto', 'foto', 'enlace', 'video')))
+			{
+				$information_view->assign('error_publicacion', 'La publicación no es correcta.');
+				$error = TRUE;
+			}
+			else
+			{
+				// Verificamos el contenido.
+				$publicacion_clean = preg_replace('/\[([^\[\]]+)\]/', '', $publicacion);
+				if ( ( ! isset($publicacion_clean{10}) && $tipo == 'texto') || isset($publicacion{600}))
+				{
+					$information_view->assign('error_publicacion', 'La publicación debe tener entre 10 y 400 caractéres.');
+					$error = TRUE;
+				}
+				unset($publicacion_clean);
+
+				// Verifico URL y tipo si no es texto.
+				if ($tipo !== 'texto')
+				{
+					// Verifico sea una URL válida.
+					if (isset($url{200}) || ! preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/Di', $url))
+					{
+						$information_view->assign('error_url', 'La URL ingresada no es válida, la misma no debe superar los 200 caracteres.');
+						$error = TRUE;
+					}
+					else
+					{
+						switch ($tipo)
+						{
+							case 'foto':
+								// Tamaño de la imagen (también verificamos si es válida).
+								$size = @getimagesize($url);
+								if ( ! is_array($size))
+								{
+									$information_view->assign('error_url', 'La URL ingresada no es una foto válida.');
+									$error = TRUE;
+								}
+								else
+								{
+									// Verificar TAMAÑO.
+									if ($size[0] < 100 || $size[1] < 100)
+									{
+										$information_view->assign('error_url', 'La imagen debe tener como mínimo un tamaño de 100x100px.');
+										$error = TRUE;
+									}
+									elseif ($size[0] > 1600 || $size[1] > 1600)
+									{
+										$information_view->assign('error_url', 'La imagen debe tener como máximo un tamaño de 1600x1600px.');
+										$error = TRUE;
+									}
+									else
+									{
+										$valor = $url;
+									}
+								}
+								break;
+							case 'enlace':
+								// Obtengo HTML del sitio.
+								$html = Utils::remote_call($url);
+
+								// Obtengo titulo.
+								if (isset($html{0}))
+								{
+									if (preg_match("/\<title\>(.*)\<\/title\>/",$html, $title))
+									{
+										// Genero valor.
+										$valor = serialize(array($url, htmlspecialchars(substr($title[1], 0, 200))));
+									}
+									else
+									{
+										$information_view->assign('error_url', 'La URL no es un sitio válido.');
+										$error = TRUE;
+									}
+								}
+								else
+								{
+									$information_view->assign('error_url', 'La URL no es un sitio válido.');
+									$error = TRUE;
+								}
+								break;
+							case 'video':
+								preg_match('@^(?:(http|https)://)?([^/]+)@i', $url, $matches);
+								$domain = isset($matches[2]) ? $matches[2] : '';
+
+								// Proceso según el tipo de video.
+								switch ($domain) {
+									case 'www.youtube.com':
+									case 'youtube.com':
+										if ( ! preg_match('#^http://\w{0,3}.?youtube+\.\w{2,3}/watch\?v=([\w-]{11})#', $url, $match))
+										{
+											$information_view->assign('error_url', 'La URL del video de youtube no es válida.');
+											$error = TRUE;
+										}
+										else
+										{
+											$valor = 'youtube:'.$match[1];
+										}
+										break;
+									case 'vimeo.com':
+									case 'player.vimeo.com':
+										if ( ! preg_match('#http://(?:\w+.)?vimeo.com/(?:video/|moogaloop\.swf\?clip_id=|)(\w+)#i', $url, $match))
+										{
+											$information_view->assign('error_url', 'La URL del video de vimeo no es válida.');
+											$error = TRUE;
+										}
+										else
+										{
+											if (preg_match('/^[0-9]+$/', $match[1]))
+											{
+												$valor = 'vimeo:'.$match[1];
+											}
+											else
+											{
+												$information_view->assign('error_url', 'La URL del video de vimeo no es válida.');
+												$error = TRUE;
+											}
+										}
+										break;
+									default:
+										$information_view->assign('error_url', 'La URL del video no es válida.');
+										$error = TRUE;
+								}
+								break;
+						}
+					}
+				}
+			}
+
+			//TODO: Implementar BBCode reducido.
+			if ( ! $error)
+			{
+				// Transformo el tipo.
+				switch ($tipo)
+				{
+					case 'texto':
+						$tipo = 0;
+						break;
+					case 'foto':
+						$tipo = 1;
+						break;
+					case 'enlace':
+						$tipo = 2;
+						break;
+					case 'video':
+						$tipo = 3;
+						break;
+				}
+
+				// Evitamos XSS.
+				$publicacion = htmlentities($publicacion, ENT_NOQUOTES, 'UTF-8');
+
+				// Cargo modelo del shout.
+				$model_shout = new Model_Shout;
+
+				// Obtengo citas.
+				$tags = $model_shout->procesar_etiquetas($publicacion);
+
+				// Obtengo citas.
+				$users = $model_shout->procesar_usuarios($publicacion);
+
+				// Creo la publicación.
+				$id = $model_shout->crear(Usuario::$usuario_id, $publicacion, $tipo, isset($valor) ? $valor : NULL);
+
+				// Cargo modelo de sucesos.
+				$model_suceso = new Model_Suceso;
+
+				// Envio sucesos de citas a los usuarios.
+				foreach ($users as $v)
+				{
+					if ($v !== Usuario::$usuario_id && $v !== $this->usuario->id)
+					{
+						$model_suceso->crear($v, 'usuario_shout_cita', TRUE, $id, $this->usuario->id);
+					}
+				}
+
+				// Agrego etiquetas.
+				foreach ($tags as $tag)
+				{
+					Database::get_instance()->insert('INSERT INTO shout_tag (tag, shout_id) VALUES (?, ?)', array($tag, $id));
+				}
+
+				// Envio el suceso correspondiente.
+				if ($this->usuario->id !== Usuario::$usuario_id)
+				{
+					$model_suceso->crear($this->usuario->id, 'usuario_shout', TRUE, $id, $this->usuario->id);
+					$model_suceso->crear(Usuario::$usuario_id, 'usuario_shout', FALSE, $id, $this->usuario->id);
+				}
+				else
+				{
+					$model_suceso->crear($this->usuario->id, 'usuario_shout', FALSE, $id, $this->usuario->id);
+				}
+
+				// Notifico que fue correcto.
+				add_flash_message(FLASH_SUCCESS, 'Publicación realizada correctamente.');
+
+				// Redirecciono para evitar re-post.
+				Request::redirect('/perfil/index/'.$this->usuario->nick);
+			}
+			else
+			{
+				$information_view->assign('publicacion', $publicacion);
+			}
+		}
 
 		// Información del usuario actual.
 		$information_view->assign('usuario', $this->usuario->as_array());
@@ -504,7 +754,6 @@ class Base_Controller_Perfil extends Controller {
 			// Agregamos el evento.
 			$eventos[] = $suceso_vista->parse();
 		}
-		//TODO: agregar listado de eventos.
 		$information_view->assign('eventos', $eventos);
 
 		// Asignamos la vista a la plantilla base.
@@ -881,4 +1130,336 @@ class Base_Controller_Perfil extends Controller {
 		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick').' - Medallas');
 	}
 
+	/**
+	 * Vemos la publicación.
+	 * @param int $usuario ID del usuario al que pertenece el shout.
+	 * @param int $shout_id ID del shout a ver.
+	 */
+	public function action_publicacion($usuario, $shout_id)
+	{
+		// Cargamos el usuario.
+		$this->cargar_usuario($usuario);
+
+		// Cargo el shout.
+		$shout_id = (int) $shout_id;
+		$model_shout = new Model_Shout($shout_id);
+
+		// Verifico existencia.
+		if ( ! $model_shout->existe() || $model_shout->usuario_id !== $this->usuario->id)
+		{
+			add_flash_message(FLASH_ERROR, 'La publicación no se encuentra disponible.');
+			Request::redirect('/perfil/index/'.$usuario);
+		}
+
+		// Cargamos la vista de información.
+		$information_view = View::factory('perfil/shout');
+
+		// Información del usuario actual.
+		$information_view->assign('usuario', $this->usuario->as_array());
+
+		// Cargamos datos.
+		$shout = $model_shout->as_array();
+
+		// Proceso BBCode.
+		$decoda = new Decoda($shout['mensaje']);
+		$decoda->addFilter(new TagFilter());
+		$decoda->addFilter(new UserFilter());
+		$shout['mensaje_bbcode'] = $decoda->parse(FALSE);
+
+		// Proceso valor si es tipo especial.
+		if ($model_shout->tipo == Model_Shout::TIPO_VIDEO)
+		{
+			// Obtengo clase de video.
+			$shout['valor'] = explode(':', $model_shout->valor);
+		}
+		elseif($model_shout->tipo == Model_Shout::TIPO_ENLACE)
+		{
+			$shout['valor'] = unserialize($shout['valor']);
+		}
+
+		// Datos extra
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+		$shout['votos'] = $model_shout->cantidad_votos();
+		$shout['comentario'] = $model_shout->cantidad_comentarios();
+		$shout['favoritos'] = $model_shout->cantidad_favoritos();
+		$shout['compartido'] = $model_shout->cantidad_compartido();
+
+		// Comentarios.
+		$shout['comentarios'] = array();
+		foreach ($model_shout->comentarios(-1) as $v)
+		{
+			$aux = $v->as_array();
+			$aux['usuario'] = $v->usuario()->as_array();
+			$shout['comentarios'][] = $aux;
+		}
+		$information_view->assign('shout', $shout);
+
+		unset($aux, $shout, $model_shout);
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $this->header_block($information_view->parse()));
+		unset($information_view);
+
+		// Seteamos el titulo.
+		$this->template->assign('title', 'Perfil - '.$this->usuario->nick.' - Muro');
+	}
+
+	/**
+	 * Comentamos un shout.
+	 * @param int $usuario ID del usuario al que pertenece el shout.
+	 * @param int $shout ID del shout a comentar.
+	 */
+	public function action_comentar_publicacion($usuario, $shout)
+	{
+		// Verifico método de envio.
+		if ( ! Usuario::is_login() || Request::method() !== 'POST')
+		{
+			add_flash_message(FLASH_ERROR, 'La petición no es correcta.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Cargamos el usuario.
+		$this->cargar_usuario($usuario);
+
+		// Cargo el shout.
+		$shout = (int) $shout;
+		$model_shout = new Model_Shout($shout);
+
+		// Verifico existencia.
+		if ( ! $model_shout->existe() || $model_shout->usuario_id !== $this->usuario->id)
+		{
+			add_flash_message(FLASH_ERROR, 'La publicación que desea comentar no se encuentra disponible.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Obtengo el comentario.
+		$comentario = isset($_POST['comentario']) ? trim($_POST['comentario']) : '';
+
+		// Verificamos el contenido.
+		$comentario_clean = preg_replace('/\[([^\[\]]+)\]/', '', $comentario);
+		if ( ! isset($comentario_clean{10}) || isset($comentario{600}))
+		{
+			add_flash_message(FLASH_ERROR, 'El comentario debe tener entre 10 y 400 caractéres.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+		else
+		{
+			unset($comentario_clean);
+			// Evitamos XSS.
+			$comentario = htmlentities($comentario, ENT_NOQUOTES, 'UTF-8');
+
+			// Creamos el comentario.
+			$id = $model_shout->comentar(Usuario::$usuario_id, $comentario);
+
+			// Enviamos suceso.
+			$model_suceso = new Model_Suceso;
+			if (Usuario::$usuario_id == $model_shout->usuario_id)
+			{
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_shout_comentario', FALSE, $model_shout->id, Usuario::$usuario_id, $id);
+			}
+			else
+			{
+				$model_suceso->crear($model_shout->usuario_id, 'usuario_shout_comentario', TRUE, $model_shout->id, Usuario::$usuario_id, $id);
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_shout_comentario', FALSE, $model_shout->id, Usuario::$usuario_id, $id);
+			}
+
+			// Informo resultado.
+			add_flash_message(FLASH_SUCCESS, 'El comentario se ha realizado correctamente.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+	}
+
+	/**
+	 * Agrego voto o lo quito del shout.
+	 * @param int $usuario ID del usuario al que pertenece el shout.
+	 * @param int $shout ID del shout a comentar.
+	 * @param int $voto 1 positivo, 0 negativo.
+	 */
+	public function action_votar_publicacion($usuario, $shout, $voto)
+	{
+		// Verifico método de envio.
+		if ( ! Usuario::is_login())
+		{
+			add_flash_message(FLASH_ERROR, 'La petición no es correcta.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Cargamos el usuario.
+		$this->cargar_usuario($usuario);
+
+		// Cargo el shout.
+		$shout = (int) $shout;
+		$model_shout = new Model_Shout($shout);
+
+		// Verifico existencia.
+		if ( ! $model_shout->existe() || $model_shout->usuario_id !== $this->usuario->id)
+		{
+			add_flash_message(FLASH_ERROR, 'La publicación que desea votar no se encuentra disponible.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Verifico no sea mia.
+		if ($model_shout->usuario_id === Usuario::$usuario_id)
+		{
+			add_flash_message(FLASH_ERROR, 'La publicación que desea votar no se encuentra disponible.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Verifico voto.
+		$voto = (bool) $voto;
+		if ($model_shout->ya_voto(Usuario::$usuario_id) && $voto)
+		{
+			add_flash_message(FLASH_ERROR, 'La publicación que desea votar no se encuentra disponible.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Realizo la votación.
+		if ($voto)
+		{
+			$model_shout->votar(Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_shout->quitar_voto(Usuario::$usuario_id);
+		}
+
+		// Agregamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear($model_shout->usuario_id, 'usuario_shout_voto', TRUE, $model_shout->id, Usuario::$usuario_id, $voto);
+		$model_suceso->crear(Usuario::$usuario_id, 'usuario_shout_voto', FALSE, $model_shout->id, Usuario::$usuario_id, $voto);
+
+		//TODO: Agregar suceso.
+
+		add_flash_message(FLASH_SUCCESS, 'El voto se ha realizado correctamente.');
+		Request::redirect("/perfil/publicacion/$usuario/$shout");
+	}
+
+	/**
+	 * Agrego o quito la publicación de los favoritos.
+	 * @param int $usuario ID del usuario al que pertenece el shout.
+	 * @param int $shout ID del shout a agregar/quitar de los favoritos.
+	 * @param int $agregar 1 para agregar, 0 para quitar.
+	 */
+	public function action_favorito_publicacion($usuario, $shout, $agregar)
+	{
+		// Verifico método de envio.
+		if ( ! Usuario::is_login())
+		{
+			add_flash_message(FLASH_ERROR, 'La petición no es correcta.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Cargamos el usuario.
+		$this->cargar_usuario($usuario);
+
+		// Cargo el shout.
+		$shout = (int) $shout;
+		$model_shout = new Model_Shout($shout);
+
+		// Verifico existencia.
+		if ( ! $model_shout->existe() || $model_shout->usuario_id !== $this->usuario->id)
+		{
+			add_flash_message(FLASH_ERROR, 'La publicación que desea agregar/quitar de los favoritos no se encuentra disponible.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Verifico no sea mia.
+		if ($model_shout->usuario_id === Usuario::$usuario_id)
+		{
+			add_flash_message(FLASH_ERROR, 'La publicación que desea agregar/quitar de los favoritos no se encuentra disponible.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Verifico si hay que agregar o quitar.
+		$agregar = (bool) $agregar;
+		if ($model_shout->es_favorito(Usuario::$usuario_id) && $agregar)
+		{
+			add_flash_message(FLASH_ERROR, 'La publicación que desea agregar/quitar de los favoritos no se encuentra disponible.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Agrego/Quito de favoritos.
+		if ($agregar)
+		{
+			$model_shout->favorito(Usuario::$usuario_id);
+		}
+		else
+		{
+			$model_shout->quitar_favorito(Usuario::$usuario_id);
+		}
+
+		// Agregamos el suceso.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear($model_shout->usuario_id, 'usuario_shout_favorito', TRUE, $model_shout->id, Usuario::$usuario_id, $agregar);
+		$model_suceso->crear(Usuario::$usuario_id, 'usuario_shout_favorito', FALSE, $model_shout->id, Usuario::$usuario_id, $agregar);
+
+		// Notifico el resultado.
+		add_flash_message(FLASH_SUCCESS, 'La publicación se ha agregado/quitado de los favoritos correctamente.');
+		Request::redirect("/perfil/publicacion/$usuario/$shout");
+	}
+
+	/**
+	 * Comparto la publicación.
+	 * @param int $usuario ID del usuario al que pertenece el shout.
+	 * @param int $shout ID del shout a agregar/quitar de los favoritos.
+	 */
+	public function action_compartir_publicacion($usuario, $shout)
+	{
+		// Verifico método de envio.
+		if ( ! Usuario::is_login())
+		{
+			add_flash_message(FLASH_ERROR, 'La petición no es correcta.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Cargamos el usuario.
+		$this->cargar_usuario($usuario);
+
+		// Cargo el shout.
+		$shout = (int) $shout;
+		$model_shout = new Model_Shout($shout);
+
+		// Verifico existencia.
+		if ( ! $model_shout->existe())
+		{
+			add_flash_message(FLASH_ERROR, 'La publicación que desea compartir no se encuentra disponible.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Verifico no lo haya compartido.
+		if ($model_shout->fue_compartido(Usuario::$usuario_id))
+		{
+			add_flash_message(FLASH_ERROR, 'La publicación que desea compartir no se encuentra disponible.');
+			Request::redirect("/perfil/publicacion/$usuario/$shout");
+		}
+
+		// Lo comparto.
+		$model_suceso = new Model_Suceso;
+		$model_suceso->crear($model_shout->usuario_id, 'usuario_shout_compartir', TRUE, $shout, Usuario::$usuario_id, $this->usuario->id);
+		if ($model_shout->usuario_id !== $this->usuario->id)
+		{
+			$model_suceso->crear($model_shout->usuario_id, 'usuario_shout_compartir', TRUE, $shout, Usuario::$usuario_id, $this->usuario->id);
+		}
+		$model_suceso->crear(Usuario::$usuario_id, 'usuario_shout_compartir', FALSE, $shout, Usuario::$usuario_id, $this->usuario->id);
+
+		// Notifico el resultado.
+		add_flash_message(FLASH_SUCCESS, 'La publicación se ha compartido correctamente.');
+		Request::redirect("/perfil/publicacion/$usuario/$shout");
+	}
+
+	/**
+	 * Lista de usuarios para autocompletado AJAX.
+	 */
+	public function action_usuarios_permitidos()
+	{
+		// Verifico estar conectado.
+		if ( ! Usuario::is_login())
+		{
+			header(':', TRUE, 403);
+			die('Forbiden');
+		}
+
+		// Envio el listado.
+		die (json_encode(Usuario::usuarios_referir()));
+	}
 }
