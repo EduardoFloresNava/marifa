@@ -16,12 +16,6 @@
 					<strong>Error: </strong>{$error_password}
 				</div>
 				{/if}
-				{if="isset($success)"}
-				<div class="alert alert-success">
-					<a class="close" data-dismiss="alert">×</a>
-					<strong>Felicitaciones: </strong>{$success}
-				</div>
-				{/if}
 
 				<div class="control-group">
 					<label class="control-label" for="actual">Actual</label>

@@ -1,2 +1,2 @@
 <i class="icon icon-pencil"></i>
-<a href="/perfil/index/{$suceso.usuario.nick}">{$suceso.usuario.nick}</a> {@ha editado tu comentario en el post@} <a href="/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a>.
+<a href="{#SITE_URL#}/perfil/index/{$suceso.usuario.nick}">{$suceso.usuario.nick}</a> {@ha editado tu comentario en el post@} <a href="{#SITE_URL#}/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a>.

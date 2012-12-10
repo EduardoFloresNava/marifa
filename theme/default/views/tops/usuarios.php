@@ -10,34 +10,34 @@
 			</select>
 		</form>
 		<h3 class="title">Per&iacute;odo</h3>
-		<a href="/tops/usuarios/{$categoria}/1" class="btn btn-mini{if="$periodo == 1"} active{/if}">Ayer</a>
-		<a href="/tops/usuarios/{$categoria}/2" class="btn btn-mini{if="$periodo == 2"} active{/if}">Hoy</a>
-		<a href="/tops/usuarios/{$categoria}/3" class="btn btn-mini{if="$periodo == 3"} active{/if}">Esta semana</a>
-		<a href="/tops/usuarios/{$categoria}/4" class="btn btn-mini{if="$periodo == 4"} active{/if}">Del mes</a>
-		<a href="/tops/usuarios/{$categoria}/0" class="btn btn-mini{if="$periodo == 0"} active{/if}">Todos los tiempos</a>
+		<a href="{#SITE_URL#}/tops/usuarios/{$categoria}/1" class="btn btn-mini{if="$periodo == 1"} active{/if}">Ayer</a>
+		<a href="{#SITE_URL#}/tops/usuarios/{$categoria}/2" class="btn btn-mini{if="$periodo == 2"} active{/if}">Hoy</a>
+		<a href="{#SITE_URL#}/tops/usuarios/{$categoria}/3" class="btn btn-mini{if="$periodo == 3"} active{/if}">Esta semana</a>
+		<a href="{#SITE_URL#}/tops/usuarios/{$categoria}/4" class="btn btn-mini{if="$periodo == 4"} active{/if}">Del mes</a>
+		<a href="{#SITE_URL#}/tops/usuarios/{$categoria}/0" class="btn btn-mini{if="$periodo == 0"} active{/if}">Todos los tiempos</a>
 	</div>
 	<div class="span10">
 		<div class="row-fluid">
 			<div class="span6">
-				<h2 class="title">Usuario con más puntos</h2>
+				<h2 class="title">Usuario con m&aacute;s puntos</h2>
 				{if="count($puntos) <= 0"}
 				<div class="alert">No hay elementos</div>
 				{else}
 				<ol>
 					{loop="$puntos"}
-					<li><a href="/perfil/index/{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.puntos|intval}</span></a></li>
+					<li><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.puntos|intval}</span></a></li>
 					{/loop}
 				</ol>
 				{/if}
 			</div>
 			<div class="span6">
-				<h2 class="title">Usuario con más seguidores</h2>
+				<h2 class="title">Usuario con m&aacute;s seguidores</h2>
 				{if="count($seguidores) <= 0"}
 				<div class="alert">No hay elementos</div>
 				{else}
 				<ol>
 					{loop="$seguidores"}
-					<li><a href="/perfil/index/{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.seguidores|intval}</span></a></li>
+					<li><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.seguidores|intval}</span></a></li>
 					{/loop}
 				</ol>
 				{/if}

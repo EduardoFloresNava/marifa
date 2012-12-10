@@ -9,20 +9,6 @@
 			<div class="descripcion">{$value.medalla.descripcion}</div>
 		</div>
 	</div>
-	<div class="medalla clearfix">
-		<img src="{#THEME_URL#}/assets/img/medallas/{$value.medalla.imagen}" alt="{$value.medalla.nombre}" class="pull-left" />
-		<div class="pull-left">
-			<h4>{$value.medalla.nombre}<small class="fecha">{$value.fecha->fuzzy()}</small></h4>
-			<div class="descripcion">{$value.medalla.descripcion}</div>
-		</div>
-	</div>
-	<div class="medalla clearfix">
-		<img src="{#THEME_URL#}/assets/img/medallas/{$value.medalla.imagen}" alt="{$value.medalla.nombre}" class="pull-left" />
-		<div class="pull-left">
-			<h4>{$value.medalla.nombre}<small class="fecha">{$value.fecha->fuzzy()}</small></h4>
-			<div class="descripcion">{$value.medalla.descripcion}</div>
-		</div>
-	</div>
 	{/loop}
 </div>
 {else}

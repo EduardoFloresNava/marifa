@@ -33,7 +33,7 @@ class TagFilter extends DecodaFilter {
 	 * @return string
 	 */
 	public function parse(array $tag, $content) {
-		$tag['attributes']['href'] = get_site_url().'buscador/pin/'.urlencode(substr($content, 1));
+		$tag['attributes']['href'] = SITE_URL.'/buscador/pin/'.urlencode(substr($content, 1));
 		return parent::parse($tag, $content);
 	}
 

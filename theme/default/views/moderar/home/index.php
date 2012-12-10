@@ -1,5 +1,5 @@
 <div class="header">
-	<h2>Bienvenido al centro de moderación de Marifa.</h2>
+	<h2>Bienvenido al centro de moderaci&oacute;n de Marifa.</h2>
 </div>
 <div class="row-fluid">
 	<div class="span6">
@@ -9,7 +9,7 @@
 				{loop="$denuncias"}
 				<li>
 					{if="$value.tipo == 'post'"}
-					<a href="/moderar/denuncias/detalle_post/{$value.id}">
+					<a href="{#SITE_URL#}/moderar/denuncias/detalle_post/{$value.id}">
 						<i class="icon icon-book"></i>
 						{$value.post.titulo}
 						<div class="pull-right">
@@ -45,7 +45,7 @@
 						</div>
 					</a>
 					{elseif="$value.tipo == 'foto'"}
-					<a href="/moderar/denuncias/detalle_foto/{$value.id}">
+					<a href="{#SITE_URL#}/moderar/denuncias/detalle_foto/{$value.id}">
 						<i class="icon icon-picture"></i>
 						{$value.foto.titulo}
 						<div class="pull-right">
@@ -71,7 +71,7 @@
 						</div>
 					</a>
 					{else}
-					<a href="/moderar/denuncias/detalle_usuario/{$value.id}">
+					<a href="{#SITE_URL#}/moderar/denuncias/detalle_usuario/{$value.id}">
 						<i class="icon icon-user"></i>
 						{$value.denunciado.nick}
 						<div class="pull-right">
@@ -113,19 +113,19 @@
 				{loop="$contenido"}
 				<li>
 					{if="$value.tipo == 'post'"}
-					<a href="/post/index/{$value.id}">
+					<a href="{#SITE_URL#}/post/index/{$value.id}">
 						<i class="icon icon-book"></i>
 						<b>{$value.titulo}</b> por <b>{$value.usuario.nick}</b>
 						<span class="pull-right">{$value.fecha->fuzzy()}</span>
 					</a>
 					{elseif="$value.tipo == 'foto_comentario'"}
-					<a href="/foto/ver/{$value.foto.id}">
+					<a href="{#SITE_URL#}/foto/ver/{$value.foto.id}">
 						<i class="icon icon-comment"></i>
 						<b>{$value.usuario.nick}</b> en la foto <b>{$value.foto.titulo}</b>
 						<span class="pull-right">{$value.fecha->fuzzy()}</span>
 					</a>
 					{else}
-					<a href="/post/index/{$value.post.id}">
+					<a href="{#SITE_URL#}/post/index/{$value.post.id}">
 						<i class="icon icon-user"></i>
 						<b>{$value.usuario.nick}</b> en el post <b>{$value.post.titulo}</b>
 						<span class="pull-right">{$value.fecha->fuzzy()}</span>
@@ -143,7 +143,7 @@
 </div>
 <div class="row-fluid">
 	<div class="span12">
-		<h3 class="title">Historial administración</h3>
+		<h3 class="title">Historial administraci&oacute;n</h3>
 		{loop="$sucesos"}
 		{else}
 		<div class="alert alert-info">

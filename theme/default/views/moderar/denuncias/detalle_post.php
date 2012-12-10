@@ -1,23 +1,23 @@
 <ul class="breadcrumb">
-    <li><a href="/moderar/">Moderación</a> <span class="divider">/</span></li>
-    <li><a href="/moderar/denuncias/">Denuncias</a> <span class="divider">/</span></li>
-    <li><a href="/moderar/denuncias/posts/">Posts</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/">Moderaci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/denuncias/">Denuncias</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/denuncias/posts/">Posts</a> <span class="divider">/</span></li>
     <li class="active">Detalles</li>
 </ul>
 <div class="header clearfix">
 	<h2 class="pull-left">Detalles de la denuncia #{$denuncia.id}</h2>
 	<div class="pull-right btn-group">
-		<a href="/moderar/denuncias/posts/" class="btn">Volver</a>
+		<a href="{#SITE_URL#}/moderar/denuncias/posts/" class="btn">Volver</a>
 	</div>
 </div>
 <table class="table table-bordered">
 	<tr>
 		<th>Denunciante</th>
-		<td><a href="/perfil/index/{$denunciante.nick}">{$denunciante.nick}</a></td>
+		<td><a href="{#SITE_URL#}/perfil/index/{$denunciante.nick}">{$denunciante.nick}</a></td>
 	</tr>
 	<tr>
 		<th>Post</th>
-		<td><a href="/post/index/{$post.id}">{$post.titulo}</a></td>
+		<td><a href="{#SITE_URL#}/post/index/{$post.id}">{$post.titulo}</a></td>
 	</tr>
 	<tr>
 		<th>Fecha</th>

@@ -1,15 +1,13 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
-	<li><a href="/admin/contenido">Contenido</a> <span class="divider">/</span></li>
-    <li><a href="/admin/contenido/posts">Posts</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+	<li><a href="{#SITE_URL#}/admin/contenido">Contenido</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/contenido/posts">Posts</a> <span class="divider">/</span></li>
     <li class="active">Eliminar</li>
 </ul>
 <div class="header">
 	<h2 class="title">Eliminar post</h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
-
-	{if="isset($success)"}<div class="alert alert-success">{$success}</div>{/if}
 
 	<div class="control-group{if="$error_tipo"} error{/if}">
 		<label class="control-label" for="tipo">Motivo</label>
@@ -34,10 +32,10 @@
 	</div>
 
 	<div class="control-group{if="$error_razon"} error{/if}">
-		<label class="control-label" for="razon">Razón</label>
+		<label class="control-label" for="razon">Raz&oacute;n</label>
 		<div class="controls">
 			<input type="text" value="{$razon}" name="razon" id="razon" class="span10" />
-			<span class="help-block">{if="$error_razon"}{$error_razon}{else}Razón para el caso de un motivo personalizado.{/if}</span>
+			<span class="help-block">{if="$error_razon"}{$error_razon}{else}Raz&oacute;n para el caso de un motivo personalizado.{/if}</span>
 		</div>
 	</div>
 
@@ -52,6 +50,6 @@
 	</div>
 
 	<div class="form-actions">
-		<button type="submit" class="btn btn-large btn-primary">Borrar</button> o <a href="/admin/contenido/noticias">Volver</a>
+		<button type="submit" class="btn btn-large btn-primary">Borrar</button> o <a href="{#SITE_URL#}/admin/contenido/noticias">Volver</a>
 	</div>
 </form>

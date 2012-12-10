@@ -1,14 +1,14 @@
 <ul class="breadcrumb">
-    <li><a href="/moderar/">Moderación</a> <span class="divider">/</span></li>
-    <li><a href="/moderar/denuncias/">Denuncias</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/">Moderaci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/denuncias/">Denuncias</a> <span class="divider">/</span></li>
     <li class="active">Posts</li>
 </ul>
 <div class="header clearfix">
 	<h2 class="pull-left">Posts</h2>
 	<div class="btn-group pull-right">
-		<a href="/moderar/denuncias/posts/{$actual}/1" class="btn btn-small btn-danger{if="$tipo == 1"} active{/if}"><i class="icon-white icon-remove-circle"></i> Rechazados{if="$cantidad_rechazados > 0"} ({$cantidad_rechazados}){/if}</a>
-		<a href="/moderar/denuncias/posts/{$actual}/0" class="btn btn-small btn-primary{if="$tipo == 0"} active{/if}"><i class="icon-white icon-time"></i> Pendientes{if="$cantidad_pendientes > 0"} ({$cantidad_pendientes}){/if}</a>
-		<a href="/moderar/denuncias/posts/{$actual}/2" class="btn btn-small btn-success{if="$tipo == 2"} active{/if}"><i class="icon-white icon-ok-circle"></i> Aprobados{if="$cantidad_aprobados > 0"} ({$cantidad_aprobados}){/if}</a>
+		<a href="{#SITE_URL#}/moderar/denuncias/posts/{$actual}/1" class="btn btn-small btn-danger{if="$tipo == 1"} active{/if}"><i class="icon-white icon-remove-circle"></i> Rechazados{if="$cantidad_rechazados > 0"} ({$cantidad_rechazados}){/if}</a>
+		<a href="{#SITE_URL#}/moderar/denuncias/posts/{$actual}/0" class="btn btn-small btn-primary{if="$tipo == 0"} active{/if}"><i class="icon-white icon-time"></i> Pendientes{if="$cantidad_pendientes > 0"} ({$cantidad_pendientes}){/if}</a>
+		<a href="{#SITE_URL#}/moderar/denuncias/posts/{$actual}/2" class="btn btn-small btn-success{if="$tipo == 2"} active{/if}"><i class="icon-white icon-ok-circle"></i> Aprobados{if="$cantidad_aprobados > 0"} ({$cantidad_aprobados}){/if}</a>
 	</div>
 </div>
 <table class="table table-bordered">
@@ -24,8 +24,8 @@
 	<tbody>
 		{loop="$denuncias"}
 		<tr>
-			<td><a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
-			<td><a href="/foto/index/{$value.post.id}">{$value.post.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/foto/index/{$value.post.id}">{$value.post.titulo}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td>
 				{if="$value.motivo == 0"}
@@ -60,12 +60,12 @@
 			</td>
 			<td style="text-align: center;">
 				<div class="btn-group">
-					<a href="/moderar/denuncias/detalle_post/{$value.id}" class="btn btn-mini" rel="tooltip" title="Detalles"><i class="icon icon-file"></i></a>
-					<a href="/post/index/{$value.post.id}" class="btn btn-mini btn-info" rel="tooltip" title="Ver post"><i class="icon-white icon-eye-close"></i></a>
-					{if="$value.estado == 0"}<a href="/moderar/denuncias/cerrar_denuncia_post/{$value.id}" class="btn btn-mini btn-danger" rel="tooltip" title="Rechazar denuncia"><i class="icon-white icon-trash"></i></a>
-					<a href="/moderar/denuncias/cerrar_denuncia_post/{$value.id}/1" class="btn btn-mini btn-success" rel="tooltip" title="Aceptar denuncia"><i class="icon-white icon-ok"></i></a>{/if}
-					{if="$value.post.estado != 2"}<a href="/post/editar/{$value.post.id}" class="btn btn-mini btn-primary" rel="tooltip" title="Editar post"><i class="icon-white icon-pencil"></i></a>
-					<a href="/moderar/denuncias/borrar_post/{$value.post.id}" class="btn btn-mini btn-danger" rel="tooltip" title="Borrar post"><i class="icon-white icon-remove"></i></a>{/if}
+					<a href="{#SITE_URL#}/moderar/denuncias/detalle_post/{$value.id}" class="btn btn-mini show-tooltip" title="Detalles"><i class="icon icon-file"></i></a>
+					<a href="{#SITE_URL#}/post/index/{$value.post.id}" class="btn btn-mini btn-info show-tooltip" title="Ver post"><i class="icon-white icon-eye-close"></i></a>
+					{if="$value.estado == 0"}<a href="/moderar/denuncias/cerrar_denuncia_post/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Rechazar denuncia"><i class="icon-white icon-trash"></i></a>
+					<a href="{#SITE_URL#}/moderar/denuncias/cerrar_denuncia_post/{$value.id}/1" class="btn btn-mini btn-success show-tooltip" title="Aceptar denuncia"><i class="icon-white icon-ok"></i></a>{/if}
+					{if="$value.post.estado != 2"}<a href="/post/editar/{$value.post.id}" class="btn btn-mini btn-primary show-tooltip" title="Editar post"><i class="icon-white icon-pencil"></i></a>
+					<a href="{#SITE_URL#}/moderar/denuncias/borrar_post/{$value.post.id}" class="btn btn-mini btn-danger show-tooltip" title="Borrar post"><i class="icon-white icon-remove"></i></a>{/if}
 				</div>
 			</td>
 		</tr>

@@ -319,4 +319,19 @@ class Base_Controller_Moderar_Home extends Controller {
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
+
+	/**
+	 * Previsualización de bbcode.
+	 */
+	public function action_preview()
+	{
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Proceso contenido.
+		die(Decoda::procesar($contenido));
+	}
 }

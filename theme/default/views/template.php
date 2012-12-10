@@ -125,7 +125,7 @@
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
 		<script type="text/javascript">
-			window.site_url = "{function="get_site_url()"}";
+			window.site_url = "{#SITE_URL#}/";
 			window.theme_url = "{#THEME_URL#}/";
 		</script>
         <script src="{#THEME_URL#}/assets/js/jquery.js"></script>

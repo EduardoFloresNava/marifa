@@ -163,7 +163,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico el usuario y sus permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
 		{
-			$_SESSION['flash_error'] ='El posts que deseas aprobar/rechazar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El posts que deseas aprobar/rechazar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 

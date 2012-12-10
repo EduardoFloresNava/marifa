@@ -1,7 +1,7 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
-	<li><a href="/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
-    <li><a href="/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+	<li><a href="{#SITE_URL#}/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
     <li class="active">Nuevo</li>
 </ul>
 <div class="header">
@@ -49,7 +49,7 @@
 		<label class="control-label" for="puntos_dar">Puntos por post</label>
 		<div class="controls">
 			<input type="text" value="{$puntos_dar}" name="puntos_dar" id="puntos_dar" class="span10" />
-			<span class="help-block">{if="$error_puntos_dar"}{$error_puntos_dar}{else}Cantidad máxima de puntos a dar por post.{/if}</span>
+			<span class="help-block">{if="$error_puntos_dar"}{$error_puntos_dar}{else}Cantidad m&aacute;xima de puntos a dar por post.{/if}</span>
 		</div>
 	</div>
 
@@ -63,7 +63,7 @@
 				<option value="3"{if="$tipo==3"} selected="selected"{/if}>Fotos</option>
 				<option value="4"{if="$tipo==4"} selected="selected"{/if}>Comentarios</option>
 			</select>
-			<span class="help-block">{if="$error_tipo"}{$error_tipo}{else}Tipo de rango. Especial implica que son rango a asignar manualmente, mientras que el resto son asignado automáticamente al cumplir los requisitos especificados. Solo necesario si el tipo no es especial.{/if}</span>
+			<span class="help-block">{if="$error_tipo"}{$error_tipo}{else}Tipo de rango. Especial implica que son rango a asignar manualmente, mientras que el resto son asignado autom&aacute;ticamente al cumplir los requisitos especificados. Solo necesario si el tipo no es especial.{/if}</span>
 		</div>
 	</div>
 
@@ -76,6 +76,6 @@
 	</div>
 
 	<div class="form-actions">
-		<button type="submit" class="btn btn-large btn-primary">Crear</button> o <a href="/admin/usuario/rangos/">Volver</a>
+		<button type="submit" class="btn btn-large btn-primary">Crear</button> o <a href="{#SITE_URL#}/admin/usuario/rangos/">Volver</a>
 	</div>
 </form>

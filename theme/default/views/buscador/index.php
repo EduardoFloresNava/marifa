@@ -19,7 +19,7 @@
 						</div>
 					</div>-->
 					<div class="span6">
-						Categorias:
+						Categor&iacute;as:
 						<select name="categoria">
 							<option value="todos"{if="$categoria == 'todos'"} selected="selected"{/if}>Todas</option>
 							{loop="$categorias"}
@@ -44,8 +44,8 @@
 			<div>
 				<img style="float: left;" src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
 				<div style="margin-left: 30px;">
-					<p><a href="/post/index/{$value.id}/">{$value.titulo}</a></p>
-					<p>{$value.fecha->fuzzy()} - <a href="/perfil/informacion/{$value.usuario.nick}">@{$value.usuario.nick}</a> - {@Puntos@} {$value.puntos} - {@Comentarios@} {$value.comentarios}<span class="pull-right">{$value.categoria.nombre}</span> <a href="/buscador/relacionados/{$value.id}">Buscar relacionados</a></p>
+					<p><a href="{#SITE_URL#}/post/index/{$value.id}/">{$value.titulo}</a></p>
+					<p>{$value.fecha->fuzzy()} - <a href="{#SITE_URL#}/perfil/informacion/{$value.usuario.nick}">@{$value.usuario.nick}</a> - {@Puntos@} {$value.puntos} - {@Comentarios@} {$value.comentarios}<span class="pull-right">{$value.categoria.nombre}</span> <a href="{#SITE_URL#}/buscador/relacionados/{$value.id}">Buscar relacionados</a></p>
 				</div>
 			</div>
 			{else}

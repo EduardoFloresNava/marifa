@@ -35,7 +35,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" href="/">{if="isset($brand)"}{$brand}{else}Marifa{/if}</a>
+                    <a class="brand" href="{#SITE_URL#}">{if="isset($brand)"}{$brand}{else}Marifa{/if}</a>
                 </div>
             </div>
         </div>
@@ -43,7 +43,8 @@
 			{$contenido}
 		</div>
 		<footer class="footer container">
-			<p>&copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Equipo desarrollo Marifa {if="isset($execution)"} - {$execution}{/if}</p>
+			<p>Contacto - <a href="{#SITE_URL#}/pages/protocolo">Protocolo</a> - <a href="{#SITE_URL#}/pages/tyc">T&eacute;rminos y condiciones</a> - <a href="{#SITE_URL#}/pages/privacidad">Privacidad de datos</a> - <a href="{#SITE_URL#}/pages/dmca">Report Abuse - DMCA</a></p>
+			<p>{$_SERVER.HTTP_HOST} &copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Basado en <a href="http://www.marifa.com.ar/" rel="follow" title="Marifa">Marifa</a>{if="isset($execution)"} - {$execution}{/if}</p>
 		</footer>
 
         <!-- Le javascript
@@ -52,19 +53,9 @@
         <script src="{#THEME_URL#}/assets/js/jquery.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-transition.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-alert.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-modal.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-dropdown.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-scrollspy.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-tab.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-tooltip.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-popover.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-button.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-collapse.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-carousel.js"></script>
 		<script src="{#THEME_URL#}/assets/js/bootstrap-typeahead.js"></script>
-		<script src="{#THEME_URL#}/assets/js/jquery.markitup.js"></script>
-		<script src="{#THEME_URL#}/assets/js/bbcode.markitup.js"></script>
-		<script src="{#THEME_URL#}/assets/js/jquery.masonry.min.js"></script>
 		<script src="{#THEME_URL#}/assets/js/base.js"></script>
         {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}
     </body>

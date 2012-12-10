@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
-    <li><a href="/admin/contenido/">Contenido</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/contenido/">Contenido</a> <span class="divider">/</span></li>
     <li class="active">Posts</li>
 </ul>
 <div class="header clearfix">
@@ -19,29 +19,23 @@
 			</button>
 			<button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
 			<ul class="dropdown-menu">
-				<li{if="$tipo == 0"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/0"><i class="icon{if="$tipo == 0"}-white{/if} icon-ok-circle"></i> Activos{if="$cantidades.activo > 0"}<span class="badge">{$cantidades.activo}</span>{/if}</a></li>
-				<li{if="$tipo == 1"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/1"><i class="icon{if="$tipo == 1"}-white{/if} icon-file"></i> Borradores{if="$cantidades.borrador > 0"}<span class="badge">{$cantidades.borrador}</span>{/if}</a></li>
-				<li{if="$tipo == 2"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/2"><i class="icon{if="$tipo == 2"}-white{/if} icon-remove-circle"></i> Eliminados{if="$cantidades.borrado > 0"}<span class="badge">{$cantidades.borrado}</span>{/if}</a></li>
-				<li{if="$tipo == 3"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/3"><i class="icon{if="$tipo == 3"}-white{/if} icon-time"></i> Pendientes{if="$cantidades.pendiente > 0"}<span class="badge">{$cantidades.pendiente}</span>{/if}</a></li>
-				<li{if="$tipo == 4"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/4"><i class="icon{if="$tipo == 4"}-white{/if} icon-eye-close"></i> Ocultos{if="$cantidades.oculto > 0"}<span class="badge">{$cantidades.oculto}</span>{/if}</a></li>
-				<li{if="$tipo == 5"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/5"><i class="icon{if="$tipo == 5"}-white{/if} icon-remove-circle"></i> Rechazados{if="$cantidades.rechazado > 0"}<span class="badge">{$cantidades.rechazado}</span>{/if}</a></li>
-				<li{if="$tipo == 6"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/6"><i class="icon{if="$tipo == 6"}-white{/if} icon-trash"></i> Papelera{if="$cantidades.papelera > 0"}<span class="badge">{$cantidades.papelera}</span>{/if}</a></li>
+				<li{if="$tipo == 0"} class="active"{/if}><a href="{#SITE_URL#}/admin/contenido/posts/{$actual}/0"><i class="icon{if="$tipo == 0"}-white{/if} icon-ok-circle"></i> Activos{if="$cantidades.activo > 0"}<span class="badge">{$cantidades.activo}</span>{/if}</a></li>
+				<li{if="$tipo == 1"} class="active"{/if}><a href="{#SITE_URL#}/admin/contenido/posts/{$actual}/1"><i class="icon{if="$tipo == 1"}-white{/if} icon-file"></i> Borradores{if="$cantidades.borrador > 0"}<span class="badge">{$cantidades.borrador}</span>{/if}</a></li>
+				<li{if="$tipo == 2"} class="active"{/if}><a href="{#SITE_URL#}/admin/contenido/posts/{$actual}/2"><i class="icon{if="$tipo == 2"}-white{/if} icon-remove-circle"></i> Eliminados{if="$cantidades.borrado > 0"}<span class="badge">{$cantidades.borrado}</span>{/if}</a></li>
+				<li{if="$tipo == 3"} class="active"{/if}><a href="{#SITE_URL#}/admin/contenido/posts/{$actual}/3"><i class="icon{if="$tipo == 3"}-white{/if} icon-time"></i> Pendientes{if="$cantidades.pendiente > 0"}<span class="badge">{$cantidades.pendiente}</span>{/if}</a></li>
+				<li{if="$tipo == 4"} class="active"{/if}><a href="{#SITE_URL#}/admin/contenido/posts/{$actual}/4"><i class="icon{if="$tipo == 4"}-white{/if} icon-eye-close"></i> Ocultos{if="$cantidades.oculto > 0"}<span class="badge">{$cantidades.oculto}</span>{/if}</a></li>
+				<li{if="$tipo == 5"} class="active"{/if}><a href="{#SITE_URL#}/admin/contenido/posts/{$actual}/5"><i class="icon{if="$tipo == 5"}-white{/if} icon-remove-circle"></i> Rechazados{if="$cantidades.rechazado > 0"}<span class="badge">{$cantidades.rechazado}</span>{/if}</a></li>
+				<li{if="$tipo == 6"} class="active"{/if}><a href="{#SITE_URL#}/admin/contenido/posts/{$actual}/6"><i class="icon{if="$tipo == 6"}-white{/if} icon-trash"></i> Papelera{if="$cantidades.papelera > 0"}<span class="badge">{$cantidades.papelera}</span>{/if}</a></li>
 				<li class="divider"></li>
-				<li{if="$tipo == 7"} class="active"{/if}><a href="/admin/contenido/posts/{$actual}/7"><i class="icon{if="$tipo == 7"}-white{/if} icon-asterisk"></i> Todas{if="$cantidades.total > 0"}<span class="badge">{$cantidades.total}</span>{/if}</a></li>
+				<li{if="$tipo == 7"} class="active"{/if}><a href="{#SITE_URL#}/admin/contenido/posts/{$actual}/7"><i class="icon{if="$tipo == 7"}-white{/if} icon-asterisk"></i> Todas{if="$cantidades.total > 0"}<span class="badge">{$cantidades.total}</span>{/if}</a></li>
 			</ul>
 		</div>
-		<!--<form action="/admin/contenido/posts" class="form-search" method="POST">
-			<div class="input-append">
-				<input type="text" name="q" class="search-query" value="{if="isset($q)"}{$q}{/if}" placeholder="Buscar..." />
-				<button type="submit" class="btn submit"><i class="icon icon-search"></i></button>
-			</div>
-		</form>-->
 	</div>
 </div>
 <table class="table table-bordered">
 	<thead>
 		<tr>
-			<th>Titulo</th>
+			<th>T&iacute;tulo</th>
 			<th>Autor</th>
 			<th>Creado</th>
 			<th>Estado</th>
@@ -51,8 +45,8 @@
 	<tbody>
 		{loop="$posts"}
 		<tr>
-			<td><a href="/post/index/{$value.id}">{$value.titulo}</a></td>
-			<td><a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/post/index/{$value.id}">{$value.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td>
 				{if="$value.estado == 0"}
@@ -76,27 +70,27 @@
 			<td style="text-align: center;">
 				<div class="btn-group">
 					{if="$value.estado == 0"}
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/5" class="btn btn-mini btn-warning" title="Rechazar el post" rel="tooltip"><i class="icon-white icon-hand-down"></i></a>
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/4" class="btn btn-mini btn-inverse" title="Ocultar el post" rel="tooltip"><i class="icon-white icon-eye-close"></i></a>
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/6" class="btn btn-mini btn-danger" title="Enviar a la papelera" rel="tooltip"><i class="icon-white icon-trash"></i></a>
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/5" class="btn btn-mini btn-warning" title="Rechazar el post" rel="tooltip"><i class="icon-white icon-hand-down"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/4" class="btn btn-mini btn-inverse" title="Ocultar el post" rel="tooltip"><i class="icon-white icon-eye-close"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/6" class="btn btn-mini btn-danger" title="Enviar a la papelera" rel="tooltip"><i class="icon-white icon-trash"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
 					{elseif="$value.estado == 1"}
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
 					{elseif="$value.estado == 2"}
 					<!--<a href="" class="btn btn-danger">Rechazar</a> ENVIAR COMO BORRADOR-->
 					{elseif="$value.estado == 3"}
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/0" class="btn btn-mini btn-success" title="Aprobar" rel="tooltip"><i class="icon-white icon-hand-up"></i></a>
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/5" class="btn btn-mini btn-warning" title="Rechazar el post" rel="tooltip"><i class="icon-white icon-hand-down"></i></a>
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/0" class="btn btn-mini btn-success" title="Aprobar" rel="tooltip"><i class="icon-white icon-hand-up"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/5" class="btn btn-mini btn-warning" title="Rechazar el post" rel="tooltip"><i class="icon-white icon-hand-down"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
 					{elseif="$value.estado == 4"}
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/0" class="btn btn-mini btn-success" title="Mostrar el post" rel="tooltip"><i class="icon-white icon-eye-open"></i></a>
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/0" class="btn btn-mini btn-success" title="Mostrar el post" rel="tooltip"><i class="icon-white icon-eye-open"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
 					{elseif="$value.estado == 5"}
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/0" class="btn btn-mini btn-success" title="Aprobar" rel="tooltip"><i class="icon-white icon-hand-up"></i></a>
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/0" class="btn btn-mini btn-success" title="Aprobar" rel="tooltip"><i class="icon-white icon-hand-up"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
 					{elseif="$value.estado == 6"}
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/0" class="btn btn-mini btn-success" title="Restaurar el post" rel="tooltip"><i class="icon-white icon-refresh"></i></a>
-					<a href="/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/0" class="btn btn-mini btn-success" title="Restaurar el post" rel="tooltip"><i class="icon-white icon-refresh"></i></a>
+					<a href="{#SITE_URL#}/admin/contenido/cambiar_estado_post/{$value.id}/2" class="btn btn-mini btn-danger" title="Eliminar" rel="tooltip"><i class="icon-white icon-remove"></i></a>
 					{else}
 					ESTADO INDEFINIDO
 					{/if}
