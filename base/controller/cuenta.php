@@ -40,7 +40,7 @@ class Base_Controller_Cuenta extends Controller {
 		// Verificamos permisos.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para editar tu cuenta.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para editar tu cuenta.');
 			Request::redirect('/usuario/login');
 		}
 
@@ -60,6 +60,7 @@ class Base_Controller_Cuenta extends Controller {
 			'bloqueados' => array('link' => '/cuenta/bloqueados', 'caption' => 'Bloqueos', 'active' =>  $activo == 'bloqueados'),
 			'password' => array('link' => '/cuenta/password', 'caption' => 'Contrase&ntilde;a', 'active' =>  $activo == 'password'),
 			'nick' => array('link' => '/cuenta/nick', 'caption' => 'Nicks', 'active' =>  $activo == 'nick'),
+			'avisos' => array('link' => '/cuenta/avisos', 'caption' => 'Avisos', 'active' =>  $activo == 'avisos', 'cantidad' => Usuario::usuario()->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO)),
 		);
 	}
 
@@ -799,7 +800,7 @@ class Base_Controller_Cuenta extends Controller {
 				}
 
 				// Envio notificación.
-				$_SESSION['flash_success'] = 'El usuario fue bloqueado correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'El usuario fue bloqueado correctamente.');
 				Request::redirect('/cuenta/bloqueados');
 			}
 		}
@@ -1059,14 +1060,14 @@ class Base_Controller_Cuenta extends Controller {
 		// Verifico el formato.
 		if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/D', $nick))
 		{
-			$_SESSION['flash_error'] = 'El nick que desea liberar no es correcto.';
+			add_flash_message(FLASH_ERROR, 'El nick que desea liberar no es correcto.');
 			Request::redirect('/cuenta/nick');
 		}
 
 		// Verifico si es del usuario.
 		if ( ! in_array($nick, Usuario::usuario()->nicks()))
 		{
-			$_SESSION['flash_error'] = 'El nick que desea liberar no es correcto.';
+			add_flash_message(FLASH_ERROR, 'El nick que desea liberar no es correcto.');
 			Request::redirect('/cuenta/nick');
 		}
 
@@ -1074,7 +1075,7 @@ class Base_Controller_Cuenta extends Controller {
 		Usuario::usuario()->eliminar_nick($nick);
 
 		// Informo el resultado.
-		$_SESSION['flash_success'] = 'El nick se ha liberado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El nick se ha liberado correctamente.');
 		Request::redirect('/cuenta/nick');
 	}
 
@@ -1087,14 +1088,14 @@ class Base_Controller_Cuenta extends Controller {
 		// Verifico el formato.
 		if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/D', $nick))
 		{
-			$_SESSION['flash_error'] = 'El nick que desea liberar no es correcto.';
+			add_flash_message(FLASH_ERROR, 'El nick que desea liberar no es correcto.');
 			Request::redirect('/cuenta/nick');
 		}
 
 		// Verifico si es del usuario.
 		if ( ! in_array($nick, Usuario::usuario()->nicks()))
 		{
-			$_SESSION['flash_error'] = 'El nick que desea liberar no es correcto.';
+			add_flash_message(FLASH_ERROR, 'El nick que desea liberar no es correcto.');
 			Request::redirect('/cuenta/nick');
 		}
 
@@ -1108,8 +1109,121 @@ class Base_Controller_Cuenta extends Controller {
 		$model_suceso->crear(Usuario::$usuario_id, 'usuario_cambio_nick', Usuario::$usuario_id);
 
 		// Informo el resultado.
-		$_SESSION['flash_success'] = 'El nick se ha actualizado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El nick se ha actualizado correctamente.');
 		Request::redirect('/cuenta/nick');
+	}
+
+	/**
+	 * Visualización de los avisos que tiene el usuario.
+	 */
+	public function action_avisos()
+	{
+		// Asignamos el título.
+		$this->template->assign('title', 'Cuenta - Avisos');
+
+		// Cargamos la vista.
+		$view = View::factory('cuenta/avisos');
+
+		// Cargamos el usuario actual.
+		$model_usuario = Usuario::usuario();
+
+		// Cargo listado de avisos
+		$avisos = $model_usuario->avisos(array(Model_Usuario_Aviso::ESTADO_NUEVO, Model_Usuario_Aviso::ESTADO_VISTO));
+
+		// Proceso para obtener información.
+		$lst = array();
+		foreach ($avisos as $v)
+		{
+			$a = $v->as_array();
+			$a['moderador'] = $v->moderador()->as_array();
+			$lst[] = $a;
+		}
+		// Listado de advertencias.
+		$view->assign('advertencias', $lst);
+		unset($lst);
+
+		// Información del usuario del que se ven las advertencias.
+		$view->assign('usuario', $model_usuario->as_array());
+
+		// Menu.
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
+		$this->template->assign('top_bar', $this->submenu('avisos'));
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
+	 * Marcamos un aviso como leido.
+	 * @param int $id ID del aviso.
+	 */
+	public function action_aviso_leido($id)
+	{
+		$id = (int) $id;
+
+		// Cargo aviso.
+		$model_aviso = new Model_Usuario_Aviso($id);
+
+		// Verifico existencia.
+		if ( ! $model_aviso->existe())
+		{
+			add_flash_message(FLASH_ERROR, 'El aviso que deseas marcar como visto no se encuentra disponible.');
+			Request::redirect('/cuenta/avisos');
+		}
+
+		// Verifico sea del usuario.
+		if ($model_aviso->usuario_id !== Usuario::$usuario_id)
+		{
+			add_flash_message(FLASH_ERROR, 'El aviso que deseas marcar como visto no se encuentra disponible.');
+			Request::redirect('/cuenta/avisos');
+		}
+
+		// Verifico el estado.
+		if ($model_aviso->estado !== Model_Usuario_Aviso::ESTADO_NUEVO)
+		{
+			add_flash_message(FLASH_ERROR, 'El aviso que deseas marcar como visto no se encuentra disponible.');
+			Request::redirect('/cuenta/avisos');
+		}
+
+		// Seteo como leido.
+		$model_aviso->actualizar_campo('estado', Model_Usuario_Aviso::ESTADO_VISTO);
+
+		// Informo resultado.
+		add_flash_message(FLASH_SUCCESS, 'Aviso marcado como visto correctamente.');
+		Request::redirect('/cuenta/avisos');
+	}
+
+	/**
+	 * Ocultamos un aviso.
+	 * @param int $id ID del aviso.
+	 */
+	public function action_borrar_aviso($id)
+	{
+		$id = (int) $id;
+
+		// Cargo aviso.
+		$model_aviso = new Model_Usuario_Aviso($id);
+
+		// Verifico existencia.
+		if ( ! $model_aviso->existe())
+		{
+			add_flash_message(FLASH_ERROR, 'El aviso que deseas borrar no se encuentra disponible.');
+			Request::redirect('/cuenta/avisos');
+		}
+
+		// Verifico sea del usuario.
+		if ($model_aviso->usuario_id !== Usuario::$usuario_id)
+		{
+			add_flash_message(FLASH_ERROR, 'El aviso que deseas borrar no se encuentra disponible.');
+			Request::redirect('/cuenta/avisos');
+		}
+
+		// Seteo como oculto.
+		$model_aviso->actualizar_campo('estado', Model_Usuario_Aviso::ESTADO_OCULTO);
+
+		// Informo resultado.
+		add_flash_message(FLASH_SUCCESS, 'Aviso borrado correctamente.');
+		Request::redirect('/cuenta/avisos');
 	}
 
 }

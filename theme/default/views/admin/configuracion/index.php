@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
     <li class="active">Configuraci&oacute;n</li>
 </ul>
 <div class="header">
@@ -36,19 +36,19 @@
 					<option value="1"{if="$registro"} selected="selected"{/if}>Abierto</option>
 					<option value="0"{if="!$registro"} selected="selected"{/if}>Cerrado</option>
 				</select>
-				<span class="help-inline">{if="$error_registro"}{$error_registro}{elseif="$success_registro"}{$success_registro}{else}Estado del registro de los usuarios. Si lo cierras no podrán registrarse nuevos usuarios.{/if}</span>
+				<span class="help-inline">{if="$error_registro"}{$error_registro}{elseif="$success_registro"}{$success_registro}{else}Estado del registro de los usuarios. Si lo cierras no podr&aacute;n registrarse nuevos usuarios.{/if}</span>
 			</div>
 		</div>
 
 		<div class="control-group{if="$error_activacion_usuario"} error{elseif="$success_activacion_usuario"} success{/if}">
-			<label class="control-label" for="activacion_usuario">Activación usuarios:</label>
+			<label class="control-label" for="activacion_usuario">Activaci&oacute;n usuarios:</label>
 			<div class="controls">
 				<select name="activacion_usuario" id="activacion_usuario">
 					<option value="2"{if="$activacion_usuario == 2"} selected="selected"{/if}>Directa</option>
 					<option value="1"{if="$activacion_usuario == 1"} selected="selected"{/if}>E-Mail</option>
 					<option value="0"{if="$activacion_usuario == 0"} selected="selected"{/if}>Manual</option>
 				</select>
-				<span class="help-inline">{if="$error_activacion_usuario"}{$error_activacion_usuario}{elseif="$success_activacion_usuario"}{$success_activacion_usuario}{else}La forma de activar las cuentas de los usuarios. Directa: no requiere ningún tipo de validación. E-Mail: se debe activar por medio de un código enviado por E-Mail. Manual: la cuenta debe ser activada de forma manual por un administrador.{/if}</span>
+				<span class="help-inline">{if="$error_activacion_usuario"}{$error_activacion_usuario}{elseif="$success_activacion_usuario"}{$success_activacion_usuario}{else}La forma de activar las cuentas de los usuarios. Directa: no requiere ning&uacute;n tipo de validación. E-Mail: se debe activar por medio de un c&oacute;digo enviado por E-Mail. Manual: la cuenta debe ser activada de forma manual por un administrador.{/if}</span>
 			</div>
 		</div>
 
@@ -71,7 +71,7 @@
 			<label class="control-label" for="elementos_pagina">Elementos por página:</label>
 			<div class="controls">
 				<input type="text" value="{$elementos_pagina}" name="elementos_pagina" id="elementos_pagina" />
-				<span class="help-inline">{if="$error_elementos_pagina"}{$error_elementos_pagina}{elseif="$success_elementos_pagina"}{$success_elementos_pagina}{else}Cantidad de elementos a mostrar por página.{/if}</span>
+				<span class="help-inline">{if="$error_elementos_pagina"}{$error_elementos_pagina}{elseif="$success_elementos_pagina"}{$success_elementos_pagina}{else}Cantidad de elementos a mostrar por p&aacute;gina.{/if}</span>
 			</div>
 		</div>
 	</fieldset>

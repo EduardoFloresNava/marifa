@@ -24,6 +24,11 @@
  */
 
 /**
+ * Defino versión de marifa.
+ */
+define('VERSION', '0.2RC2');
+
+/**
  * Cargamos el modo de depuración desde una variable de entorno.
  * Se puede setear esta variable desde htaccess.
  */
@@ -96,7 +101,7 @@ define('SITE_URL', get_site_url());
 // Cargo el tema actual.
 define('THEME', 'theme');
 
-define('THEME_URL', SITE_URL.VIEW_PATH.THEME);
+define('THEME_URL', SITE_URL.DS.VIEW_PATH.THEME);
 
 // Inicio logs.
 Log::setup(APP_BASE.DS.'log', '%d-%m-%Y.log', PRODUCTION ? Log::INFO : Log::DEBUG);

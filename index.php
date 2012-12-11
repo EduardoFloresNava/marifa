@@ -41,7 +41,7 @@ else
 /**
  * Defino versión de marifa.
  */
-define('VERSION', '0.2RC1');
+define('VERSION', '0.2RC2');
 
 // Suprimimos advertencias de DateTime. Si lo deseas puedes poner una TZ estatica.
 date_default_timezone_set('UTC');
@@ -98,7 +98,11 @@ require_once (APP_BASE.DS.'function.php');
 // Iniciamos el proceso de carga automatica de librerias.
 spl_autoload_register('loader_load');
 
-// Defino la URL del sitio.
+/**
+ * Defino la URL del sitio. Puede definirla manualemente. No debe terminar en /.
+ * Por ejemplo:
+ * define('SITE_URL', 'http://demo.marifa.com.ar');
+ */
 define('SITE_URL', get_site_url());
 
 // Verifico que no exista el instalador.
@@ -148,10 +152,9 @@ define('THEME', Theme::actual());
 Error::get_instance()->start(DEBUG);
 
 // Verificamos bloqueos.
-$lock = new Mantenimiento;
-if ($lock->is_locked())
+if (Mantenimiento::is_locked())
 {
-	if ($lock->is_locked_for(IP::get_ip_addr()))
+	if (Mantenimiento::is_locked_for(get_ip_addr()))
 	{
 		// Cargo la vista.
 		$view = View::factory('mantenimiento');
@@ -169,9 +172,6 @@ if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
 	//TODO: lo mandamos al instalador.
 	die("Falta configurar la base de datos");
 }
-
-// Cargamos la cache.
-Cache::get_instance();
 
 // Cargamos las configuraciones del gestor de actualizaciones.
 if (file_exists(CONFIG_PATH.DS.'update.php'))

@@ -1,2 +1,2 @@
 Bienvenido a {$titulo}:
-	Para activar tu cuenta de usuario debes seguir al siguiente enlace: {function="get_site_url()"}/usuario/activar/{$codigo}
+	Para activar tu cuenta de usuario debes seguir al siguiente enlace: {#SITE_URL#}/usuario/activar/{$codigo}

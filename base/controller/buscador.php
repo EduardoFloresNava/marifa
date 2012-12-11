@@ -265,4 +265,81 @@ class Base_Controller_Buscador extends Controller {
 		$this->template->assign('contenido', $vista->parse());
 	}
 
+	/**
+	 * Obtenemos el listado de publicaciones con una etiqueta.
+	 * @param string $etiqueta Etiqueta a buscar.
+	 */
+	public function action_pin($etiqueta, $pagina)
+	{
+		// Cargo modelo de shouts.
+		$model_shout = new Model_Shout;
+
+		// Cargamos la vista.
+		$vista = View::factory('buscador/pin');
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Formato de la página.
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
+		// Obtengo por etiqueta.
+		list($cantidad, $shouts) = $model_shout->get_by_tag($etiqueta, $pagina, $cantidad_por_pagina);
+
+		// Verifivo que la página seleccionada sea válida.
+		if (count($shouts) == 0 && $shouts != 1)
+		{
+			Request::redirect('/buscador/pin/'.$etiqueta);
+		}
+
+		// Paginación.
+		$paginador = new Paginator($cantidad, $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, "/buscador/pin/$etiqueta/%s/"));
+		unset($paginador);
+		$vista->assign('total', $cantidad);
+
+		// Cargo procesador BBCode.
+		$decoda = new Decoda;
+		$decoda->addFilter(new TagFilter());
+		$decoda->addFilter(new UserFilter());
+
+		// Listado de shout's.
+		foreach ($shouts as $k => $v)
+		{
+			$shouts[$k] = $v->as_array();
+			$decoda->reset($v->mensaje, FALSE);
+			$shouts[$k]['mensaje_bbcode'] = $decoda->parse(FALSE);
+
+			// Proceso valor si es tipo especial.
+			if ($v->tipo == Model_Shout::TIPO_VIDEO)
+			{
+				// Obtengo clase de video.
+				$shouts[$k]['valor'] = explode(':', $v->valor);
+			}
+			elseif($v->tipo == Model_Shout::TIPO_ENLACE)
+			{
+				$shouts[$k]['valor'] = unserialize($shouts[$k]['valor']);
+			}
+
+			// Datos extra
+			$shouts[$k]['usuario'] = $v->usuario()->as_array();
+			$shouts[$k]['votos'] = $v->cantidad_votos();
+			$shouts[$k]['comentario'] = $v->cantidad_comentarios();
+			$shouts[$k]['favoritos'] = $v->cantidad_favoritos();
+			$shouts[$k]['compartido'] = $v->cantidad_compartido();
+		}
+
+		// Seteo los shouts.
+		$vista->assign('shouts', $shouts);
+		unset($shouts);
+
+		// Seteo parámetros de la plantilla base.
+		$this->template->assign('master_bar', parent::base_menu());
+		$this->template->assign('top_bar', Controller_Home::submenu('buscador'));
+
+		// Asignamos la vista.
+		$this->template->assign('contenido', $vista->parse());
+	}
+
 }

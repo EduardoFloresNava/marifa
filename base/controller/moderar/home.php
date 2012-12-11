@@ -40,14 +40,14 @@ class Base_Controller_Moderar_Home extends Controller {
 		// Verifico esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
 			Request::redirect('/usuario/login', TRUE);
 		}
 
 		// Verifico si tiene algun permiso.
 		if ( ! self::permisos_acceso())
 		{
-			$_SESSION['flash_error'] = 'No tienes permisos para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -73,6 +73,58 @@ class Base_Controller_Moderar_Home extends Controller {
 		);
 
 		return Usuario::permiso($permisos);
+	}
+
+	/**
+	 * Cantidad de elementos que están esperando supervición.
+	 * @return int
+	 */
+	public static function cantidad_pendiente()
+	{
+		$cantidad = 0;
+
+		// TODO: REALIZAR CACHE PARA OPTIMIZAR.
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
+		{
+			$cantidad += Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
+		{
+			$cantidad += Model_Foto_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
+		{
+			$cantidad += Model_Usuario_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
+		{
+			$cantidad += Model_Usuario_Suspension::cantidad();
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
+		{
+			$cantidad += Model_Post::s_cantidad(Model_Post::ESTADO_PAPELERA);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
+		{
+			$cantidad += Model_Foto::s_cantidad(Model_Foto::ESTADO_PAPELERA);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
+		{
+			$cantidad += Model_Post::s_cantidad(Model_Post::ESTADO_PENDIENTE) + Model_Post::s_cantidad(Model_Post::ESTADO_RECHAZADO);
+		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
+		{
+			$cantidad +=  Model_Comentario::cantidad(Model_Comentario::ESTADO_OCULTO);
+		}
+
+		return $cantidad;
 	}
 
 	/**
@@ -181,7 +233,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		$portada->assign('sucesos', array());
 
 		// Listado de denuncias.
-		$rst = Database::get_instance()->query('SELECT * FROM ( SELECT \'post\' as type, id from post_denuncia WHERE estado = 0 UNION SELECT \'foto\' as type, id from foto_denuncia WHERE estado = 0 UNION SELECT \'usuario\' as type, id from usuario_denuncia WHERE estado = 0 ) as A LIMIT 10');
+		$rst = Database::get_instance()->query('SELECT type, id FROM ( SELECT \'post\' AS type, id, fecha FROM post_denuncia WHERE estado = 0 UNION SELECT \'foto\' AS type, id, fecha FROM foto_denuncia WHERE estado = 0 UNION SELECT \'usuario\' AS type, id, fecha FROM usuario_denuncia WHERE estado = 0 ) as A ORDER BY fecha DESC LIMIT 10');
 		$rst->set_fetch_type(Database_Query::FETCH_ASSOC);
 
 		$lst = array();
@@ -219,7 +271,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		unset($lst, $rst);
 
 		// Listado de contenido desaprobado.
-		$rst = Database::get_instance()->query('SELECT * FROM ( SELECT \'post\' as type, id, fecha from post WHERE estado = 3 UNION SELECT \'post_comentario\' as type, id, fecha from post_comentario WHERE estado = 1 UNION SELECT \'foto_comentario\' as type, id, fecha from foto_comentario WHERE estado = 1 ) as A ORDER BY fecha DESC LIMIT 10');
+		$rst = Database::get_instance()->query('SELECT * FROM ( SELECT \'post\' AS type, id, fecha FROM post WHERE estado = 3 UNION SELECT \'post_comentario\' AS type, id, fecha FROM post_comentario WHERE estado = 1 UNION SELECT \'foto_comentario\' AS type, id, fecha FROM foto_comentario WHERE estado = 1 ) AS A ORDER BY fecha DESC LIMIT 10');
 		$rst->set_fetch_type(Database_Query::FETCH_ASSOC);
 
 		$lista = array();
@@ -266,5 +318,20 @@ class Base_Controller_Moderar_Home extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Previsualización de bbcode.
+	 */
+	public function action_preview()
+	{
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Proceso contenido.
+		die(Decoda::procesar($contenido));
 	}
 }

@@ -40,14 +40,14 @@ class Base_Controller_Admin_Home extends Controller {
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico si tiene alguno de los permisos solicitados.
 		if ( ! self::permisos_acceso())
 		{
-			$_SESSION['flash_error'] = 'No tienes permisos para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -218,7 +218,7 @@ class Base_Controller_Admin_Home extends Controller {
 			// Verifico si esta en la lista.
 			if ( ! in_array($file, $file_list))
 			{
-				$_SESSION['flash_error'] = 'El archivo no es correcto.';
+				add_flash_message(FLASH_ERROR, 'El archivo no es correcto.');
 				Request::redirect('/admin/home/logs/');
 			}
 
@@ -275,19 +275,19 @@ class Base_Controller_Admin_Home extends Controller {
 		// Verifico si esta en la lista.
 		if ( ! in_array($file, $file_list))
 		{
-			$_SESSION['flash_error'] = 'El archivo de log que deseas eliminar no es correcto.';
+			add_flash_message(FLASH_ERROR, 'El archivo de log que deseas eliminar no es correcto.');
 			Request::redirect('/admin/home/logs/');
 		}
 
 		// Elimino el archivo.
 		if (@unlink(APP_BASE.DS.'log'.DS.$file))
 		{
-			$_SESSION['flash_success'] = 'El archivo de log se ha eliminado correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'El archivo de log se ha eliminado correctamente.');
 			Request::redirect('/admin/home/logs/');
 		}
 		else
 		{
-			$_SESSION['flash_error'] = 'Se ha producido un falla al borrar el archivo de logs. Verifique los permisos.';
+			add_flash_message(FLASH_ERROR, 'Se ha producido un falla al borrar el archivo de logs. Verifique los permisos.');
 			Request::redirect('/admin/home/logs/');
 		}
 	}

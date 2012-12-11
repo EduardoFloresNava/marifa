@@ -1,14 +1,14 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
-	<li><a href="/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
-    <li><a href="/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
+	<li><a href="{#SITE_URL#}/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
     <li class="active">Detalles</li>
 </ul>
 <div class="header clearfix">
 	<h2 class="pull-left">Detalles del rango <img src="{#THEME_URL#}/assets/img/rangos/{$rango.imagen}" /> <span style="color: #{function="sprintf('%06s', dechex($rango.color))"};">{$rango.nombre}</span>{if="$rango.id == $rango_defecto"} <span class="label label-info">POR DEFECTO</span>{/if}</h2>
 	<div class="btn-group pull-right">
-		<a href="/admin/usuario/editar_rango/{$rango.id}" class="btn btn-info"><i class="icon-white icon-pencil"></i> Editar</a>
-		<a href="/admin/usuario/rangos" class="btn btn-success"><i class="icon-white icon-arrow-left"></i> Volver</a>
+		<a href="{#SITE_URL#}/admin/usuario/editar_rango/{$rango.id}" class="btn btn-info"><i class="icon-white icon-pencil"></i> Editar</a>
+		<a href="{#SITE_URL#}/admin/usuario/rangos" class="btn btn-success"><i class="icon-white icon-arrow-left"></i> Volver</a>
 	</div>
 </div>
 <table class="table table-bordered">
@@ -20,7 +20,7 @@
 		<th>Cantidad</th><td>{$rango.cantidad}</td>
 	</tr>{/if}
 	<tr>
-		<th>Puntos por día</th>
+		<th>Puntos por d&iacute;a</th>
 		<td>{$rango.puntos}</td>
 	</tr>
 	<tr>
@@ -28,7 +28,6 @@
 		<td>{$rango.puntos_dar}</td>
 	</tr>
 </table>
-{if="isset($success)"}<div class="alert alert-success">{$success}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
 <form method="POST" action="" name="permisos">
 	<div class="btn-toolbar">
 		<div class="btn-group">

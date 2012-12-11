@@ -59,7 +59,17 @@
             </div>
         </div>
         <div class="container">
-			{if="isset($noticia)"}<div class="alert alert-info">{$noticia}<a class="close" data-dismiss="alert">×</a></div>{/if}
+			{if="isset($noticia)"}
+				{if="is_array($noticia)"}
+				<div class="alert alert-info alert-container">
+					{loop="$noticia"}
+					<div class="alert-item"><a class="close" data-dismiss="alert">×</a><i class="icon icon-bullhorn"></i> {$value}</div>
+					{/loop}
+				</div>
+				{else}
+					<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><i class="icon icon-bullhorn"></i> {$noticia}</div>
+				{/if}
+			{/if}
 			{if="isset($top_bar)"}
 			<ul class="nav nav-tabs">
 				{loop="top_bar"}
@@ -70,17 +80,51 @@
 			</ul>
 			{/if}
 			{if="isset($is_locked) && $is_locked"}<div class="alert alert-info"><b>&iexcl;Importante!</b> El sitio se encuentra en modo mantenimiento, no todos los usuarios pueden acceder a el sitio.<a class="close" data-dismiss="alert">×</a></div>{/if}
-			{if="isset($flash_success)"}<div class="alert alert-success"><a class="close" data-dismiss="alert">×</a>{$flash_success}</div>{/if}
-			{if="isset($flash_error)"}<div class="alert"><a class="close" data-dismiss="alert">×</a>{$flash_error}</div>{/if}
+			{if="isset($flash_success)"}
+				{if="is_array($flash_success)"}
+				<div class="alert alert-success alert-container">
+					{loop="$flash_success"}
+					<div class="alert-item"><a class="close" data-dismiss="alert">×</a><i class="icon icon-ok"></i> {$value}</div>
+					{/loop}
+				</div>
+				{else}
+					<div class="alert alert-success"><a class="close" data-dismiss="alert">×</a><i class="icon icon-ok"></i> {$flash_success}</div>
+				{/if}
+			{/if}
+			{if="isset($flash_info)"}
+				{if="is_array($flash_info)"}
+				<div class="alert alert-info alert-container">
+					{loop="$flash_info"}
+					<div class="alert-item"><a class="close" data-dismiss="alert">×</a><i class="icon icon-info-sign"></i> {$value}</div>
+					{/loop}
+				</div>
+				{else}
+					<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><i class="icon icon-info-sign"></i> {$flash_info}</div>
+				{/if}
+			{/if}
+			{if="isset($flash_error)"}
+				{if="is_array($flash_error)"}
+				<div class="alert alert-container">
+					{loop="$flash_error"}
+					<div class="alert-item"><a class="close" data-dismiss="alert">×</a><i class="icon icon-remove-sign"></i> {$value}</div>
+					{/loop}
+				</div>
+				{else}
+					<div class="alert"><a class="close" data-dismiss="alert">×</a><i class="icon icon-remove-sign"></i> {$flash_error}</div>
+				{/if}
+			{/if}
 			{$contenido}
 		</div>
-		<footer class="footer container">
-			<p>{$_SERVER.HTTP_HOST} &copy; 2012{if="date('Y') > 2012"}-{function="date('Y')"}{/if} - Basado en <a href="http://www.marifa.com.ar/" rel="folow" title="Marifa">Marifa</a>{if="isset($execution)"} - {$execution}{/if}</p>
-		</footer>
+		{include="footer"}
+		<div class="pop-notification"></div>
 
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
+		<script type="text/javascript">
+			window.site_url = "{#SITE_URL#}/";
+			window.theme_url = "{#THEME_URL#}/";
+		</script>
         <script src="{#THEME_URL#}/assets/js/jquery.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-transition.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-alert.js"></script>
@@ -97,6 +141,7 @@
 		<script src="{#THEME_URL#}/assets/js/jquery.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/bbcode.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.masonry.min.js"></script>
+		<script src="{#THEME_URL#}/assets/js/jquery.textext.min.js"></script>
 		<script src="{#THEME_URL#}/assets/js/base.js"></script>
         {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}
     </body>

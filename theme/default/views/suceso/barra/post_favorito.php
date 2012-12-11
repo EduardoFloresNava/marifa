@@ -1,2 +1,2 @@
 <i class="icon icon-star"></i>
-<a href="/perfil/index/{$suceso.favorito.nick}">{$suceso.favorito.nick}</a> {@ha agregado a sus favoritos tu post@} <a href="/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a>.
+<a href="{#SITE_URL#}/perfil/index/{$suceso.favorito.nick}">{$suceso.favorito.nick}</a> {@ha agregado a sus favoritos tu post@} <a href="{#SITE_URL#}/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a>.

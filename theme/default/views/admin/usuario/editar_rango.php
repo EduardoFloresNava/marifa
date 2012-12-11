@@ -1,16 +1,13 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
-	<li><a href="/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
-    <li><a href="/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+	<li><a href="{#SITE_URL#}/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
     <li class="active">Editar</li>
 </ul>
 <div class="header">
 	<h2>Editar rango</h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
-
-	{if="isset($success)"}<div class="alert alert-success">{$success}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
-
 	<div class="control-group{if="$error_nombre"} error{/if}">
 		<label class="control-label" for="nombre">Nombre</label>
 		<div class="controls">
@@ -51,7 +48,7 @@
 		<label class="control-label" for="puntos_dar">Puntos por d&iacute;a</label>
 		<div class="controls">
 			<input type="text" value="{$puntos_dar}" name="puntos_dar" id="puntos_dar" class="span10" />
-			<span class="help-block">{if="$error_puntos_dar"}{$error_puntos_dar}{else}Cantidad máxima de puntos a dar por post.{/if}</span>
+			<span class="help-block">{if="$error_puntos_dar"}{$error_puntos_dar}{else}Cantidad m&aacute;xima de puntos a dar por post.{/if}</span>
 		</div>
 	</div>
 
@@ -78,6 +75,6 @@
 	</div>
 
 	<div class="form-actions">
-		<button type="submit" class="btn btn-large btn-primary">Actualizar</button> o <a href="/admin/usuario/rangos/">Volver</a>
+		<button type="submit" class="btn btn-large btn-primary">Actualizar</button> o <a href="{#SITE_URL#}/admin/usuario/rangos/">Volver</a>
 	</div>
 </form>

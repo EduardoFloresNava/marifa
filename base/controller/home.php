@@ -65,6 +65,25 @@ class Base_Controller_Home extends Controller {
 	}
 
 	/**
+	 * Obtenemos un CAPTCHA.
+	 */
+	public function action_captcha()
+	{
+		// Evito salida de la plantilla.
+		$this->template = NULL;
+
+		// Cargo archivo de terceros.
+		include_once(VENDOR_PATH.'securimage'.DS.'securimage.php');
+
+		// Genero el CAPTCHA
+		$img = new securimage;
+		$img->show();
+
+		// Evito salida de depuración.
+		exit;
+	}
+
+	/**
 	 * Portada del sitio.
 	 * @param int $pagina Número de página para lo últimos posts.
 	 */
@@ -94,7 +113,7 @@ class Base_Controller_Home extends Controller {
 		if ($pagina == 1)
 		{
 			// Cargo fijos.
-			$post_sticky = $model_post->sticky(Usuario::is_login());
+			$post_sticky = $model_post->sticky(TRUE);
 
 			// Extendemos la información de los posts.
 			foreach ($post_sticky as $k => $v)

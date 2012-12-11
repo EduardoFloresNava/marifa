@@ -29,7 +29,7 @@
     $('.bbcode-bar .btn-list-item').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'List Item', openWith: '[li]', closeWith: '[/li]'}); });
 
     $('.bbcode-bar .btn-picture').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Picture', key: 'P', replaceWith: '[img][![Url]!][/img]'}); });
-    $('.bbcode-bar .btn-link').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Link', key: 'L', openWith: '[url=[![Url]!]]', closeWith: '[/url]', placeHolder: 'Tu texto aquí...'}); });
+    $('.bbcode-bar .btn-link').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Link', key: 'L', openWith: '[url="[![Url]!]"]', closeWith: '[/url]', placeHolder: 'Tu texto aquí...'}); });
 
     $('.bbcode-bar .btn-spoiler').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Spoiler', openWith: '[spoiler]', closeWith: '[/spoiler]'}); });
     $('.bbcode-bar .btn-quote').click(function (e){ e.preventDefault(); $.markItUp({ target: $(this).closest('.bbcode-bar').parent().find('textarea'), name: 'Quote', openWith: '[quote]', closeWith: '[/quote]'}); });

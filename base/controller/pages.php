@@ -42,6 +42,12 @@ class Base_Controller_Pages extends Controller {
 
 		// Asignamos la vista.
 		$view = View::factory('/pages/protocolo');
+
+		// Nombre del sitio.
+		$model_config = new Model_Configuracion;
+		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
+
+		// Compilamos la vista.
 		$this->template->assign('contenido', $view->parse());
 	}
 
@@ -55,6 +61,47 @@ class Base_Controller_Pages extends Controller {
 
 		// Asignamos la vista.
 		$view = View::factory('/pages/tyc');
+
+		// Nombre del sitio.
+		$model_config = new Model_Configuracion;
+		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
+
+		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
+	 * Privacidad de datos.
+	 */
+	public function action_privacidad()
+	{
+		// Menu principal.
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
+
+		// Asignamos la vista.
+		$view = View::factory('/pages/privacidad');
+
+		// Nombre del sitio.
+		$model_config = new Model_Configuracion;
+		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
+
+		$this->template->assign('contenido', $view->parse());
+	}
+
+	/**
+	 * DMCA
+	 */
+	public function action_dmca()
+	{
+		// Menu principal.
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
+
+		// Asignamos la vista.
+		$view = View::factory('/pages/dmca');
+
+		// Nombre del sitio.
+		$model_config = new Model_Configuracion;
+		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
+
 		$this->template->assign('contenido', $view->parse());
 	}
 }

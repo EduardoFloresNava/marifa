@@ -1,7 +1,7 @@
 <ul class="breadcrumb">
-    <li><a href="/moderar/">Moderación</a> <span class="divider">/</span></li>
-    <li><a href="/moderar/denuncias/">Denuncias</a> <span class="divider">/</span></li>
-    <li><a href="/moderar/denuncias/usuarios/">Usuarios</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/">Moderaci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/denuncias/">Denuncias</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/denuncias/usuarios/">Usuarios</a> <span class="divider">/</span></li>
     <li class="active">Detalles</li>
 </ul>
 <div class="header">
@@ -10,11 +10,11 @@
 <table class="table table-bordered">
 	<tr>
 		<th>Denunciante</th>
-		<td><a href="/perfil/index/{$denunciante.nick}">{$denunciante.nick}</a></td>
+		<td><a href="{#SITE_URL#}/perfil/index/{$denunciante.nick}">{$denunciante.nick}</a></td>
 	</tr>
 	<tr>
 		<th>Denunciado</th>
-		<td><a href="/perfil/index/{$denunciado.nick}">{$denunciado.nick}</a></td>
+		<td><a href="{#SITE_URL#}/perfil/index/{$denunciado.nick}">{$denunciado.nick}</a></td>
 	</tr>
 	<tr>
 		<th>Fecha</th>

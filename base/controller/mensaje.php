@@ -274,7 +274,7 @@ class Base_Controller_Mensaje extends Controller {
 						if ($model_usuario->exists_nick($u))
 						{
 							$model_usuario->load_by_nick($u);
-							if ($model_usuario->id == $_SESSION['usuario_id'])
+							if ($model_usuario->id == Usuario::$usuario_id)
 							{
 								$view->assign('error_para', "No puedes enviarte mensaje a ti mismo.");
 								$error = TRUE;
@@ -352,7 +352,7 @@ class Base_Controller_Mensaje extends Controller {
 
 				if (count($errors) == 0)
 				{
-					$_SESSION['flash_success'] = 'Mensajes enviados correctamente.';
+					add_flash_message(FLASH_SUCCESS, 'Mensajes enviados correctamente.');
 					Request::redirect('/mensaje/');
 				}
 				else
@@ -384,21 +384,21 @@ class Base_Controller_Mensaje extends Controller {
 
 		if ( ! is_array($model_mensaje->as_array()))
 		{
-			$_SESSION['flash_error'] = 'El mensaje seleccionado no es válido.';
+			add_flash_message(FLASH_ERROR, 'El mensaje seleccionado no es válido.');
 			Request::redirect('/mensaje/');
 		}
 
 		// Verificamos sea el receptor.
 		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
-			$_SESSION['flash_error'] = 'El mensaje seleccionado no es válido.';
+			add_flash_message(FLASH_ERROR, 'El mensaje seleccionado no es válido.');
 			Request::redirect('/mensaje/');
 		}
 
 		// Verifico el estado.
 		if ($model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
 		{
-			$_SESSION['flash_error'] = 'El mensaje seleccionado no es válido.';
+			add_flash_message(FLASH_ERROR, 'El mensaje seleccionado no es válido.');
 			Request::redirect('/mensaje/');
 		}
 
@@ -606,28 +606,43 @@ class Base_Controller_Mensaje extends Controller {
 
 		if ( ! is_array($model_mensaje->as_array()))
 		{
-			$_SESSION['flash_error'] = 'El mensaje a eliminar no existe.';
+			add_flash_message(FLASH_ERROR, 'El mensaje a eliminar no existe.');
 			Request::redirect('/mensaje/');
 		}
 
 		// Verificamos sea el receptor.
 		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
-			$_SESSION['flash_error'] = 'El mensaje a eliminar no existe.';
+			add_flash_message(FLASH_ERROR, 'El mensaje a eliminar no existe.');
 			Request::redirect('/mensaje/');
 		}
 
 		// Verifico el estado.
 		if ($model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
 		{
-			$_SESSION['flash_error'] = 'El mensaje a eliminar no existe.';
+			add_flash_message(FLASH_ERROR, 'El mensaje a eliminar no existe.');
 			Request::redirect('/mensaje/');
 		}
 
 		// Seteamos como eliminado.
 		$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_ELIMINADO);
 
-		$_SESSION['flash_success'] = 'Mensaje eliminado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'Mensaje eliminado correctamente.');
 		Request::redirect('/mensaje/');
+	}
+
+	/**
+	 * Vista preliminar de un comentario.
+	 */
+	public function action_preview()
+	{
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Proceso contenido.
+		die(Decoda::procesar($contenido));
 	}
 }

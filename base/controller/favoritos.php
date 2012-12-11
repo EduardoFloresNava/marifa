@@ -40,7 +40,7 @@ class Base_Controller_Favoritos extends Controller {
 		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a tus favoritos.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a tus favoritos.');
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -176,14 +176,14 @@ class Base_Controller_Favoritos extends Controller {
 		// Verifico existencia.
 		if ( ! $model_post->existe())
 		{
-			$_SESSION['flash_error'] = 'El post que quiere quitar de sus favoritos no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El post que quiere quitar de sus favoritos no se encuentra disponible.');
 			Request::redirect('/favoritos/');
 		}
 
 		// Verifico sea favorito.
 		if ( ! $model_post->es_favorito(Usuario::$usuario_id))
 		{
-			$_SESSION['flash_error'] = 'El post que quiere quitar de sus favoritos no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El post que quiere quitar de sus favoritos no se encuentra disponible.');
 			Request::redirect('/favoritos/');
 		}
 
@@ -191,7 +191,7 @@ class Base_Controller_Favoritos extends Controller {
 		$model_post->quitar_favoritos(Usuario::$usuario_id);
 
 		// Informo resultado.
-		$_SESSION['flash_success'] = 'El post se ha quitado correctamente de sus favoritos.';
+		add_flash_message(FLASH_SUCCESS, 'El post se ha quitado correctamente de sus favoritos.');
 		Request::redirect('/favoritos/');
 	}
 
@@ -207,14 +207,14 @@ class Base_Controller_Favoritos extends Controller {
 		// Verifico existencia.
 		if ( ! $model_foto->existe())
 		{
-			$_SESSION['flash_error'] = 'La foto que quiere quitar de sus favoritos no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La foto que quiere quitar de sus favoritos no se encuentra disponible.');
 			Request::redirect('/favoritos/fotos/');
 		}
 
 		// Verifico sea favorito.
 		if ( ! $model_foto->es_favorito(Usuario::$usuario_id))
 		{
-			$_SESSION['flash_error'] = 'La foto que quiere quitar de sus favoritos no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'La foto que quiere quitar de sus favoritos no se encuentra disponible.');
 			Request::redirect('/favoritos/fotos/');
 		}
 
@@ -222,7 +222,7 @@ class Base_Controller_Favoritos extends Controller {
 		$model_foto->quitar_favoritos(Usuario::$usuario_id);
 
 		// Informo resultado.
-		$_SESSION['flash_success'] = 'La foto se ha quitado correctamente de sus favoritos.';
+		add_flash_message(FLASH_SUCCESS, 'La foto se ha quitado correctamente de sus favoritos.');
 		Request::redirect('/favoritos/fotos/');
 	}
 

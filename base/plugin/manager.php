@@ -221,6 +221,26 @@ class Base_Plugin_Manager {
 	}
 
 	/**
+	 * Obtenemos listado de plugins activos.
+	 * @return array
+	 */
+	public function get_actives()
+	{
+		// Listado de plugins.
+		$pl = $this->load();
+
+		$l = array();
+		foreach ($pl as $k => $v)
+		{
+			if ($v)
+			{
+				$l[] = $k;
+			}
+		}
+		return $l;
+	}
+
+	/**
 	 * Cargamos el listado de plugins con su estado.
 	 * @return array Arreglo con los plugins.
 	 */

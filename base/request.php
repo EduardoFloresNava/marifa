@@ -94,7 +94,7 @@ class Base_Request {
 			return NULL;
 		}
 	}
-	
+
 	/**
 	 * Convertimos un arreglo de una petición a una URL válida.
 	 * @param array $peticion Petición.
@@ -107,13 +107,13 @@ class Base_Request {
 			// Quito prefijo y convierto a URL.
 			$controller = strtolower(str_replace('_', '/', str_replace('Controller_', '', $peticion['controller'])));
 
-			return '/'.$controller.'/'.$peticion['action'].'/'.implode('/', $peticion['args']); 
+			return '/'.$controller.'/'.$peticion['action'].'/'.implode('/', $peticion['args']);
 		}
 		else
 		{
 			// Quito prefijo y convierto a URL.
 			$controller = strtolower(str_replace('_', '/', substr($peticion['controller'], 11)));
-			
+
 			// Devolvemos la URL completa.
 			return '/'.$controller.'/'.$peticion['action'].'/'.implode('/', $peticion['args']);
 		}
@@ -192,7 +192,7 @@ class Base_Request {
 			$url = substr($url, 1);
 		}
 
-		$url = SITE_URL.$url;
+		$url = SITE_URL.'/'.$url;
 
 		// Verifico si tengo que guardar la URL.
 		if ($save_current)

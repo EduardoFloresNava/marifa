@@ -139,7 +139,7 @@ function get_site_url()
 	// URL del servidor.
 	$server_name = $_SERVER['SERVER_NAME'];
 
-	return ($https ? 'https' : 'http').'://'.$server_name.((($https && ($puerto == 443)) || ( ! $https && ($puerto == 80))) ? '' : (':'.$puerto)).'/';
+	return ($https ? 'https' : 'http').'://'.$server_name.((($https && ($puerto == 443)) || ( ! $https && ($puerto == 80))) ? '' : (':'.$puerto));
 }
 
 /**
@@ -363,4 +363,93 @@ if ( ! function_exists('date_diff'))
 		return $diff;
 	}
 
+}
+
+/**
+ * Obtenemos el IP de la petición.
+ * @return string
+ */
+function get_ip_addr()
+{
+   if ( ! empty($_SERVER['HTTP_CLIENT_IP']))
+   {
+	   // Check ip from share internet
+	   return $_SERVER['HTTP_CLIENT_IP'];
+   }
+   elseif ( ! empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+   {
+		// To check ip is pass from proxy
+	   return $_SERVER['HTTP_X_FORWARDED_FOR'];
+   }
+   else
+   {
+	   return $_SERVER['REMOTE_ADDR'];
+   }
+}
+
+/*
+ * Convert seconds to human readable text.
+ * @param int $secs Segundos.
+ * @return string
+ */
+function secs_to_h($secs)
+{
+	$units = array(
+		"semana"  => 7*24*3600,
+		"día"     =>   24*3600,
+		"hora"    =>      3600,
+		"minuto"  =>        60,
+		"segundo" =>         1,
+	);
+
+	// specifically handle zero
+	if ($secs == 0)
+	{
+		return "0 segundos";
+	}
+
+	$s = "";
+	foreach ($units as $name => $divisor)
+	{
+		if ($quot = intval($secs / $divisor))
+		{
+			$s .= "$quot $name";
+			$s .= (abs($quot) > 1 ? "s" : "") . ", ";
+			$secs -= $quot * $divisor;
+		}
+	}
+
+	return substr($s, 0, -2);
+}
+
+/**
+ * Constante para mensajes flash de suceso.
+ */
+define('FLASH_SUCCESS', 'flash_success');
+
+/**
+ * Constante para mensajes flash de información.
+ */
+define('FLASH_INFO', 'flash_info');
+
+/**
+ * Constante para mensajes flash de error.
+ */
+define('FLASH_ERROR', 'flash_error');
+
+/**
+ * Agrego un mensaje flash para ser mostrado.
+ * @param type $tipo
+ * @param type $message
+ */
+function add_flash_message($tipo, $message)
+{
+	// Inicio el arreglo si hace falta.
+	if ( ! isset($_SESSION[$tipo]) || ! is_array($_SESSION[$tipo]))
+	{
+		$_SESSION[$tipo] = array();
+	}
+
+	// Agrego el mensaje.
+	$_SESSION[$tipo][] = $message;
 }

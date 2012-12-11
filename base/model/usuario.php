@@ -215,7 +215,7 @@ class Base_Model_Usuario extends Model_Dataset {
 					}
 				case self::ESTADO_ACTIVA: // Cuenta activa.
 					// IP del usuario.
-					$ip = ip2long(IP::get_ip_addr());
+					$ip = ip2long(get_ip_addr());
 
 					// Seteamos el usuario actual.
 					$this->primary_key['id'] = $data['id'];
@@ -392,7 +392,7 @@ class Base_Model_Usuario extends Model_Dataset {
 		unset($enc);
 
 		// Creamos arreglo con los datos.
-		$info = array($nick, $enc_password, $email, $rango, 10, date('Y/m/d H:i:s'), 0);
+		$info = array($nick, $enc_password, $email, $rango, 0, date('Y/m/d H:i:s'), 0);
 
 		// Creamos la cuenta.
 		list ($id, $cant) = $this->db->insert('INSERT INTO usuario (nick, password, email, rango, puntos, registro, estado) VALUES (?, ?, ?, ?, ?, ?, ?)', $info);
@@ -648,6 +648,54 @@ class Base_Model_Usuario extends Model_Dataset {
 			}
 		}
 		return $this->db->query('SELECT COUNT(*) FROM usuario'.$q, $params)->get_var(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Listado de avisos del usuario.
+	 * @param int|array $estado Estado de los avisos, NULL para cualquier estado.
+	 * @return array
+	 */
+	public function avisos($estado = NULL)
+	{
+		// Cargo listado.
+		if ($estado === NULL)
+		{
+			$lst = $this->db->query('SELECT id FROM usuario_aviso WHERE usuario_id = ? ORDER BY fecha DESC', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			if (is_array($estado))
+			{
+				$estado = implode(', ', $estado);
+			}
+			$lst = $this->db->query('SELECT id FROM usuario_aviso WHERE usuario_id = ? AND estado IN('.$estado.') ORDER BY fecha DESC', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+		}
+
+		// Armo listado de objetos.
+		foreach($lst as $k => $v)
+		{
+			$lst[$k] = new Model_Usuario_Aviso($v);
+		}
+
+		// Devuelvo la lista.
+		return $lst;
+	}
+
+	/**
+	 * Cantidad de avisos que tiene el usuario.
+	 * @param int $estado Estado de los avisos, NULL para cualquier estado.
+	 * @return
+	 */
+	public function cantidad_avisos($estado = NULL)
+	{
+		if ($estado === NULL)
+		{
+			return $this->db->query('SELECT COUNT(*) FROM usuario_aviso WHERE usuario_id = ?', $this->primary_key['id'])->get_var(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			return $this->db->query('SELECT COUNT(*) FROM usuario_aviso WHERE usuario_id = ? AND estado = ?', array($this->primary_key['id'], $estado))->get_var(Database_Query::FIELD_INT);
+		}
 	}
 
 	/**

@@ -59,9 +59,15 @@ class Base_Log {
 
 	/**
 	 * Archivo donde alojar los logs.
-	 * @var type
+	 * @var string
 	 */
 	protected static $file = '';
+
+	/**
+	 * Si está configurado o no.
+	 * @var int
+	 */
+	protected static $config = FALSE;
 
 	/**
 	 * Nivel de logs a guardar. Setea el minimo, los inferiores se omiten,
@@ -96,15 +102,21 @@ class Base_Log {
 			// Fuerzo creacion del directorio.
 			if ( ! file_exists(dirname(self::$file)))
 			{
-				mkdir(dirname(self::$file), 0777, TRUE);
+				@mkdir(dirname(self::$file), 0777, TRUE) || die('Debe dar permisos de escritura al directorio de logs \''.dirname(self::$file).'\'');
 			}
 
+			// Verifico permisos de escritura.
+			is_writable(dirname(self::$file)) || die('Debe dar permisos de escritura al directorio de logs \''.dirname(self::$file).'\'');
+
 			// Genero el archivo.
-			touch(self::$file);
+			@touch(self::$file) || die('Debe dar permisos de escritura al directorio de logs \''.dirname(self::$file).'\'');
 		}
 
 		// Seteo nivel a utilizar.
 		self::$level = $level;
+
+		// Seteo como configurado.
+		self::$config = TRUE;
 	}
 
 	/**
@@ -115,6 +127,11 @@ class Base_Log {
 	 */
 	public static function log($str, $level = self::NONE)
 	{
+		if ( ! self::$config)
+		{
+			return TRUE;
+		}
+
 		// Verifico el nivel.
 		if ($level === self::NONE || $level > self::$level)
 		{

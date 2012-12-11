@@ -109,7 +109,7 @@ class Base_Model_Noticia extends Model_Dataset {
 	 */
 	public function usuario()
 	{
-		return new Model_Usuario($this->get('usuario_id'));
+		return new Model_Usuario($this->usuario_id);
 	}
 
 	/**

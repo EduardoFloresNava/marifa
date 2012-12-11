@@ -1,0 +1,2 @@
+<i class="icon icon-star{if="!$suceso.agregar"}-empty{/if}"></i>
+<a href="{#SITE_URL#}/perfil/index/{$suceso.usuario.nick}">{$suceso.usuario.nick}</a> {if="$suceso.agregar"}{@ha agregado tu@}{else}{@ha quitado tu@}{/if} <a href="{#SITE_URL#}/perfil/publicacion/{$suceso.shout.usuario.nick}/{$suceso.shout.id}">{@shout@}</a> {if="$suceso.agregar"}{@a sus favoritos@}{else}{@de sus favoritos@}{/if}.

@@ -46,7 +46,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Verifico los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
 		{
-			$_SESSION['flash_error'] = 'No tienes permisos para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -257,9 +257,6 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/configuracion/mantenimiento');
 
-		// Cargo manejador del modo mantenimiento.
-		$mantenimiento = new Mantenimiento;
-
 		// Cargo listado de IP's que pueden acceder en modo mantenimiento.
 		$model_configuracion = new Model_Configuracion;
 		$ips_matenimiento = unserialize($model_configuracion->get('ip_mantenimiento', 'a:0:{}'));
@@ -325,9 +322,9 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					$ips_matenimiento = $ips;
 
 					// Actualizo si es necesario.
-					if ($mantenimiento->is_locked())
+					if (Mantenimiento::is_locked())
 					{
-						$mantenimiento->lock($ips);
+						Mantenimiento::lock($ips);
 					}
 
 					// Informo resultado.
@@ -337,15 +334,15 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		}
 
 		// Verifico si está habilitado el bloqueo.
-		$vista->assign('is_locked', $mantenimiento->is_locked());
-		if ($mantenimiento->is_locked())
+		$vista->assign('is_locked', Mantenimiento::is_locked());
+		if (Mantenimiento::is_locked())
 		{
-			$locked_for_me = $mantenimiento->is_locked_for(IP::get_ip_addr());
+			$locked_for_me = Mantenimiento::is_locked_for(get_ip_addr());
 		}
 		else
 		{
 			$locked_for_me = TRUE;
-			$my_ip = IP::get_ip_addr();
+			$my_ip = get_ip_addr();
 			foreach ($ips_matenimiento as $ip)
 			{
 				if ($my_ip == $ip || IP::ip_in_range($my_ip, $ip))
@@ -380,27 +377,25 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	{
 		$tipo = (bool) $tipo;
 
-		$mantenimiento = new Mantenimiento;
-
 		// Verifico la acción.
-		if ($tipo == $mantenimiento->is_locked())
+		if ($tipo == Mantenimiento::is_locked())
 		{
-			$_SESSION['flash_error'] = 'El modo mantenimiento ya posee ese estado.';
+			add_flash_message(FLASH_ERROR, 'El modo mantenimiento ya posee ese estado.');
 		}
 		else
 		{
 			// Ejecuto la acción deseada.
 			if ($tipo)
 			{
-				$_SESSION['flash_success'] = 'Modo mantenimiento activado correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'Modo mantenimiento activado correctamente.');
 				$c = new Model_Configuracion;
 				//TODO: Verificar que alguien pueda acceder.
-				$mantenimiento->lock(unserialize($c->get('ip_mantenimiento', 'a:0:{}')));
+				Mantenimiento::lock(unserialize($c->get('ip_mantenimiento', 'a:0:{}')));
 			}
 			else
 			{
-				$_SESSION['flash_success'] = 'Modo mantenimiento activado correctamente.';
-				$mantenimiento->unlock();
+				add_flash_message(FLASH_SUCCESS, 'Modo mantenimiento activado correctamente.');
+				Mantenimiento::unlock();
 			}
 		}
 		Request::redirect('/admin/configuracion/mantenimiento');
@@ -454,28 +449,28 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$p = $pm->get($plugin);
 		if ( ! is_object($p))
 		{
-			$_SESSION['flash_error'] = 'El plugin no existe.';
+			add_flash_message(FLASH_ERROR, 'El plugin no existe.');
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Verifico su estado.
 		if ($p->estado())
 		{
-			$_SESSION['flash_error'] = 'El plugin ya se encuentra activo.';
+			add_flash_message(FLASH_ERROR, 'El plugin ya se encuentra activo.');
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Verifico posibilidad de aplicar.
 		if ( ! $p->check_support())
 		{
-			$_SESSION['flash_error'] = 'El plugin no puede ser instalado por la existencia de incompatibilidades.';
+			add_flash_message(FLASH_ERROR, 'El plugin no puede ser instalado por la existencia de incompatibilidades.');
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Realizamos la instalación.
 		$p->install();
 
-		$_SESSION['flash_success'] = 'El plugin se ha instalado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El plugin se ha instalado correctamente.');
 		Request::redirect('/admin/configuracion/plugins');
 	}
 
@@ -492,21 +487,21 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$p = $pm->get($plugin);
 		if ( ! is_object($p))
 		{
-			$_SESSION['flash_error'] = 'El plugin no existe.';
+			add_flash_message(FLASH_ERROR, 'El plugin no existe.');
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Verifico su estado.
 		if ( ! $p->estado())
 		{
-			$_SESSION['flash_error'] = 'El plugin ya se encuentra desactivado.';
+			add_flash_message(FLASH_ERROR, 'El plugin ya se encuentra desactivado.');
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Realizamos la desinstalación.
 		$p->remove();
 
-		$_SESSION['flash_success'] = 'El plugin se ha desinstalado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El plugin se ha desinstalado correctamente.');
 		Request::redirect('/admin/configuracion/plugins');
 	}
 
@@ -523,14 +518,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$p = $pm->get($plugin);
 		if ( ! is_object($p))
 		{
-			$_SESSION['flash_error'] = 'El plugin no existe.';
+			add_flash_message(FLASH_ERROR, 'El plugin no existe.');
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
 		// Verifico su estado.
 		if ($p->estado())
 		{
-			$_SESSION['flash_error'] = 'El plugin se encuentra activado, no se puede borrar.';
+			add_flash_message(FLASH_ERROR, 'El plugin se encuentra activado, no se puede borrar.');
 			Request::redirect('/admin/configuracion/plugins');
 		}
 
@@ -538,7 +533,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		Update_Utils::unlink(Plugin_Manager::nombre_as_path($plugin));
 		Plugin_Manager::get_instance()->regenerar_lista();
 
-		$_SESSION['flash_success'] = 'El plugin se ha borrado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El plugin se ha borrado correctamente.');
 		Request::redirect('/admin/configuracion/plugins');
 	}
 
@@ -709,7 +704,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 							Update_Utils::unlink($file['tmp_name']);
 
 							// Informo resultado.
-							$_SESSION['flash_success'] = 'El plugin se importó correctamente.';
+							add_flash_message(FLASH_SUCCESS, 'El plugin se importó correctamente.');
 
 							// Redireccionamos.
 							Request::redirect('/admin/configuracion/plugins');
@@ -795,20 +790,20 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Verificamos exista.
 		if ( ! in_array($tema, Theme::lista()))
 		{
-			$_SESSION['flash_error'] = 'El tema seleccionado para previsualizar es incorrecto.';
+			add_flash_message(FLASH_ERROR, 'El tema seleccionado para previsualizar es incorrecto.');
 			Request::redirect('/admin/configuracion/temas');
 		}
 
 		// Verifico no sea actual.
 		if ($tema == Theme::actual(TRUE) || $tema == Theme::actual())
 		{
-			$_SESSION['flash_error'] = 'El tema seleccionado para previsualizar es el actual.';
+			add_flash_message(FLASH_ERROR, 'El tema seleccionado para previsualizar es el actual.');
 			Request::redirect('/admin/configuracion/temas');
 		}
 
 		// Activo el tema.
 		$_SESSION['preview-theme'] = $tema;
-		$_SESSION['flash_success'] = 'El tema se a colocado para previsualizar correctamente';
+		add_flash_message(FLASH_SUCCESS, 'El tema se a colocado para previsualizar correctamente');
 		Request::redirect('/admin/configuracion/temas');
 	}
 
@@ -823,11 +818,11 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			// Quitamos la vista previa.
 			unset($_SESSION['preview-theme']);
 
-			$_SESSION['flash_success'] = 'Vista previa terminada correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'Vista previa terminada correctamente.');
 		}
 		else
 		{
-			$_SESSION['flash_error'] = 'No hay vista previa para deshabilitar.';
+			add_flash_message(FLASH_ERROR, 'No hay vista previa para deshabilitar.');
 		}
 		Request::redirect('/admin/configuracion/temas');
 	}
@@ -844,14 +839,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Verifico no sea el actual.
 		if ($tema == $base)
 		{
-			$_SESSION['flash_error'] = 'El tema ya es el predeterminado.';
+			add_flash_message(FLASH_ERROR, 'El tema ya es el predeterminado.');
 			Request::redirect('/admin/configuracion/temas');
 		}
 
 		// Verificamos exista.
 		if ( ! in_array($tema, Theme::lista()))
 		{
-			$_SESSION['flash_error'] = 'El tema seleccionado para setear como predeterminado es incorrecto.';
+			add_flash_message(FLASH_ERROR, 'El tema seleccionado para setear como predeterminado es incorrecto.');
 			Request::redirect('/admin/configuracion/temas');
 		}
 
@@ -864,7 +859,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Activo tema.
 		Theme::setear_tema($tema);
 
-		$_SESSION['flash_success'] = 'El tema se ha seteado como predeterminado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El tema se ha seteado como predeterminado correctamente.');
 		Request::redirect('/admin/configuracion/temas');
 	}
 
@@ -877,14 +872,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Verificamos exista.
 		if ( ! in_array($tema, Theme::lista()))
 		{
-			$_SESSION['flash_error'] = 'El tema seleccionado para eliminar es incorrecto.';
+			add_flash_message(FLASH_ERROR, 'El tema seleccionado para eliminar es incorrecto.');
 			Request::redirect('/admin/configuracion/temas');
 		}
 
 		// Verifico no sea el actual ni el de previsualizacion.
 		if ($tema == Theme::actual(TRUE) || $tema == Theme::actual())
 		{
-			$_SESSION['flash_error'] = 'El tema no se puede borrar por estar en uso.';
+			add_flash_message(FLASH_ERROR, 'El tema no se puede borrar por estar en uso.');
 			Request::redirect('/admin/configuracion/temas');
 		}
 
@@ -894,7 +889,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Refrescamos la cache.
 		Theme::lista(TRUE);
 
-		$_SESSION['flash_success'] = 'El tema se ha eliminado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El tema se ha eliminado correctamente.');
 		Request::redirect('/admin/configuracion/temas');
 	}
 
@@ -1069,7 +1064,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					Update_Utils::unlink($tmp_dir);
 
 					// Informo resultado.
-					$_SESSION['flash_success'] = 'El tema se instaló correctamente.';
+					add_flash_message(FLASH_SUCCESS, 'El tema se instaló correctamente.');
 
 					// Redireccionamos.
 					Request::redirect('/admin/configuracion/temas');
@@ -1136,21 +1131,21 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Verifico el método de envio.
 		if (Request::method() !== 'POST')
 		{
-			$_SESSION['flash_error'] = 'No puedes enviar un correo de prueba si no especificas el destinatario.';
+			add_flash_message(FLASH_ERROR, 'No puedes enviar un correo de prueba si no especificas el destinatario.');
 			Request::redirect('/admin/configuracion/correo');
 		}
 
 		// Verifico que se encuentre configurado.
 		if ( ! file_exists(CONFIG_PATH.DS.'email.php'))
 		{
-			$_SESSION['flash_error'] = 'No puedes enviar un correo de prueba ya que no has lo has configurado.';
+			add_flash_message(FLASH_ERROR, 'No puedes enviar un correo de prueba ya que no has lo has configurado.');
 			Request::redirect('/admin/configuracion/correo');
 		}
 
 		// Verifico el correo enviado.
 		if ( ! isset($_POST['email']) || ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $_POST['email']))
 		{
-			$_SESSION['flash_error'] = 'La casilla de correo ingresada no es válida.';
+			add_flash_message(FLASH_ERROR, 'La casilla de correo ingresada no es válida.');
 			Request::redirect('/admin/configuracion/correo/'.(isset($_POST['email']) ? urlencode($_POST['email']) : '' ));
 		}
 
@@ -1173,7 +1168,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$mailer->send($message);
 
 		// Informo el resultado.
-		$_SESSION['flash_success'] = 'El correo de prueba se ha enviado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El correo de prueba se ha enviado correctamente.');
 		Request::redirect('/admin/configuracion/correo');
 	}
 
@@ -1209,7 +1204,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 						} catch (Database_Exception $e) {}
 					}
 
-					$_SESSION['flash_success'] = 'Optimización de la base de datos realizada correctamente.';
+					add_flash_message(FLASH_SUCCESS, 'Optimización de la base de datos realizada correctamente.');
 					Request::redirect('/admin/configuracion/optimizar');
 					break;
 				//case 'cache':

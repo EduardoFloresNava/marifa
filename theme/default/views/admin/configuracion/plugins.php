@@ -1,22 +1,20 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
     <li class="active">Plugins</li>
 </ul>
 <div class="clearfix header">
 	<h2 class="pull-left">Plugins</h2>
 	<div class="btn-group pull-right">
-		<a href="/admin/configuracion/buscar_actualizaciones_plugins/" class="btn btn-info"><i class="icon-white icon-globe"></i> Buscar actualizaciones</a>
-		<a href="/admin/configuracion/agregar_plugin/" class="btn btn-success"><i class="icon-white icon-plus"></i> Agregar plugin</a>
+		<a href="{#SITE_URL#}/admin/configuracion/buscar_actualizaciones_plugins/" class="btn btn-info"><i class="icon-white icon-globe"></i> Buscar actualizaciones</a>
+		<a href="{#SITE_URL#}/admin/configuracion/agregar_plugin/" class="btn btn-success"><i class="icon-white icon-plus"></i> Agregar plugin</a>
 	</div>
 </div>
-{if="isset($success)"}<div class="alert alert-success">{$success}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
-{if="isset($error)"}<div class="alert">{$error}<button type="button" class="close" data-dismiss="alert">×</button></div>{/if}
 <table class="table table-bordered table-striped">
 	<thead>
 		<tr>
 			<th>Nombre</th>
 			<th>Autor</th>
-			<th>Descripción</th>
+			<th>Descripci&oacute;n</th>
 			<th>Versión</th>
 			<th>Acciones</th>
 		</tr>
@@ -31,11 +29,11 @@
 			<td>
 				<div class="btn-group">
 				{if="$value.estado"}
-					<a href="/admin/configuracion/buscar_actualizaciones_plugins/{$key}" class="btn btn-mini btn-success" rel="tooltip" title="Buscar actualizaciones"><i class="icon-white icon-globe"></i></a>
-					<a href="/admin/configuracion/desactivar_plugin/{$key}" class="btn btn-mini btn-danger" rel="tooltip" title="Desinstalar"><i class="icon-white icon-remove"></i></a>
+					<a href="{#SITE_URL#}/admin/configuracion/buscar_actualizaciones_plugins/{$key}" class="btn btn-mini btn-success" rel="tooltip" title="Buscar actualizaciones"><i class="icon-white icon-globe"></i></a>
+					<a href="{#SITE_URL#}/admin/configuracion/desactivar_plugin/{$key}" class="btn btn-mini btn-danger" rel="tooltip" title="Desinstalar"><i class="icon-white icon-remove"></i></a>
 				{else}
-					<a href="/admin/configuracion/activar_plugin/{$key}" class="btn btn-mini btn-success">Instalar</a>
-					<a href="/admin/configuracion/borrar_plugin/{$key}" class="btn btn-mini btn-danger">Borrar</a>
+					<a href="{#SITE_URL#}/admin/configuracion/activar_plugin/{$key}" class="btn btn-mini btn-success">Instalar</a>
+					<a href="{#SITE_URL#}/admin/configuracion/borrar_plugin/{$key}" class="btn btn-mini btn-danger">Borrar</a>
 				{/if}
 				</div>
 			</td>

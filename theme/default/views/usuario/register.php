@@ -2,18 +2,11 @@
     <fieldset>
         <legend>Nueva cuenta</legend>
 
-		{if="isset($error)"}
-		<div class="alert">
-			<a class="close" data-dismiss="alert">×</a>
-			<strong>Error: </strong>{$error}
-		</div>
-		{/if}
-
         <div class="control-group{if="$error_nick"} error{/if}">
             <label class="control-label" for="nick">Nick</label>
             <div class="controls">
                 <input type="text" id="nick" name="nick" value="{$nick}" />
-                <p class="help-inline">Su apellido, se permiten caracteres alphanuméricos, espacios y '.</p>
+                <p class="help-inline">Su apellido, se permiten caracteres alphanum&eacute;ricos, espacios y '.</p>
             </div>
         </div>
 
@@ -29,7 +22,7 @@
             <label class="control-label" for="password">Contrase&ntilde;a</label>
             <div class="controls">
                 <input type="password" id="password" name="password" />
-                <p class="help-inline">Su clave de acceso. Puede contener caracteres alphanuméricos, @, #, +, - /, * y _, '.' y ','.</p>
+                <p class="help-inline">Su clave de acceso. Puede contener caracteres alphanum&eacute;ricos, @, #, +, - /, * y _, '.' y ','.</p>
             </div>
         </div>
 
@@ -40,10 +33,18 @@
             </div>
         </div>
 
+		<div class="control-group{if="$error_captcha"} error{/if}">
+            <label class="control-label" for="captcha">CAPTCHA</label>
+            <div class="controls">
+                <input type="text" id="captcha" name="captcha" value="{$captcha}" />
+				<img src="/home/captcha" style="display: block;" />
+            </div>
+        </div>
+
         <div class="form-actions">
             <button class="btn btn-primary">Registrarse</button>
             o
-            <a href="/usuario/login/">&iquest;Iniciar session?</a>
+            <a href="/usuario/login/">&iquest;Iniciar sesi&oacute;n?</a>
         </div>
     </fieldset>
 </form>

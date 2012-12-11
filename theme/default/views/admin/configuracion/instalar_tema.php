@@ -1,10 +1,10 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
-    <li><a href="/admin/configuracion/temas">Temas</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/configuracion/temas">Temas</a> <span class="divider">/</span></li>
     <li class="active">Instalar tema</li>
 </ul>
 <div class="header">
-	<h2 class="title">Instalar tema</h2>
+	<h2>Instalar tema</h2>
 </div>
 <form method="POST" enctype="multipart/form-data" class="form-horizontal" action="">
 
@@ -17,6 +17,6 @@
 	</div>
 
 	<div class="form-actions">
-		<button type="submit" class="btn btn-large btn-primary">Instalar</button> o <a href="/admin/configuracion/temas">Volver</a>
+		<button type="submit" class="btn btn-large btn-primary">Instalar</button> o <a href="{#SITE_URL#}/admin/configuracion/temas">Volver</a>
 	</div>
 </form>

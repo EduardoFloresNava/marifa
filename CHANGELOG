@@ -1,3 +1,25 @@
+Marifa 0.2RC2 []
+ - FEATURE: Páginas estáticas con DCMA, protocolo, declaración de privacidad y términos y condiciones.
+ - FEATURE: Mejora de la portada.
+ - FEATURE: Implementación de AJAX para los Sucesos.
+ - FEATURE: Se muestra la consulta cuando se produce un error en el driver MySQL.
+ - FEATURE: Las URL's se convierten a links clickeables automáticamente en BBCode.
+ - FEATURE: Agregado el soporte de emoticones.
+ - FEATURE: Se permiten agregar clases al núcleo desde plugins.
+ - FEATURE: Mejora de la administración de usuarios.
+ - FEATURE: Se agrupan los mensajes de error por tipo.
+ - FEATURE: Implementadas las publicaciones en los muros de los usarios (shout's).
+ - FEATURE: Mejorada la interface de los muros de los usuarios.
+ - FEATURE: El tema por defecto es compatible para usarse en instalaciones con SUBDIRECTORIOS (i.e: http://marifa.com.ar/demo)
+ - FIX: Error en el instalador producto del nuevo sistema de actualización.
+ - FIX: Error en el primer logueo producto del calculo de puntos.
+ - FIX: Solucionado problema de inserción de clases del núcleo para plugins.
+ - FIX: Vista preliminar cuando se editan post's y fotos.
+ - FIX: Problema de parseo de URL's en el BBCode.
+ - FIX: Solucionado error en Model_Dataset con claves compuestas.
+ - FIX: Error en por medallas en denuncias de fotos.
+ - FIX: Mostramos posts privados en la portada con símbolo para identificarlos.
+
 Marifa 0.2RC1 [26/11/2012]
  - FEATURE: Agregados rangos dinámicos.
  - FEATURE: Agregadas actualizaciones de versiones en el instalador.

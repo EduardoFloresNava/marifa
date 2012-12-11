@@ -42,7 +42,18 @@ class Base_Suceso_Perfil extends Suceso {
 	 */
 	public static function obtener_listado($usuario, $pagina, $cantidad = 20, $class = __CLASS__)
 	{
-		return parent::obtener_listado($usuario, $pagina, $cantidad, $class);
+		if ($usuario == Usuario::$usuario_id)
+		{
+			// Genero listado de usuarios a partir del actual y de quien sigue.
+			$usuarios = Database::get_instance()->query('SELECT usuario_id FROM usuario_seguidor WHERE seguidor_id = ?', $usuario)->get_pairs(Database_Query::FIELD_INT);
+			$usuarios[] = $usuario;
+		}
+		else
+		{
+			$usuarios = $usuario;
+		}
+
+		return parent::obtener_listado($usuarios, $pagina, $cantidad, $class);
 	}
 
 	/**
@@ -52,7 +63,18 @@ class Base_Suceso_Perfil extends Suceso {
 	 */
 	public static function cantidad($usuario, $class = __CLASS__)
 	{
-		return parent::cantidad($usuario, $class);
+		if ($usuario == Usuario::$usuario_id)
+		{
+			// Genero listado de usuarios a partir del actual y de quien sigue.
+			$usuarios = Database::get_instance()->query('SELECT usuario_id FROM usuario_seguidor WHERE seguidor_id = ?', $usuario)->get_pairs(Database_Query::FIELD_INT);
+			$usuarios[] = $usuario;
+		}
+		else
+		{
+			$usuarios = $usuario;
+		}
+
+		return parent::cantidad($usuarios, $class);
 	}
 
 	/**
@@ -469,5 +491,150 @@ class Base_Suceso_Perfil extends Suceso {
 		}
 
 		return array('usuario' => $model_usuario->as_array(), 'comentario' => $model_comentario->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array());
+	}
+
+	/**
+	 * Suceso producido por un shout creado por un usuario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_shout($suceso)
+	{
+		// Cargo shout.
+		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
+		$shout = $model_shout->as_array();
+
+		// Proceso BBCode.
+		$decoda = new Decoda($shout['mensaje']);
+		$decoda->addFilter(new TagFilter());
+		$decoda->addFilter(new UserFilter());
+		$shout['mensaje_bbcode'] = $decoda->parse(FALSE);
+
+		// Proceso valor si es tipo especial.
+		if ($model_shout->tipo == Model_Shout::TIPO_VIDEO)
+		{
+			// Obtengo clase de video.
+			$shout['valor'] = explode(':', $model_shout->valor);
+		}
+		elseif($model_shout->tipo == Model_Shout::TIPO_ENLACE)
+		{
+			$shout['valor'] = unserialize($shout['valor']);
+		}
+
+		// Campos extra.
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+		$shout['votos'] = $model_shout->cantidad_votos();
+		$shout['comentario'] = $model_shout->cantidad_comentarios();
+		$shout['favoritos'] = $model_shout->cantidad_favoritos();
+		$shout['compartido'] = $model_shout->cantidad_compartido();
+
+		// Cargo usuario a quien se publica.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('usuario' => $model_usuario->as_array(), 'shout' => $shout);
+	}
+
+	/**
+	 * Suceso producido por un shout compartido por un usuario.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	protected static function suceso_usuario_shout_compartir($suceso)
+	{
+		// Cargo shout.
+		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
+		$shout = $model_shout->as_array();
+
+		// Campos extra.
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+		$shout['votos'] = $model_shout->cantidad_votos();
+		$shout['comentario'] = $model_shout->cantidad_comentarios();
+		$shout['favoritos'] = $model_shout->cantidad_favoritos();
+		$shout['compartido'] = $model_shout->cantidad_compartido();
+
+		// Cargo datos de quien comparte.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		// Cargo usuario a través del cual se comparte.
+		$model_usuario_comparte = new Model_Usuario( (int) $suceso['objeto_id2']);
+
+		return array('usuario' => $model_usuario->as_array(), 'usuario_comparte' => $model_usuario_comparte->as_array(), 'shout' => $shout);
+	}
+
+	/**
+	 * Suceso producido por un shout agregado/quitado de los favoritos.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	public static function suceso_usuario_shout_favorito($suceso)
+	{
+		// Cargo shout.
+		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
+		$shout = $model_shout->as_array();
+
+		// Información extendida del shout.
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+
+		// Cargo quien agregó a favoritos el shout.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('usuario' => $model_usuario->as_array(), 'agregar' => (bool) $suceso['objeto_id2'], 'shout' => $shout);
+	}
+
+	/**
+	 * Suceso producido por un shout votado.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	public static function suceso_usuario_shout_voto($suceso)
+	{
+		// Cargo shout.
+		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
+		$shout = $model_shout->as_array();
+
+		// Información extendida del shout.
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+
+		// Cargo quien votó el shout.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('usuario' => $model_usuario->as_array(), 'voto' => (bool) $suceso['objeto_id2'], 'shout' => $shout);
+	}
+
+	/**
+	 * Suceso producido por un comentario en un shout.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	public static function suceso_usuario_shout_comentario($suceso)
+	{
+		// Cargo shout.
+		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
+		$shout = $model_shout->as_array();
+
+		// Información extendida del shout.
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+
+		// Cargo quien comentó el shout.
+		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
+
+		return array('usuario' => $model_usuario->as_array(), 'comentario_id' => (int) $suceso['objeto_id2'], 'shout' => $shout);
+	}
+
+	/**
+	 * Suceso producido cuando se cita a un usuario en un shout.
+	 * @param array $suceso Datos del suceso.
+	 * @return array
+	 */
+	public static function suceso_usuario_shout_cita($suceso)
+	{
+		// Cargo shout.
+		$model_shout = new Model_Shout( (int) $suceso['objeto_id']);
+		$shout = $model_shout->as_array();
+
+		// Información extendida del shout.
+		$shout['usuario'] = $model_shout->usuario()->as_array();
+
+		return array('shout' => $shout);
 	}
 }

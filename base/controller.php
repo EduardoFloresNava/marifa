@@ -70,17 +70,6 @@ class Base_Controller {
 		}
 		$this->template->assign('contenido', '');
 
-		// Eventos flash.
-		if (isset($_SESSION['flash_success']))
-		{
-			$this->template->assign('flash_success', get_flash('flash_success'));
-		}
-
-		if (isset($_SESSION['flash_error']))
-		{
-			$this->template->assign('flash_error', get_flash('flash_error'));
-		}
-
 		// Seteo si es mantenimiento.
 		$m = new Mantenimiento;
 		$this->template->assign('is_locked', $m->is_locked());
@@ -115,7 +104,7 @@ class Base_Controller {
 			}
 
 			// Obtenemos el tipo de suceso.
-			$tipo = $v->as_object()->tipo;
+			$tipo = $v->tipo;
 
 			// Cargamos la vista.
 			$suceso_vista = View::factory('suceso/barra/'.$tipo);
@@ -130,9 +119,12 @@ class Base_Controller {
 			$suceso_vista->assign('fecha', $v->fecha);
 
 			// Agregamos el evento.
-			$eventos[] = $suceso_vista->parse();
+			$eventos[] = array('id' => $v->id, 'desplegado' => $v->desplegado, 'html' => $suceso_vista->parse());
 		}
 		$vista->assign('sucesos', $eventos);
+
+		// Cantidad de sucesos nuevos.
+		$vista->assign('cantidad_sucesos', count($eventos));
 		unset($lst, $eventos);
 
 		// Listado de mensajes.
@@ -176,6 +168,15 @@ class Base_Controller {
 	 */
 	public function after()
 	{
+		// Eventos flash.
+		foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
+		{
+			if (isset($_SESSION[$k]))
+			{
+				$this->template->assign($k, get_flash($k));
+			}
+		}
+
 		if (is_object($this->template) && ! Request::is_ajax())
 		{
 			DEBUG || $this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
@@ -206,7 +207,7 @@ class Base_Controller {
 		// Listado elemento por permisos.
 		if (Controller_Moderar_Home::permisos_acceso())
 		{
-			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'icon' => 'eye-open', 'active' => FALSE);
+			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'icon' => 'eye-open', 'active' => FALSE, 'tipo' => 'important', 'cantidad' => Controller_Moderar_Home::cantidad_pendiente());
 		}
 
 		if (Controller_Admin_Home::permisos_acceso())

@@ -40,7 +40,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		// Verifico esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -54,7 +54,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 	{
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -124,7 +124,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 	{
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -136,14 +136,14 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario del que desea terminar la suspención no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario del que desea terminar la suspención no se encuentra disponible.');
 			Request::redirect('/moderar/gestion/usuarios');
 		}
 
 		// Verifico el estado.
 		if ($model_usuario->estado !== Model_Usuario::ESTADO_SUSPENDIDA)
 		{
-			$_SESSION['flash_error'] = 'El usuario del que desea terminar la suspención no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario del que desea terminar la suspención no se encuentra disponible.');
 			Request::redirect('/moderar/gestion/usuarios');
 		}
 
@@ -163,7 +163,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		}
 
 		// Informamos el resultado.
-		$_SESSION['flash_success'] = 'Suspensión anulada correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'Suspensión anulada correctamente.');
 		Request::redirect('/moderar/gestion/usuarios');
 	}
 

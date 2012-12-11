@@ -45,19 +45,29 @@ class Base_View {
 		// Defino constantes para URL's relativas.
 		if ( ! defined('THEME_URL'))
 		{
-			define('THEME_URL', SITE_URL.'theme/'.THEME);
+			define('THEME_URL', SITE_URL.'/theme/'.THEME);
 		}
 
 		// No usarmos las URL's de RainTPL.
 		RainTPL::configure('base_url', '');
 		RainTPL::configure('path_replace', FALSE);
 
-		// Configuramos directorio de los template's. Seteamos base para que nuestra
-		// extensión se encarge.
+		// Configuramos directorio de los template's. Seteamos base para que nuestra extensión se encarge.
 		RainTPL::configure('tpl_dir', APP_BASE.DS);
 
-		// Directorio de cache de raintpl ( se usa subdirectorio por la cache de otros
-		// elementos).
+		// Trato de crear directorio temporal.
+		if ( ! file_exists(CACHE_PATH.DS.'raintpl'.DS.THEME.DS))
+		{
+			@mkdir(CACHE_PATH.DS.'raintpl'.DS.THEME.DS, 0777, TRUE);
+		}
+
+		// Verifico permisos de directorio temporal.
+		if ( ! is_writable(CACHE_PATH.DS.'raintpl'.DS.THEME.DS))
+		{
+			die('No tiene permisos de escritura en el directorio temporal: \''.CACHE_PATH.DS.'raintpl'.DS.THEME.DS.'\'');
+		}
+
+		// Directorio de cache de raintpl ( se usa subdirectorio por la cache de otros elementos).
 		RainTPL::configure('cache_dir', CACHE_PATH.DS.'raintpl'.DS.THEME.DS);
 
 		// Extension de los templates iguales que los archivos generales. Evitamos su
@@ -81,7 +91,7 @@ class Base_View {
 		// Es por seguridad y para mantener el patrón MVC.
 		RainTPL::configure('php_enabled', FALSE);
 
-		RainTPL::configure('debug', FALSE);
+		RainTPL::configure('debug', ! PRODUCTION);
 	}
 
 	/**

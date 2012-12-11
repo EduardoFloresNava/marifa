@@ -70,6 +70,51 @@ class Base_Plugin_Merge {
 	 */
 	public function revert()
 	{
+		// Verifico existencia de la clase.
+		if ( ! class_exists($this->to))
+		{
+			return;
+		}
+
+		// Verifico existencia clase padre.
+		if ( ! class_exists('Base_'.$this->to))
+		{
+			// Listado de quienes editan ese archivo.
+			$lista = glob(APP_BASE.DS.PLUGINS_PATH.DS.'*'.DS.'marifa'.DS.str_replace('_', DS, strtolower($this->to)).'.'.FILE_EXT);
+
+			// Borro si solo pertenece a 1.
+			if(count($lista) <= 1)
+			{
+				@unlink(APP_BASE.DS.'marifa'.DS.str_replace('_', DS, strtolower($this->to)).'.'.FILE_EXT);
+				return;
+			}
+
+			// Dejo solo nombre de plugins.
+			foreach ($lista as $k => $v)
+			{
+				$lista[$k] = substr($v, strlen(APP_BASE.DS.PLUGINS_PATH.DS), (-1) * strlen(DS.'marifa'.DS.str_replace('_', DS, strtolower($this->to)).'.'.FILE_EXT));
+			}
+
+			// Verifico cantidad activos.
+			$pm = Plugin_Manager::get_instance();
+			$c = 0;
+			foreach ($lista as $v)
+			{
+				$p = $pm->get($v);
+				if ($p->estado())
+				{
+					$c++;
+				}
+			}
+
+			// Verifico si puedo borrar directamente;
+			if ($c <= 1)
+			{
+				@unlink(APP_BASE.DS.'marifa'.DS.str_replace('_', DS, strtolower($this->to)).'.'.FILE_EXT);
+				return;
+			}
+		}
+
 		// Cargamos objetos de las clases.
 		$ref_to = new ReflectionClass($this->to);
 
@@ -153,6 +198,13 @@ class Base_Plugin_Merge {
 	 */
 	public function merge()
 	{
+		// Verifico existencia.
+		if ( ! class_exists($this->to))
+		{
+			// Creo la clase vacia.
+			$this->make_class($this->to);
+		}
+
 		// Cargamos objetos de las clases.
 		$ref_from = new ReflectionClass($this->from);
 		$ref_to = new ReflectionClass($this->to);
@@ -373,6 +425,11 @@ class Base_Plugin_Merge {
 	 */
 	public function is_compatible()
 	{
+		if ( ! class_exists($this->to))
+		{
+			return TRUE;
+		}
+
 		// Obtenemos los métodos de ambas clases.
 		$m_f = $this->get_class_methods($this->from);
 		$m_t = $this->get_class_methods($this->to);
@@ -488,6 +545,50 @@ class Base_Plugin_Merge {
 		$reflection = new ReflectionClass($class);
 		$lst = $reflection->getConstants();
 		return array_keys($lst);
+	}
+
+	/**
+	 * Creamos una clase y guardamos el archivo.
+	 * @param string $class Nombre de la clase a crear.
+	 */
+	private function make_class($class)
+	{
+		// Convierto el nombre a un path.
+		$path = APP_BASE.DS.'marifa'.DS.str_replace('_', DS, strtolower($class)).'.'.FILE_EXT;
+
+		// Creo directorio.
+		@mkdir(dirname($path), 0777, TRUE);
+
+		$filename = basename($path);
+
+		// Guardo la clase.
+		file_put_contents($path, "<?php
+/**
+ * $filename.php is part of Marifa.
+ *
+ * Marifa is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Marifa is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Marifa. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @license     http://www.gnu.org/licenses/gpl-3.0-standalone.html GNU Public License
+ * @filesource
+ * @package		Marifa\Marifa
+ */
+defined('APP_BASE') || die('No direct access allowed.');
+
+/**
+ * Agregado por Plugin
+ */
+class $class {}");
 	}
 
 }

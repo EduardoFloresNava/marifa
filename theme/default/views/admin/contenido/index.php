@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="/admin/">Administración</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
     <li class="active">Contenido</li>
 </ul>
 <div class="header">
@@ -10,7 +10,7 @@
 		<h2 class="title">Posts</h2>
 		<ul>
 			<li>Activos: <span class="badge badge-success pull-right">{$post_estado.activo}</span></li>
-			<li>En revisión: <span class="badge badge-info pull-right">{$post_estado.pendiente}</span></li>
+			<li>En revisi&oacute;n: <span class="badge badge-info pull-right">{$post_estado.pendiente}</span></li>
 			<li>Borrados: <span class="badge badge-important pull-right">{$post_estado.borrado}</span></li>
 			<li>Rechazados: <span class="badge badge-warning pull-right">{$post_estado.rechazado}</span></li>
 			<li>Ocultos: <span class="badge badge-warning pull-right">{$post_estado.oculto}</span></li>
@@ -27,7 +27,7 @@
 		</ul>
 	</div>
 	<div class="span4">
-		<h2 class="title">Posts categoría</h2>
+		<h2 class="title">Posts categor&iacute;a</h2>
 		{if="count($posts_categorias) > 0"}
 		<ul>
 			{loop="$posts_categorias"}
@@ -35,7 +35,7 @@
 			{/loop}
 		</ul>
 		{else}
-		<div class="alert">No hay posts aún.</div>
+		<div class="alert">No hay posts a&uacute;n.</div>
 		{/if}
 	</div>
 </div>
@@ -60,7 +60,7 @@
 		</ul>
 	</div>
 	<div class="span4">
-		<h2 class="title">Fotos por categoría</h2>
+		<h2 class="title">Fotos por categor&iacute;a</h2>
 		{if="count($fotos_categorias) > 0"}
 		<ul>
 			{loop="$fotos_categorias"}

@@ -228,3 +228,33 @@
  * **usuario_denuncia_rechazar** (*denuncia_id*, *usuario_id*): Rechazamos una denuncia.
  * * **denuncia_id**: ID de la denuncia a rechazar.
  * * **usuario_id**: ID del usuario que rechaza la denuncia.
+
+### Shouts de usuarios:
+
+ * **usuario_shout** (*shout_id*, *usuario_id*): Se publica un shout en el perfil del usuario.
+ * * **shout_id**: ID del shout que se publica.
+ * * **usuario_id**: ID del perfil donde se publica el shout.
+
+ * **usuario_shout_compartir** (*shout_id*, *comparte_id*, *usuario_id*): usuario_id comparte el shout shout_id a través de usuario_id.
+ * * **shout_id**: ID del shout que se comparte.
+ * * **comparte_id**: ID del usuario que comparte el shout.
+ * * **usuario_id**: ID del usuario a través del cual se comparte el shout.
+
+ * **usuario_shout_favorito** (*shout_id*, *usuario_id*, *agregar*): usuario_id agrega/quita de sus favoritos al shout shout_id.
+ * * **shout_id**: ID del shout que se agrega a los favoritos.
+ * * **usuario_id**: ID del usuario que agrega a los favoritos el shout.
+ * * **agregar**: 0 quita de favoritos, 1 agrega a favoritos.
+
+ * **usuario_shout_voto** (*shout_id*, *usuario_id*, *agregar*): usuario_id agrega/quita el voto al shout shout_id.
+ * * **shout_id**: ID del shout que se vota.
+ * * **usuario_id**: ID del usuario hace la votación.
+ * * **agregar**: 0 quita el voto, 1 lo agrega.
+
+ * **usuario_shout_comentario** (*shout_id*, *usuario_id*, *comentario_id*): usuario_id comenta el shout shout_id.
+ * * **shout_id**: ID del shout que se vota.
+ * * **usuario_id**: ID del usuario hace la votación.
+ * * **comentario_id**: ID del comentario que se crea.
+
+ * **usuario_shout_cita** (*shout_id*, *usuario_id*): usuario_id te ha citado en el shout shout_id.
+ * * **shout_id**: ID del shout donde se hizo la cita.
+ * * **usuario_id**: ID del usuario que realiza la cita.

@@ -42,18 +42,33 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_ADMINISTRAR))
 		{
-			$_SESSION['flash_error'] = 'No tienes permisos para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
 		parent::before();
+	}
+
+	/**
+	 * Vista preliminar de BBCode para denuncias, etc.
+	 */
+	public function action_preview()
+	{
+		// Obtengo el contenido y evitamos XSS.
+		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Proceso contenido.
+		die(Decoda::procesar($contenido));
 	}
 
 	/**
@@ -138,7 +153,12 @@ class Base_Controller_Admin_Usuario extends Controller {
 		{
 			$a = $v->as_array();
 			$a['rango_id'] = $v->rango;
-			$a['rango'] = $v->rango()->nombre;
+			$a['rango'] = $v->rango()->as_array();
+			$a['avisos'] = $v->cantidad_avisos();
+			if ($v->estado === Model_Usuario::ESTADO_SUSPENDIDA)
+			{
+				$a['restante'] = $v->suspension()->restante();
+			}
 			$lst[$k] = $a;
 		}
 
@@ -160,11 +180,108 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Listado de advertencias que tiene un usuario.
+	 * @param int $id ID del usuario.
+	 */
+	public function action_advertencias_usuario($id)
+	{
+		// Aseguramos un ID entero.
+		$id = (int) $id;
+
+		// Cargamos el modelo del usuario.
+		$model_usuario = new Model_Usuario($id);
+		if ( ! $model_usuario->existe())
+		{
+			add_flash_message(FLASH_ERROR, 'El usuario del que quieres ver las advertencias no se encuentra disponible.');
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Verifico cantidad de advertencias.
+		if ($model_usuario->cantidad_avisos() <= 0)
+		{
+			add_flash_message(FLASH_ERROR, 'El usuario no posee ninguna advertencia.');
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/advertencias_usuario');
+
+		// Cargo listado de avisos
+		$avisos = $model_usuario->avisos();
+
+		// Proceso para obtener información.
+		$lst = array();
+		foreach ($avisos as $v)
+		{
+			$a = $v->as_array();
+			$a['moderador'] = $v->moderador()->as_array();
+			$lst[] = $a;
+		}
+		// Listado de advertencias.
+		$vista->assign('advertencias', $lst);
+		unset($lst);
+
+		// Información del usuario del que se ven las advertencias.
+		$vista->assign('usuario', $model_usuario->as_array());
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Borro la advertencia de un usuario.
+	 * @param int $id ID de la advertencia.
+	 */
+	public function action_borrar_advertencia_usuario($id)
+	{
+		// Aseguramos un ID entero.
+		$id = (int) $id;
+
+		// Cargamos el modelo de la advertencia.
+		$model_advertencia = new Model_Usuario_Aviso($id);
+		if ( ! $model_advertencia->existe())
+		{
+			add_flash_message(FLASH_ERROR, 'La advertencia que deseas eliminar no se encuentra disponible.');
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Verifico donde tengo que regresar.
+		$m_u = $model_advertencia->usuario();
+		if ($m_u->cantidad_avisos() > 1)
+		{
+			// Elimino la advertencia.
+			$model_advertencia->delete();
+
+			// Envio notificacion.
+			add_flash_message(FLASH_SUCCESS, 'La advertencia se ha eliminado correctamente.');
+			Request::redirect('/admin/usuario/advertencias_usuario/'.$m_u->id);
+		}
+		else
+		{
+			// Elimino la advertencia.
+			$model_advertencia->delete();
+
+			// Envio notificacion.
+			add_flash_message(FLASH_SUCCESS, 'La advertencia se ha eliminado correctamente.');
+			Request::redirect('/admin/usuario/');
+		}
 	}
 
 	/**
@@ -178,7 +295,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = 'El usuario que quieres activar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que quieres activar no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -186,14 +303,14 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario que quieres activar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que quieres activar no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
 		// Su estado.
 		if ($model_usuario->estado !== Model_Usuario::ESTADO_PENDIENTE)
 		{
-			$_SESSION['flash_error'] = 'El usuario que quieres activar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que quieres activar no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -225,7 +342,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
 
 		// Informamos el resultado.
-		$_SESSION['flash_success'] = 'La cuenta del usuario ha sido activada correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'La cuenta del usuario ha sido activada correctamente.');
 		Request::redirect('/admin/usuario');
 	}
 
@@ -240,7 +357,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = 'El usuario que quieres suspender no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que quieres suspender no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -248,7 +365,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario que quieres suspender no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que quieres suspender no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -262,7 +379,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 			else
 			{
-				$_SESSION['flash_error'] = 'El usuario que quieres suspender no se encuentra disponible.';
+				add_flash_message(FLASH_ERROR, 'El usuario que quieres suspender no se encuentra disponible.');
 				Request::redirect('/admin/usuario/');
 			}
 		}
@@ -342,7 +459,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				}
 
 				// Informamos el resultado.
-				$_SESSION['flash_success'] = 'Usuario suspendido correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'Usuario suspendido correctamente.');
 				Request::redirect('/admin/usuario');
 			}
 		}
@@ -353,7 +470,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
 
 		// Asignamos la vista a la plantilla base.
@@ -371,7 +488,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = 'El usuario al que quieres quitar la suspensión no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario al que quieres quitar la suspensión no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -379,7 +496,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario al que quieres quitar la suspensión no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario al que quieres quitar la suspensión no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -407,16 +524,16 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $id)
 			{
-				$model_suceso->crear($id, 'usuario_fin_suspension', TRUE, $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
-				$model_suceso->crear(Usuario::$usuario_id, 'usuario_fin_suspension', FALSE, $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
+				$model_suceso->crear($id, 'usuario_fin_suspension', TRUE, $id, Usuario::$usuario_id);
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_fin_suspension', FALSE, $id, Usuario::$usuario_id);
 			}
 			else
 			{
-				$model_suceso->crear($id, 'usuario_fin_suspension', FALSE, $suspension->id, ($suspension->restante() > 0) ? Usuario::$usuario_id : NULL);
+				$model_suceso->crear($id, 'usuario_fin_suspension', FALSE, $id, Usuario::$usuario_id);
 			}
 		}
 		// Informo el resultado.
-		$_SESSION['flash_success'] = 'Suspensión anulada correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'Suspensión anulada correctamente.');
 		Request::redirect('/admin/usuario');
 	}
 
@@ -429,7 +546,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = 'El usuario que quieres advertir no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que quieres advertir no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -440,7 +557,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario que quieres advertir no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que quieres advertir no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -508,7 +625,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				}
 
 				// Seteamos mensaje flash y volvemos.
-				$_SESSION['flash_success'] = 'Advertencia enviada correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'Advertencia enviada correctamente.');
 				Request::redirect('/admin/usuario');
 			}
 		}
@@ -519,7 +636,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
 
 		// Asignamos la vista a la plantilla base.
@@ -535,7 +652,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = 'El usuario que quieres banear no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que quieres banear no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -546,7 +663,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario que quieres banear no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que quieres banear no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -605,7 +722,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				}
 
 				// Informamos el resultado.
-				$_SESSION['flash_success'] = 'Baneo realizado correctamente.';
+				add_flash_message(FLASH_SUCCESS, 'Baneo realizado correctamente.');
 				Request::redirect('/admin/usuario');
 			}
 		}
@@ -616,7 +733,112 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Detalles del baneo del usuario.
+	 * @param int $id ID del usuario del cual se quieren ver los detalles del baneo.
+	 */
+	public function action_detalles_baneo_usuario($id)
+	{
+		$id = (int) $id;
+
+		// Cargamos el modelo del usuario.
+		$model_usuario = new Model_Usuario($id);
+		if ( ! $model_usuario->existe())
+		{
+			add_flash_message(FLASH_ERROR, 'El usuario del que deseas ver los detalles del baneo no se encuentra disponible.');
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Verificamos esté suspendido.
+		$baneo = $model_usuario->baneo();
+
+		if ($baneo === NULL)
+		{
+			add_flash_message(FLASH_ERROR, 'El usuario del que deseas ver los detalles del baneo no se encuentra disponible.');
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/detalles_baneo_usuario');
+
+		// Cargo información del baneo.
+		$vista->assign('moderador', $baneo->moderador()->as_array());
+		$vista->assign('baneo', $baneo->as_array());
+		$vista->assign('usuario', $model_usuario->as_array());
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Detalles de la suspensión del usuario.
+	 * @param int $id ID del usuario del cual se quieren ver los detalles de la suspensión.
+	 */
+	public function action_detalles_suspension_usuario($id)
+	{
+		$id = (int) $id;
+
+		// Cargamos el modelo del usuario.
+		$model_usuario = new Model_Usuario($id);
+		if ( ! $model_usuario->existe())
+		{
+			add_flash_message(FLASH_ERROR, 'El usuario del que deseas ver los detalles de la suspensión no se encuentra disponible.');
+			Request::redirect('/admin/usuario/');
+		}
+
+
+
+
+		// Verificamos esté suspendido.
+		$suspension = $model_usuario->suspension();
+
+		if ($suspension === NULL)
+		{
+			// Verifico el estado.
+			if ($model_usuario->estado === Model_Usuario::ESTADO_SUSPENDIDA)
+			{
+				// Actualizamos el estado.
+				$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
+			}
+
+			add_flash_message(FLASH_ERROR, 'El usuario del que deseas ver los detalles de la suspensión no se encuentra disponible.');
+			Request::redirect('/admin/usuario/');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/usuario/detalles_suspension_usuario');
+
+		// Cargo información de la suspensión.
+		$vista->assign('moderador', $suspension->moderador()->as_array());
+		$vista->assign('suspension', $suspension->as_array());
+		$vista->assign('usuario', $model_usuario->as_array());
+		$vista->assign('restante', $suspension->restante());
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
 
 		// Asignamos la vista a la plantilla base.
@@ -634,7 +856,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = 'El usuario que deseas banear no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que deseas banear no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -642,7 +864,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario que deseas banear no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que deseas banear no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -658,17 +880,17 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $id)
 			{
-				$model_suceso->crear($id, 'usuario_fin_baneo', TRUE, $id, Usuario::$id);
-				$model_suceso->crear(Usuario::$usuario_id, 'usuario_fin_baneo', FALSE, $id, Usuario::$id);
+				$model_suceso->crear($id, 'usuario_fin_baneo', TRUE, $id, Usuario::$usuario_id);
+				$model_suceso->crear(Usuario::$usuario_id, 'usuario_fin_baneo', FALSE, $id, Usuario::$usuario_id);
 			}
 			else
 			{
-				$model_suceso->crear($id, 'usuario_fin_baneo', FALSE, $id, Usuario::$id);
+				$model_suceso->crear($id, 'usuario_fin_baneo', FALSE, $id, Usuario::$usuario_id);
 			}
 		}
 
 		// Informo el resultado.
-		$_SESSION['flash_success'] = 'El baneo fue anulado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El baneo fue anulado correctamente.');
 		Request::redirect('/admin/usuario');
 	}
 
@@ -684,7 +906,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Verificamos no sea actual.
 		if ($usuario == Usuario::$usuario_id)
 		{
-			$_SESSION['flash_error'] = 'El usuario que deseas cambiarle el rango no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que deseas cambiarle el rango no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -692,14 +914,14 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_usuario = new Model_Usuario($usuario);
 		if ( ! $model_usuario->existe())
 		{
-			$_SESSION['flash_error'] = 'El usuario que deseas cambiarle el rango no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que deseas cambiarle el rango no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
 		// Verifico su orden.
 		if ($model_usuario->rango()->es_superior(Usuario::usuario()->rango))
 		{
-			$_SESSION['flash_error'] = 'El usuario que deseas cambiarle el rango no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El usuario que deseas cambiarle el rango no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
 
@@ -712,7 +934,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			// Verifico el nivel.
 			if ($model_rango->es_superior(Usuario::usuario()->rango))
 			{
-				$_SESSION['flash_error'] = 'Rango que deseas asignar no se encuentra disponible.';
+				add_flash_message(FLASH_ERROR, 'Rango que deseas asignar no se encuentra disponible.');
 				Request::redirect('/admin/usuario/');
 			}
 
@@ -732,7 +954,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 
 			// Informo el resultado.
-			$_SESSION['flash_success'] = 'El rango fue cambiado correctamente correctamente.';
+			add_flash_message(FLASH_SUCCESS, 'El rango fue cambiado correctamente correctamente.');
 			Request::redirect('/admin/usuario');
 		}
 
@@ -753,7 +975,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
 
 		// Asignamos la vista a la plantilla base.
@@ -795,7 +1017,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
 
 		// Asignamos la vista a la plantilla base.
@@ -816,7 +1038,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Verifico la existencia.
 		if ( ! $model_rango->existe())
 		{
-			$_SESSION['flash_error'] = 'El rango que desea visualizar es incorrecto.';
+			add_flash_message(FLASH_ERROR, 'El rango que desea visualizar es incorrecto.');
 			Request::redirect('/admin/usuario/rangos/');
 		}
 
@@ -872,7 +1094,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
 
 		// Asignamos la vista a la plantilla base.
@@ -890,7 +1112,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$posicion = (int) $posicion;
 		if ($posicion <= 0)
 		{
-			$_SESSION['flash_error'] = 'La posición que deseas asignar no es correcta.';
+			add_flash_message(FLASH_ERROR, 'La posición que deseas asignar no es correcta.');
 			Request::redirect('/admin/usuario/rangos');
 		}
 
@@ -900,14 +1122,14 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_rango = new Model_Usuario_Rango($rango);
 		if ( ! $model_rango->existe())
 		{
-			$_SESSION['flash_error'] = 'El rango que deseas mover no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El rango que deseas mover no se encuentra disponible.');
 			Request::redirect('/admin/usuario/rangos');
 		}
 
 		// Verifico la posición.
 		if ($model_rango->orden === $posicion || $posicion > $model_rango->cantidad())
 		{
-			$_SESSION['flash_error'] = 'La posición que deseas asignar no es correcta.';
+			add_flash_message(FLASH_ERROR, 'La posición que deseas asignar no es correcta.');
 			Request::redirect('/admin/usuario/rangos');
 		}
 
@@ -915,7 +1137,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_rango->posicionar($posicion);
 
 		// Informamos.
-		$_SESSION['flash_success'] = 'El rango se ha movido correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El rango se ha movido correctamente.');
 		Request::redirect('/admin/usuario/rangos');
 	}
 
@@ -1044,7 +1266,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				//TODO: agregar suceso de administracion.
 
 				// Seteo FLASH message.
-				$_SESSION['flash_success'] = 'El rango se creó correctamente';
+				add_flash_message(FLASH_SUCCESS, 'El rango se creó correctamente');
 
 				// Redireccionamos.
 				Request::redirect('/admin/usuario/rangos');
@@ -1057,7 +1279,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1235,7 +1457,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				}
 
 				// Informamos suceso.
-				$vista->assign('success', 'Información actualizada correctamente');
+				add_flash_message(FLASH_SUCCESS, 'Información actualizada correctamente');
 			}
 		}
 
@@ -1245,7 +1467,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1337,7 +1559,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				$model_rango->agregar_permiso($q);
 			}
 
-			$vista->assign('success', 'Permisos actualizados correctamente.');
+			add_flash_message(FLASH_SUCCESS, 'Permisos actualizados correctamente.');
 		}
 
 		// Rango por defecto para nuevos usuario, evitamos que se borre.
@@ -1363,7 +1585,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1385,14 +1607,14 @@ class Base_Controller_Admin_Usuario extends Controller {
 			// Verificamos exista otro y además no tenga usuarios.
 			if ($model_rango->tiene_usuarios())
 			{
-				$_SESSION['flash_error'] = 'El rango tiene usuarios y no puede ser eliminado.';
+				add_flash_message(FLASH_ERROR, 'El rango tiene usuarios y no puede ser eliminado.');
 				Request::redirect('/admin/usuario/rangos');
 			}
 
 			// Verifico que no sea el único.
 			if ($model_rango->cantidad() < 2)
 			{
-				$_SESSION['flash_error'] = 'No se puede eliminar al único rango existente.';
+				add_flash_message(FLASH_ERROR, 'No se puede eliminar al único rango existente.');
 				Request::redirect('/admin/usuario/rangos');
 			}
 
@@ -1400,13 +1622,13 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$model_config = new Model_Configuracion;
 			if ($id == (int) $model_config->get('rango_defecto', 1))
 			{
-				$_SESSION['flash_error'] = 'No se puede eliminar al rango por defecto para los nuevos usuarios.';
+				add_flash_message(FLASH_ERROR, 'No se puede eliminar al rango por defecto para los nuevos usuarios.');
 				Request::redirect('/admin/usuario/rangos');
 			}
 
 			// Borramos la noticia.
 			$model_rango->borrar_rango();
-			$_SESSION['flash_success'] = 'Se borró correctamente el rango.';
+			add_flash_message(FLASH_SUCCESS, 'Se borró correctamente el rango.');
 		}
 		Request::redirect('/admin/usuario/rangos');
 	}
@@ -1460,7 +1682,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_sesiones'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1481,7 +1703,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		{
 			// Terminamos la session.
 			$model_session->borrar();
-			$_SESSION['flash_success'] = 'Se terminó correctamente la sessión.';
+			add_flash_message(FLASH_SUCCESS, 'Se terminó correctamente la sessión.');
 		}
 		Request::redirect('/admin/usuario/sesiones');
 	}
@@ -1528,7 +1750,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1637,7 +1859,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				//TODO: agregar suceso de administracion.
 
 				// Seteo FLASH message.
-				$_SESSION['flash_success'] = 'La medalla se creó correctamente';
+				add_flash_message(FLASH_SUCCESS, 'La medalla se creó correctamente');
 
 				// Redireccionamos.
 				Request::redirect('/admin/usuario/medallas/');
@@ -1650,7 +1872,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1798,7 +2020,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				}
 
 				// Informamos suceso.
-				$vista->assign('success', 'Información actualizada correctamente');
+				add_flash_message(FLASH_SUCCESS, 'Información actualizada correctamente');
 			}
 		}
 
@@ -1808,7 +2030,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1829,7 +2051,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Verifico la existencia.
 		if ( ! $model_medalla->existe())
 		{
-			$_SESSION['flash_error'] = 'La medalla que desea visualizar es incorrecto.';
+			add_flash_message(FLASH_ERROR, 'La medalla que desea visualizar es incorrecto.');
 			Request::redirect('/admin/usuario/medallas/');
 		}
 
@@ -1877,7 +2099,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos plantilla administracion.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1900,7 +2122,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			// Borramos la medalla.
 			$model_medalla->borrar();
-			$_SESSION['flash_success'] = 'Se borró correctamente la medalla.';
+			add_flash_message(FLASH_SUCCESS, 'Se borró correctamente la medalla.');
 		}
 		Request::redirect('/admin/usuario/medallas');
 	}

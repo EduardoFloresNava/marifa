@@ -104,7 +104,7 @@ class Base_Model_Dataset extends Model {
 			{
 				$k_list[] = "$k = ?";
 			}
-			$k_list = implode('AND ', $k_list);
+			$k_list = implode(' AND ', $k_list);
 
 			// Obtenemos los campos.
 			$rst = $this->db->query("SELECT $f_list FROM $this->table WHERE $k_list LIMIT 1", array_values($primary_key))
@@ -193,7 +193,7 @@ class Base_Model_Dataset extends Model {
 			$k_list[] = "$k = ?";
 		}
 
-		return $this->db->update('UPDATE '.$this->table.' SET '.$campo.' = ? WHERE '.implode('AND ', $k_list), array_merge(array($valor), array_values($this->primary_key)));
+		return $this->db->update('UPDATE '.$this->table.' SET '.$campo.' = ? WHERE '.implode(' AND ', $k_list), array_merge(array($valor), array_values($this->primary_key)));
 	}
 
 	/**
@@ -237,7 +237,7 @@ class Base_Model_Dataset extends Model {
 			return FALSE;
 		}
 
-		return $this->db->update('UPDATE '.$this->table.' SET '.implode(', ', $asg).' WHERE '.implode('AND ', $k_list), array_merge($dt, array_values($this->primary_key)));
+		return $this->db->update('UPDATE '.$this->table.' SET '.implode(', ', $asg).' WHERE '.implode(' AND ', $k_list), array_merge($dt, array_values($this->primary_key)));
 	}
 
 	/**
@@ -259,7 +259,7 @@ class Base_Model_Dataset extends Model {
 			$k_list[] = "$k = ?";
 		}
 
-		return $this->db->query("SELECT COUNT(*) FROM {$this->table} WHERE ".implode('AND ', $k_list), $primary_key)->get_var(Database_Query::FIELD_INT) > 0;
+		return $this->db->query("SELECT COUNT(*) FROM {$this->table} WHERE ".implode(' AND ', $k_list), $primary_key)->get_var(Database_Query::FIELD_INT) > 0;
 	}
 
 	/**
@@ -274,6 +274,6 @@ class Base_Model_Dataset extends Model {
 			$k_list[] = "$k = ?";
 		}
 
-		return $this->db->delete("DELETE FROM {$this->table} WHERE ".implode('AND ', $k_list), $this->primary_key);
+		return $this->db->delete("DELETE FROM {$this->table} WHERE ".implode(' AND ', $k_list), $this->primary_key);
 	}
 }

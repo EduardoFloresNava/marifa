@@ -288,7 +288,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 			else
 			{
 				// Generamos una excepción.
-				throw new Database_Exception("Error al ejecutar la consulta: '".mysql_error()."'", mysql_errno());
+				throw new Database_Exception("Error al ejecutar la consulta '$query': '".mysql_error()."'", mysql_errno());
 
 				// Devolvemos falso para indicar que no fue correcto.
 				return FALSE;
@@ -327,7 +327,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 			else
 			{
 				// Generamos una excepción.
-				throw new Database_Exception("Error al ejecutar la consulta: '".mysql_error()."'", mysql_errno());
+				throw new Database_Exception("Error al ejecutar la consulta '$query': '".mysql_error()."'", mysql_errno());
 
 				// Devolvemos falso para indicar que no fue correcto.
 				return FALSE;
@@ -366,7 +366,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 			else
 			{
 				// Generamos una excepción.
-				throw new Database_Exception("Error al ejecutar la consulta: '".mysql_error()."'", mysql_errno());
+				throw new Database_Exception("Error al ejecutar la consulta '$query': '".mysql_error()."'", mysql_errno());
 
 				// Devolvemos falso para indicar que no fue correcto.
 				return FALSE;

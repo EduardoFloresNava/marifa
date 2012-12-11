@@ -57,6 +57,12 @@ class Base_Usuario {
 	private static $permisos;
 
 	/**
+	 * Cache de usuarios que permite referir el usuario.
+	 * @var array
+	 */
+	private static $usuarios_permitidos;
+
+	/**
 	 * Obtenemos si hay un usuario logueado o no.
 	 * @return bool
 	 */
@@ -163,6 +169,38 @@ class Base_Usuario {
 	}
 
 	/**
+	 * Listado de usuarios a los que puedo hacer una referencia (@usaurio) o publicar en su perfil.
+	 * Debo seguirlo o el me debe seguir pero no puede estar bloqueandome.
+	 * @return array
+	 */
+	public static function usuarios_referir()
+	{
+		// Verifico cache.
+		if ( ! is_array(self::$usuarios_permitidos))
+		{
+			// Cargo la cache.
+			self::$usuarios_permitidos = Database::get_instance()->query(
+				'SELECT `ul`.`id`, `nick` FROM ( ( SELECT `seguidor_id` AS `id` FROM `usuario_seguidor` WHERE `usuario_id` = ?) UNION (SELECT `usuario_id` AS `id` FROM `usuario_seguidor` WHERE `seguidor_id` = ?)) AS ul INNER JOIN usuario ON `usuario`.`id` = `ul`.`id` WHERE `ul`.`id` NOT IN (SELECT `usuario_id` FROM `usuario_bloqueo` WHERE `bloqueado_id` = ? AND `usuario_id` IN (SELECT `id` FROM ((SELECT `seguidor_id` AS `id` FROM `usuario_seguidor` WHERE `usuario_id` = ?) UNION (SELECT `usuario_id` AS `id` FROM `usuario_seguidor` WHERE `seguidor_id` = ?)) AS ul))',
+				array(Usuario::$usuario_id, Usuario::$usuario_id, Usuario::$usuario_id, Usuario::$usuario_id, Usuario::$usuario_id)
+			)->get_pairs(Database_Query::FIELD_INT, Database_Query::FIELD_STRING);
+		}
+
+		return self::$usuarios_permitidos;
+	}
+
+	/**
+	 * Verifico si puedo hacer una referencia al usuario (@usaurio) o publicar en su perfil.
+	 * Debo seguirlo o el me debe seguir pero no puede estar bloqueandome.
+	 * @param int $usuario_id ID del usuario a verificar.
+	 * @return bool
+	 */
+	public static function puedo_referirlo($usuario_id)
+	{
+		$lst = self::usuarios_referir();
+		return isset($lst[$usuario_id]);
+	}
+
+	/**
 	 * Indicamos que el usuario ha iniciado sessión para realizar los registros
 	 * de sessiones pertinentes.
 	 * @param Model_Usuario $usuario Modelo del usuario que inicio sessión.
@@ -214,7 +252,7 @@ class Base_Usuario {
 	private static function start_session()
 	{
 		// Fuerzo inicio de la sessión
-		if ( ! isset($_SESSION))
+		if (session_id() == "" || ! isset($_SESSION))
 		{
 			session_start();
 		}

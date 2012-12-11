@@ -107,7 +107,7 @@ $consultas[] = array(
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('elementos_pagina', 20, 20), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('ip_mantenimiento', serialize(array()), serialize(array())), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('rango_defecto', 3, 3), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', '0.2RC1', '0.2RC1'), array('error_no' => 1062))
+		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', '0.2RC2', '0.2RC2'), array('error_no' => 1062))
 	)
 );
 
@@ -437,6 +437,7 @@ $consultas[] = array(
 				`tipo` varchar(50) NOT NULL,
 				`notificar` BIT NOT NULL DEFAULT 0,
 				`visto` BIT NOT NULL DEFAULT 0,
+				`desplegado` BIT(1) NOT NULL DEFAULT 0,
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
@@ -455,7 +456,7 @@ $consultas[] = array(
 				`password` varchar(64) NOT NULL,
 				`email` varchar(50) NOT NULL,
 				`rango` int(11) NOT NULL DEFAULT 1,
-				`puntos` int(11) NOT NULL DEFAULT 10,
+				`puntos` int(11) NOT NULL DEFAULT 0,
 				`registro` datetime NOT NULL,
 				`lastlogin` datetime NULL DEFAULT NULL,
 				`lastactive` datetime NULL DEFAULT NULL,
@@ -810,6 +811,99 @@ $consultas[] = array(
 				PRIMARY KEY (`usuario_id`,`medalla_id`),
 				KEY `medalla_id` (`medalla_id`)
 			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Tabla de shouts.
+$consultas[] = array(
+	'Tabla de shouts',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout` (
+				`id` int(11) NOT NULL AUTO_INCREMENT,
+				`usuario_id` int(11) NOT NULL,
+				`mensaje` text NOT NULL,
+				`tipo` int(11) NOT NULL DEFAULT 0,
+				`valor` varchar(512) DEFAULT NULL,
+				`fecha` datetime NOT NULL,
+				PRIMARY KEY (`id`),
+				KEY `usuario_id` (`usuario_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Tabla de comentarios en shout's.
+$consultas[] = array(
+	'Tabla de comentarios en shout\'s',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout_comentario` (
+				`id` int(11) NOT NULL AUTO_INCREMENT,
+				`usuario_id` int(11) NOT NULL,
+				`shout_id` int(11) NOT NULL,
+				`comentario` text NOT NULL,
+				`fecha` datetime NOT NULL,
+				PRIMARY KEY (`id`),
+				KEY `usuario_id` (`usuario_id`,`shout_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Tabla de shout's favoritos.
+$consultas[] = array(
+	'Tabla de shout\'s favoritos',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout_favorito` (
+				`usuario_id` int(11) NOT NULL,
+				`shout_id` int(11) NOT NULL,
+				PRIMARY KEY (`usuario_id`,`shout_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Shout tag.
+$consultas[] = array(
+	'Tabla de etiquetas de los shout\'s',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout_tag` (
+				`tag` varchar(100) NOT NULL,
+				`shout_id` int(11) NOT NULL,
+				PRIMARY KEY (`tag`,`shout_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Citas a usuarios en shout's
+$consultas[] = array(
+	'Tabla de usuarios citados en shout\'s',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout_usuario` (
+				`usuario_id` int(11) NOT NULL,
+				`shout_id` int(11) NOT NULL,
+				PRIMARY KEY (`usuario_id`,`shout_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Votos a los shouts.
+$consultas[] = array(
+	'Tabla de votos a shout\'s',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout_voto` (
+				`usuario_id` int(11) NOT NULL,
+				`shout_id` int(11) NOT NULL,
+				PRIMARY KEY (`usuario_id`,`shout_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
 		)
 	)
 );

@@ -1,0 +1,18 @@
+{
+	"angry.png":	[ "&gt;(", "&gt;:(", "&gt;[", "&gt;:[", ":angry:" ],
+	"aw.png":	[ ":aw:" ],
+	"cool.png":	[ "8)", "8]", ":cool:" ],
+	"ecstatic.png":	[ ":D", "8D", ":ecstatic:" ],
+	"furious.png":	[ "&gt;:D", "&gt;&lt;", ":furious:" ],
+	"gah.png":	[ "D:", ":O", ":gah:" ],
+	"happy.png":	[ ":)", ":]", ":happy:" ],
+	"heart.png":	[ "&lt;3", ":heart:" ],
+	"hm.png":	[ ":/", ":\\", ":hm:" ],
+	"kiss.png":	[ ":3", ":kiss:" ],
+	"meh.png":	[ ":|", "-.-", "&lt;_&lt;", "&gt;_&gt;", ":meh:" ],
+	"mmf.png":	[ ":x", ":X", ":mmf:" ],
+	"sad.png":	[ ":(", ":[", ";(", ";[", ":'(", ":'[", ";'(", ";'[", ":sad:" ],
+	"tongue.png":	[ ":P", ":p", ":tongue:" ],
+	"what.png":	[ ":o", ":?", ":what:" ],
+	"wink.png":	[ ";)", ";]", ";D", ":wink:" ]
+}

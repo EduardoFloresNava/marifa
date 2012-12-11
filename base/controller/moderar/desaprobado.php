@@ -40,7 +40,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			$_SESSION['flash_error'] = 'Debes iniciar sessión para poder acceder a esta sección.';
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -56,7 +56,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -156,14 +156,14 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			$_SESSION['flash_error'] = 'El posts que deseas aprobar/rechazar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El posts que deseas aprobar/rechazar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
 		{
-			$_SESSION['flash_error'] ='El posts que deseas aprobar/rechazar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El posts que deseas aprobar/rechazar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 
@@ -173,12 +173,12 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico el estado actual.
 		if ($tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_RECHAZADO))
 		{
-			$_SESSION['flash_error'] = 'El posts que deseas aprobar/rechazar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El posts que deseas aprobar/rechazar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 		elseif ( ! $tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_ACTIVO))
 		{
-			$_SESSION['flash_error'] = 'El posts que deseas aprobar/rechazar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El posts que deseas aprobar/rechazar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 
@@ -198,7 +198,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		}
 
 		// Informamos el resultado.
-		$_SESSION['flash_success'] = 'El estado se modificó correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El estado se modificó correctamente.');
 		Request::redirect('/moderar/desaprobado/posts');
 	}
 
@@ -211,7 +211,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -224,14 +224,14 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			$_SESSION['flash_error'] = 'El post que deseas eliminar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El post que deseas eliminar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
 		{
-			$_SESSION['flash_error'] = 'El post que deseas eliminar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El post que deseas eliminar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/posts');
 		}
 
@@ -251,7 +251,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		}
 
 		// Informamos el resultado.
-		$_SESSION['flash_success'] = 'El post fue eliminado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El post fue eliminado correctamente.');
 		Request::redirect('/moderar/desaprobado/posts');
 	}
 
@@ -265,7 +265,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -395,7 +395,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -403,7 +403,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$tipo = (int) $tipo;
 		if ($tipo !== 1 && $tipo !== 2)
 		{
-			$_SESSION['flash_error'] = 'El comentario que deseas mostrar/ocultar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El comentario que deseas mostrar/ocultar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
@@ -421,14 +421,14 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico existencia.
 		if ( ! $model_comentario->existe())
 		{
-			$_SESSION['flash_error'] = 'El comentario que deseas mostrar/ocultar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El comentario que deseas mostrar/ocultar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
 		// Verifico el estado.
 		if ($model_comentario->estado !== Model_Comentario::ESTADO_OCULTO)
 		{
-			$_SESSION['flash_error'] = 'El comentario que deseas mostrar/ocultar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El comentario que deseas mostrar/ocultar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
@@ -448,7 +448,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		}
 
 		// Informamos resultado.
-		$_SESSION['flash_success'] = 'El comentario se ha aprobado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El comentario se ha aprobado correctamente.');
 		Request::redirect('/moderar/desaprobado/comentarios');
 	}
 
@@ -462,7 +462,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
 		{
-			$_SESSION['flash_error'] = 'No tienes permiso para acceder a esa sección.';
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
 			Request::redirect('/');
 		}
 
@@ -470,7 +470,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$tipo = (int) $tipo;
 		if ($tipo !== 1 && $tipo !== 2)
 		{
-			$_SESSION['flash_error'] = 'El comentario que deseas borrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El comentario que deseas borrar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
@@ -488,14 +488,14 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		// Verifico existencia.
 		if ( ! $model_comentario->existe())
 		{
-			$_SESSION['flash_error'] = 'El comentario que deseas borrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El comentario que deseas borrar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
 		// Verifico el estado.
 		if ($model_comentario->estado !== Model_Comentario::ESTADO_OCULTO)
 		{
-			$_SESSION['flash_error'] = 'El comentario que deseas borrar no se encuentra disponible.';
+			add_flash_message(FLASH_ERROR, 'El comentario que deseas borrar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/comentarios');
 		}
 
@@ -515,7 +515,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		}
 
 		// Informo el resultado.
-		$_SESSION['flash_success'] = 'El comentario se ha eliminado correctamente.';
+		add_flash_message(FLASH_SUCCESS, 'El comentario se ha eliminado correctamente.');
 		Request::redirect('/moderar/desaprobado/comentarios');
 	}
 

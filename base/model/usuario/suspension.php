@@ -98,7 +98,7 @@ class Base_Model_Usuario_Suspension extends Model_Dataset {
 	 */
 	public function restante()
 	{
-		return $this->get('fin')->getTimestamp() - time();
+		return ($this->fin !== NULL ? $this->fin->getTimestamp() : 0) - time();
 	}
 
 	/**

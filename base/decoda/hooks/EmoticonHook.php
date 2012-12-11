@@ -47,7 +47,7 @@ class EmoticonHook extends DecodaHook {
 	public function __construct(array $config = array()) {
 		parent::__construct($config);
 
-		$path = DECODA_CONFIG . 'emoticons.json';
+		$path = VIEW_PATH.THEME.DS.'assets'.DS.'emoticons.json';
 
 		if (file_exists($path)) {
 			$this->_emoticons = json_decode(file_get_contents($path), true);
@@ -103,7 +103,7 @@ class EmoticonHook extends DecodaHook {
 		$image = $this->getParser()->getFilter('Image')->parse(array(
 			'tag' => 'img',
 			'attributes' => array()
-		), $this->_config['path'] . $this->_map[$smiley] . '.png');
+		), $this->_config['path'].$this->_map[$smiley]);
 
 		return $l . $image . $r;
 	}
