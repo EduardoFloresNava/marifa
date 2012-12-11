@@ -10,6 +10,7 @@ Marifa 0.2RC2 []
  - FEATURE: Se agrupan los mensajes de error por tipo.
  - FEATURE: Implementadas las publicaciones en los muros de los usarios (shout's).
  - FEATURE: Mejorada la interface de los muros de los usuarios.
+ - FEATURE: El tema por defecto es compatible para usarse en instalaciones con SUBDIRECTORIOS (i.e: http://marifa.com.ar/demo)
  - FIX: Error en el instalador producto del nuevo sistema de actualización.
  - FIX: Error en el primer logueo producto del calculo de puntos.
  - FIX: Solucionado problema de inserción de clases del núcleo para plugins.
