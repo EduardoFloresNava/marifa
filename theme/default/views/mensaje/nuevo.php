@@ -3,13 +3,6 @@
 	<div class="span12">
 		<form method="POST" class="form-horizontal" action="">
 
-			{loop="$error"}
-			<div class="alert">
-				<a class="close" data-dismiss="alert">×</a>
-				<strong>Error: </strong>{$value}
-			</div>
-			{/loop}
-
 			<div class="control-group{if="$error_para"} error{/if}">
 				<label class="control-label" for="titulo">Para</label>
 				<div class="controls">
@@ -43,6 +36,5 @@
 				<button type="submit" class="btn btn-large btn-primary">Enviar</button>
 			</div>
 		</form>
-		{/if}
 	</div>
 </div>
