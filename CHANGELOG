@@ -3,12 +3,13 @@ Marifa 0.2RC2 []
  - FEATURE: Mejora de la portada.
  - FEATURE: Implementación de AJAX para los Sucesos.
  - FEATURE: Se muestra la consulta cuando se produce un error en el driver MySQL.
- - FEATURE: Las URL's se convierten a links clickeables automáticamente.
+ - FEATURE: Las URL's se convierten a links clickeables automáticamente en BBCode.
  - FEATURE: Agregado el soporte de emoticones.
  - FEATURE: Se permiten agregar clases al núcleo desde plugins.
  - FEATURE: Mejora de la administración de usuarios.
  - FEATURE: Se agrupan los mensajes de error por tipo.
- - FEAUTRE: Se mejora la administración de usuarios.
+ - FEATURE: Implementadas las publicaciones en los muros de los usarios (shout's).
+ - FEATURE: Mejorada la interface de los muros de los usuarios.
  - FIX: Error en el instalador producto del nuevo sistema de actualización.
  - FIX: Error en el primer logueo producto del calculo de puntos.
  - FIX: Solucionado problema de inserción de clases del núcleo para plugins.

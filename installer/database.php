@@ -815,4 +815,97 @@ $consultas[] = array(
 	)
 );
 
+// Tabla de shouts.
+$consultas[] = array(
+	'Tabla de shouts',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout` (
+				`id` int(11) NOT NULL AUTO_INCREMENT,
+				`usuario_id` int(11) NOT NULL,
+				`mensaje` text NOT NULL,
+				`tipo` int(11) NOT NULL DEFAULT 0,
+				`valor` varchar(512) DEFAULT NULL,
+				`fecha` datetime NOT NULL,
+				PRIMARY KEY (`id`),
+				KEY `usuario_id` (`usuario_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Tabla de comentarios en shout's.
+$consultas[] = array(
+	'Tabla de comentarios en shout\'s',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout_comentario` (
+				`id` int(11) NOT NULL AUTO_INCREMENT,
+				`usuario_id` int(11) NOT NULL,
+				`shout_id` int(11) NOT NULL,
+				`comentario` text NOT NULL,
+				`fecha` datetime NOT NULL,
+				PRIMARY KEY (`id`),
+				KEY `usuario_id` (`usuario_id`,`shout_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Tabla de shout's favoritos.
+$consultas[] = array(
+	'Tabla de shout\'s favoritos',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout_favorito` (
+				`usuario_id` int(11) NOT NULL,
+				`shout_id` int(11) NOT NULL,
+				PRIMARY KEY (`usuario_id`,`shout_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Shout tag.
+$consultas[] = array(
+	'Tabla de etiquetas de los shout\'s',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout_tag` (
+				`tag` varchar(100) NOT NULL,
+				`shout_id` int(11) NOT NULL,
+				PRIMARY KEY (`tag`,`shout_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Citas a usuarios en shout's
+$consultas[] = array(
+	'Tabla de usuarios citados en shout\'s',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout_usuario` (
+				`usuario_id` int(11) NOT NULL,
+				`shout_id` int(11) NOT NULL,
+				PRIMARY KEY (`usuario_id`,`shout_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
+// Votos a los shouts.
+$consultas[] = array(
+	'Tabla de votos a shout\'s',
+	array(
+		array(
+			'ALTER', 'CREATE TABLE IF NOT EXISTS `shout_voto` (
+				`usuario_id` int(11) NOT NULL,
+				`shout_id` int(11) NOT NULL,
+				PRIMARY KEY (`usuario_id`,`shout_id`)
+			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
 return $consultas;
