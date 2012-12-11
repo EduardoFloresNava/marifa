@@ -266,6 +266,7 @@ td .btn-toolbar {
 }
 
 .ultimo-post-list {
+    margin: 10px 0;
     border: 1px solid #D1D1D1;
     border-radius: 4px;
     -moz-border-radius: 4px;
@@ -1201,5 +1202,25 @@ h1.title, h2.title, h3.title, h4.title {
 
     .publicacion ~ .publicacion, .suceso ~ .suceso {
         border: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .publicaciones {
+        .publicacion, .suceso {
+
+            a.usuario {
+                display: none;
+            }
+
+            .cuerpo {
+                margin: 0;
+                border-width: 1px;
+
+                &:before {
+                    border: none;
+                }
+            }
+        }
     }
 }

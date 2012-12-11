@@ -104,7 +104,7 @@
 			<div class="span12">
 				{loop="$comentarios"}
 				<div class="row-fluid comentario" id="c-{$value.id}">
-					<div class="span1">
+					<div class="span1 hidden-phone">
 						<img class="thumbnail" src="{function="Utils::get_gravatar($value.usuario.email, 48, 48)"}" />
 					</div>
 					<div class="span11 comentario-data">

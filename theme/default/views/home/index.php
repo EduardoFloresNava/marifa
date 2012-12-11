@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="span7">
-		<h3 class="title">&Uacute;ltimos posts<small class="pull-right leyenda">Leyenda: <span><i class="icon icon-bookmark"></i>Fijo - <i class="icon icon-certificate"></i>Patrocinado - <i class="icon icon-lock"></i>Privado</span></small></h3>
+		<h3 class="title clearfix">&Uacute;ltimos posts<small class="pull-right leyenda">Leyenda: <span><i class="icon icon-bookmark"></i>Fijo - <i class="icon icon-certificate"></i>Patrocinado - <i class="icon icon-lock"></i>Privado</span></small></h3>
 		{if="count($sticky) == 0 && count($ultimos_posts) == 0"}
 		<div class="alert">No hay posts aún.</div>
 		{else}
