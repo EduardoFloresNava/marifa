@@ -1,4 +1,7 @@
-Marifa 0.2RC2 []
+Marifa 0.2RC3 [11/12/2012]
+ - FIX: Error en el sistema de actualización a 0.2RC2.
+
+Marifa 0.2RC2 [11/12/2012]
  - FEATURE: Páginas estáticas con DCMA, protocolo, declaración de privacidad y términos y condiciones.
  - FEATURE: Mejora de la portada.
  - FEATURE: Implementación de AJAX para los Sucesos.
