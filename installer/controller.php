@@ -1,4 +1,7 @@
 <?php
+//TODO: LINK TO NEXT STEP.
+
+
 /**
  * controller.php is part of Marifa.
  *
@@ -32,165 +35,67 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Installer_Controller {
 
 	/**
-	 * Paso actual.
-	 * @var int
-	 */
-	protected $step = 0;
-
-	/**
 	 * Plantilla Base.
 	 * @var RainTPL
 	 */
 	protected $template;
 
 	/**
+	 * Listado de pasos.
+	 * El formato es 'method' => array('titulo' => 'TITULO EN LA BARRA', 'posicion' => POSICION)
+	 * donde titulo será un string con el nombre que se muestra en la barra de progreso
+	 * y posicion un entero que especifica el número de paso (empezando en 1).
+	 * method debe ser el nombre sin el prefijo action_
+	 * @var array
+	 */
+	protected $steps = array(
+		'index'          => array('titulo' => 'Inicio',          'posicion' => 1), // Portada.
+		'requerimientos' => array('titulo' => 'Requerimientos',  'posicion' => 2), // Requerimientos del entorno.
+		'bd'             => array('titulo' => 'BD',              'posicion' => 3), // Configuramos la conección a la base de datos.
+		'bd_install'     => array('titulo' => 'BD install',      'posicion' => 4), // Instalamos la Base de datos.
+		'importar'       => array('titulo' => 'Importar',        'posicion' => 5), // Importamos datos de otros lados.
+		'configuracion'  => array('titulo' => 'Configuraciones', 'posicion' => 6), // Configuramos el sistema.
+		'finalizacion'   => array('titulo' => 'Terminación',     'posicion' => 7) // Terminada la instalacion.
+	);
+
+	/**
 	 * Cargamos la plantilla base.
 	 */
-	public function __construct()
+	public function before()
 	{
-		// Inicio la sessión.
-		session_start();
-
-		// Verifico el paso actual.
-		if ( ! isset($_SESSION['step']) && $this->step !== 0)
-		{
-			$_SESSION['step'] = 0;
-			Request::redirect('/installer/');
-		}
-
-		if ( ! isset($_SESSION['step']))
-		{
-			$_SESSION['step'] = 0;
-		}
+		// Cargo manejador de pasos.
+		Installer_Step::get_instance()->setup($this->steps);
 
 		// Cargamos la plantilla base.
 		$this->template = View::factory('template');
 
 		// Contenido inicial vacio.
 		$this->template->assign('contenido', '');
-
-		// Eventos flash.
-		if (isset($_SESSION['flash_success']))
-		{
-			$this->template->assign('flash_success', get_flash('flash_success'));
-		}
-
-		if (isset($_SESSION['flash_error']))
-		{
-			$this->template->assign('flash_error', get_flash('flash_error'));
-		}
 	}
 
 	/**
 	 * Mostramos el template.
 	 */
-	public function __destruct()
+	public function after()
 	{
-		if (is_object($this->template) && ! Request::is_ajax() && ! Error::$has_error)
+		// Seteo el menu.
+		$this->template->assign('steps', Installer_Step::get_instance()->listado());
+
+		// Eventos flash.
+		foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
+		{
+			if (isset($_SESSION[$k]))
+			{
+				$this->template->assign($k, get_flash($k));
+			}
+		}
+
+		// Muestro el template.
+		if (is_object($this->template) && ! Request::is_ajax())
 		{
 			$this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
 			$this->template->show();
 		}
-	}
-
-	/**
-	 * Listado de pasos.
-	 * @param int $actual Número de paso actual. 0 Implica que estamos en el 1er paso.
-	 */
-	protected function steps($actual = 0)
-	{
-		$steps = array();
-
-		// Inicial, pantalla de bienvenida.
-		$steps[] = array('caption' => 'Inicio');
-
-		// Requerimientos.
-		$steps[] = array('caption' => 'Requerimientos');
-
-		// Base de datos.
-		$steps[] = array('caption' => 'BD');
-		$steps[] = array('caption' => 'BD install');
-		$steps[] = array('caption' => 'Configuraciones');
-
-		// Cache.
-		// $steps[] = array('caption' => 'Cache');
-
-		// Imagenes.
-		// $steps[] = array('caption' => 'Imagenes');
-
-		// Final.
-		$steps[] = array('caption' => 'Terminación');
-
-		// Seteo los estados.
-		foreach ($steps as $k => $v)
-		{
-			// Asigno estado a los terminados.
-			if ($k < $actual)
-			{
-				$steps[$k]['estado'] = 1;
-				continue;
-			}
-
-			// Asigno estado al activo.
-			if ($k == $actual)
-			{
-				$steps[$k]['estado'] = 0;
-				continue;
-			}
-
-			// Asigno estado a los pendientes.
-			if ($k > $actual)
-			{
-				$steps[$k]['estado'] = -1;
-				continue;
-			}
-		}
-
-		return $steps;
-	}
-
-	/**
-	 * Menu principal.
-	 * @param string $selected Clave seleccionada.
-	 * @return array
-	 */
-	protected function base_menu($selected = NULL)
-	{
-		$data = array();
-
-		// Listado de elementos ONLINE.
-		if (Usuario::is_login())
-		{
-			$data['inicio'] = array('link' => '/perfil/', 'caption' => 'Inicio', 'icon' => 'home', 'active' => FALSE);
-		}
-
-		// Listado de elemento OFFLINE.
-		$data['posts'] = array('link' => '/', 'caption' => 'Posts', 'icon' => 'book', 'active' => FALSE);
-		$data['fotos'] = array('link' => '/foto/', 'caption' => 'Fotos', 'icon' => 'picture', 'active' => FALSE);
-		$data['tops'] = array('link' => '/tops/', 'caption' => 'TOPs', 'icon' => 'signal', 'active' => FALSE);
-
-		// Listado elemento por permisos.
-		if (Controller_Moderar_Home::permisos_acceso())
-		{
-			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'icon' => 'eye-open', 'active' => FALSE);
-		}
-
-		if (Controller_Admin_Home::permisos_acceso())
-		{
-			$data['admin'] = array('link' => '/admin/', 'caption' => 'Administración', 'icon' => 'certificate', 'active' => FALSE);
-		}
-
-		// Seleccionamos elemento.
-		if ($selected !== NULL && isset($data[$selected]))
-		{
-			$data[$selected]['active'] = TRUE;
-		}
-		else
-		{
-			$data['posts']['active'] = TRUE;
-		}
-
-		return $data;
 	}
 
 	/**
@@ -201,14 +106,8 @@ class Installer_Controller {
 		// Cargo la vista.
 		$vista = View::factory('index');
 
-		// Seteo el menu.
-		$this->template->assign('steps', $this->steps(0));
-
 		// Seteo el paso como terminado.
-		if ($_SESSION['step'] < 1)
-		{
-			$_SESSION['step'] = 1;
-		}
+		Installer_Step::get_instance()->terminado();
 
 		// Seteo la vista.
 		$this->template->assign('contenido', $vista->parse());
@@ -278,25 +177,14 @@ class Installer_Controller {
 			}
 		}
 
-		// Seteo paso.
+		// Seteo el paso como terminado.
 		if ($is_ok)
 		{
-			// Seteo el paso como terminado.
-			if ($_SESSION['step'] < 2)
-			{
-				$_SESSION['step'] = 2;
-			}
-		}
-		else
-		{
-			$_SESSION['step'] = 1;
+			Installer_Step::get_instance()->terminado();
 		}
 
 		// Paso estado a la vista.
 		$vista->assign('can_continue', $is_ok);
-
-		// Seteo el menu.
-		$this->template->assign('steps', $this->steps(1));
 
 		// Seteo la vista.
 		$this->template->assign('contenido', $vista->parse());
@@ -310,12 +198,11 @@ class Installer_Controller {
 		// Verifico estado de la base de datos.
 		if ($this->check_database())
 		{
-			// Seteo el paso como terminado.
-			if ($_SESSION['step'] < 3)
-			{
-				$_SESSION['step'] = 3;
-			}
-			Request::redirect('/installer/bd_install/');
+			// Seteo como terminado.
+			Installer_Step::get_instance()->terminado();
+
+			// Voy al siguiente.
+			Request::redirect(Installer_Step::url_siguiente('bd'));
 		}
 
 		// Cargo la vista.
@@ -419,11 +306,10 @@ class Installer_Controller {
 				if ($this->check_database())
 				{
 					// Seteo el paso como terminado.
-					if ($_SESSION['step'] < 3)
-					{
-						$_SESSION['step'] = 3;
-					}
-					Request::redirect('/installer/bd_install/');
+					Installer_Step::get_instance()->terminado();
+
+					// Voy al siguiente.
+					Installer_Step::get_instance()->ir_al_paso();
 				}
 				else
 				{
@@ -434,13 +320,10 @@ class Installer_Controller {
 					}
 
 					// Informo resultado.
-					$vista->assign('error', 'No se pudo conectar a la base de datos. Verifique los datos ingresados.');
+					add_flash_message(FLASH_ERROR, 'No se pudo conectar a la base de datos. Verifique los datos ingresados.');
 				}
 			}
 		}
-
-		// Seteo el menu.
-		$this->template->assign('steps', $this->steps(2));
 
 		// Seteo la vista.
 		$this->template->assign('contenido', $vista->parse());
@@ -513,14 +396,6 @@ class Installer_Controller {
 	 */
 	public function action_bd_install()
 	{
-		// Verifico estado de la base de datos.
-		if ( ! $this->check_database())
-		{
-			// Vuelvo para atrás.
-			$_SESSION['step'] = 2;
-			Request::redirect('/installer/bd');
-		}
-
 		// Cargo la vista.
 		$vista = View::factory('bd_installer');
 
@@ -647,19 +522,14 @@ class Installer_Controller {
 			if ( ! $error_global)
 			{
 				// Seteo el paso como terminado.
-				if ($_SESSION['step'] < 4)
-				{
-					$_SESSION['step'] = 4;
-				}
+				Installer_Step::get_instance()->terminado();
+
 				$vista->assign('execute', TRUE);
 			}
 		}
 
 		// Paso listado resultado.
 		$vista->assign('consultas', $lst);
-
-		// Seteo el menu.
-		$this->template->assign('steps', $this->steps(3));
 
 		// Seteo la vista.
 		$this->template->assign('contenido', $vista->parse());
@@ -672,9 +542,6 @@ class Installer_Controller {
 	{
 		// Cargo la vista.
 		$vista = View::factory('configuracion');
-
-		// Seteo el menu.
-		$this->template->assign('steps', $this->steps(4));
 
 		// Cargamos las configuraciones.
 		$model_configuracion = new Model_Configuracion;
@@ -821,13 +688,10 @@ class Installer_Controller {
 				}
 
 				// Seteo el paso como terminado.
-				if ($_SESSION['step'] < 4)
-				{
-					$_SESSION['step'] = 4;
-				}
+				Installer_Step::get_instance()->terminado();
 
 				// Redirecciono al siguiente.
-				Request::redirect('/installer/finalizacion/');
+				Installer_Step::get_instance()->ir_al_paso();
 			}
 		}
 
@@ -844,13 +708,171 @@ class Installer_Controller {
 		$vista = View::factory('finalizacion');
 
 		// Seteo el paso como terminado.
-		if ($_SESSION['step'] < 6)
+		Installer_Step::get_instance()->terminado();
+
+		// Seteo la vista.
+		$this->template->assign('contenido', $vista->parse());
+	}
+
+	/**
+	 * Acción de importar datos de otros sistemas.
+	 */
+	public function action_importar()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('importar');
+
+		// Listado de drivers.
+		$drivers = array();
+
+		if (function_exists('mysql_connect'))
 		{
-			$_SESSION['step'] = 6;
+			$drivers['mysql'] = 'MySQL';
 		}
 
-		// Seteo el menu.
-		$this->template->assign('steps', $this->steps(6));
+		if (class_exists('pdo'))
+		{
+			$drivers['pdo'] = 'PDO';
+		}
+		$vista->assign('drivers', $drivers);
+
+		// Listado de importadores.
+		$importadores = array('phpost');
+		$vista->assign('importadores', $importadores);
+
+		// Información por defecto.
+		$vista->assign('importador', 'phpost');
+		$vista->assign('error_importador', FALSE);
+		$vista->assign('driver', isset($drivers['mysql']) ? 'mysql' : 'pdo');
+		$vista->assign('error_driver', FALSE);
+		$vista->assign('host', '');
+		$vista->assign('error_host', FALSE);
+		$vista->assign('db_name', '');
+		$vista->assign('error_db_name', FALSE);
+		$vista->assign('usuario', '');
+		$vista->assign('error_usuario', FALSE);
+		$vista->assign('password', '');
+		$vista->assign('error_password', FALSE);
+
+		// Acciones de la importación.
+		if (Request::method() == 'POST')
+		{
+			// Verifico acción.
+			$method = isset($_POST['method']) ? $_POST['method'] : 'skip';
+
+			if ($method == 'skip')
+			{
+				// Omitimos la importación.
+				Installer_Step::get_instance()->terminado();
+				Installer_Step::get_instance()->ir_al_paso();
+			}
+			else
+			{
+				// Importamos datos.
+
+				// Obtengo los datos.
+				foreach (array('driver', 'host', 'db_name', 'usuario', 'password', 'importador') as $v)
+				{
+					$$v = isset($_POST[$v]) ? trim($_POST[$v]) : NULL;
+					$vista->assign($v, $$v);
+				}
+
+				$error = FALSE;
+
+				// Verifico importador.
+				if ( ! in_array($importador, $importadores))
+				{
+					$error = TRUE;
+					$vista->assign('error_importador', 'El importador seleccionado es incorrecto.');
+				}
+
+				// Verifico driver.
+				if ( ! isset($drivers[$driver]))
+				{
+					$error = TRUE;
+					$vista->assign('error_driver', 'El driver seleccionado es incorrecto.');
+				}
+
+				// Verifico lo datos.
+				if ($driver == 'mysql')
+				{
+					if (empty($host))
+					{
+						$error = TRUE;
+						$vista->assign('error_host', 'Debes ingresar un host válido.');
+					}
+
+					if (empty($db_name))
+					{
+						$error = TRUE;
+						$vista->assign('error_db_name', 'Debes ingresar una base de datos válida.');
+					}
+				}
+
+				if ( ! $error)
+				{
+					if ($driver == 'pdo')
+					{
+						// Genero arreglo de configuraciones.
+						$config = array(
+							'type' => $driver,
+							'dsn' => $host,
+							'username' => $usuario,
+							'password' => $password
+						);
+					}
+					else
+					{
+						// Genero arreglo de configuraciones.
+						$config = array(
+							'type' => $driver,
+							'host' => $host,
+							'db_name' => $db_name,
+							'username' => $usuario,
+							'password' => $password
+						);
+					}
+
+					// Realizo la conección.
+					try {
+						$db_tt = 'Database_Driver_'.ucfirst(strtolower($config['type']));
+						$db_instance = new $db_tt($config);
+					}
+					catch (Database_Exception $e)
+					{
+						$error = TRUE;
+						add_flash_message(FLASH_ERROR, 'Los datos ingresados para la conección a la base de datos son incorrectos');
+					}
+				}
+
+				// Realizo la importación.
+				if ( ! $error)
+				{
+					// Cargo el importador.
+					$importador = 'Installer_Importador_'.ucfirst(strtolower($importador));
+					$o_importador = new $importador(Database::get_instance(), $db_instance);
+
+					// Realizo la tarea.
+					try {
+						$o_importador->importar();
+					}
+					catch (Exception $e)
+					{
+						add_flash_message(FLASH_ERROR, 'Error al importar: \''.$e->getMessage().'\'');
+						$error = TRUE;
+					}
+				}
+
+				// Resultado de la importación.
+				if ( ! $error)
+				{
+					add_flash_message(FLASH_SUCCESS, 'Se han importado correctamente los datos.');
+					Installer_Step::get_instance()->terminado();
+
+					$vista->assign('terminado', TRUE);
+				}
+			}
+		}
 
 		// Seteo la vista.
 		$this->template->assign('contenido', $vista->parse());

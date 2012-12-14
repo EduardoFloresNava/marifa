@@ -1,8 +1,5 @@
 <h2 class="title">Configuraci&oacute;n del sitio</h2>
 <form class="form-horizontal" action="" method="POST" enctype="multipart/form-data">
-
-	{if="isset($error)"}<div class="alert">{$error}</div>{/if}
-
 	<fieldset>
 		<legend>Datos del sitio</legend>
 		<div class="control-group{if="$error_nombre"} error{/if}">
@@ -56,7 +53,7 @@
 			</div>
 		</div>
 	</fieldset>
-	
+
 	<fieldset>
 		<legend>Verificaci&oacute;n</legend>
 		<div class="control-group{if="$error_usuario"} error{/if}">

@@ -35,7 +35,7 @@
 			<div class="span12">
 				<div class="pull-left btn-group">
 					{if="$modificar_especiales"}
-						{if="$post.sticky"}<a href="{#SITE_URL#}/post/fijar_post/{$post.id}/-1" class="btn btn-info">Quitar fijo</a>{else}<a href="/post/fijar_post/{$post.id}/1" class="btn btn-info">Fijar</a>{/if}
+						{if="$post.sticky"}<a href="{#SITE_URL#}/post/fijar_post/{$post.id}/-1" class="btn btn-info">Desfijar</a>{else}<a href="/post/fijar_post/{$post.id}/1" class="btn btn-info">Fijar</a>{/if}
 						{if="$post.sponsored"}<a href="{#SITE_URL#}/post/patrocinar_post/{$post.id}/-1" class="btn btn-info">Quitar patrocinio</a>{else}<a href="/post/patrocinar_post/{$post.id}/1" class="btn btn-info">Patrocinar</a>{/if}
 					{/if}
 					{if="$modificar_editar"}<a href="{#SITE_URL#}/post/editar/{$post.id}" class="btn btn-success show-tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
@@ -71,10 +71,10 @@
 					{if="$me != NULL && $me != $usuario.id && $post.estado == 0"}<a href="{#SITE_URL#}/post/denunciar/{$post.id}" class="btn btn-danger">Denunciar</a>{/if}
 				</div>
 				<div class="pull-right btn-group">
-					<span class="btn">{$post.seguidores} Seguidores</span>
-					<span class="btn">{$post.puntos} Puntos</span>
-					<span class="btn">{$post.vistas} Visitas</span>
-					<span class="btn">{$post.favoritos} Favoritos</span>
+					<span class="btn show-tooltip" title="Seguidores"><i class="icon icon-user"></i> {$post.seguidores}</span>
+					<span class="btn show-tooltip" title="Puntos"><i class="icon icon-asterisk"></i> {$post.puntos}</span>
+					<span class="btn show-tooltip" title="Vistas"><i class="icon icon-eye-open"></i> {$post.vistas}</span>
+					<span class="btn show-tooltip" title="Favoritos"><i class="icon icon-star"></i> {$post.favoritos}</span>
 				</div>
 				{if="$me != NULL && is_array($puntuacion)"}
 				<div class="pull-right btn-group">
@@ -93,10 +93,7 @@
 					{loop="$etiquetas"}<li><a href="#">{$value}</a></li>{/loop}
 				</ul>
 				<div class="pull-right">
-					Creado: {function="$post.fecha->fuzzy()"}
-				</div>
-				<div class="pull-right">
-					Categoria: {$categoria.nombre}
+					<i class="icon icon-time"></i> {function="$post.fecha->fuzzy()"} en {$categoria.nombre}
 				</div>
 			</div>
 		</div>
@@ -124,7 +121,7 @@
 								</div>
 								{/if}
 								<div class="btn-group">
-									<a href="#" class="btn-quote-comment btn-mini btn" data-user="{$value.usuario.nick}" data-comment="p{$value.id}"><i class="icon icon-comment"></i></a>
+									<a href="#" class="btn-quote-comment btn-mini btn show-tooltip" title="Citar comentario" data-user="{$value.usuario.nick}" data-comment="p{$value.id}"><i class="icon icon-comment"></i></a>
 									{if="($me == $value.usuario.id || $comentario_editar) && $value.estado != 2"}<a href="{#SITE_URL#}/post/editar_comentario/{$value.id}" class="btn btn-mini btn-primary show-tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
 									{if="($me == $value.usuario.id || $comentario_ocultar) && $value.estado == 0"}<a href="{#SITE_URL#}/post/ocultar_comentario/{$value.id}/0" class="btn btn-mini btn-inverse show-tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
 									{if="$value.estado == 1 && $comentario_ocultar"}<a href="{#SITE_URL#}/post/ocultar_comentario/{$value.id}/1" class="btn btn-mini btn-info show-tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{/if}
