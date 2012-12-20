@@ -30,6 +30,11 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 
 /**
+ * Constante para las fecha de MySQL.
+ */
+define('BD_DATETIME', 'Y/m/d H:i:s');
+
+/**
  * Carga un archivo de configuraciones y lo devuelve.
  * @param string $file Nombre del archivo a cargar.
  * @param boolean $prepend_name Si agregamos previamente un arreglo con el nombre

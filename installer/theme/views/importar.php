@@ -1,5 +1,6 @@
 <h2 class="title">Importar datos:</h2>
 {if="!isset($terminado)"}
+<div class="alert alert-warning"><strong>&iexcl;IMPORTANTE!</strong> Al realizarse la importación toda información existente será eliminada. Solo realize una importación si es una instalación limpia, en caso contrario puede generar perdida de información y/o fallas irreversibles en el script.</div>
 <form class="form-horizontal" action="" method="POST" enctype="multipart/form-data">
 
 	<div class="control-group{if="$error_importador"} error{/if}">
