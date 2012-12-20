@@ -113,7 +113,7 @@ class Base_Controller_Perfil extends Controller {
 
 		$usuario = (Usuario::$usuario_id == $this->usuario->id) ? '' : $this->usuario->get('nick');
 		return array(
-			'muro' => array('link' => '/perfil/index/'.$usuario, 'caption' => __('Muro', FALSE), 'active' => $activo == 'muro' || $activo == 'index'),
+			'muro' => array('link' => '/perfil/index/'.$usuario, 'caption' => __('Muro', FALSE), 'active' => $activo == 'muro' || $activo == 'index' || $activo == 'publicacion'),
 			'informacion' => array('link' => '/perfil/informacion/'.$usuario, 'caption' => __('Información', FALSE), 'active' =>  $activo == 'informacion'),
 			'posts' => array('link' => '/perfil/posts/'.$usuario, 'caption' => __('Posts', FALSE), 'active' =>  $activo == 'posts'),
 			'seguidores' => array('link' => '/perfil/seguidores/'.$usuario, 'caption' => __('Seguidores', FALSE), 'active' =>  $activo == 'seguidores'),
@@ -320,7 +320,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+		$this->template->assign('title_raw', 'Información de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -374,7 +374,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+		$this->template->assign('title_raw', 'Posts de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -451,7 +451,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+		$this->template->assign('title_raw', 'Seguidores de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -761,7 +761,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+		$this->template->assign('title_raw', 'Perfil de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -875,7 +875,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+		$this->template->assign('title_raw', 'Denunciar a '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -1127,7 +1127,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick').' - Medallas');
+		$this->template->assign('title_raw', 'Medallas de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -1201,7 +1201,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->nick.' - Muro');
+		$this->template->assign('title_raw', 'Publicacion en el perfil de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**

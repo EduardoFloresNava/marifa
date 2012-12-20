@@ -2,21 +2,12 @@
 <html lang="es">
     <head>
         <meta charset="utf-8">
-        <title>{if="isset($brand)"}{$brand}{else}Marifa{/if} {if="isset($title)"} - {$title}{/if}</title>
+        <title>{if="isset($title_raw)"}{$title_raw}{elseif="isset($title)"}{$title} - {/if}{if="isset($brand)"}{$brand}{else}Marifa{/if}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
 
         <link href="{#THEME_URL#}/assets/css/bootstrap.css" rel="stylesheet">
-        <style type="text/css">
-            body {
-                padding-top: 60px;
-                padding-bottom: 40px;
-            }
-            .sidebar-nav {
-                padding: 9px 0;
-            }
-        </style>
         <link href="{#THEME_URL#}/assets/css/bootstrap-responsive.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/base.css" rel="stylesheet">
         {if="DEBUG"}<link href="{#THEME_URL#}/assets/css/profiler.css" rel="stylesheet">{/if}

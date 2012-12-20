@@ -183,6 +183,9 @@ class Base_Controller_Buscador extends Controller {
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $vista->parse());
+
+		// Título de la página.
+		$this->template->assign('title', 'Buscador');
 	}
 
 	/**
@@ -263,6 +266,9 @@ class Base_Controller_Buscador extends Controller {
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $vista->parse());
+
+		// Título de la página.
+		$this->template->assign('title_raw', 'Busqueda relacionada a \''.$model_post->titulo.'\' en ');
 	}
 
 	/**
@@ -340,6 +346,9 @@ class Base_Controller_Buscador extends Controller {
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $vista->parse());
+
+		// Título de la página.
+		$this->template->assign('title', 'Pin - #'.$etiqueta);
 	}
 
 }
