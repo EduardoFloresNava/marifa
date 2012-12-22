@@ -63,17 +63,19 @@ class Installer_Importador {
 	{
 		// Obtenemos métodos de la clase.
 		$r = new ReflectionClass($this);
-		$methods = $r->getMethods(ReflectionMethod::IS_PROTECTED);
+		$methods = $r->getMethods();
 
 		// Proceso listado y ejecuto.
 		foreach ($methods as $m)
 		{
 			// Verifico si es del timpo import_.
 			$m_name = $m->getName();
-			if (substr($m_name, 0, 7) == 'import_')
+				if (substr($m_name, 0, 7) == 'import_')
 			{
-				$this->$m_name();
+				//$this->$m_name();
+				var_dump($m_name);
 			}
 		}
+		die();
 	}
 }
