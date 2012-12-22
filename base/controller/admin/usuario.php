@@ -616,12 +616,12 @@ class Base_Controller_Admin_Usuario extends Controller {
 				$model_suceso = new Model_Suceso;
 				if (Usuario::$usuario_id != $id)
 				{
-					$model_suceso->crear($id, 'usuario_suspender', TRUE, $adv_id);
-					$model_suceso->crear(Usuario::$usuario_id, 'usuario_suspender', FALSE, $adv_id);
+					$model_suceso->crear($id, 'usuario_advertir', TRUE, $adv_id);
+					$model_suceso->crear(Usuario::$usuario_id, 'usuario_advertir', FALSE, $adv_id);
 				}
 				else
 				{
-					$model_suceso->crear($id, 'usuario_suspender', FALSE, $adv_id);
+					$model_suceso->crear($id, 'usuario_advertir', FALSE, $adv_id);
 				}
 
 				// Seteamos mensaje flash y volvemos.
