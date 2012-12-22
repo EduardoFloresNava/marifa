@@ -5,7 +5,7 @@
         <title>{if="isset($title_raw)"}{$title_raw}{elseif="isset($title)"}{$title} - {/if}{if="isset($brand)"}{$brand}{else}Marifa{/if}</title>
 		{if="isset($meta_description)"}<meta name="description" content="{$meta_description|Texto::limit_chars:140,'...',TRUE}">{/if}
 		{if="isset($meta_keywords)"}<meta name="keywords" content="{$meta_keywords}">{/if}
-        <meta name="author" content="">
+		{if="isset($meta_author)"}<meta name="author" content="{$meta_author}">{/if}
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 

@@ -86,6 +86,7 @@ class Base_Controller_Post extends Controller {
 		// Cargo información SEO.
 		$this->template->assign('meta_description', preg_replace('/\[.*\]/', '', $model_post->contenido));
 		$this->template->assign('meta_keywords', implode(', ', array_slice($model_post->etiquetas(), 0, 5)));
+		$this->template->assign('meta_author', $model_post->usuario()->nick);
 
 
 		if ($model_post->as_object()->privado && ! Usuario::is_login())
