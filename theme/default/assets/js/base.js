@@ -8,15 +8,15 @@
 
         if (usuario != '')
         {
-            window.location.href = '/buscador/q/'+encodeURIComponent(query)+'/1/'+encodeURIComponent(categoria)+'/'+encodeURIComponent(usuario);
+            window.location.href = window.site_url+'buscador/q/'+encodeURIComponent(query)+'/1/'+encodeURIComponent(categoria)+'/'+encodeURIComponent(usuario);
         }
         else if(categoria != '' && categoria != 'todos')
         {
-            window.location.href = '/buscador/q/'+encodeURIComponent(query)+'/1/'+encodeURIComponent(categoria);
+            window.location.href = window.site_url+'buscador/q/'+encodeURIComponent(query)+'/1/'+encodeURIComponent(categoria);
         }
         else
         {
-            window.location.href = '/buscador/q/'+encodeURIComponent(query);
+            window.location.href = window.site_url+'buscador/q/'+encodeURIComponent(query);
         }
     });
 } (jQuery));
@@ -123,7 +123,7 @@
             $(".pop-notification div.notification").remove();
 
             $.ajax({
-                url: '/notificaciones/sin_desplegar',
+                url: window.site_url+'notificaciones/sin_desplegar',
                 dataType: 'json',
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(textStatus);
@@ -172,7 +172,7 @@
             // Verifico si hay que marcar como desplegados.
             if (sucesos.length > 0 && $("#suceso-dropdown").css('display') == 'none') {
                 $.ajax({
-                    url: '/notificaciones/desplegadas',
+                    url: window.site_url+'notificaciones/desplegadas',
                     type: 'POST',
                     data: {sucesos: sucesos},
                     dataType: 'json',
@@ -513,5 +513,39 @@ $('a[data-dismiss="alert"]').click(function (e) {
             }
         }
         e.preventDefault();
+    });
+} (jQuery));
+
+/**
+ * Generación automática de etiquetas en posts y fotos.
+ */
+(function ($) {
+    $('.generar-etiquetas').click(function (e) {
+        e.preventDefault();
+
+        // Verifico no sea doble click.
+        if ($(this).attr('disabled'))
+        {
+            return false;
+        }
+
+        // Evito se envie de nuevo.
+        $(this).attr('disabled', 'disabled');
+
+        // Realizo la peticion.
+        $.ajax({
+            url: window.site_url+'post/etiquetas',
+            type: 'POST',
+            data: {contenido: $('#contenido').val()},
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus);
+                $(this).removeAttr('disabled');
+            },
+            context: $(this),
+            success: function (data, textStatus, jqXHR) {
+                $(this).prev().val(data);
+                $(this).removeAttr('disabled');
+            }
+        });
     });
 } (jQuery));

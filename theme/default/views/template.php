@@ -1,11 +1,13 @@
 <!DOCTYPE HTML>
 <html lang="es">
     <head>
-        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>{if="isset($title_raw)"}{$title_raw}{elseif="isset($title)"}{$title} - {/if}{if="isset($brand)"}{$brand}{else}Marifa{/if}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
+		{if="isset($meta_description)"}<meta name="description" content="{$meta_description|Texto::limit_chars:140,'...',TRUE}">{/if}
+		{if="isset($meta_keywords)"}<meta name="keywords" content="{$meta_keywords}">{/if}
         <meta name="author" content="">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link href="{#THEME_URL#}/assets/css/bootstrap.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/bootstrap-responsive.css" rel="stylesheet">

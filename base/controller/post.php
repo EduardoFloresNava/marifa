@@ -83,6 +83,10 @@ class Base_Controller_Post extends Controller {
 				break;
 		}
 
+		// Cargo información SEO.
+		$this->template->assign('meta_description', preg_replace('/\[.*\]/', '', $model_post->contenido));
+		$this->template->assign('meta_keywords', implode(', ', array_slice($model_post->etiquetas(), 0, 5)));
+
 
 		if ($model_post->as_object()->privado && ! Usuario::is_login())
 		{
@@ -378,8 +382,54 @@ class Base_Controller_Post extends Controller {
 			// Verificamos las etiquetas.
 			if ( ! preg_match('/^[a-zA-Z0-9áéíóúñÑÁÉÍÓÚ, ]{0,}$/D', $tags))
 			{
-				$view->assign('error_tags', 'Las etiquetas ingresadas con son alphanuméricas..');
+				$view->assign('error_tags', 'Las etiquetas ingresadas con son alphanuméricas.');
 				$error = TRUE;
+			}
+
+			if ( ! $error)
+			{
+				// Configuraciones sobre etiquetas.
+				$model_config = new Model_Configuracion;
+				$keyword_len = (int) $model_config->get('keyword_largo_minimo', 3);
+				$keyword_bloqueadas = unserialize($model_config->get('keyword_palabras_comunes', 'a:0:{}'));
+
+				// Obtengo el listado de etiquetas.
+				$tags = explode(',', $tags);
+				foreach ($tags as $k => $v)
+				{
+					// Elimino espacios extra.
+					$tags[$k] = trim(strtolower($v));
+
+					// Verifico no sea vacia.
+					if ($tags[$k] == '')
+					{
+						unset($tags[$k]);
+						continue;
+					}
+
+					// Verifico largo.
+					if (strlen($v) < $keyword_len)
+					{
+						$view->assign('error_tags', "La etiqueta '$v' no es válida. Debe tener al menos $keyword_len caracteres.");
+						$error = TRUE;
+						break;
+					}
+
+					// Verifico que sea permitida.
+					if (in_array($v, $keyword_bloqueadas))
+					{
+						$view->assign('error_tags', "La etiqueta '$v' no está permitida.");
+						$error = TRUE;
+						break;
+					}
+				}
+
+				// Verifico la cantidad.
+				if ( ! $error && count($tags) < 3)
+				{
+					$view->assign('error_tags', 'Debes insertar un mínimo de 3 etiquetas.');
+					$error = TRUE;
+				}
 			}
 
 			// Procedemos a crear el post.
@@ -390,17 +440,6 @@ class Base_Controller_Post extends Controller {
 
 				// Formateamos los campos.
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
-
-				// Obtengo el listado de etiquetas.
-				$tags = explode(',', $tags);
-				foreach ($tags as $k => $v)
-				{
-					$tags[$k] = trim($v);
-					if ($tags[$k] == '')
-					{
-						unset($tags[$k]);
-					}
-				}
 
 				// Obtengo listado a agregar, quitar y mantener.
 				$delta_etiquetas = array_intersect($model_post->etiquetas(), $tags);
@@ -1965,19 +2004,44 @@ class Base_Controller_Post extends Controller {
 
 			if ( ! $error)
 			{
+				// Configuraciones sobre etiquetas.
+				$model_config = new Model_Configuracion;
+				$keyword_len = (int) $model_config->get('keyword_largo_minimo', 3);
+				$keyword_bloqueadas = unserialize($model_config->get('keyword_palabras_comunes', 'a:0:{}'));
+
 				// Obtengo el listado de etiquetas.
 				$tags = explode(',', $tags);
 				foreach ($tags as $k => $v)
 				{
-					$tags[$k] = trim($v);
+					// Elimino espacios extra.
+					$tags[$k] = trim(strtolower($v));
+
+					// Verifico no sea vacia.
 					if ($tags[$k] == '')
 					{
 						unset($tags[$k]);
+						continue;
+					}
+
+					// Verifico largo.
+					if (strlen($v) < $keyword_len)
+					{
+						$view->assign('error_tags', "La etiqueta '$v' no es válida. Debe tener al menos $keyword_len caracteres.");
+						$error = TRUE;
+						break;
+					}
+
+					// Verifico que sea permitida.
+					if (in_array($v, $keyword_bloqueadas))
+					{
+						$view->assign('error_tags', "La etiqueta '$v' no está permitida.");
+						$error = TRUE;
+						break;
 					}
 				}
 
 				// Verifico la cantidad.
-				if (count($tags) < 3)
+				if ( ! $error && count($tags) < 3)
 				{
 					$view->assign('error_tags', 'Debes insertar un mínimo de 3 etiquetas.');
 					$error = TRUE;
@@ -2071,5 +2135,23 @@ class Base_Controller_Post extends Controller {
 
 		// Proceso contenido.
 		die(Decoda::procesar($contenido));
+	}
+
+	/**
+	 * Obtenemos un listado de etiquetas para el post.
+	 */
+	public function action_etiquetas()
+	{
+		// Obtengo el contenido.
+		$contenido = isset($_POST['contenido']) ? $_POST['contenido'] : '';
+
+		// Evito salida por template.
+		$this->template = NULL;
+
+		// Obtengo listado de etiquetas.
+		$tags = new Keyword;
+
+		// Proceso contenido.
+		die(implode(', ', $tags->extract_keywords($contenido, TRUE)));
 	}
 }
