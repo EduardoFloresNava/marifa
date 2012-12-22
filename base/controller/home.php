@@ -236,6 +236,10 @@ class Base_Controller_Home extends Controller {
 		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
 		unset($model_foto);
 
+		// Titulo del sitio.
+		$this->template->assign('brand', '');
+		$this->template->assign('title_raw', $model_configuracion->nombre.' - '.$model_configuracion->descripcion);
+
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());
 	}
