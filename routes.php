@@ -28,6 +28,13 @@
  *                Es un arreglo asociativo donde la clave es el nombre de la variable y el valor la expresión regular.
  *                Por ejemplo: array('/post/:id/', array('controller' => 'post', 'action' => 'index'), array('filters' => array('id' => '(\d+)')))
  *                Donde se especifica que id debe ser un número.
+ *     - params_map: Este arreglo permite especificar la posición donde será colocado un parámetro.
+ *                Es un arreglo donde deben ponerse en orden los nombres de los parámetros o NULL para uno vacio.
+ *                Por ejemplo: array('/post/categoria/:categoria', array('controller' => 'home', 'action' => 'index'), array('params_map' => array(NULL, 'categoria')))
+ *                    Mapea :categoria al 2do parámetro en lugar del primero, siendo equivalente a /home/index//:categoria (en caso de no estar params_map sería /home/index/:categoria/
+ *                    Como se puso NULL como primer elemento, se toma un argumento vacio.
+ *                Otro ejemplo: array('/post/categoria/:categoria/:pagina', array('controller' => 'home', 'action' => 'index'), array('params_map' => array('pagina', 'categoria')))
+ *                    Donde mapea :categoria al 2do y :pagina al 1ro, siendo equivalente a /home/index/:pagina/:categoria (en caso de no estar params_map sería /home/index/:categoria/:params
  *
  *
  *  Algo importante a destacar es que el orden de las rutas es importante ya que se van verificando en orden una a una. Luego se procesan las de los plugins.
@@ -37,5 +44,8 @@ return array(
 	array('/login', array('controller' => 'usuario', 'action' => 'login')), // Atajo al login.
 	array('/logout', array('controller' => 'usuario', 'action' => 'logout')), // Atajo al logout.
 	array('/register/', array('controller' => 'usuario', 'action' => 'register')), // Atajo al registro.
+
+	array('/post/categoria/:categoria/:pagina', array('controller' => 'home', 'action' => 'index'), array('params_map' => array('pagina', 'categoria'))), // Atajo a las categorias. VER MAPEO PARÁMETROS.
+	array('/post/categoria/:categoria', array('controller' => 'home', 'action' => 'index'), array('params_map' => array(NULL, 'categoria'))), // Atajo a las categorias. VER MAPEO PARÁMETROS.
 	//array('/perfil/:usuario/', array('controller' => 'perfil', 'action' => 'index'), array('filters' => array('usuario' => '()')), // Atajo al perfil del usuario.
 );

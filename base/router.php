@@ -85,6 +85,11 @@ class Base_Router {
 			$route->setFilters($args['filters']);
 		}
 
+		if (isset($args['params_map']))
+		{
+			$route->setParamsMap($args['params_map']);
+		}
+
 		if (isset($args['name']))
 		{
 			$route->setName($args['name']);
