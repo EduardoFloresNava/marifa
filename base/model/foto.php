@@ -308,15 +308,23 @@ class Base_Model_Foto extends Model_Dataset {
 	 * Obtenemos un listado de las ultimas fotos.
 	 * @param int $pagina Número de paginas a obtener. La primera es 1.
 	 * @param int $cantidad Cantidad de elementos por página.
+	 * @param int $categoria ID de la categoria de los elementos.
 	 * @return array
 	 */
-	public function obtener_ultimas($pagina = 1, $cantidad = 20)
+	public function obtener_ultimas($pagina = 1, $cantidad = 20, $categoria = NULL)
 	{
 		// Calculamos primer elemento.
 		$primero = $cantidad * ($pagina - 1);
 
 		// Obtenemos la lista de sucesos.
-		$sucesos = $this->db->query('SELECT id FROM foto WHERE estado = ? ORDER BY creacion DESC LIMIT '.$primero.','.$cantidad, self::ESTADO_ACTIVA)->get_pairs(Database_Query::FIELD_INT);
+		if ($categoria === NULL)
+		{
+			$sucesos = $this->db->query('SELECT id FROM foto WHERE estado = ? ORDER BY creacion DESC LIMIT '.$primero.','.$cantidad, self::ESTADO_ACTIVA)->get_pairs(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			$sucesos = $this->db->query('SELECT id FROM foto WHERE estado = ? AND categoria_id = ? ORDER BY creacion DESC LIMIT '.$primero.','.$cantidad, array(self::ESTADO_ACTIVA, $categoria))->get_pairs(Database_Query::FIELD_INT);
+		}
 
 		$listado = array();
 		foreach ($sucesos as $s)
@@ -354,32 +362,31 @@ class Base_Model_Foto extends Model_Dataset {
 	/**
 	 * Cantidad total de fotos.
 	 * @param int $estado Estado de la categoria a contar. NULL para todas.
-	 * @param int $usuario ID del usuario dueño de las fotos. NULL para todos.
+	 * @param int $usuario_id ID del usuario dueño de las fotos. NULL para todos.
+	 * @param int $categoria_id ID de la categoria de la foto. NULL para todas.
 	 * @return int
 	 */
-	public static function s_cantidad($estado = NULL, $usuario = NULL)
+	public static function s_cantidad($estado = NULL, $usuario_id = NULL, $categoria_id = NULL)
 	{
-		if ($estado !== NULL)
+		if ($estado === NULL && $usuario_id === NULL && $categoria_id === NULL)
 		{
-			if ($usuario !== NULL)
-			{
-				return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE estado = ? AND WHERE usuario_id = ?', array($estado, $usuario))->get_var(Database_Query::FIELD_INT);
-			}
-			else
-			{
-				return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
-			}
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
 		}
 		else
 		{
-			if ($usuario !== NULL)
+			$params = array();
+			$opts = array();
+
+			foreach (array('estado', 'usuario_id', 'categoria_id') as $t)
 			{
-				return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE usuario_id = ?', $usuario)->get_var(Database_Query::FIELD_INT);
+				if ($$t !== NULL)
+				{
+					$params[] = $$t;
+					$opts[] = $t.' = ?';
+				}
 			}
-			else
-			{
-				return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto')->get_var(Database_Query::FIELD_INT);
-			}
+
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM foto WHERE '.implode(' AND ', $opts), $params)->get_var(Database_Query::FIELD_INT);
 		}
 	}
 
@@ -416,11 +423,13 @@ class Base_Model_Foto extends Model_Dataset {
 	/**
 	 * Cantidad total de fotos.
 	 * @param int $estado Estado de la categoria a contar. NULL para todas.
+	 * @param int $usuario ID del usuario dueño de las fotos. NULL para todos.
+	 * @param int $categoria ID de la categoria de la foto. NULL para todas.
 	 * @return int
 	 */
-	public function cantidad($estado = NULL)
+	public function cantidad($estado = NULL, $usuario = NULL, $categoria = NULL)
 	{
-		return self::s_cantidad($estado);
+		return self::s_cantidad($estado, $usuario, $categoria);
 	}
 
 	/**

@@ -528,15 +528,23 @@ class Base_Model_Post extends Model_Dataset {
 	 * Obtenemos el listado de los últimos posts.
 	 * @param int $pagina Número de página empezando en 1.
 	 * @param int $cantidad Cantidad de post por página.
+	 * @param int $categoria ID de la categoria a donde deben pertenecer, NULL para todas.
 	 * @return array
 	 */
-	public function obtener_ultimos($pagina = 1, $cantidad = 10)
+	public function obtener_ultimos($pagina = 1, $cantidad = 10, $categoria = NULL)
 	{
 		// Primer elemento a devolver.
 		$inicio = $cantidad * ($pagina - 1);
 
 		// Obtenemos el listado.
-		$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 0 ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+		if ($categoria === NULL)
+		{
+			$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 0 ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 0 AND categoria_id = ? ORDER BY fecha DESC LIMIT '.$inicio.', '.$cantidad, $categoria)->get_pairs(Database_Query::FIELD_INT);
+		}
 
 		// Armamos la lista.
 		$lst = array();
@@ -550,19 +558,34 @@ class Base_Model_Post extends Model_Dataset {
 
 	/**
 	 * Obtenemos el listado de los posts fijos.
-	 * @param bool Si mostramos los privados o no.
+	 * @param bool $privados Si mostramos los privados o no.
+	 * @param int $categoria Catengía a la que deben pertenecer, NULL para cualquiera.
 	 * @return array
 	 */
-	public function sticky($privados = FALSE)
+	public function sticky($privados = FALSE, $categoria = NULL)
 	{
 		// Obtenemos el listado.
 		if ($privados)
 		{
-			$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 1 ORDER BY fecha DESC')->get_pairs(Database_Query::FIELD_INT);
+			if ($categoria !== NULL)
+			{
+				$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 1 AND categoria_id = ? ORDER BY fecha DESC', $categoria)->get_pairs(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 1 ORDER BY fecha DESC')->get_pairs(Database_Query::FIELD_INT);
+			}
 		}
 		else
 		{
-			$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 1 AND privado = 0 ORDER BY fecha DESC')->get_pairs(Database_Query::FIELD_INT);
+			if ($categoria !== NULL)
+			{
+				$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 1 AND privado = 0 AND categoria_id = ? ORDER BY fecha DESC', $categoria)->get_pairs(Database_Query::FIELD_INT);
+			}
+			else
+			{
+				$rst = $this->db->query('SELECT id FROM post WHERE estado = 0 AND sticky = 1 AND privado = 0 ORDER BY fecha DESC')->get_pairs(Database_Query::FIELD_INT);
+			}
 		}
 
 		// Armamos la lista.
@@ -609,7 +632,7 @@ class Base_Model_Post extends Model_Dataset {
 	{
 		if ($estado !== NULL && $categoria !== NULL)
 		{
-			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE estado = ? AND categoria = ?', array($estado, $categoria))->get_var(Database_Query::FIELD_INT);
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE estado = ? AND categoria_id = ?', array($estado, $categoria))->get_var(Database_Query::FIELD_INT);
 		}
 
 		if ($estado !== NULL)
@@ -619,7 +642,7 @@ class Base_Model_Post extends Model_Dataset {
 
 		if ($categoria !== NULL)
 		{
-			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE categoria = ?', $categoria)->get_var(Database_Query::FIELD_INT);
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE categoria_id = ?', $categoria)->get_var(Database_Query::FIELD_INT);
 		}
 		return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post')->get_var(Database_Query::FIELD_INT);
 	}

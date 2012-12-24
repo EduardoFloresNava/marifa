@@ -8,9 +8,9 @@
 		<div class="contenido">
 			<div class="wrapper">
 				{if="$suceso.usuario.id === $suceso.foto_usuario.id"}
-				{@Ha comentado en su foto@} <a href="{#SITE_URL#}/foto/ver/{$suceso.foto.id}">{$suceso.foto.titulo}</a>.
+				{@Ha comentado en su foto@} <a href="{#SITE_URL#}/foto/{$suceso.foto.categoria.seo}/{$suceso.foto.id}/{$suceso.foto.titulo|Texto::make_seo}.html">{$suceso.foto.titulo}</a>.
 				{else}
-				{@Ha comentado en la foto@} <a href="{#SITE_URL#}/foto/ver/{$suceso.foto.id}">{$suceso.foto.titulo}</a> {@de@} <a href="{#SITE_URL#}/perfil/index/{$suceso.foto_usuario.nick}">{$suceso.foto_usuario.nick}</a>.
+				{@Ha comentado en la foto@} <a href="{#SITE_URL#}/foto/{$suceso.foto.categoria.seo}/{$suceso.foto.id}/{$suceso.foto.titulo|Texto::make_seo}.html">{$suceso.foto.titulo}</a> {@de@} <a href="{#SITE_URL#}/perfil/index/{$suceso.foto_usuario.nick}">{$suceso.foto_usuario.nick}</a>.
 				{/if}
 			</div>
 		</div>

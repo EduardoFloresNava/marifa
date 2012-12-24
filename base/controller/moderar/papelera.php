@@ -258,6 +258,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		{
 			$a = $v->as_array();
 			$a['usuario'] = $v->usuario()->as_array();
+			$a['categoria'] = $v->categoria()->as_array();
 			$lst[$k] = $a;
 		}
 

@@ -276,8 +276,12 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+		$foto = $model_foto->as_array();
+		$foto['usuario'] = $model_foto->usuario()->as_array();
+		$foto['categoria'] = $model_foto->categoria()->as_array();
+		unset($model_foto);
 
-		return array('foto' => $model_foto->as_array(), 'usuario' => $model_foto->usuario()->as_array());
+		return array('foto' => $foto, 'usuario' => $foto['usuario']);
 	}
 
 	/**
@@ -289,6 +293,10 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+		$foto = $model_foto->as_array();
+		$foto['usuario'] = $model_foto->usuario()->as_array();
+		$foto['categoria'] = $model_foto->categoria()->as_array();
+		unset($model_foto);
 
 		// Cargo quien vota.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
@@ -296,7 +304,7 @@ class Base_Suceso_Perfil extends Suceso {
 		// Tipo de voto.
 		$voto = (bool) $suceso['objeto_id2'];
 
-		return array('foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
+		return array('foto' => $foto, 'foto_usuario' => $foto['usuario'], 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
 	}
 
 	/**
@@ -308,11 +316,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+		$foto = $model_foto->as_array();
+		$foto['usuario'] = $model_foto->usuario()->as_array();
+		$foto['categoria'] = $model_foto->categoria()->as_array();
+		unset($model_foto);
 
 		// Cargo quien agrega a favoritos.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+		return array('foto' => $foto, 'foto_usuario' => $foto['usuario'], 'usuario' => $model_usuario->as_array());
 	}
 
 	/**
@@ -324,11 +336,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+		$foto = $model_foto->as_array();
+		$foto['usuario'] = $model_foto->usuario()->as_array();
+		$foto['categoria'] = $model_foto->categoria()->as_array();
+		unset($model_foto);
 
 		// Cargo quien edita la foto.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('foto' => $model_foto->as_array(), 'usuario' => $model_foto->usuario()->as_array(), 'editor' => $model_usuario->as_array());
+		return array('foto' => $foto, 'usuario' => $foto['usuario'], 'editor' => $model_usuario->as_array());
 	}
 
 	/**
@@ -343,11 +359,15 @@ class Base_Suceso_Perfil extends Suceso {
 
 		// Foto en donde se crea el comentario.
 		$model_foto = $model_comentario->foto();
+		$foto = $model_foto->as_array();
+		$foto['usuario'] = $model_foto->usuario()->as_array();
+		$foto['categoria'] = $model_foto->categoria()->as_array();
+		unset($model_foto);
 
 		// Usuario que crea el foto.
 		$model_usuario = $model_comentario->usuario();
 
-		return array('comentario' => $model_comentario->as_array(), 'foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+		return array('comentario' => $model_comentario->as_array(), 'foto' => $foto, 'foto_usuario' => $foto['usaurio'], 'usuario' => $model_usuario->as_array());
 	}
 
 	/**
@@ -363,7 +383,11 @@ class Base_Suceso_Perfil extends Suceso {
 		// Cargo el usuario que edita.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('foto' => $model_comentario->foto()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+		$foto = $model_comentario->foto()->as_array();
+		$foto['usuario'] = $model_comentario->foto()->usuario()->as_array();
+		$foto['categoria'] = $model_comentario->foto()->categoria()->as_array();
+
+		return array('foto' => $foto, 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
 	}
 
 	/**
@@ -484,13 +508,19 @@ class Base_Suceso_Perfil extends Suceso {
 		if ($suceso['objeto_id2'] == 1)
 		{
 			$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
+			
+			return array('usuario' => $model_usuario->as_array(), 'comentario' => $model_comentario->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array());
 		}
 		else
 		{
 			$model_comentario = new Model_Foto_Comentario( (int) $suceso['objeto_id']);
-		}
 
-		return array('usuario' => $model_usuario->as_array(), 'comentario' => $model_comentario->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array());
+			$foto = $model_comentario->foto()->as_array();
+			$foto['usuario'] = $model_comentario->foto()->usuario()->as_array();
+			$foto['categoria'] = $model_comentario->foto()->categoria()->as_array();
+
+			return array('foto' => $foto, 'usuario' => $model_usuario->as_array(), 'comentario' => $model_comentario->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array());
+		}
 	}
 
 	/**

@@ -45,7 +45,17 @@ return array(
 	array('/logout', array('controller' => 'usuario', 'action' => 'logout')), // Atajo al logout.
 	array('/register/', array('controller' => 'usuario', 'action' => 'register')), // Atajo al registro.
 
-	array('/post/categoria/:categoria/:pagina', array('controller' => 'home', 'action' => 'index'), array('params_map' => array('pagina', 'categoria'))), // Atajo a las categorias. VER MAPEO PARÁMETROS.
-	array('/post/categoria/:categoria', array('controller' => 'home', 'action' => 'index'), array('params_map' => array(NULL, 'categoria'))), // Atajo a las categorias. VER MAPEO PARÁMETROS.
+	// Rutas para los posts.
+	array('/post/:pagina/', array('controller' => 'home', 'action' => 'index'), array('filters' => array('pagina' => '(\d+)'))),
+	array('/post/categoria/:categoria/:pagina', array('controller' => 'home', 'action' => 'index'), array('params_map' => array('pagina', 'categoria'))), // Atajo a las categorias.
+	array('/post/categoria/:categoria', array('controller' => 'home', 'action' => 'index'), array('params_map' => array(NULL, 'categoria'))), // Atajo a las categorias.
+	array('/post/:categoria/:id/(:nombre).html', array('controller' => 'post', 'action' => 'index'), array('params_map' => array('id'))), // URL a una foto.
+
+	// Rutas para las fotos.
+	array('/foto/:pagina/', array('controller' => 'foto', 'action' => 'index'), array('filters' => array('pagina' => '(\d+)'))),
+	array('/foto/categoria/:categoria/:pagina', array('controller' => 'foto', 'action' => 'index'), array('params_map' => array('pagina', 'categoria'))), // Atajo a las categorias.
+	array('/foto/categoria/:categoria', array('controller' => 'foto', 'action' => 'index'), array('params_map' => array(NULL, 'categoria'))), // Atajo a las categorias.
+	array('/foto/:categoria/:id/(:nombre).html', array('controller' => 'foto', 'action' => 'ver'), array('params_map' => array('id'))), // URL a una foto.
+
 	//array('/perfil/:usuario/', array('controller' => 'perfil', 'action' => 'index'), array('filters' => array('usuario' => '()')), // Atajo al perfil del usuario.
 );

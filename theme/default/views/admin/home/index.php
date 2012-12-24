@@ -31,7 +31,7 @@
 						{/if}
 				</a>
 				{else}
-				<a href="{#SITE_URL#}/foto/ver/{$value.id}/">
+				<a href="{#SITE_URL#}/foto/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">
 					<i class="icon icon-picture"></i>
 					{function="Texto::limit_chars($value.titulo, 35, '...', TRUE)"}
 						{if="$value.estado == 0"}

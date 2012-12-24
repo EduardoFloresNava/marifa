@@ -172,6 +172,7 @@ class Base_Controller_Admin_Home extends Controller {
 				$aux = $obj->as_array();
 				$aux['tipo'] = 'post';
 				$aux['usuario'] = $obj->usuario()->as_array();
+				$aux['categoria'] = $obj->categoria()->as_array();
 				$lst[] = $aux;
 			}
 			else
@@ -180,6 +181,7 @@ class Base_Controller_Admin_Home extends Controller {
 				$aux = $obj->as_array();
 				$aux['tipo'] = 'foto';
 				$aux['usuario'] = $obj->usuario()->as_array();
+				$aux['categoria'] = $obj->categoria()->as_array();
 				$lst[] = $aux;
 			}
 		}

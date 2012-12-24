@@ -11,7 +11,7 @@
 	<tbody>
 	{loop="$favoritos"}
 		<tr>
-			<td><a href="{#SITE_URL#}/foto/ver/{$value.id}" class="title"><img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" /> {$value.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/foto/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html" class="title"><img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" /> {$value.titulo}</a></td>
 			<td>{$value.creacion->fuzzy()}</td>
 			<td>
 				<a href="{#SITE_URL#}/favoritos/borrar_foto/{$value.id}" rel="tooltip" title="Quitar de favoritos" class="btn btn-mini btn-danger"><i class="icon-white icon-remove"></i></a>

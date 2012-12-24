@@ -172,7 +172,7 @@ class Base_Route {
 	 */
 	public function getParameters()
 	{
-		if (is_array($this->params_map))
+		if (is_array($this->params_map) && count($this->params_map) > 0)
 		{
 			// Aplico traducción de parámetros.
 			$p = array();

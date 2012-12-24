@@ -27,7 +27,7 @@
 		<div>
 			<h3 class="title">{$foto.titulo}<small>{$foto.creacion->fuzzy()}</small></h3>
 			<div class="thumbnail" style="margin: 0 auto; min-height: 200px">
-				<img src="{$foto.url}" />
+				<img alt="{$foto.descripcion_clean|Texto::limit_chars:30,TRUE,'...'}" src="{$foto.url}" />
 			</div>
 			<div class="contenido-foto">{$foto.descripcion}</div>
 		</div>

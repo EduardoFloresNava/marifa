@@ -770,6 +770,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		{
 			$a = $v->as_array();
 			$a['usuario'] = $v->usuario()->as_array();
+			$a['categoria'] = $v->categoria()->as_array();
 			$lst[$k] = $a;
 		}
 

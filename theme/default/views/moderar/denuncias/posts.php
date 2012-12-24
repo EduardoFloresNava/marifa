@@ -25,7 +25,7 @@
 		{loop="$denuncias"}
 		<tr>
 			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
-			<td><a href="{#SITE_URL#}/foto/index/{$value.post.id}">{$value.post.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/post/index/{$value.post.id}">{$value.post.titulo}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td>
 				{if="$value.motivo == 0"}

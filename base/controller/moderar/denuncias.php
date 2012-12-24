@@ -369,6 +369,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$a = $v->as_array();
 			$a['usuario'] = $v->usuario()->as_array();
 			$a['foto'] = $v->foto()->as_array();
+			$a['foto']['categoria'] = $v->foto()->categoria()->as_array();
 			$lst[$k] = $a;
 		}
 

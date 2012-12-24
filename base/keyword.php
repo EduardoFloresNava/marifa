@@ -75,13 +75,14 @@ class Base_Keyword {
 	public function extract_keywords($str, $asArray = FALSE, $maxWords = 8)
 	{
 		// Transformo caracteres especiales a espacios y todo a minúsculas.
-	    $str = strtolower(str_replace(array("?","!",";","(",")",":","[","]"), " ", $str));
+	    //$str = strtolower(str_replace(array("?","!",";","(",")",":","[","]"), " ", $str));
 
 		// Quito caracteres especiales.
-	    $str = preg_replace('/[^\p{L}0-9 ]/', ' ', $str);
+	    //$str = preg_replace('/[^\p{L}0-9 ]/', ' ', strtolower($str));
 
 		// Borro espacios multiples.
-	    $str = trim(preg_replace('/\s+/', ' ', $str));
+	    //$str = trim(preg_replace('/\s+/', ' ', $str));
+	    $str = trim(preg_replace('/\s+/', ' ', preg_replace('/[^\p{L}0-9 ]/', ' ', strtolower($str))));
 
 		// Separo en palabras.
 	    $words = explode(' ', $str);

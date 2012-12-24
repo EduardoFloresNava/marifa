@@ -8,9 +8,9 @@
 		<div class="contenido">
 			<div class="wrapper">
 				{if="$suceso.comentario_usuario.id !== $actual.id"}
-				{@Ha citado el@} <a href="{if="isset($suceso.comentario.foto_id)"}{#SITE_URL#}/foto/ver/{$suceso.comentario.foto_id}#c-{$suceso.comentario.id}{else}{#SITE_URL#}/post/index/{$suceso.comentario.post_id}#c-{$suceso.comentario.id}{/if}">comentario</a> {@de@} <a href="{#SITE_URL#}/perfil/index/{$suceso.comentario_usuario.nick}">{$suceso.comentario_usuario.nick}</a>.
+				{@Ha citado el@} <a href="{if="isset($suceso.comentario.foto_id)"}{#SITE_URL#}/foto/{$suceso.foto.categoria.seo}/{$suceso.foto.id}/{$suceso.foto.titulo|Texto::make_seo}.html#c-{$suceso.comentario.id}{else}{#SITE_URL#}/post/index/{$suceso.comentario.post_id}#c-{$suceso.comentario.id}{/if}">comentario</a> {@de@} <a href="{#SITE_URL#}/perfil/index/{$suceso.comentario_usuario.nick}">{$suceso.comentario_usuario.nick}</a>.
 				{else}
-				{@Ha citado tu@} <a href="{if="isset($suceso.comentario.foto_id)"}{#SITE_URL#}/foto/ver/{$suceso.comentario.foto_id}#c-{$suceso.comentario.id}{else}{#SITE_URL#}/post/index/{$suceso.comentario.post_id}#c-{$suceso.comentario.id}{/if}">comentario</a>.
+				{@Ha citado tu@} <a href="{if="isset($suceso.comentario.foto_id)"}{#SITE_URL#}/foto/{$suceso.foto.categoria.seo}/{$suceso.foto.id}/{$suceso.foto.titulo|Texto::make_seo}.html#c-{$suceso.comentario.id}{else}{#SITE_URL#}/post/index/{$suceso.comentario.post_id}#c-{$suceso.comentario.id}{/if}">comentario</a>.
 				{/if}
 			</div>
 		</div>

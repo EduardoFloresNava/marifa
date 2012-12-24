@@ -37,7 +37,7 @@
 				</div>
 
 				<div class="form-actions">
-					<button type="submit" class="btn btn-large btn-primary">Editar</button> o <a href="{#SITE_URL#}/foto/ver/{$foto}">Volver</a>
+					<button type="submit" class="btn btn-large btn-primary">Editar</button> o <a href="{#SITE_URL#}/foto/{$foto.categoria.seo}/{$foto.id}/{$foto.titulo|Texto::make_seo}.html">Volver</a>
 				</div>
 
 			</fieldset>

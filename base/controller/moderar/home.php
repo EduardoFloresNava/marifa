@@ -247,6 +247,7 @@ class Base_Controller_Moderar_Home extends Controller {
 					$obj['usuario'] = $denuncia->usuario()->as_array();
 					$obj['tipo'] = 'post';
 					$obj['post'] = $denuncia->post()->as_array();
+					$obj['post']['categoria'] = $denuncia->post()->categoria()->as_array();
 					$lst[] = $obj;
 					break;
 				case 'foto':
@@ -255,6 +256,7 @@ class Base_Controller_Moderar_Home extends Controller {
 					$obj['usuario'] = $denuncia->usuario()->as_array();
 					$obj['tipo'] = 'foto';
 					$obj['foto'] = $denuncia->foto()->as_array();
+					$obj['foto']['categoria'] = $denuncia->foto()->categoria()->as_array();
 					$lst[] = $obj;
 					break;
 				case 'usuario':

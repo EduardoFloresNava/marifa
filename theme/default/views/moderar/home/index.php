@@ -119,7 +119,7 @@
 						<span class="pull-right">{$value.fecha->fuzzy()}</span>
 					</a>
 					{elseif="$value.tipo == 'foto_comentario'"}
-					<a href="{#SITE_URL#}/foto/ver/{$value.foto.id}">
+					<a href="{#SITE_URL#}/foto/{$value.foto.categoria.seo}/{$value.foto.id}/{$value.foto.titulo|Texto::make_seo}">
 						<i class="icon icon-comment"></i>
 						<b>{$value.usuario.nick}</b> en la foto <b>{$value.foto.titulo}</b>
 						<span class="pull-right">{$value.fecha->fuzzy()}</span>

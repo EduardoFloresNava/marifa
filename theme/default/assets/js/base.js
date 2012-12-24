@@ -549,3 +549,30 @@ $('a[data-dismiss="alert"]').click(function (e) {
         });
     });
 } (jQuery));
+
+/**
+ * Selección categorías fotos y posts.
+ */
+(function ($) {
+    $('#foto-menu-categoria').change(function () {
+        if ($(this).val() != '')
+        {
+            location.href = window.site_url+'/foto/categoria/'+$(this).val();
+        }
+        else
+        {
+            location.href = window.site_url+'/foto/';
+        }
+    });
+
+    $('#post-menu-categoria').change(function () {
+        if ($(this).val() != '')
+        {
+            location.href = window.site_url+'/post/categoria/'+$(this).val();
+        }
+        else
+        {
+            location.href = window.site_url+'/post/';
+        }
+    });
+} (jQuery));

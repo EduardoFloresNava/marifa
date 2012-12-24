@@ -9,7 +9,7 @@
 			<li><a href="{#SITE_URL#}/notificaciones/"><i class="icon icon-bullhorn"></i> Notificaciones</a></li>
 			<li><a href="{#SITE_URL#}/cuenta/"><i class="icon icon-user"></i> Cuenta</a></li>
             <li class="divider"></li>
-            <li><a href="{#SITE_URL#}/usuario/logout"><i class="icon icon-off"></i> Salir</a></li>
+            <li><a href="{#SITE_URL#}/logout"><i class="icon icon-off"></i> Salir</a></li>
         </ul>
     </div>
     <div class="btn-group pull-right">
