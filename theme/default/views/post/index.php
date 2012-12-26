@@ -22,12 +22,12 @@
 	<div class="span10 contenido">
 		<div class="cabecera">
 			<div class="lineal btn-group">
-				<a href="{#SITE_URL#}/post/index/{$post_anterior}" class="btn btn-mini"><i class="icon icon-chevron-left"></i></a>
-				<a href="{#SITE_URL#}/post/index/{$post_siguiente}" class="btn btn-mini"><i class="icon icon-chevron-right"></i></a>
+				<a href="{#SITE_URL#}/post/{$post_anterior.categoria.seo}/{$post_anterior.id}/{$post_anterior.titulo|Texto::make_seo}.html" class="btn btn-mini"><i class="icon icon-chevron-left"></i></a>
+				<a href="{#SITE_URL#}/post/{$post_siguiente.categoria.seo}/{$post_siguiente.id}/{$post_siguiente.titulo|Texto::make_seo}.html" class="btn btn-mini"><i class="icon icon-chevron-right"></i></a>
 			</div>
 			<h2 class="title">{$post.titulo}</h2>
 			<div class="aleatorio">
-				<a href="{#SITE_URL#}/post/index/{$post_aleatorio}" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
+				<a href="{#SITE_URL#}/post/{$post_aleatorio.categoria.seo}/{$post_aleatorio.id}/{$post_aleatorio.titulo|Texto::make_seo}.html" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
 			</div>
 		</div>
 		<div class="contenido-post">{$post.contenido}</div>

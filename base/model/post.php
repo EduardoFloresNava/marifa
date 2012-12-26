@@ -626,36 +626,52 @@ class Base_Model_Post extends Model_Dataset {
 	 * Cantidad total de posts.
 	 * @param int $estado Estado de la categoria a contar. NULL para todas.
 	 * @param int $categoria Categoria a contar. NULL para todas.
+	 * @param bool $sticky Si debe ser sticky o no. NULL para todos.
 	 * @return int
 	 */
-	public static function s_cantidad($estado = NULL, $categoria = NULL)
+	public static function s_cantidad($estado = NULL, $categoria = NULL, $sticky = NULL)
 	{
-		if ($estado !== NULL && $categoria !== NULL)
-		{
-			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE estado = ? AND categoria_id = ?', array($estado, $categoria))->get_var(Database_Query::FIELD_INT);
-		}
+		$args = array();
+		$params = array();
 
 		if ($estado !== NULL)
 		{
-			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE estado = ?', $estado)->get_var(Database_Query::FIELD_INT);
+			$args[] = $estado;
+			$params[] = 'estado = ?';
 		}
 
 		if ($categoria !== NULL)
 		{
-			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE categoria_id = ?', $categoria)->get_var(Database_Query::FIELD_INT);
+			$args[] = $categoria;
+			$params[] = 'categoria_id = ?';
 		}
-		return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post')->get_var(Database_Query::FIELD_INT);
+
+		if ($sticky !== NULL)
+		{
+			$args[] = $sticky;
+			$params[] = 'sticky = ?';
+		}
+
+		if (count($params) > 0)
+		{
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post WHERE '.implode(' AND ', $params), $args)->get_var(Database_Query::FIELD_INT);
+		}
+		else
+		{
+			return (int) Database::get_instance()->query('SELECT COUNT(*) FROM post')->get_var(Database_Query::FIELD_INT);
+		}
 	}
 
 	/**
 	 * Cantidad total de posts.
 	 * @param int $estado Estado de la categoria a contar. NULL para todas.
 	 * @param int $categoria Categoria a contar. NULL para todas.
+	 * @param bool $sticky Si debe ser sticky o no. NULL para todos.
 	 * @return int
 	 */
-	public function cantidad($estado = NULL, $categoria = NULL)
+	public function cantidad($estado = NULL, $categoria = NULL, $sticky = NULL)
 	{
-		return self::s_cantidad($estado, $categoria);
+		return self::s_cantidad($estado, $categoria, $sticky);
 	}
 
 	/**
@@ -1000,7 +1016,7 @@ class Base_Model_Post extends Model_Dataset {
 			$where = '';
 		}
 
-		return $this->db->query('SELECT SUM(post_punto.cantidad) AS puntos, post.id, post.titulo, categoria.imagen FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0'.$where.' GROUP BY post.id ORDER BY puntos DESC LIMIT 10', $params)
+		return $this->db->query('SELECT SUM(post_punto.cantidad) AS puntos, post.id, post.titulo, categoria.imagen, categoria.seo FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0'.$where.' GROUP BY post.id ORDER BY puntos DESC LIMIT 10', $params)
 			->get_records(Database_Query::FETCH_ASSOC, array(
 				'puntos' => Database_Query::FIELD_INT,
 				'id' => Database_Query::FIELD_INT,
@@ -1078,7 +1094,7 @@ class Base_Model_Post extends Model_Dataset {
 			$where = '';
 		}
 
-		return $this->db->query('SELECT COUNT(post_favorito.post_id) AS favoritos, post.id, post.titulo, categoria.imagen FROM post LEFT JOIN post_favorito ON post.id = post_favorito.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0'.$where.' GROUP BY post.id ORDER BY favoritos DESC LIMIT 10', $params)
+		return $this->db->query('SELECT COUNT(post_favorito.post_id) AS favoritos, post.id, post.titulo, categoria.imagen, categoria.seo FROM post LEFT JOIN post_favorito ON post.id = post_favorito.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0'.$where.' GROUP BY post.id ORDER BY favoritos DESC LIMIT 10', $params)
 			->get_records(Database_Query::FETCH_ASSOC, array(
 				'favoritos' => Database_Query::FIELD_INT,
 				'id' => Database_Query::FIELD_INT,
@@ -1156,7 +1172,7 @@ class Base_Model_Post extends Model_Dataset {
 			$where = '';
 		}
 
-		return $this->db->query('SELECT COUNT(*) AS comentarios, post.id, post.titulo, categoria.imagen FROM post LEFT JOIN post_comentario ON post.id = post_comentario.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0 AND post_comentario.estado = 0'.$where.' GROUP BY post.id ORDER BY comentarios DESC LIMIT 10', $params)
+		return $this->db->query('SELECT COUNT(*) AS comentarios, post.id, post.titulo, categoria.imagen, categoria.seo FROM post LEFT JOIN post_comentario ON post.id = post_comentario.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0 AND post_comentario.estado = 0'.$where.' GROUP BY post.id ORDER BY comentarios DESC LIMIT 10', $params)
 			->get_records(Database_Query::FETCH_ASSOC, array(
 				'comentarios' => Database_Query::FIELD_INT,
 				'id' => Database_Query::FIELD_INT,
@@ -1234,7 +1250,7 @@ class Base_Model_Post extends Model_Dataset {
 			$where = '';
 		}
 
-		return $this->db->query('SELECT COUNT(post_seguidor.post_id) AS seguidores, post.id, post.titulo, categoria.imagen FROM post LEFT JOIN post_seguidor ON post.id = post_seguidor.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0'.$where.' GROUP BY post.id ORDER BY seguidores DESC LIMIT 10', $params)
+		return $this->db->query('SELECT COUNT(post_seguidor.post_id) AS seguidores, post.id, post.titulo, categoria.imagen, categoria.seo FROM post LEFT JOIN post_seguidor ON post.id = post_seguidor.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0'.$where.' GROUP BY post.id ORDER BY seguidores DESC LIMIT 10', $params)
 			->get_records(Database_Query::FETCH_ASSOC, array(
 				'seguidores' => Database_Query::FIELD_INT,
 				'id' => Database_Query::FIELD_INT,

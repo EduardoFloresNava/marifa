@@ -363,7 +363,10 @@ class Base_Controller_Perfil extends Controller {
 		// Transformamos a arreglo.
 		foreach ($post_list as $k => $v)
 		{
-			$post_list[$k] = array_merge($v->as_array(), array('puntos' => $v->puntos()));
+			$a = $v->as_array();
+			$a['puntos'] = $v->puntos();
+			$a['categoria'] = $v->categoria()->as_array();
+			$post_list[$k] = $a;
 		}
 
 		$information_view->assign('post', $post_list);

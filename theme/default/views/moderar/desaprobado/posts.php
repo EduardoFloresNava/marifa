@@ -25,7 +25,7 @@
 		{loop="$posts"}
 		<tr>
 			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
-			<td><a href="{#SITE_URL#}/post/index/{$value.id}">{$value.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td>
 				{if="$value.estado == 3"}
@@ -38,7 +38,6 @@
 			</td>
 			<td>
 				<div class="btn-group">
-					<a href="{#SITE_URL#}/post/index/{$value.id}" class="btn btn-mini btn-info show-tooltip" title="Ver post"><i class="icon-white icon-eye-close"></i></a>
 					{if="$value.estado != 2"}<a href="{#SITE_URL#}/post/editar/{$value.id}" class="btn btn-mini btn-primary show-tooltip" title="Editar post"><i class="icon-white icon-pencil"></i></a>{/if}
 					<a href="{#SITE_URL#}/moderar/desaprobado/aprobar_post/{$value.id}/1" class="btn btn-mini btn-success show-tooltip" title="Aprobar post"><i class="icon-white icon-hand-up"></i></a>
 					{if="$value.estado == 3"}<a href="{#SITE_URL#}/moderar/desaprobado/aprobar_post/{$value.id}/-1" class="btn btn-mini btn-warning show-tooltip" title="Rechazar post"><i class="icon-white icon-hand-down"></i></a>{/if}

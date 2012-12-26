@@ -103,8 +103,8 @@ class Base_Controller_Home extends Controller {
 			// Verifico formato.
 			if ( ! preg_match('/[a-z0-9_]+/i', $categoria))
 			{
-				add_flash_message(FLASH_ERROR, 'La categoria no es correcta.');
-				Request::redirect('/home/index/'.$pagina);
+				add_flash_message(FLASH_ERROR, 'La categoría no es correcta.');
+				Request::redirect('/post/'.$pagina);
 			}
 
 			// Cargo la categoria.
@@ -114,7 +114,7 @@ class Base_Controller_Home extends Controller {
 			if ( ! $model_categoria->existe_seo($categoria))
 			{
 				add_flash_message(FLASH_ERROR, 'La categoría no es correcta.');
-				Request::redirect('/home/index/'.$pagina);
+				Request::redirect('/post/'.$pagina);
 			}
 			else
 			{
@@ -161,6 +161,10 @@ class Base_Controller_Home extends Controller {
 			$portada->assign('sticky', $post_sticky);
 			unset($post_sticky);
 		}
+		else
+		{
+			$portada->assign('sticky', array());
+		}
 
 		// Ultimos posts
 		$post_list = $model_post->obtener_ultimos($pagina, $cantidad_por_pagina, $categoria_id);
@@ -168,12 +172,20 @@ class Base_Controller_Home extends Controller {
 		// Verifivo validez de la pagina.
 		if (count($post_list) == 0 && $pagina != 1)
 		{
+			Profiler_Profiler::get_instance()->display();
 			Request::redirect('/');
 		}
 
 		// Paginación.
-		$paginador = new Paginator($model_post->cantidad(Model_Post::ESTADO_ACTIVO, $categoria_id), $cantidad_por_pagina);
-		$portada->assign('paginacion', $paginador->get_view($pagina, '/home/index/%d/'.$categoria));
+		$paginador = new Paginator($model_post->cantidad(Model_Post::ESTADO_ACTIVO, $categoria_id, FALSE), $cantidad_por_pagina);
+		if ($categoria !== NULL)
+		{
+			$portada->assign('paginacion', $paginador->get_view($pagina, '/post/categoria/'.$categoria.'/%d'));
+		}
+		else
+		{
+			$portada->assign('paginacion', $paginador->get_view($pagina, '/post/%d/'));
+		}
 		unset($paginador);
 
 		// Extendemos la información de los posts.
@@ -199,6 +211,7 @@ class Base_Controller_Home extends Controller {
 		{
 			$a = $v->as_array();
 			$a['puntos'] = $v->puntos();
+			$a['categoria'] = $v->categoria()->as_array();
 			$post_top_list[$k] = $a;
 		}
 

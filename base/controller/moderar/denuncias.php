@@ -108,6 +108,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$a = $v->as_array();
 			$a['usuario'] = $v->usuario()->as_array();
 			$a['post'] = $v->post()->as_array();
+			$a['post']['categoria'] = $v->post()->categoria()->as_array();
 			$lst[$k] = $a;
 		}
 
@@ -160,7 +161,11 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Seteamos los datos.
 		$vista->assign('denuncia', $model_denuncia->as_array());
 		$vista->assign('denunciante', $model_denuncia->usuario()->as_array());
-		$vista->assign('post', $model_denuncia->post()->as_array());
+
+		$post = $model_denuncia->post()->as_array();
+		$post['categoria'] = $model_denuncia->post()->categoria()->as_array();
+		$vista->assign('post', $post);
+		unset($post);
 
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
@@ -275,7 +280,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		}
 
 		// Verifico los permisos.
-		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
+		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR))
 		{
 			add_flash_message(FLASH_ERROR, 'No tienes permisos para realizar esa acción.');
 			Request::redirect('/moderar/denuncias/posts');
@@ -422,7 +427,11 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Seteamos los datos.
 		$vista->assign('denuncia', $model_denuncia->as_array());
 		$vista->assign('denunciante', $model_denuncia->usuario()->as_array());
-		$vista->assign('foto', $model_denuncia->foto()->as_array());
+
+		$foto = $model_denuncia->foto()->as_array();
+		$foto['categoria'] = $model_denuncia->foto()->categoria()->as_array();
+		$vista->assign('foto', $foto);
+		unset($foto);
 
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
@@ -537,7 +546,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		}
 
 		// Verifico los permisos.
-		if (Usuario::$usuario_id !== $model_foto->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_FOTOS))
+		if (Usuario::$usuario_id !== $model_foto->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR))
 		{
 			add_flash_message(FLASH_ERROR, 'No tienes permisos para realizar esa acción.');
 			Request::redirect('/moderar/denuncias/fotos');

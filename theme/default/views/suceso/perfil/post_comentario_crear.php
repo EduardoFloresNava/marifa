@@ -8,9 +8,9 @@
 		<div class="contenido">
 			<div class="wrapper">
 				{if="$suceso.usuario.id === $suceso.post_usuario.id"}
-				{@Ha comentado en su post@} <a href="{#SITE_URL#}/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a>.
+				{@Ha comentado en su post@} <a href="{#SITE_URL#}/post/{$suceso.post.categoria.seo}/{$suceso.post.id}/{$suceso.post.titulo|Texto::make_seo}.html">{$suceso.post.titulo}</a>.
 				{else}
-				{@Ha comentado en el post@} <a href="{#SITE_URL#}/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a> {@de@} <a href="{#SITE_URL#}/perfil/index/{$suceso.post_usuario.nick}">{$suceso.post_usuario.nick}</a>.
+				{@Ha comentado en el post@} <a href="{#SITE_URL#}/post/{$suceso.post.categoria.seo}/{$suceso.post.id}/{$suceso.post.titulo|Texto::make_seo}.html">{$suceso.post.titulo}</a> {@de@} <a href="{#SITE_URL#}/perfil/index/{$suceso.post_usuario.nick}">{$suceso.post_usuario.nick}</a>.
 				{/if}
 			</div>
 		</div>

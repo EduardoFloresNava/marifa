@@ -7,7 +7,7 @@
 		</div>
 		<div class="contenido">
 			<div class="wrapper">
-				{@Creó el post titulado@} <a href="{#SITE_URL#}/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a>.
+				{@Creó el post titulado@} <a href="{#SITE_URL#}/post/{$suceso.post.categoria.seo}/{$suceso.post.id}/{$suceso.post.titulo|Texto::make_seo}.html">{$suceso.post.titulo}</a>.
 			</div>
 		</div>
 	</div>

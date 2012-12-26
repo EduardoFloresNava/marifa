@@ -33,6 +33,30 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Post extends Controller {
 
 	/**
+	 * Generamos la URL del post para redireccionar.
+	 * @param Model_Post|int $post Modelo del post o ID del post.
+	 * @return string
+	 */
+	protected function post_url($post)
+	{
+		// Cargo post.
+		if ( ! is_object($post))
+		{
+			$post = new Model_Post( (int) $post);
+		}
+
+		// Verifico existencia.
+		if ( ! $post->existe())
+		{
+			add_flash_message(FALSH_ERROR, 'El post no es válido');
+			Request::redirect('/post/');
+		}
+
+		// Genero la URL.
+		return '/post/'.$post->categoria()->seo.'/'.$post->id.'/'.Texto::make_seo($post->titulo).'.html';
+	}
+
+	/**
 	 * Información de un post.
 	 * @param int $post ID del post a visualizar.
 	 */
@@ -106,9 +130,21 @@ class Base_Controller_Post extends Controller {
 			$view = View::factory('post/index');
 
 			// Obtengo el post siguiente, el anterior y uno aleatorio.
-			$view->assign('post_anterior', $model_post->anterior()->id);
-			$view->assign('post_siguiente', $model_post->siguiente()->id);
-			$view->assign('post_aleatorio', $model_post->aleatorio()->id);
+			$pa = $model_post->anterior();
+			$pad = $pa->as_array();
+			$pad['categoria'] = $pa->categoria()->as_array();
+			$view->assign('post_anterior', $pad);
+
+			$ps = $model_post->siguiente();
+			$psd = $ps->as_array();
+			$psd['categoria'] = $ps->categoria()->as_array();
+			$view->assign('post_siguiente', $psd);
+
+			$pal = $model_post->aleatorio();
+			$pald = $pa->as_array();
+			$pald['categoria'] = $pal->categoria()->as_array();
+			$view->assign('post_aleatorio', $pald);
+			unset($pa, $pad, $ps, $psd, $pal, $pald);
 
 			// Verifico si debo contabilizar la visita.
 			if (Usuario::$usuario_id != $model_post->as_object()->usuario_id)
@@ -280,14 +316,14 @@ class Base_Controller_Post extends Controller {
 		if ($model_post->estado == Model_Post::ESTADO_BORRADO)
 		{
 			add_flash_message(FLASH_ERROR, 'El post especificado no se encuentra disponible.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico el usuario y el permiso de edición para terceros.
 		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_EDITAR))
 		{
 			add_flash_message(FLASH_ERROR, 'No tienes los permisos necesarios para realizar esa edición.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Asignamos el título.
@@ -535,7 +571,7 @@ class Base_Controller_Post extends Controller {
 		if ($model_post->usuario_id == Usuario::$usuario_id)
 		{
 			add_flash_message(FLASH_ERROR, 'El post que desea denunciar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Asignamos el título.
@@ -544,7 +580,10 @@ class Base_Controller_Post extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('post/denunciar');
 
-		$view->assign('post', $model_post->id);
+		$p = $model_post->as_array();
+		$p['categoria'] = $model_post->categoria()->as_array();
+		$view->assign('post', $p);
+		unset($p);
 
 		// Elementos por defecto.
 		$view->assign('motivo', '');
@@ -612,7 +651,7 @@ class Base_Controller_Post extends Controller {
 
 				// Seteamos mensaje flash y volvemos.
 				add_flash_message(FLASH_SUCCESS, 'Denuncia enviada correctamente.');
-				Request::redirect('/post/index/'.$model_post->id);
+				Request::redirect($this->post_url($model_post));
 			}
 		}
 
@@ -640,7 +679,7 @@ class Base_Controller_Post extends Controller {
 		// Verificamos el método de envio.
 		if (Request::method() != 'POST')
 		{
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Convertimos el post a ID.
@@ -660,7 +699,7 @@ class Base_Controller_Post extends Controller {
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR) || ( ! $model_post->comentar && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR_CERRADO)))
 		{
 			add_flash_message(FLASH_ERROR, 'El post que deseas comentar no permite comentarios nuevos.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Obtenemos el comentario.
@@ -675,7 +714,7 @@ class Base_Controller_Post extends Controller {
 			// Evitamos la salida de la vista actual.
 			$this->template = NULL;
 
-			Dispatcher::call('/post/index/'.$post, TRUE);
+			Dispatcher::call($this->post_url($model_post), TRUE);
 		}
 		else
 		{
@@ -711,7 +750,7 @@ class Base_Controller_Post extends Controller {
 
 				$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
 
-				Request::redirect('/post/index/'.$post);
+				Request::redirect($this->post_url($model_post));
 			}
 			else
 			{
@@ -720,7 +759,7 @@ class Base_Controller_Post extends Controller {
 				// Evitamos la salida de la vista actual.
 				$this->template = NULL;
 
-				//Dispatcher::call('/post/index/'.$post, TRUE);
+				//Dispatcher::call($this->post_url($model_post), TRUE);
 			}
 		}
 	}
@@ -755,21 +794,21 @@ class Base_Controller_Post extends Controller {
 		if ($model_post->usuario_id === Usuario::$usuario_id)
 		{
 			add_flash_message(FLASH_ERROR, 'El post que desea agregar a favoritos no se encuentra disponible.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico el estado.
 		if ($model_post->estado !== Model_Post::ESTADO_ACTIVO)
 		{
 			add_flash_message(FLASH_ERROR, 'El post que desea agregar a favoritos no se encuentra disponible.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico no tenerlo como favorito.
 		if ($model_post->es_favorito(Usuario::$usuario_id))
 		{
 			add_flash_message(FLASH_ERROR, 'El post ya forma parte de tus favoritos.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Agrego el post a favoritos.
@@ -791,7 +830,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El post fue agregado a favoritos correctamente.');
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($model_post));
 	}
 
 	/**
@@ -827,7 +866,7 @@ class Base_Controller_Post extends Controller {
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VOTAR))
 		{
 			add_flash_message(FLASH_ERROR, 'El comentario que deseas votar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$model_comentario->post_id);
+			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
 		// Post donde se encuentra el comentario.
@@ -837,7 +876,7 @@ class Base_Controller_Post extends Controller {
 		if ($model_post->estado !== Model_Post::ESTADO_ACTIVO)
 		{
 			add_flash_message(FLASH_ERROR, 'El comentario que deseas votar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$model_comentario->post_id);
+			Request::redirect($this->post_url($model_post));
 		}
 		unset($model_post);
 
@@ -845,14 +884,14 @@ class Base_Controller_Post extends Controller {
 		if ($model_comentario->usuario_id == Usuario::$usuario_id)
 		{
 			add_flash_message(FLASH_ERROR, 'El comentario que deseas votar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$model_comentario->post_id);
+			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
 		// Verifico si ya votó.
 		if ($model_comentario->ya_voto(Usuario::$usuario_id))
 		{
 			add_flash_message(FLASH_ERROR, 'El comentario que deseas votar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$model_comentario->post_id);
+			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
 		// Agrego el voto.
@@ -871,7 +910,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El comentario se ha votado correctamente.');
-		Request::redirect('/post/index/'.$model_comentario->post_id);
+		Request::redirect($this->post_url($model_comentario->post_id));
 	}
 
 	/**
@@ -907,19 +946,19 @@ class Base_Controller_Post extends Controller {
 		if (($tipo && $model_comentario->estado !== 1) || ( ! $tipo && $model_comentario->estado !== 0))
 		{
 			add_flash_message(FLASH_ERROR, 'El comentario que deseas ocultar/mostrar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$model_comentario->post_id);
+			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
 		// Verifico los permisos.
 		if ($model_comentario->estado == 0 && Usuario::$usuario_id !== $model_comentario->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
 		{
 			add_flash_message(FLASH_ERROR, 'No tienes los permisos para ocultar/mostrar comentarios.');
-			Request::redirect('/post/index/'.$model_comentario->post_id);
+			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 		elseif ($model_comentario->estado == 1 && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
 		{
 			add_flash_message(FLASH_ERROR, 'No tienes los permisos para ocultar/mostrar comentarios.');
-			Request::redirect('/post/index/'.$model_comentario->post_id);
+			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
 		//TODO: agregar otro estado para diferenciar usuario de moderador.
@@ -949,7 +988,7 @@ class Base_Controller_Post extends Controller {
 
 		// Informamos el resultado.
 		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.');
-		Request::redirect('/post/index/'.$model_comentario->post_id);
+		Request::redirect($this->post_url($model_comentario->post_id));
 	}
 
 	/**
@@ -988,7 +1027,7 @@ class Base_Controller_Post extends Controller {
 		if ($model_comentario->estado === 2)
 		{
 			add_flash_message(FLASH_ERROR, 'El comentario que deseas borrar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$model_comentario->post_id);
+			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
 		// Actualizo el estado.
@@ -1015,7 +1054,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El comentario se ha borrado correctamente.');
-		Request::redirect('/post/index/'.$model_comentario->post_id);
+		Request::redirect($this->post_url($model_comentario->post_id));
 	}
 
 	/**
@@ -1047,14 +1086,14 @@ class Base_Controller_Post extends Controller {
 		if ($model_comentario->estado === 2)
 		{
 			add_flash_message(FLASH_ERROR, 'El comentario que deseas editar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$model_comentario->post_id);
+			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
 		// Verifico permisos estado.
 		if ($model_comentario->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_EDITAR))
 		{
 			add_flash_message(FLASH_ERROR, 'No tienes los permisos para editar el comentario.');
-			Request::redirect('/post/index/'.$model_comentario->post_id);
+			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
 		// Cargo la vista.
@@ -1064,7 +1103,11 @@ class Base_Controller_Post extends Controller {
 		$vista->assign('contenido', $model_comentario->contenido);
 		$vista->assign('error_contenido', FALSE);
 		$vista->assign('usuario', $model_comentario->usuario()->as_array());
-		$vista->assign('post', $model_comentario->post()->as_array());
+
+		$p = $model_comentario->post()->as_array();
+		$p['categoria'] = $model_comentario->post()->categoria()->as_array();
+		$vista->assign('post', $p);
+		unset($p);
 		$vista->assign('comentario', $model_comentario->as_array());
 
 		if (Request::method() === 'POST')
@@ -1110,7 +1153,7 @@ class Base_Controller_Post extends Controller {
 				}
 
 				$_SESSION['post_comentario_success'] = 'El comentario se ha actualizado correctamente.';
-				Request::redirect('/post/index/'.$model_comentario->post_id);
+				Request::redirect($this->post_url($model_comentario->post_id));
 			}
 		}
 
@@ -1161,7 +1204,7 @@ class Base_Controller_Post extends Controller {
 			{
 				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres dejar de seguir no se encuentra disponible.');
 			}
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($post));
 		}
 
 		// Verificamos no sea uno mismo.
@@ -1175,7 +1218,7 @@ class Base_Controller_Post extends Controller {
 			{
 				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres dejar de seguir no se encuentra disponible.');
 			}
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($post));
 		}
 
 		// Verificaciones especiales en funcion si lo voy a seguir o dejar de seguir.
@@ -1185,14 +1228,14 @@ class Base_Controller_Post extends Controller {
 			if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 			{
 				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
-				Request::redirect('/post/index/'.$post);
+				Request::redirect($this->post_url($post));
 			}
 
 			// Verifico no sea seguidor.
 			if ($model_usuario->es_seguidor(Usuario::$usuario_id))
 			{
 				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
-				Request::redirect('/post/index/'.$post);
+				Request::redirect($this->post_url($post));
 			}
 
 			// Sigo al usuario.
@@ -1208,7 +1251,7 @@ class Base_Controller_Post extends Controller {
 			if ( ! $model_usuario->es_seguidor(Usuario::$usuario_id))
 			{
 				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres dejar de seguir no se encuentra disponible.');
-				Request::redirect('/post/index/'.$post);
+				Request::redirect($this->post_url($post));
 			}
 
 			// Dejo de seguir al usuario.
@@ -1237,7 +1280,7 @@ class Base_Controller_Post extends Controller {
 		{
 			add_flash_message(FLASH_SUCCESS, 'Dejaste de seguir al usuario correctamente.');
 		}
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($post));
 	}
 
 	/**
@@ -1270,14 +1313,14 @@ class Base_Controller_Post extends Controller {
 		if ($model_post->usuario_id === Usuario::$usuario_id)
 		{
 			add_flash_message(FLASH_ERROR, 'El post que quieres seguir no se encuentra disponible.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico si ya lo sigue.
 		if ($model_post->es_seguidor(Usuario::$usuario_id))
 		{
 			add_flash_message(FLASH_ERROR, 'Ya eres seguidor de ese post.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		$model_post->seguir(Usuario::$usuario_id);
@@ -1298,7 +1341,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		add_flash_message(FLASH_SUCCESS, 'Te has convertido en seguidor del post correctamente.');
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($model_post));
 	}
 
 	/**
@@ -1349,7 +1392,7 @@ class Base_Controller_Post extends Controller {
 			{
 				add_flash_message(FLASH_ERROR, 'El post no se encuentra fijo a la portada.');
 			}
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Actualizo el parámetro.
@@ -1376,7 +1419,7 @@ class Base_Controller_Post extends Controller {
 		{
 			add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El post se ha quitado de los posts fijos en la portada correctamente.');
 		}
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($model_post));
 	}
 
 	/**
@@ -1420,7 +1463,7 @@ class Base_Controller_Post extends Controller {
 		if ($model_post->sponsored === $tipo)
 		{
 			add_flash_message(FLASH_ERROR, 'El post que quieres patrocinar ya se encuentra patrocinado.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Actualizo el parámetro.
@@ -1440,7 +1483,7 @@ class Base_Controller_Post extends Controller {
 
 		// Informo el resultado.
 		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.');
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($model_post));
 	}
 
 	/**
@@ -1484,7 +1527,7 @@ class Base_Controller_Post extends Controller {
 		if (($tipo && $model_post->estado !== Model_Post::ESTADO_OCULTO) || ( ! $tipo && $model_post->estado !== Model_Post::ESTADO_ACTIVO))
 		{
 			add_flash_message(FLASH_ERROR, 'El post que quieres ocultar/mostrar no se encuentra disponible');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		if ($tipo)
@@ -1510,7 +1553,7 @@ class Base_Controller_Post extends Controller {
 
 		// Informo resultado
 		add_flash_message(FLASH_SUCCESS, 'El post se ocultó/mostró correctamente.');
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($model_post));
 	}
 
 	/**
@@ -1554,12 +1597,12 @@ class Base_Controller_Post extends Controller {
 		if ($tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_RECHAZADO))
 		{
 			add_flash_message(FLASH_ERROR, 'El post que deseas aprobar/rechazar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 		elseif ( ! $tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_ACTIVO))
 		{
 			add_flash_message(FLASH_ERROR, 'El post que deseas aprobar/rechazar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Actualizo el estado.
@@ -1585,7 +1628,7 @@ class Base_Controller_Post extends Controller {
 
 		// Informo resultado.
 		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El estado se modific&oacute; correctamente.');
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($model_post));
 	}
 
 	/**
@@ -1616,10 +1659,10 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Verifico el usuario y sus permisos.
-		if (Usuario::$usuario_id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
+		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR))
 		{
 			add_flash_message(FLASH_ERROR, 'No tienes los permisos suficientes para borrar/enviar a la papelera al post.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico requisitos según permisos y usuario.
@@ -1632,7 +1675,7 @@ class Base_Controller_Post extends Controller {
 			elseif ($model_post->estado !== Model_Post::ESTADO_PAPELERA && $model_post !== Model_Post::ESTADO_OCULTO)
 			{
 				add_flash_message(FLASH_ERROR, 'El post que quieres borrar/enviar a la papelera no se encuentra disponible.');
-				Request::redirect('/post/index/'.$post);
+				Request::redirect($this->post_url($model-post));
 			}
 			else
 			{
@@ -1661,7 +1704,7 @@ class Base_Controller_Post extends Controller {
 
 		// Informamos resultado.
 		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.');
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($model_post));
 	}
 
 	/**
@@ -1694,14 +1737,14 @@ class Base_Controller_Post extends Controller {
 		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
 		{
 			add_flash_message(FLASH_ERROR, '<b>&iexcl;Error!</b> Permisos incorrectos.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico el estado.
 		if ($model_post->estado !== Model_Post::ESTADO_PAPELERA)
 		{
 			add_flash_message(FLASH_ERROR, '<b>&iexcl;Error!</b> Permisos incorrectos.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Actualizo el estado.
@@ -1720,7 +1763,7 @@ class Base_Controller_Post extends Controller {
 		{
 			$model_suceso->crear($model_post->usuario_id, 'post_restaurar', FALSE, Usuario::$usuario_id, $post);
 		}
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($model_post));
 	}
 
 	/**
@@ -1753,14 +1796,14 @@ class Base_Controller_Post extends Controller {
 		if (Usuario::$usuario_id !== $model_post->usuario_id)
 		{
 			add_flash_message(FLASH_ERROR, '<b>&iexcl;Error!</b> Permisos incorrectos.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico el estado.
 		if ($model_post->estado !== Model_Post::ESTADO_BORRADOR)
 		{
 			add_flash_message(FLASH_ERROR, '<b>&iexcl;Error!</b> Permisos incorrectos.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Actualizo el estado.
@@ -1787,7 +1830,7 @@ class Base_Controller_Post extends Controller {
 		$model_suceso = new Model_Suceso;
 		$model_suceso->crear(Usuario::$usuario_id, 'post_publicado', FALSE, Usuario::$usuario_id, $post);
 
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($model_post));
 	}
 
 
@@ -1839,28 +1882,28 @@ class Base_Controller_Post extends Controller {
 		if ($model_post->estado !== Model_Post::ESTADO_ACTIVO)
 		{
 			add_flash_message(FLASH_ERROR, 'El post que desea puntuar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico el autor.
 		if ($model_post->usuario_id === Usuario::$usuario_id)
 		{
 			add_flash_message(FLASH_ERROR, 'El post que desea puntuar no se encuentra disponible.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verificamos si ya dio puntos.
 		if ($model_post->dio_puntos(Usuario::$usuario_id))
 		{
 			add_flash_message(FLASH_ERROR, 'El post que desea puntuar ya ha sido puntuado por usted.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verificamos la cantidad de puntos.
 		if (Usuario::usuario()->puntos < $cantidad)
 		{
 			add_flash_message(FLASH_ERROR, 'El post que desea puntuar ya ha sido puntuado por usted.');
-			Request::redirect('/post/index/'.$post);
+			Request::redirect($this->post_url($model_post));
 		}
 
 		// Damos los puntos.
@@ -1887,7 +1930,7 @@ class Base_Controller_Post extends Controller {
 
 		// Informamos el resultado.
 		add_flash_message(FLASH_SUCCESS, 'Has puntuado el post de manera correcta.');
-		Request::redirect('/post/index/'.$post);
+		Request::redirect($this->post_url($model_post));
 	}
 
 	/**
@@ -2106,7 +2149,7 @@ class Base_Controller_Post extends Controller {
 
 					// Informo y voy a post.
 					add_flash_message(FLASH_SUCCESS, 'El post fue creado correctamente.');
-					Request::redirect('/post/index/'.$post_id);
+					Request::redirect($this->post_url($model_post));
 				}
 				else
 				{

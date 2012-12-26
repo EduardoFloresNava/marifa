@@ -7,7 +7,7 @@
 		</div>
 		<div class="contenido">
 			<div class="wrapper">
-				{@Su post @} <a href="{#SITE_URL#}/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a> {if="$suceso.tipo"}{@ha sido patrocinado@}{else}{@ya no est&aacute; patrocinado@}{/if}.
+				{@Su post @} <a href="{#SITE_URL#}/post/{$suceso.post.categoria.seo}/{$suceso.post.id}/{$suceso.post.titulo|Texto::make_seo}.html">{$suceso.post.titulo}</a> {if="$suceso.tipo"}{@ha sido patrocinado@}{else}{@ya no est&aacute; patrocinado@}{/if}.
 			</div>
 		</div>
 	</div>

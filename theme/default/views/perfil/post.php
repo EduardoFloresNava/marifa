@@ -4,7 +4,7 @@
 	<tbody>
 	{loop="$post"}
 		<tr>
-			<td><a href="{#SITE_URL#}/post/index/{$value.id}">{$value.titulo}<span class="pull-right">{$value.puntos} {@puntos@}</span></a></td>
+			<td><a href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}<span class="pull-right">{$value.puntos} {@puntos@}</span></a></td>
 		</tr>
 	{/loop}
 	</tbody>
