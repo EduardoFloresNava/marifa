@@ -5,6 +5,9 @@
  *
  * Cada elemento debe ser un arreglo el cual puede contener 3 parámetros.
  *  - El primero es la URL que se desea hacer coincidir la cual DEBE EMPEZAR con /.
+ *      - La URL puede tener campos variables, estos campos comienzan con : y son seguido de una cadena de texto que representa su nombre.
+ *        Por ejemplo: /post/:pagina, que va a coincidir con /post/1 o /post/a
+ *        Un nombre especial es :action que se mapea directamente como la acción del controlador.
  *  - El segundo puede ser un arreglo o una cadena de caracteres.
  *      - En caso de especificar una cadena de caracteres, la URL se transforma en un alias de la otra.
  *        Por ejemplo:
@@ -57,5 +60,6 @@ return array(
 	array('/foto/categoria/:categoria', array('controller' => 'foto', 'action' => 'index'), array('params_map' => array(NULL, 'categoria'))), // Atajo a las categorias.
 	array('/foto/:categoria/:id/(:nombre).html', array('controller' => 'foto', 'action' => 'ver'), array('params_map' => array('id'))), // URL a una foto.
 
+	array('/\@:usuario/?(:action)?', array('controller' => 'perfil', 'action' => 'index')), // Atajo al perfil del usuario.
 	//array('/perfil/:usuario/', array('controller' => 'perfil', 'action' => 'index'), array('filters' => array('usuario' => '()')), // Atajo al perfil del usuario.
 );

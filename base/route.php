@@ -104,6 +104,12 @@ class Base_Route {
 
 	public function setTarget($target)
 	{
+		if (is_array($target) && isset($this->parameters['action']))
+		{
+			$this->target['action'] = $this->parameters['action'];
+			unset($this->parameters['action']);
+		}
+
 		$this->target = $target;
 	}
 
@@ -191,6 +197,12 @@ class Base_Route {
 	 */
 	public function setParameters(array $parameters)
 	{
+		if (is_array($this->target) && isset($parameters['action']))
+		{
+			$this->target['action'] = $parameters['action'];
+			unset($parameters['action']);
+		}
+
 		$this->parameters = $parameters;
 	}
 
