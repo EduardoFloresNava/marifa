@@ -6,7 +6,7 @@
 				<label class="control-label" for="email">E-Mail</label>
 				<div class="controls">
 					<input type="text" id="nick" name="email" value="{$email}" />
-					<p class="help-inline">E-Mail al cual asociar su cuenta. En caso de editarlo deber&aacute; validar la cuenta.</p>
+					<p class="help-inline">E-Mail al cual asociar su cuenta. En caso de editarlo deberá validar la cuenta.</p>
 				</div>
 			</div>
 
@@ -14,7 +14,7 @@
 				<label class="control-label" for="origen">Lugar de origen</label>
 				<div class="controls">
 					<select id="origen" name="origen">
-						<option value="">Seleccione una opci&oacute;n</option>
+						<option value="">Seleccione una opción</option>
 						{loop="$paices"}
 							<optgroup label="{$value.0|htmlentities:ENT_NOQUOTES,"UTF-8"}">{$aux_rr=$key}
 							{loop="$value.1"}
@@ -31,7 +31,7 @@
 				<label class="control-label" for="sexo">Sexo</label>
 				<div class="controls">
 					<select id="sexo" name="sexo">
-						<option value=""{if="$sexo != 'f' && $sexo != 'm'"} selected="selected"{/if}>Seleccione una opci&oacute;n</option>
+						<option value=""{if="$sexo != 'f' && $sexo != 'm'"} selected="selected"{/if}>Seleccione una opción</option>
 						<option value="f"{if="$sexo == 'f'"} selected="selected"{/if}>Femenino</option>
 						<option value="m"{if="$sexo == 'm'"} selected="selected"{/if}>Masculino</option>
 					</select>
@@ -42,7 +42,7 @@
 				<label class="control-label" for="dia">Nacimiento</label>
 				<div class="controls controls-row">
 					<select class="span1" id="dia" name="dia">
-						<option value="">-- D&iacute;a --</option>
+						<option value="">-- Día --</option>
 						<option value="1"{if="isset($nacimiento.2) && $nacimiento.2 == 1"} selected="selected"{/if}>1</option>
 						<option value="2"{if="isset($nacimiento.2) && $nacimiento.2 == 2"} selected="selected"{/if}>2</option>
 						<option value="3"{if="isset($nacimiento.2) && $nacimiento.2 == 3"} selected="selected"{/if}>3</option>
@@ -90,8 +90,8 @@
 						<option value="11"{if="isset($nacimiento.1) && $nacimiento.1 == 11"} selected="selected"{/if}>Noviembre</option>
 						<option value="12"{if="isset($nacimiento.1) && $nacimiento.1 == 12"} selected="selected"{/if}>Diciembre</option>
 					</select>
-					<input type="text" class="span1" id="ano" name="ano" placeholder="A&ntilde;o..." value="{if="isset($nacimiento.0)"}{$nacimiento.0}{/if}" />
-					<p class="help-inline">Su apellido, se permiten caracteres alphanum&eacute;ricos, espacios y '.</p>
+					<input type="text" class="span1" id="ano" name="ano" placeholder="Año..." value="{if="isset($nacimiento.0)"}{$nacimiento.0}{/if}" />
+					<p class="help-inline">Su apellido, se permiten caracteres alphanuméricos, espacios y '.</p>
 				</div>
 			</div>
 

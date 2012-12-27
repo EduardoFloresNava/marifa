@@ -50,7 +50,7 @@
 			{/loop}
 		</ul>
 		{else}
-		<div class="alert alert-info">&iexcl;{$usuario.nick} a&uacute;n no tiene ninguna medalla!</div>
+		<div class="alert alert-info">!{$usuario.nick} aún no tiene ninguna medalla!</div>
 		{/if}
 		<h3 class="title">Seguidores<small>{$usuario.seguidores}</small></h3>
 		{if="count($seguidores) > 0"}
@@ -64,7 +64,7 @@
 			{/loop}
 		</ul>
 		{else}
-		<div class="alert alert-info">&iexcl;A&uacute;n no hay usuarios siguiendo a {$usuario.nick}!</div>
+		<div class="alert alert-info">!Aún no hay usuarios siguiendo a {$usuario.nick}!</div>
 		{/if}
 		<h3 class="title">Siguiendo<small>{$usuario.sigue}</small></h3>
 		{if="count($sigue) > 0"}
@@ -78,7 +78,7 @@
 			{/loop}
 		</ul>
 		{else}
-		<div class="alert alert-info">&iexcl;{$usuario.nick} a&uacute;n no sigue a ning&uacute;n usuario!</div>
+		<div class="alert alert-info">!{$usuario.nick} aún no sigue a ningún usuario!</div>
 		{/if}
 	</div>
 </div>

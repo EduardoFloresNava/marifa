@@ -129,7 +129,7 @@ if (PRODUCTION)
 			}
 		}
 
-		die('Debes eliminar el instalador para poder acceder al sitio. Para intentar de forma autom&aacute;tica has click <a href="/?finish=1">aqu&iacute;</a>.');
+		die('Debes eliminar el instalador para poder acceder al sitio. Para intentar de forma automática has click <a href="/?finish=1">aquí</a>.');
 	}
 }
 

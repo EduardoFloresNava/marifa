@@ -11,7 +11,7 @@
 	{/loop}
 </ul>
 {else}
-<div class="alert">No estás bloqueando ning&uacute;n usuario a&uacute;n.</div>
+<div class="alert">No estás bloqueando ningún usuario aún.</div>
 {/if}
 <form class="form-horizontal" action="" method="POST">
 	<fieldset>

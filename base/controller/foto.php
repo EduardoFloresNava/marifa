@@ -755,7 +755,7 @@ class Base_Controller_Foto extends Controller {
 			}
 		}
 
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.');
 		Request::redirect('/foto/ver/'.$model_comentario->foto_id);
 	}
 
@@ -821,7 +821,7 @@ class Base_Controller_Foto extends Controller {
 			}
 		}
 
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El comentario se ha borrado correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El comentario se ha borrado correctamente.');
 		Request::redirect('/foto/ver/'.$model_comentario->foto_id);
 	}
 
@@ -1489,7 +1489,7 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Acción realizada correctamente.');
 		Request::redirect('/foto/ver/'.$foto);
 	}
 

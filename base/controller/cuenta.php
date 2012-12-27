@@ -58,7 +58,7 @@ class Base_Controller_Cuenta extends Controller {
 			'index' => array('link' => '/cuenta', 'caption' => 'Cuenta', 'active' => $activo == 'index'),
 			'perfil' => array('link' => '/cuenta/perfil', 'caption' => 'Perfil', 'active' => $activo == 'perfil'),
 			'bloqueados' => array('link' => '/cuenta/bloqueados', 'caption' => 'Bloqueos', 'active' =>  $activo == 'bloqueados'),
-			'password' => array('link' => '/cuenta/password', 'caption' => 'Contrase&ntilde;a', 'active' =>  $activo == 'password'),
+			'password' => array('link' => '/cuenta/password', 'caption' => 'Contraseña', 'active' =>  $activo == 'password'),
 			'nick' => array('link' => '/cuenta/nick', 'caption' => 'Nicks', 'active' =>  $activo == 'nick'),
 			'avisos' => array('link' => '/cuenta/avisos', 'caption' => 'Avisos', 'active' =>  $activo == 'avisos', 'cantidad' => Usuario::usuario()->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO)),
 		);
@@ -106,7 +106,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verificamos el formato de e-mail.
 				if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $_POST['email']))
 				{
-					$errors[] = 'La direcci&oacute;n de email es inv&oacute;lida.';
+					$errors[] = 'La dirección de email es invólida.';
 					$view->assign('estado_email', -1);
 				}
 				else
@@ -828,7 +828,7 @@ class Base_Controller_Cuenta extends Controller {
 	public function action_password()
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Cuenta - Contrase&ntilde;a');
+		$this->template->assign('title', 'Cuenta - Contraseña');
 
 		// Cargamos la vista.
 		$view = View::factory('cuenta/password');
@@ -875,12 +875,12 @@ class Base_Controller_Cuenta extends Controller {
 				{
 					if ($_POST['password'] != $_POST['cpassword'])
 					{
-						$view->assign('error', 'Las contrase&ntilde;as ingresadas no coinciden.');
+						$view->assign('error', 'Las contraseñas ingresadas no coinciden.');
 						$view->assign('error_password', TRUE);
 					}
 					else
 					{
-						$view->assign('error', 'La contrase&ntilde;a debe tener entre 6 y 20 caracteres alphanumericos.');
+						$view->assign('error', 'La contraseña debe tener entre 6 y 20 caracteres alphanumericos.');
 						$view->assign('error_password', TRUE);
 					}
 				}
@@ -891,14 +891,14 @@ class Base_Controller_Cuenta extends Controller {
 
 					if ( ! $enc->check_password($_POST['current'], $model_usuario->password))
 					{
-						$view->assign('error', 'La contrase&ntilde;a es incorrecta.');
+						$view->assign('error', 'La contraseña es incorrecta.');
 						$view->assign('error_current', TRUE);
 					}
 					else
 					{
 						// Actualizo la caontraseña.
 						$model_usuario->actualizar_contrasena(trim($_POST['password']));
-						$view->assign('success', 'La contrase&ntilde;a se ha actualizado correctamente.');
+						$view->assign('success', 'La contraseña se ha actualizado correctamente.');
 					}
 				}
 			}
@@ -970,7 +970,7 @@ class Base_Controller_Cuenta extends Controller {
 
 				if ( ! isset($_POST['password']) || empty($_POST['password']))
 				{
-					$view->assign('error_password', 'Debe ingresar su contrase&ntilde;a para validar el cambio.');
+					$view->assign('error_password', 'Debe ingresar su contraseña para validar el cambio.');
 				}
 			}
 			else
@@ -983,7 +983,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verifico longitud Nick.
 				if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/D', $nick))
 				{
-					$view->assign('error_nick', 'El nick debe tener entre 4 y 20 caracteres alphanum&eacute;ricos.');
+					$view->assign('error_nick', 'El nick debe tener entre 4 y 20 caracteres alphanuméricos.');
 				}
 				else
 				{
@@ -992,14 +992,14 @@ class Base_Controller_Cuenta extends Controller {
 
 					if ( ! $enc->check_password($password, $model_usuario->password))
 					{
-						$view->assign('error_password', 'La contrase&ntilde;a es incorrecta.');
+						$view->assign('error_password', 'La contraseña es incorrecta.');
 					}
 					else
 					{
 						// Verifico que no exista el nick.
 						if ($model_usuario->exists_nick($nick))
 						{
-							$view->assign('error_nick', 'El nick no est&aacute; disponible.');
+							$view->assign('error_nick', 'El nick no está disponible.');
 						}
 						else
 						{

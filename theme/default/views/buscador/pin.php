@@ -32,7 +32,7 @@
 			</div>
 			<div class="pie">
 				<ul class="clearfix">
-					<li><a href="{#SITE_URL#}/perfil/publicacion/{$value.usuario.nick}/{$value.id}/">M&aacute;s informaci&oacute;n</a></li>
+					<li><a href="{#SITE_URL#}/perfil/publicacion/{$value.usuario.nick}/{$value.id}/">Más información</a></li>
 
 					{if="Usuario::is_login() && Model_Shout::s_fue_compartido($value.id, Usuario::$usuario_id)"}
 					<li class="active"><i class="icon icon-retweet"></i> <strong>{$value.compartido}</strong></li>

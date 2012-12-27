@@ -20,5 +20,5 @@
 	</tr>
 </table>
 {else}
-<div class="alert alert-success">&iexcl;No tienes ning&uacute;n aviso!</div>
+<div class="alert alert-success">!No tienes ningún aviso!</div>
 {/loop}

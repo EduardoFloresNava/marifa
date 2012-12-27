@@ -158,7 +158,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Post restaurado correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Post restaurado correctamente.');
 		Request::redirect('/moderar/papelera/posts');
 	}
 
@@ -211,7 +211,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Post borrado correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Post borrado correctamente.');
 		Request::redirect('/moderar/papelera/posts');
 	}
 
@@ -326,7 +326,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		}
 
 		// Informamos resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Foto restaurada correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Foto restaurada correctamente.');
 		Request::redirect('/moderar/papelera/fotos');
 	}
 
@@ -378,7 +378,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Foto borrada correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Foto borrada correctamente.');
 		Request::redirect('/moderar/papelera/fotos');
 	}
 }

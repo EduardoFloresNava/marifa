@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
 	<li><a href="{#SITE_URL#}/admin/contenido">Contenido</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/contenido/noticias">Noticias</a> <span class="divider">/</span></li>
     <li class="active">Nueva</li>
@@ -29,7 +29,7 @@
 				<input type="radio" name="visible" id="visible" value="0"{if="!$visible"} checked{/if}>
 				Oculto
 			</label>
-			<span class="help-block">La visibilidad que va a tener por defecto. Si se pone visible instantaneamente ser&aacute; mostrado a los usuarios.</span>
+			<span class="help-block">La visibilidad que va a tener por defecto. Si se pone visible instantaneamente será mostrado a los usuarios.</span>
 		</div>
 	</div>
 

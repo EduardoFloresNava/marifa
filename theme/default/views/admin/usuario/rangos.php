@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
     <li class="active">Rangos</li>
 </ul>
@@ -10,7 +10,7 @@
 	</div>
 </div>
 <div class="alert alert-info">
-	<strong>&iexcl;Importante!</strong> En el caso de que un usuario tenga un rango especial y por un logro pueda pasar a otro rango, solo se va a realizar si el nuevo rango se encuentra con un orden menor (es decir, por arriba).
+	<strong>!Importante!</strong> En el caso de que un usuario tenga un rango especial y por un logro pueda pasar a otro rango, solo se va a realizar si el nuevo rango se encuentra con un orden menor (es decir, por arriba).
 </div>
 <table class="table table-bordered">
 	<thead>
@@ -18,7 +18,7 @@
 			<th>Orden</th>
 			<th>Nombre</th>
 			<th>Usuarios</th>
-			<th>Puntos por d&iacute;a</th>
+			<th>Puntos por día</th>
 			<th>Puntos por post</th>
 			<th>Tipo</th>
 			<th>Requerimiento</th>
@@ -35,7 +35,7 @@
 					<div class="btn-group">
 						{if="$value.orden !== 1"}<a class="btn btn-mini" href="{#SITE_URL#}/admin/usuario/mover_rango/{$value.id}/1" rel="tooltip" title="Colocar primero"><i class="icon icon-arrow-up"></i></a>{/if}
 						{if="$value.orden !== 1"}<a class="btn btn-mini" href="{#SITE_URL#}/admin/usuario/mover_rango/{$value.id}/{$value.orden - 1}" rel="tooltip" title="Subir 1 posición"><i class="icon icon-chevron-up"></i></a>{/if}
-						{if="$value.orden !== count($rangos)"}<a class="btn btn-mini" href="{#SITE_URL#}/admin/usuario/mover_rango/{$value.id}/{$value.orden + 1}" rel="tooltip" title="Bajar 1 posici&oacute;n"><i class="icon icon-chevron-down"></i></a>{/if}
+						{if="$value.orden !== count($rangos)"}<a class="btn btn-mini" href="{#SITE_URL#}/admin/usuario/mover_rango/{$value.id}/{$value.orden + 1}" rel="tooltip" title="Bajar 1 posición"><i class="icon icon-chevron-down"></i></a>{/if}
 						{if="$value.orden !== count($rangos)"}<a class="btn btn-mini" href="{#SITE_URL#}/admin/usuario/mover_rango/{$value.id}/{function="count($rangos)"}" rel="tooltip" title="Colocar último"><i class="icon icon-arrow-down"></i></a>{/if}
 					</div>
 				</div>
@@ -59,7 +59,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="6">&iexcl;No hay rangos definidos!</td>
+			<td class="alert" colspan="6">!No hay rangos definidos!</td>
 		</tr>
 		{/loop}
 	</tbody>

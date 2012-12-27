@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/moderar/">Moderaci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/">Moderación</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/moderar/desaprobado/">Contenido desaprobado</a> <span class="divider">/</span></li>
     <li class="active">Comentarios</li>
 </ul>
@@ -37,7 +37,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="5">&iexcl;No hay comentarios que mostrar!</td>
+			<td class="alert" colspan="5">!No hay comentarios que mostrar!</td>
 		</tr>
 		{/loop}
 	</tbody>

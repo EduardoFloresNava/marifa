@@ -6,7 +6,7 @@
             <label class="control-label" for="nick">Nick</label>
             <div class="controls">
                 <input type="text" id="nick" name="nick" value="{$nick}" />
-                <p class="help-inline">Su apellido, se permiten caracteres alphanum&eacute;ricos, espacios y '.</p>
+                <p class="help-inline">Su apellido, se permiten caracteres alphanuméricos, espacios y '.</p>
             </div>
         </div>
 
@@ -19,15 +19,15 @@
         </div>
 
         <div class="control-group{if="$error_password"} error{/if}">
-            <label class="control-label" for="password">Contrase&ntilde;a</label>
+            <label class="control-label" for="password">Contraseña</label>
             <div class="controls">
                 <input type="password" id="password" name="password" />
-                <p class="help-inline">Su clave de acceso. Puede contener caracteres alphanum&eacute;ricos, @, #, +, - /, * y _, '.' y ','.</p>
+                <p class="help-inline">Su clave de acceso. Puede contener caracteres alphanuméricos, @, #, +, - /, * y _, '.' y ','.</p>
             </div>
         </div>
 
         <div class="control-group{if="$error_c_password"} error{/if}">
-            <label class="control-label" for="c_password">Repetir Contrase&ntilde;a</label>
+            <label class="control-label" for="c_password">Repetir Contraseña</label>
             <div class="controls">
                 <input type="password" id="c_password" name="c_password" />
             </div>
@@ -44,7 +44,7 @@
         <div class="form-actions">
             <button class="btn btn-primary">Registrarse</button>
             o
-            <a href="/usuario/login/">&iquest;Iniciar sesi&oacute;n?</a>
+            <a href="/usuario/login/">¿Iniciar sesión?</a>
         </div>
     </fieldset>
 </form>

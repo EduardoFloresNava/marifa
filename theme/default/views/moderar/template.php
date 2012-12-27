@@ -1,5 +1,5 @@
 <div class="moderar">
-	<h1 class="title">Panel de moderaci&oacute;n</h1>
+	<h1 class="title">Panel de moderación</h1>
 	{if="isset($top_bar)"}
 	<div class="row-fluid">
 		<div class="span2 menu">

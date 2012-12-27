@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="span7">
-		<h3 class="title clearfix">&Uacute;ltimos posts<small class="pull-right leyenda">Leyenda: <span><i class="icon icon-bookmark"></i>Fijo - <i class="icon icon-certificate"></i>Patrocinado - <i class="icon icon-lock"></i>Privado</span></small></h3>
+		<h3 class="title clearfix">últimos posts<small class="pull-right leyenda">Leyenda: <span><i class="icon icon-bookmark"></i>Fijo - <i class="icon icon-certificate"></i>Patrocinado - <i class="icon icon-lock"></i>Privado</span></small></h3>
 		{if="count($sticky) == 0 && count($ultimos_posts) == 0"}
 		<div class="alert">No hay posts aún.</div>
 		{else}
@@ -29,7 +29,7 @@
 				<div class="contenido">
 					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<a class="titulo" href="{#SITE_URL#}/post/index/{$value.id}/">{$value.titulo}</a>
 					<div class="info">
-						{@Por@}: <a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categor&iacute;a: {$value.categoria.nombre}
+						{@Por@}: <a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoría: {$value.categoria.nombre}
 					</div>
 				</div>
 				<div class="fecha visible-desktop">
@@ -73,7 +73,7 @@
 			</div>
 		</div>
 		<div>
-			<h3 class="title">&Uacute;ltimos comentarios</h3>
+			<h3 class="title">últimos comentarios</h3>
 			{if="count($ultimos_comentarios) > 0"}
 			<ol>
 			{loop="$ultimos_comentarios"}
@@ -114,7 +114,7 @@
 	</div>
 	<div class="span2 hidden-phone">
 		<div>
-			<h3 class="title">&Uacute;ltimas fotos</h3>
+			<h3 class="title">últimas fotos</h3>
 			{if="isset($ultimas_fotos[0])"}
 			<!--170x150-->
 			<a href="{#SITE_URL#}/foto/ver/{$ultimas_fotos.0.id}">

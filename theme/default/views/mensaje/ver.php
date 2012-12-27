@@ -8,7 +8,7 @@
         <div class="btn-group pull-right">
             <a class="btn btn-small btn-info" href="{#SITE_URL#}/mensaje/nuevo/1/{$mensaje.id}">Responder</a>
             <a class="btn btn-small btn-info" href="{#SITE_URL#}/mensaje/nuevo/2/{$mensaje.id}">Reenviar</a>
-            {if="$mensaje.estado == 1"}<a class="btn btn-small btn-primary" href="{#SITE_URL#}/mensaje/noleido/{$mensaje.id}">Marcar como no le&iacute;do</a>{/if}
+            {if="$mensaje.estado == 1"}<a class="btn btn-small btn-primary" href="{#SITE_URL#}/mensaje/noleido/{$mensaje.id}">Marcar como no leído</a>{/if}
             <a class="btn btn-small btn-danger" href="{#SITE_URL#}/mensaje/borrar/{$mensaje.id}">Borrar</a>
         </div>
     </div>

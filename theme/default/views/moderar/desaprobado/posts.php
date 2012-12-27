@@ -48,7 +48,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="5">&iexcl;No hay denuncias a los posts!</td>
+			<td class="alert" colspan="5">!No hay denuncias a los posts!</td>
 		</tr>
 		{/loop}
 	</tbody>

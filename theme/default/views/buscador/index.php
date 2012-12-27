@@ -19,7 +19,7 @@
 						</div>
 					</div>-->
 					<div class="span6">
-						Categor&iacute;as:
+						Categorías:
 						<select name="categoria">
 							<option value="todos"{if="$categoria == 'todos'"} selected="selected"{/if}>Todas</option>
 							{loop="$categorias"}

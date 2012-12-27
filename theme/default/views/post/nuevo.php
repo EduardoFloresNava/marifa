@@ -4,7 +4,7 @@
 		<form method="POST" class="form-horizontal" action="">
 
 			<div class="control-group{if="$error_titulo"} error{/if}">
-				<label class="control-label" for="titulo">T&iacute;tulo</label>
+				<label class="control-label" for="titulo">Título</label>
 				<div class="controls">
 					<input type="text" id="titulo" name="titulo" value="{$titulo}" class="input-xxlarge" />
 					<span class="help-block">{if="$error_titulo"}{$error_titulo}{/if}</span>
@@ -24,7 +24,7 @@
 				<label class="control-label" for="tags">Etiquetas</label>
 				<div class="controls">
 					<input type="text" id="tags" name="tags" value="{$tags}" class="input-xxlarge" />
-					<span class="help-block">{if="$error_tags"}{$error_tags}{else}Listado de etiquetas separadas por ','. Las etiquetas deben ser alphanum&eacute;ricas y contener espacios.{/if}</span>
+					<span class="help-block">{if="$error_tags"}{$error_tags}{else}Listado de etiquetas separadas por ','. Las etiquetas deben ser alphanuméricas y contener espacios.{/if}</span>
 				</div>
 			</div>
 
@@ -32,14 +32,14 @@
 				<label class="control-label" for="captcha">CAPTCHA</label>
 				<div class="controls">
 					<input type="text" id="captcha" name="captcha" value="{$captcha}" />
-					<span class="help-block">{if="$error_captcha"}El c&oacute;digo ingresado no es correcto.{else}Ingresa el c&oacute;digo que aparece a continuaci&oacute;n.{/if}</span>
+					<span class="help-block">{if="$error_captcha"}El código ingresado no es correcto.{else}Ingresa el código que aparece a continuación.{/if}</span>
 					<img src="/home/captcha" style="display: block;" />
 				</div>
 			</div>
 
 			<div class="row-fluid">
 				<div class="span6">
-					<h3 class="title">Categor&iacute;a</h3>
+					<h3 class="title">Categoría</h3>
 					{if="$error_categoria"}<div class="alert alert-danger">{$error_categoria}</div>{/if}
 					<select class="span12" name="categoria" id="categoria" size="10">
 						{loop="$categorias"}
@@ -51,8 +51,8 @@
 					<h3 class="title">Opciones</h3>
 
 					<label class="checkbox">
-						<input type="checkbox" id="privado" name="privado" value="1"{if="$privado"} checked{/if}><strong>S&oacute;lo usuarios registrados</strong>
-						<p>Tu post ser&aacute; visto s&oacute;lo por los usuarios que est&eacute;n registrados.</p>
+						<input type="checkbox" id="privado" name="privado" value="1"{if="$privado"} checked{/if}><strong>Sólo usuarios registrados</strong>
+						<p>Tu post será visto sólo por los usuarios que estén registrados.</p>
 					</label>
 					<label class="checkbox">
 						<input type="checkbox" id="comentar" name="comentar" value="1"{if="$comentar"} checked{/if}><strong>Comentarios cerrados</strong>
@@ -60,7 +60,7 @@
 					</label>
 					{if="$permisos_especiales"}<label class="checkbox">
 						<input type="checkbox" id="patrocinado" name="patrocinado" value="1"{if="$patrocinado"} checked{/if}><strong>Patrocinado</strong>
-						<p>Resalta este post entre los dem&aacute;s.</p>
+						<p>Resalta este post entre los demás.</p>
 					</label>
 					<label class="checkbox">
 						<input type="checkbox" id="sticky" name="sticky" value="1"{if="$sticky"} checked{/if}><strong>Sticky</strong>

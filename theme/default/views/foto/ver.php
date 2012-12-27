@@ -63,7 +63,7 @@
 			</div>
 			{if="$foto.visitas !== NULL"}<div class="btn-group">
 				<span class="btn">{@Visitas@}: {$foto.visitas}</span>
-				{if="$foto.visitas > 0"}<span class="btn">{@&Uacute;ltima visita@}: {$foto.ultima_visita->fuzzy()}</span>{/if}
+				{if="$foto.visitas > 0"}<span class="btn">{@última visita@}: {$foto.ultima_visita->fuzzy()}</span>{/if}
 			</div>{/if}
 			{if="$me != NULL && $foto.usuario_id != $me"}
 			<div class="btn-group pull-right">
@@ -114,11 +114,11 @@
 			{include="helper/bbcode_bar"}
 			{if="isset($comentario_success)"}
 			<div class="alert alert-success">
-				<strong>{@&iexcl;Felicidades!@}</strong> {$comentario_success}
+				<strong>{@!Felicidades!@}</strong> {$comentario_success}
 			</div>{/if}
 			{if="isset($comentario_error)"}
 			<div class="alert alert-danger">
-				<strong>{@&iexcl;Error!@}</strong> {$comentario_error}
+				<strong>{@!Error!@}</strong> {$comentario_error}
 			</div>{/if}
 			<textarea class="span10" name="comentario" data-preview="{#SITE_URL#}/foto/preview/" id="comentario" placeholder="Comentario...">{$comentario_content}</textarea>
 		</form>

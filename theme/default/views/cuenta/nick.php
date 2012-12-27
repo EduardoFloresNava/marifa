@@ -34,7 +34,7 @@
 				</div>
 
 				<div class="control-group{if="isset($error_password)"} error{/if}">
-					<label class="control-label" for="password">Contrase&ntilde;a</label>
+					<label class="control-label" for="password">Contraseña</label>
 					<div class="controls">
 						<input type="password" id="password" name="password" value="" />
 					</div>
@@ -50,7 +50,7 @@
 					{/if}
 				{else}
 				<div class="alert alert-info">
-					Alcanzaste el m&aacute;ximo de nick's que se tienen permitidos poseer.
+					Alcanzaste el máximo de nick's que se tienen permitidos poseer.
 				</div>
 				{/if}
 			</fieldset>

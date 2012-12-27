@@ -3,7 +3,7 @@
 <table class="table table-bordered">
 	<thead>
 		<tr>
-			<th>T&iacute;tulo</th>
+			<th>Título</th>
 			<th>Fecha</th>
 			<th>Acciones</th>
 		</tr>
@@ -21,6 +21,6 @@
 	</tbody>
 </table>
 {else}
-<div class="alert alert-info">No tienes ning&uacute;n posts como favorito.</div>
+<div class="alert alert-info">No tienes ningún posts como favorito.</div>
 {/if}
 {$paginacion}

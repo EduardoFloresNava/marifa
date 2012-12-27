@@ -2,7 +2,7 @@
 	<div class="span10">
 		<form class="form-horizontal" action="" method="POST">
 			<fieldset>
-				<legend>Cambiar contrase&ntilde;a</legend>
+				<legend>Cambiar contraseña</legend>
 
 				<div class="control-group{if="isset($error_current)"} error{/if}">
 					<label class="control-label" for="current">Actual</label>
@@ -12,7 +12,7 @@
 				</div>
 
 				<div class="control-group{if="isset($error_password) || isset($error_c_password)"} error{/if}">
-					<label class="control-label" for="password">Nueva contrase&ntilde;a</label>
+					<label class="control-label" for="password">Nueva contraseña</label>
 					<div class="controls">
 						<p><input type="password" id="password" name="password" /></p>
 						<p><input type="password" id="cpassword" name="cpassword" /></p>

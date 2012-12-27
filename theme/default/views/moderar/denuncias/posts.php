@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/moderar/">Moderaci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/">Moderación</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/moderar/denuncias/">Denuncias</a> <span class="divider">/</span></li>
     <li class="active">Posts</li>
 </ul>
@@ -71,7 +71,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="5">&iexcl;No hay denuncias a los posts!</td>
+			<td class="alert" colspan="5">!No hay denuncias a los posts!</td>
 		</tr>
 		{/loop}
 	</tbody>

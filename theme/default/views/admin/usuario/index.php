@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li class="active">Usuarios</li>
 </ul>
 <div class="header clearfix">
@@ -68,7 +68,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="6">&iexcl;No hay usuarios!</td>
+			<td class="alert" colspan="6">!No hay usuarios!</td>
 		</tr>
 		{/loop}
 	</tbody>

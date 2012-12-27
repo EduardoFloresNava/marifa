@@ -21,7 +21,7 @@
 		{if="$actual.id == $suceso.usuario.id"}
 		<div class="pie">
 			<ul class="clearfix">
-				<li><a href="{#SITE_URL#}/perfil/publicacion/{$suceso.shout.usuario.nick}/{$suceso.shout.id}/">M&aacute;s informaci&oacute;n</a></li>
+				<li><a href="{#SITE_URL#}/perfil/publicacion/{$suceso.shout.usuario.nick}/{$suceso.shout.id}/">Más información</a></li>
 
 				{if="Usuario::is_login() && Model_Shout::s_fue_compartido($suceso.shout.id, Usuario::$usuario_id)"}
 				<li class="active"><i class="icon icon-retweet"></i> <strong>{$suceso.shout.compartido}</strong></li>

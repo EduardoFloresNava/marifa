@@ -4,7 +4,7 @@
 <div class="publicar">
 	<form action="{#SITE_URL#}/perfil/index/{$usuario.nick}/" method="POST">
 		<ul class="nav nav-pills">
-			<li{if="$tipo == 'texto'"} class="active"{/if}><a href="#" id="publicacion-tipo-texto"><i class="icon-white icon-pencil"></i> {if="$usuario.id !== Usuario::$usuario_id"}Publicaci&oacute;n{else}Estado{/if}</a></li>
+			<li{if="$tipo == 'texto'"} class="active"{/if}><a href="#" id="publicacion-tipo-texto"><i class="icon-white icon-pencil"></i> {if="$usuario.id !== Usuario::$usuario_id"}Publicación{else}Estado{/if}</a></li>
 			<li{if="$tipo == 'foto'"} class="active"{/if}><a href="#" id="publicacion-tipo-foto"><i class="icon icon-picture"></i> Foto</a></li>
 			<li{if="$tipo == 'enlace'"} class="active"{/if}><a href="#" id="publicacion-tipo-enlace"><i class="icon icon-retweet"></i> Enlace</a></li>
 			<li{if="$tipo == 'video'"} class="active"{/if}><a href="#" id="publicacion-tipo-video"><i class="icon icon-play"></i> Video</a></li>
@@ -25,7 +25,7 @@
 	</form>
 </div>
 {elseif="Usuario::$usuario_id !== $usuario.id"}
-<div class="alert alert-info"><i class="icon icon-info-sign"></i> Para poder publicar en el perfil de {$usuario.nick} debes seguirlo o &eacute;l debe ser tu seguidor. Si ya cumples ese requisito tal vez est&eacute;s bloqueado.</div>
+<div class="alert alert-info"><i class="icon icon-info-sign"></i> Para poder publicar en el perfil de {$usuario.nick} debes seguirlo o él debe ser tu seguidor. Si ya cumples ese requisito tal vez estés bloqueado.</div>
 {/if}
 {/if}
 <div class="publicaciones">

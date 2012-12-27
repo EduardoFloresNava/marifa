@@ -3,7 +3,7 @@
 		<form class="form-horizontal" method="POST" action="">
 
 			<fieldset>
-				<legend>M&aacute;s sobre mi</legend>
+				<legend>Más sobre mi</legend>
 
 				<div class="control-group{if="$estado_nombre == -1"} error{elseif="$estado_nombre == 1"} success{/if}">
 					<label class="control-label" for="nombre">Nombre Completo</label>
@@ -46,7 +46,7 @@
 				</div>
 
 				<div class="control-group{if="$estado_hacer_amigos == -1"} error{elseif="$estado_hacer_amigos == 1"} success{/if}">
-					<label class="control-label">Me gustar&iacute;a</label>
+					<label class="control-label">Me gustaría</label>
 					<div class="controls">
 						<label class="checkbox">
 							<input type="checkbox" name="hacer_amigos" value="1"{if="$hacer_amigos"} checked="checked"{/if}>
@@ -164,8 +164,8 @@
 						<select name="color_pelo" id="color_pelo">
 							<option value=""{if="$color_pelo == ''"} selected="selected"{/if}>Sin Respuesta</option>
 							<option value="negro"{if="$color_pelo == 'negro'"} selected="selected"{/if}>Negro</option>
-							<option value="castano_oscuro"{if="$color_pelo == 'castano_oscuro'"} selected="selected"{/if}>Casta&ntilde;o oscuro</option>
-							<option value="castano_claro"{if="$color_pelo == 'castano_claro'"} selected="selected"{/if}>Casta&ntilde;o claro</option>
+							<option value="castano_oscuro"{if="$color_pelo == 'castano_oscuro'"} selected="selected"{/if}>Castaño oscuro</option>
+							<option value="castano_claro"{if="$color_pelo == 'castano_claro'"} selected="selected"{/if}>Castaño claro</option>
 							<option value="rubio"{if="$color_pelo == 'rubio'"} selected="selected"{/if}>Rubio</option>
 							<option value="pelirrojo"{if="$color_pelo == 'pelirrojo'"} selected="selected"{/if}>Pelirrojo</option>
 							<option value="gris"{if="$color_pelo == 'gris'"} selected="selected"{/if}>Gris</option>
@@ -174,7 +174,7 @@
 							<option value="morado"{if="$color_pelo == 'morado'"} selected="selected"{/if}>Morado</option>
 							<option value="azul"{if="$color_pelo == 'azul'"} selected="selected"{/if}>Azul</option>
 							<option value="canoso"{if="$color_pelo == 'canoso'"} selected="selected"{/if}>Canoso</option>
-							<option value="tenido"{if="$color_pelo == 'tenido'"} selected="selected"{/if}>Te&ntilde;ido</option>
+							<option value="tenido"{if="$color_pelo == 'tenido'"} selected="selected"{/if}>Teñido</option>
 							<option value="rapado"{if="$color_pelo == 'rapado'"} selected="selected"{/if}>Rapado</option>
 							<option value="calvo"{if="$color_pelo == 'calvo'"} selected="selected"{/if}>Calvo</option>
 						</select>
@@ -196,14 +196,14 @@
 				</div>
 
 				<div class="control-group{if="$estado_complexion == -1"} error{elseif="$estado_complexion == 1"} success{/if}">
-					<label class="control-label" for="complexion">Complexi&oacute;n</label>
+					<label class="control-label" for="complexion">Complexión</label>
 					<div class="controls">
 						<select name="complexion" id="complexion">
 							<option value=""{if="$complexion == ''"} selected="selected"{/if}>Sin Respuesta</option>
 							<option value="delgado"{if="$complexion == 'delgado'"} selected="selected"{/if}>Delgado/a</option>
-							<option value="atletico"{if="$complexion == 'atletico'"} selected="selected"{/if}>Atl&eacute;tico</option>
+							<option value="atletico"{if="$complexion == 'atletico'"} selected="selected"{/if}>Atlético</option>
 							<option value="normal"{if="$complexion == 'normal'"} selected="selected"{/if}>Normal</option>
-							<option value="kilos_mas"{if="$complexion == 'kilos_mas'"} selected="selected"{/if}>Algunos kilos de m&aacute;s</option>
+							<option value="kilos_mas"{if="$complexion == 'kilos_mas'"} selected="selected"{/if}>Algunos kilos de más</option>
 							<option value="corpulento"{if="$complexion == 'corpulento'"} selected="selected"{/if}>Corpulento/a</option>
 						</select>
 					</div>
@@ -216,7 +216,7 @@
 							<option value=""{if="$mi_dieta == ''"} selected="selected"{/if}>Sin Respuesta</option>
 							<option value="vegetariana"{if="$mi_dieta == 'vegetariana'"} selected="selected"{/if}>Vegetariana</option>
 							<option value="lacto_vegetariana"{if="$mi_dieta == 'lacto_vegetariana'"} selected="selected"{/if}>Lacto Vegetariana</option>
-							<option value="organica"{if="$mi_dieta == 'organica'"} selected="selected"{/if}>Org&aacute;nica</option>
+							<option value="organica"{if="$mi_dieta == 'organica'"} selected="selected"{/if}>Orgánica</option>
 							<option value="de_todo"{if="$mi_dieta == 'de_todo'"} selected="selected"{/if}>De todo</option>
 							<option value="comida_basura"{if="$mi_dieta == 'comida_basura'"} selected="selected"{/if}>Comida basura</option>
 						</select>
@@ -273,7 +273,7 @@
 			</fieldset>
 
 			<fieldset>
-				<legend>Formaci&oacute;n y trabajo</legend>
+				<legend>Formación y trabajo</legend>
 
 				<div class="control-group{if="$estado_estudios == -1"} error{elseif="$estado_estudios == 1"} success{/if}">
 					<label class="control-label" for="estudios">Estudios</label>
@@ -296,7 +296,7 @@
 				</div>
 
 				<div class="control-group{if="$estado_idioma_espanol == -1"} error{elseif="$estado_idioma_espanol == 1"} success{/if}">
-					<label class="control-label" for="idioma_espanol">Espa&ntilde;ol</label>
+					<label class="control-label" for="idioma_espanol">Español</label>
 					<div class="controls">
 						<select name="idioma_espanol" id="idioma_espanol">
 							<option value=""{if="$idioma_espanol == ''"} selected="selected"{/if}>Sin Respuesta</option>
@@ -310,7 +310,7 @@
 				</div>
 
 				<div class="control-group{if="$estado_idioma_ingles == -1"} error{elseif="$estado_idioma_ingles == 1"} success{/if}">
-					<label class="control-label" for="idioma_ingles">Ingl&eacute;s</label>
+					<label class="control-label" for="idioma_ingles">Inglés</label>
 					<div class="controls">
 						<select name="idioma_ingles" id="idioma_ingles">
 							<option value=""{if="$idioma_ingles == ''"} selected="selected"{/if}>Sin Respuesta</option>
@@ -324,7 +324,7 @@
 				</div>
 
 				<div class="control-group{if="$estado_idioma_portugues == -1"} error{elseif="$estado_idioma_portugues == 1"} success{/if}">
-					<label class="control-label" for="idioma_portugues">Portugu&eacute;s</label>
+					<label class="control-label" for="idioma_portugues">Portugués</label>
 					<div class="controls">
 						<select name="idioma_portugues" id="idioma_portugues">
 							<option value=""{if="$idioma_portugues == ''"} selected="selected"{/if}>Sin Respuesta</option>
@@ -338,7 +338,7 @@
 				</div>
 
 				<div class="control-group{if="$estado_idioma_frances == -1"} error{elseif="$estado_idioma_frances == 1"} success{/if}">
-					<label class="control-label" for="idioma_frances">Franc&eacute;s</label>
+					<label class="control-label" for="idioma_frances">Francés</label>
 					<div class="controls">
 						<select name="idioma_frances" id="idioma_frances">
 							<option value=""{if="$idioma_frances == ''"} selected="selected"{/if}>Sin Respuesta</option>
@@ -366,7 +366,7 @@
 				</div>
 
 				<div class="control-group{if="$estado_idioma_aleman == -1"} error{elseif="$estado_idioma_aleman == 1"} success{/if}">
-					<label class="control-label" for="idioma_aleman">Alem&aacute;n</label>
+					<label class="control-label" for="idioma_aleman">Alemán</label>
 					<div class="controls">
 						<select name="idioma_aleman" id="idioma_aleman">
 							<option value=""{if="$idioma_aleman == ''"} selected="selected"{/if}>Sin Respuesta</option>
@@ -394,7 +394,7 @@
 				</div>
 
 				<div class="control-group{if="$estado_profesion == -1"} error{elseif="$estado_profesion == 1"} success{/if}">
-					<label class="control-label" for="profesion">Profesi&oacute;n</label>
+					<label class="control-label" for="profesion">Profesión</label>
 					<div class="controls">
 						<input type="text" id="profesion" name="profesion" value="{$profesion}" />
 					</div>
@@ -413,66 +413,66 @@
 						<select name="sector" id="sector">
 							<option value=""{if="$sector == ''"} selected="selected"{/if}>Sin Respuesta</option>
 							<option value="abastecimiento"{if="$sector == 'abastecimiento'"} selected="selected"{/if}>Abastecimiento</option>
-							<option value="administracion"{if="$sector == 'administracion'"} selected="selected"{/if}>Administraci&oacute;n</option>
+							<option value="administracion"{if="$sector == 'administracion'"} selected="selected"{/if}>Administración</option>
 							<option value="apoderado_aduanal"{if="$sector == 'apoderado_aduanal'"} selected="selected"{/if}>Apoderado Aduanal</option>
-							<option value="asesoria_en_comercio_exterior"{if="$sector == 'asesoria_en_comercio_exterior'"} selected="selected"{/if}>Asesor&iacute;a en Comercio Exterior</option>
-							<option value="asesoria_legal_internacional"{if="$sector == 'asesoria_legal_internacional'"} selected="selected"{/if}>Asesor&iacute;a Legal Internacional</option>
-							<option value="asistente_de_trafico"{if="$sector == 'asistente_de_trafico'"} selected="selected"{/if}>Asistente de Tr&aacute;fico</option>
-							<option value="auditoria"{if="$sector == 'auditoria'"} selected="selected"{/if}>Auditor&iacute;a</option>
+							<option value="asesoria_en_comercio_exterior"{if="$sector == 'asesoria_en_comercio_exterior'"} selected="selected"{/if}>Asesoría en Comercio Exterior</option>
+							<option value="asesoria_legal_internacional"{if="$sector == 'asesoria_legal_internacional'"} selected="selected"{/if}>Asesoría Legal Internacional</option>
+							<option value="asistente_de_trafico"{if="$sector == 'asistente_de_trafico'"} selected="selected"{/if}>Asistente de Tráfico</option>
+							<option value="auditoria"{if="$sector == 'auditoria'"} selected="selected"{/if}>Auditoría</option>
 							<option value="calidad"{if="$sector == 'calidad'"} selected="selected"{/if}>Calidad</option>
 							<option value="call_center"{if="$sector == 'call_center'"} selected="selected"{/if}>Call Center</option>
-							<option value="capacitacion_comercio_exterior"{if="$sector == 'capacitacion_comercio_exterior'"} selected="selected"{/if}>Capacitaci&oacute;n Comercio Exterior</option>
+							<option value="capacitacion_comercio_exterior"{if="$sector == 'capacitacion_comercio_exterior'"} selected="selected"{/if}>Capacitación Comercio Exterior</option>
 							<option value="comercial"{if="$sector == 'comercial'"} selected="selected"{/if}>Comercial</option>
 							<option value="comercio_exterior"{if="$sector == 'comercio_exterior'"} selected="selected"{/if}>Comercio Exterior</option>
 							<option value="compras"{if="$sector == 'compras'"} selected="selected"{/if}>Compras</option>
-							<option value="compras_internacionalesimportacion"{if="$sector == 'compras_internacionalesimportacion'"} selected="selected"{/if}>Compras Internacionales/Importaci&oacute;n</option>
-							<option value="comunicacion_social"{if="$sector == 'comunicacion_social'"} selected="selected"{/if}>Comunicaci&oacute;n Social</option>
+							<option value="compras_internacionalesimportacion"{if="$sector == 'compras_internacionalesimportacion'"} selected="selected"{/if}>Compras Internacionales/Importación</option>
+							<option value="comunicacion_social"{if="$sector == 'comunicacion_social'"} selected="selected"{/if}>Comunicación Social</option>
 							<option value="comunicaciones_externas"{if="$sector == 'comunicaciones_externas'"} selected="selected"{/if}>Comunicaciones Externas</option>
 							<option value="comunicaciones_internas"{if="$sector == 'comunicaciones_internas'"} selected="selected"{/if}>Comunicaciones Internas</option>
-							<option value="consultoria"{if="$sector == 'consultoria'"} selected="selected"{/if}>Consultor&iacute;a</option>
-							<option value="consultorias_comercio_exterior"{if="$sector == 'consultorias_comercio_exterior'"} selected="selected"{/if}>Consultor&iacute;as Comercio Exterior</option>
+							<option value="consultoria"{if="$sector == 'consultoria'"} selected="selected"{/if}>Consultoría</option>
+							<option value="consultorias_comercio_exterior"{if="$sector == 'consultorias_comercio_exterior'"} selected="selected"{/if}>Consultorías Comercio Exterior</option>
 							<option value="contabilidad"{if="$sector == 'contabilidad'"} selected="selected"{/if}>Contabilidad</option>
-							<option value="control_de_gestion"{if="$sector == 'control_de_gestion'"} selected="selected"{/if}>Control de Gesti&oacute;n</option>
+							<option value="control_de_gestion"{if="$sector == 'control_de_gestion'"} selected="selected"{/if}>Control de Gestión</option>
 							<option value="creatividad"{if="$sector == 'creatividad'"} selected="selected"{/if}>Creatividad</option>
-							<option value="diseno"{if="$sector == 'diseno'"} selected="selected"{/if}>Dise&ntilde;o</option>
-							<option value="distribucion"{if="$sector == 'distribucion'"} selected="selected"{/if}>Distribuci&oacute;n</option>
+							<option value="diseno"{if="$sector == 'diseno'"} selected="selected"{/if}>Diseño</option>
+							<option value="distribucion"{if="$sector == 'distribucion'"} selected="selected"{/if}>Distribución</option>
 							<option value="ecommerce"{if="$sector == 'ecommerce'"} selected="selected"{/if}>E-commerce</option>
-							<option value="educacion"{if="$sector == 'educacion'"} selected="selected"{/if}>Educaci&oacute;n</option>
+							<option value="educacion"{if="$sector == 'educacion'"} selected="selected"{/if}>Educación</option>
 							<option value="finanzas"{if="$sector == 'finanzas'"} selected="selected"{/if}>Finanzas</option>
 							<option value="finanzas_internacionales"{if="$sector == 'finanzas_internacionales'"} selected="selected"{/if}>Finanzas Internacionales</option>
-							<option value="gerencia_direccion_general"{if="$sector == 'gerencia_direccion_general'"} selected="selected"{/if}>Gerencia / Direcci&oacute;n General</option>
+							<option value="gerencia_direccion_general"{if="$sector == 'gerencia_direccion_general'"} selected="selected"{/if}>Gerencia / Dirección General</option>
 							<option value="impuestos"{if="$sector == 'impuestos'"} selected="selected"{/if}>Impuestos</option>
-							<option value="ingenieria"{if="$sector == 'ingenieria'"} selected="selected"{/if}>Ingenier&iacute;a</option>
+							<option value="ingenieria"{if="$sector == 'ingenieria'"} selected="selected"{/if}>Ingeniería</option>
 							<option value="internet"{if="$sector == 'internet'"} selected="selected"{/if}>Internet</option>
-							<option value="investigacion_y_desarrollo"{if="$sector == 'investigacion_y_desarrollo'"} selected="selected"{/if}>Investigaci&oacute;n y Desarrollo</option>
-							<option value="jovenes_profesionales"{if="$sector == 'jovenes_profesionales'"} selected="selected"{/if}>J&oacute;venes Profesionales</option>
+							<option value="investigacion_y_desarrollo"{if="$sector == 'investigacion_y_desarrollo'"} selected="selected"{/if}>Investigación y Desarrollo</option>
+							<option value="jovenes_profesionales"{if="$sector == 'jovenes_profesionales'"} selected="selected"{/if}>Jóvenes Profesionales</option>
 							<option value="legal"{if="$sector == 'legal'"} selected="selected"{/if}>Legal</option>
-							<option value="logistica"{if="$sector == 'logistica'"} selected="selected"{/if}>Log&iacute;stica</option>
+							<option value="logistica"{if="$sector == 'logistica'"} selected="selected"{/if}>Logística</option>
 							<option value="mantenimiento"{if="$sector == 'mantenimiento'"} selected="selected"{/if}>Mantenimiento</option>
 							<option value="marketing"{if="$sector == 'marketing'"} selected="selected"{/if}>Marketing</option>
 							<option value="medio_ambiente"{if="$sector == 'medio_ambiente'"} selected="selected"{/if}>Medio Ambiente</option>
 							<option value="mercadotecnia_internacional"{if="$sector == 'mercadotecnia_internacional'"} selected="selected"{/if}>Mercadotecnia Internacional</option>
 							<option value="multimedia"{if="$sector == 'multimedia'"} selected="selected"{/if}>Multimedia</option>
 							<option value="otra"{if="$sector == 'otra'"} selected="selected"{/if}>Otra</option>
-							<option value="pasantias"{if="$sector == 'pasantias'"} selected="selected"{/if}>Pasant&iacute;as</option>
+							<option value="pasantias"{if="$sector == 'pasantias'"} selected="selected"{/if}>Pasantías</option>
 							<option value="periodismo"{if="$sector == 'periodismo'"} selected="selected"{/if}>Periodismo</option>
 							<option value="planeamiento"{if="$sector == 'planeamiento'"} selected="selected"{/if}>Planeamiento</option>
-							<option value="produccion"{if="$sector == 'produccion'"} selected="selected"{/if}>Producci&oacute;n</option>
-							<option value="produccion_e_ingenieria"{if="$sector == 'produccion_e_ingenieria'"} selected="selected"{/if}>Producci&oacute;n e Ingenier&iacute;a</option>
+							<option value="produccion"{if="$sector == 'produccion'"} selected="selected"{/if}>Producción</option>
+							<option value="produccion_e_ingenieria"{if="$sector == 'produccion_e_ingenieria'"} selected="selected"{/if}>Producción e Ingeniería</option>
 							<option value="recursos_humanos"{if="$sector == 'recursos_humanos'"} selected="selected"{/if}>Recursos Humanos</option>
-							<option value="relaciones_institucionales_publicas"{if="$sector == 'relaciones_institucionales_publicas'"} selected="selected"{/if}>Relaciones Institucionales / P&uacute;blicas</option>
+							<option value="relaciones_institucionales_publicas"{if="$sector == 'relaciones_institucionales_publicas'"} selected="selected"{/if}>Relaciones Institucionales / Públicas</option>
 							<option value="salud"{if="$sector == 'salud'"} selected="selected"{/if}>Salud</option>
 							<option value="seguridad_industrial"{if="$sector == 'seguridad_industrial'"} selected="selected"{/if}>Seguridad Industrial</option>
 							<option value="servicios"{if="$sector == 'servicios'"} selected="selected"{/if}>Servicios</option>
-							<option value="soporte_tecnico"{if="$sector == 'soporte_tecnico'"} selected="selected"{/if}>Soporte T&eacute;cnico</option>
-							<option value="tecnologia"{if="$sector == 'tecnologia'"} selected="selected"{/if}>Tecnolog&iacute;a</option>
-							<option value="tecnologias_de_la_informacion"{if="$sector == 'tecnologias_de_la_informacion'"} selected="selected"{/if}>Tecnolog&iacute;as de la Informaci&oacute;n</option>
+							<option value="soporte_tecnico"{if="$sector == 'soporte_tecnico'"} selected="selected"{/if}>Soporte Técnico</option>
+							<option value="tecnologia"{if="$sector == 'tecnologia'"} selected="selected"{/if}>Tecnología</option>
+							<option value="tecnologias_de_la_informacion"{if="$sector == 'tecnologias_de_la_informacion'"} selected="selected"{/if}>Tecnologías de la Información</option>
 							<option value="telecomunicaciones"{if="$sector == 'telecomunicaciones'"} selected="selected"{/if}>Telecomunicaciones</option>
 							<option value="telemarketing"{if="$sector == 'telemarketing'"} selected="selected"{/if}>Telemarketing</option>
-							<option value="traduccion"{if="$sector == 'traduccion'"} selected="selected"{/if}>Traducci&oacute;n</option>
+							<option value="traduccion"{if="$sector == 'traduccion'"} selected="selected"{/if}>Traducción</option>
 							<option value="transporte"{if="$sector == 'transporte'"} selected="selected"{/if}>Transporte</option>
 							<option value="ventas"{if="$sector == 'ventas'"} selected="selected"{/if}>Ventas</option>
-							<option value="ventas_internacionalesexportacion"{if="$sector == 'ventas_internacionalesexportacion'"} selected="selected"{/if}>Ventas Internacionales/Exportaci&oacute;n</option>
+							<option value="ventas_internacionalesexportacion"{if="$sector == 'ventas_internacionalesexportacion'"} selected="selected"{/if}>Ventas Internacionales/Exportación</option>
 						</select>
 					</div>
 				</div>

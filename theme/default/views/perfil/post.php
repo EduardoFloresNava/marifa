@@ -1,4 +1,4 @@
-<h3 class="title">{@&Uacute;ltimos post creados por@} {$usuario.nick}:</h3>
+<h3 class="title">{@últimos post creados por@} {$usuario.nick}:</h3>
 {if="isset($post) && count($post) > 0"}
 <table class="table table-striped table-bordered">
 	<tbody>
@@ -10,6 +10,6 @@
 	</tbody>
 </table>
 {else}
-<div class="alert"><strong>{$usuario.nick}</strong> {@no tiene posts a&uacute;n.@}</div>
+<div class="alert"><strong>{$usuario.nick}</strong> {@no tiene posts aún.@}</div>
 {/if}
 {$paginacion}

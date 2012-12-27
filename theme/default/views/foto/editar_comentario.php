@@ -7,7 +7,7 @@
 	</div>{/if}
 
 	<div class="control-group">
-		<label class="control-label" for="titulo">T&iacute;tulo de la foto:</label>
+		<label class="control-label" for="titulo">Título de la foto:</label>
 		<div class="controls">
 			<input type="text" disabled="disabled" name="titulo" class="input-xxlarge" id="titulo" value="{$foto.titulo}" />
 		</div>

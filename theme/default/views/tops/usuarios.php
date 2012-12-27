@@ -1,7 +1,7 @@
 <h1 class="title">Tops</h1>
 <div class="row-fluid">
 	<div class="span2 top-options">
-		<h3 class="title">Categor&iacute;as</h3>
+		<h3 class="title">Categorías</h3>
 		<form action="" method="post">
 			<select onchange="this.form.submit()" class="span12" name="categoria" id="categoria">
 				<option value=""{if="$categoria == '' || $categoria == 'todas'"}selected="selected"{/if}>Todas</option>
@@ -9,7 +9,7 @@
 				<option value="{$value.seo}"{if="$categoria == $value.seo"}selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
 			</select>
 		</form>
-		<h3 class="title">Per&iacute;odo</h3>
+		<h3 class="title">Período</h3>
 		<a href="{#SITE_URL#}/tops/usuarios/{$categoria}/1" class="btn btn-mini{if="$periodo == 1"} active{/if}">Ayer</a>
 		<a href="{#SITE_URL#}/tops/usuarios/{$categoria}/2" class="btn btn-mini{if="$periodo == 2"} active{/if}">Hoy</a>
 		<a href="{#SITE_URL#}/tops/usuarios/{$categoria}/3" class="btn btn-mini{if="$periodo == 3"} active{/if}">Esta semana</a>
@@ -19,7 +19,7 @@
 	<div class="span10">
 		<div class="row-fluid">
 			<div class="span6">
-				<h2 class="title">Usuario con m&aacute;s puntos</h2>
+				<h2 class="title">Usuario con más puntos</h2>
 				{if="count($puntos) <= 0"}
 				<div class="alert">No hay elementos</div>
 				{else}
@@ -31,7 +31,7 @@
 				{/if}
 			</div>
 			<div class="span6">
-				<h2 class="title">Usuario con m&aacute;s seguidores</h2>
+				<h2 class="title">Usuario con más seguidores</h2>
 				{if="count($seguidores) <= 0"}
 				<div class="alert">No hay elementos</div>
 				{else}

@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li class="active">Plugins</li>
 </ul>
 <div class="clearfix header">
@@ -14,7 +14,7 @@
 		<tr>
 			<th>Nombre</th>
 			<th>Autor</th>
-			<th>Descripci&oacute;n</th>
+			<th>Descripción</th>
 			<th>Versión</th>
 			<th>Acciones</th>
 		</tr>
@@ -40,7 +40,7 @@
 		</tr>
 {else}
 		<tr>
-			<td colspan="5" class="alert">&iexcl;No hay plugins presentes!</td>
+			<td colspan="5" class="alert">!No hay plugins presentes!</td>
 		</tr>
 {/loop}
 	</tbody>

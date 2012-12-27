@@ -146,22 +146,22 @@
 					{include="helper/bbcode_bar"}
 					{if="isset($comentario_success)"}
 					<div class="alert alert-success">
-						<strong>&iexcl;Felicidades!</strong> {$comentario_success}
+						<strong>!Felicidades!</strong> {$comentario_success}
 					</div>{/if}
 					{if="isset($comentario_error)"}
 					<div class="alert">
-						<strong>&iexcl;Error!</strong> {$comentario_error}
+						<strong>!Error!</strong> {$comentario_error}
 					</div>{/if}
 					<textarea name="comentario" data-preview="{#SITE_URL#}/post/preview/" id="comentario" class="span12" placeholder="Comentario...">{if="isset($comentario_content)"}{$comentario_content}{/if}</textarea>
 				</form>
 				{else}
 					{if="$podemos_comentar"}
 				<div class="alert">
-					<strong>&iexcl;Atenci&oacute;n!</strong> Solo usuarios registrados pueden comentar este post.
+					<strong>!Atención!</strong> Solo usuarios registrados pueden comentar este post.
 				</div>
 					{else}
 				<div class="alert">
-					<strong>&iexcl;Atenci&oacute;n!</strong> Los comentarios se encuentran cerrados.
+					<strong>!Atención!</strong> Los comentarios se encuentran cerrados.
 				</div>
 					{/if}
 				{/if}

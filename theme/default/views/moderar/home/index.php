@@ -1,5 +1,5 @@
 <div class="header">
-	<h2>Bienvenido al centro de moderaci&oacute;n de Marifa.</h2>
+	<h2>Bienvenido al centro de moderación de Marifa.</h2>
 </div>
 <div class="row-fluid">
 	<div class="span6">
@@ -143,11 +143,11 @@
 </div>
 <div class="row-fluid">
 	<div class="span12">
-		<h3 class="title">Historial administraci&oacute;n</h3>
+		<h3 class="title">Historial administración</h3>
 		{loop="$sucesos"}
 		{else}
 		<div class="alert alert-info">
-			No hay acciones en el historial a&uacute;n.
+			No hay acciones en el historial aún.
 		</div>
 		{/loop}
 	</div>

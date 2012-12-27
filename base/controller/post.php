@@ -750,7 +750,7 @@ class Base_Controller_Post extends Controller {
 			$model_suceso->crear($model_post->usuario_id, 'post_favorito', FALSE, $post, Usuario::$usuario_id);
 		}
 
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El post fue agregado a favoritos correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El post fue agregado a favoritos correctamente.');
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -830,7 +830,7 @@ class Base_Controller_Post extends Controller {
 			$model_suceso->crear($model_comentario->usuario_id, 'post_comentario_voto', FALSE, $comentario, Usuario::$usuario_id, (int) $voto);
 		}
 
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El comentario se ha votado correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El comentario se ha votado correctamente.');
 		Request::redirect('/post/index/'.$model_comentario->post_id);
 	}
 
@@ -908,7 +908,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.');
 		Request::redirect('/post/index/'.$model_comentario->post_id);
 	}
 
@@ -974,7 +974,7 @@ class Base_Controller_Post extends Controller {
 			}
 		}
 
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El comentario se ha borrado correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El comentario se ha borrado correctamente.');
 		Request::redirect('/post/index/'.$model_comentario->post_id);
 	}
 
@@ -1330,11 +1330,11 @@ class Base_Controller_Post extends Controller {
 		// Informo el resultado.
 		if ($tipo)
 		{
-			add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El post se ha fijado a la portada correctamente.');
+			add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El post se ha fijado a la portada correctamente.');
 		}
 		else
 		{
-			add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El post se ha quitado de los posts fijos en la portada correctamente.');
+			add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El post se ha quitado de los posts fijos en la portada correctamente.');
 		}
 		Request::redirect('/post/index/'.$post);
 	}
@@ -1399,7 +1399,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Acción realizada correctamente.');
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -1544,7 +1544,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Informo resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> El estado se modific&oacute; correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El estado se modificó correctamente.');
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -1620,7 +1620,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Informamos resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Acción realizada correctamente.');
 		Request::redirect('/post/index/'.$post);
 	}
 
@@ -1646,28 +1646,28 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, '<b>&iexcl;Error!</b> Post incorrecto.');
+			add_flash_message(FLASH_ERROR, '<b>!Error!</b> Post incorrecto.');
 			Request::redirect('/');
 		}
 
 		// Verifico el usuario.
 		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
 		{
-			add_flash_message(FLASH_ERROR, '<b>&iexcl;Error!</b> Permisos incorrectos.');
+			add_flash_message(FLASH_ERROR, '<b>!Error!</b> Permisos incorrectos.');
 			Request::redirect('/post/index/'.$post);
 		}
 
 		// Verifico el estado.
 		if ($model_post->estado !== Model_Post::ESTADO_PAPELERA)
 		{
-			add_flash_message(FLASH_ERROR, '<b>&iexcl;Error!</b> Permisos incorrectos.');
+			add_flash_message(FLASH_ERROR, '<b>!Error!</b> Permisos incorrectos.');
 			Request::redirect('/post/index/'.$post);
 		}
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
 
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Acción realizada correctamente.');
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
@@ -1705,21 +1705,21 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, '<b>&iexcl;Error!</b> Post incorrecto.');
+			add_flash_message(FLASH_ERROR, '<b>!Error!</b> Post incorrecto.');
 			Request::redirect('/');
 		}
 
 		// Verifico el usuario.
 		if (Usuario::$usuario_id !== $model_post->usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, '<b>&iexcl;Error!</b> Permisos incorrectos.');
+			add_flash_message(FLASH_ERROR, '<b>!Error!</b> Permisos incorrectos.');
 			Request::redirect('/post/index/'.$post);
 		}
 
 		// Verifico el estado.
 		if ($model_post->estado !== Model_Post::ESTADO_BORRADOR)
 		{
-			add_flash_message(FLASH_ERROR, '<b>&iexcl;Error!</b> Permisos incorrectos.');
+			add_flash_message(FLASH_ERROR, '<b>!Error!</b> Permisos incorrectos.');
 			Request::redirect('/post/index/'.$post);
 		}
 
@@ -1741,7 +1741,7 @@ class Base_Controller_Post extends Controller {
 		// Verifico actualización medallas.
 		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
 
-		add_flash_message(FLASH_SUCCESS, '<b>&iexcl;Felicitaciones!</b> Acci&oacute;n realizada correctamente.');
+		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Acción realizada correctamente.');
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;

@@ -12,5 +12,5 @@
 	{/loop}
 </div>
 {else}
-<div class="alert alert-info">El usuario no tiene medallas a&uacute;n.</div>
+<div class="alert alert-info">El usuario no tiene medallas aún.</div>
 {/if}

@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/contenido/">Contenido</a> <span class="divider">/</span></li>
     <li class="active">Fotos</li>
 </ul>
@@ -16,7 +16,7 @@
 <table class="table table-bordered">
 	<thead>
 		<tr>
-			<th>T&iacute;tulo</th>
+			<th>Título</th>
 			<th>Autor</th>
 			<th>Creado</th>
 			<th>Estado</th>
@@ -51,7 +51,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="5">&iexcl;No hay Fotos!</td>
+			<td class="alert" colspan="5">!No hay Fotos!</td>
 		</tr>
 		{/loop}
 	</tbody>

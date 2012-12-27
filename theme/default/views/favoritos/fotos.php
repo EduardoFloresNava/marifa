@@ -3,7 +3,7 @@
 <table class="table table-bordered">
 	<thead>
 		<tr>
-			<th>T&iacute;tulo</th>
+			<th>Título</th>
 			<th>Fecha</th>
 			<th>Acciones</th>
 		</tr>

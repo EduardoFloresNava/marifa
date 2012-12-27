@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario">Usuarios</a> <span class="divider">/</span></li>
     <li class="active">Banear</li>
 </ul>
@@ -9,7 +9,7 @@
 <form method="POST" class="form-horizontal" action="">
 
 	<div class="control-group{if="$error_razon"} error{/if}">
-		<label class="control-label" for="razon">Raz&oacute;n</label>
+		<label class="control-label" for="razon">Razón</label>
 		<div class="controls">
 			{include="helper/bbcode_bar"}
 			<textarea name="razon" id="razon" data-preview="{#SITE_URL#}/admin/usuario/preview" class="span10">{$razon}</textarea>

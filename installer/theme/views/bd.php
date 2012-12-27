@@ -40,7 +40,7 @@
 	</div>
 
 	<div class="control-group{if="$error_password"} error{/if}">
-		<label class="control-label" for="password">Contrase&ntilde;a</label>
+		<label class="control-label" for="password">Contraseña</label>
 		<div class="controls">
 			<input type="password" name="password" id="password" />
 			<span class="help-inline">{if="$error_password"}{$error_password}{/if}</span>

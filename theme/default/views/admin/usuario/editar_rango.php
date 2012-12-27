@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
 	<li><a href="{#SITE_URL#}/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
     <li class="active">Editar</li>
@@ -20,7 +20,7 @@
 		<label class="control-label" for="color">Color</label>
 		<div class="controls">
 			<input type="text" value="{$color}" name="color" id="color" class="span10" />
-			<span class="help-block">{if="$error_color"}{$error_color}{else}Color hexadecimal de 6 d&iacute;gitos. Por ejemplo: 00FFE5{/if}</span>
+			<span class="help-block">{if="$error_color"}{$error_color}{else}Color hexadecimal de 6 dígitos. Por ejemplo: 00FFE5{/if}</span>
 		</div>
 	</div>
 
@@ -37,23 +37,23 @@
 	</div>
 
 	<div class="control-group{if="$error_puntos"} error{/if}">
-		<label class="control-label" for="puntos">Puntos por d&iacute;a</label>
+		<label class="control-label" for="puntos">Puntos por día</label>
 		<div class="controls">
 			<input type="text" value="{$puntos}" name="puntos" id="puntos" class="span10" />
-			<span class="help-block">{if="$error_puntos"}{$error_puntos}{else}Cantidad de puntos que se le otorgan por d&iacute;a.{/if}</span>
+			<span class="help-block">{if="$error_puntos"}{$error_puntos}{else}Cantidad de puntos que se le otorgan por día.{/if}</span>
 		</div>
 	</div>
 
 	<div class="control-group{if="$error_puntos_dar"} error{/if}">
-		<label class="control-label" for="puntos_dar">Puntos por d&iacute;a</label>
+		<label class="control-label" for="puntos_dar">Puntos por día</label>
 		<div class="controls">
 			<input type="text" value="{$puntos_dar}" name="puntos_dar" id="puntos_dar" class="span10" />
-			<span class="help-block">{if="$error_puntos_dar"}{$error_puntos_dar}{else}Cantidad m&aacute;xima de puntos a dar por post.{/if}</span>
+			<span class="help-block">{if="$error_puntos_dar"}{$error_puntos_dar}{else}Cantidad máxima de puntos a dar por post.{/if}</span>
 		</div>
 	</div>
 
 	<div class="control-group{if="$error_tipo"} error{/if}">
-		<label class="control-label" for="tipo">Puntos por d&iacute;a</label>
+		<label class="control-label" for="tipo">Puntos por día</label>
 		<div class="controls">
 			<select name="tipo" id="tipo">
 				<option value="0"{if="$tipo==0"} selected="selected"{/if}>Especial</option>
@@ -67,7 +67,7 @@
 	</div>
 
 	<div class="control-group{if="$error_cantidad"} error{/if}">
-		<label class="control-label" for="cantidad">Puntos por d&iacute;a</label>
+		<label class="control-label" for="cantidad">Puntos por día</label>
 		<div class="controls">
 			<input type="text" value="{$cantidad}" name="cantidad" id="cantidad" class="span10" />
 			<span class="help-block">{if="$error_cantidad"}{$error_cantidad}{else}Cantidad de post/fotos/comentarios/puntos que debe tener para poder tener este rango.{/if}</span>

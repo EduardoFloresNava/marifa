@@ -19,6 +19,6 @@
 	</tbody>
 </table>
 {else}
-<div class="alert">No tienes ning&uacute;n borrador</div>
+<div class="alert">No tienes ningún borrador</div>
 {/if}
 {$paginacion}

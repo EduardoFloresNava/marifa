@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
     <li class="active">Usuarios con el rango <span style="color: #{function="sprintf('%06s', dechex($rango.color))"};">{$rango.nombre}</span></li>
@@ -26,7 +26,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="4">&iexcl;No hay usuarios!</td>
+			<td class="alert" colspan="4">!No hay usuarios!</td>
 		</tr>
 		{/loop}
 	</tbody>

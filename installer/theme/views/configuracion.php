@@ -1,4 +1,4 @@
-<h2 class="title">Configuraci&oacute;n del sitio</h2>
+<h2 class="title">Configuración del sitio</h2>
 <form class="form-horizontal" action="" method="POST" enctype="multipart/form-data">
 
 	{if="isset($error)"}<div class="alert">{$error}</div>{/if}
@@ -41,7 +41,7 @@
 		</div>
 
 		<div class="control-group{if="$error_password"} error{/if}">
-			<label class="control-label" for="password">Contrase&ntilde;a</label>
+			<label class="control-label" for="password">Contraseña</label>
 			<div class="controls">
 				<input type="password" name="password" id="descripcion" class="input-xxlarge" />
 				<span class="help-inline">{if="$error_password"}{$error_password}{/if}</span>
@@ -49,7 +49,7 @@
 		</div>
 
 		<div class="control-group{if="$error_cpassword"} error{/if}">
-			<label class="control-label" for="cpassword">Repetir contrase&ntilde;a</label>
+			<label class="control-label" for="cpassword">Repetir contraseña</label>
 			<div class="controls">
 				<input type="password" name="cpassword" id="cpassword" class="input-xxlarge" />
 				<span class="help-inline">{if="$error_cpassword"}{$error_cpassword}{/if}</span>
@@ -58,12 +58,12 @@
 	</fieldset>
 	
 	<fieldset>
-		<legend>Verificaci&oacute;n</legend>
+		<legend>Verificación</legend>
 		<div class="control-group{if="$error_usuario"} error{/if}">
-			<label class="control-label" for="bd_password">Contrase&ntilde;a</label>
+			<label class="control-label" for="bd_password">Contraseña</label>
 			<div class="controls">
 				<input type="password" name="bd_password" id="bd_password" class="input-xxlarge" value="{$bd_password}" />
-				<span class="help-inline">{if="$error_bd_password"}{$error_bd_password}{else}Contrase&ntilde;a de conecci&oacute;n a la base de datos. Por motivos de seguridad.{/if}</span>
+				<span class="help-inline">{if="$error_bd_password"}{$error_bd_password}{else}Contraseña de conección a la base de datos. Por motivos de seguridad.{/if}</span>
 			</div>
 		</div>
 	</fieldset>

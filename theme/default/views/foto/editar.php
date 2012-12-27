@@ -5,7 +5,7 @@
 				<legend>Editar foto</legend>
 
 				<div class="control-group{if="$error_titulo"} error{/if}">
-					<label class="control-label" for="titulo">T&iacute;tulo</label>
+					<label class="control-label" for="titulo">Título</label>
 					<div class="controls">
 						<input type="text" id="titulo" name="titulo" value="{$titulo}" class="span10" />
 						<span class="help-block">{if="$error_titulo"}{$error_titulo}{/if}</span>
@@ -13,7 +13,7 @@
 				</div>
 
 				<div class="control-group{if="$error_descripcion"} error{/if}">
-					<label class="control-label" for="descripcion">Descripci&oacute;n</label>
+					<label class="control-label" for="descripcion">Descripción</label>
 					<div class="controls">
 						{include="helper/bbcode_bar"}
 						<textarea name="descripcion" id="descripcion" class="span10" data-preview="{#SITE_URL#}/foto/preview">{$descripcion}</textarea>
@@ -40,8 +40,8 @@
 						</label>
 
 						<label class="checkbox">
-							<input type="checkbox" id="visitantes" name="visitantes" value="1"{if="$visitantes"} checked{/if}><strong>&Uacute;ltimos visitantes</strong>
-							<p>Se mostrar&aacute;n los &uacute;ltimos visitantes.</p>
+							<input type="checkbox" id="visitantes" name="visitantes" value="1"{if="$visitantes"} checked{/if}><strong>últimos visitantes</strong>
+							<p>Se mostrarán los últimos visitantes.</p>
 						</label>
 					</div>
 				</div>

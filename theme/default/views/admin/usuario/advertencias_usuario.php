@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario">Usuarios</a> <span class="divider">/</span></li>
     <li class="active">Advertencias a <a href="{#SITE_URL#}/perfil/index/{$usuario.nick}">{$usuario.nick}</a></li>
 </ul>
@@ -29,5 +29,5 @@
 	</tr>
 </table>
 {else}
-<div class="alert alert-info">&iexcl;No hay advertencias para mostrar!</div>
+<div class="alert alert-info">!No hay advertencias para mostrar!</div>
 {/loop}
