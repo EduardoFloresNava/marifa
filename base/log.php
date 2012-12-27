@@ -208,4 +208,21 @@ class Base_Log {
 	{
 		return self::log($str, self::ERROR);
 	}
+
+	/**
+	 * Comprimimos los log's antiguos.
+	 */
+	public static function compress_old()
+	{
+		foreach (glob(dirname(self::$file).DS.'*.log') as $file)
+		{
+			if ($file == self::$file)
+			{
+				continue;
+			}
+
+			file_put_contents($file.'.gz', gzcompress(file_get_contents($file)));
+			unlink($file);
+		}
+	}
 }

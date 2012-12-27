@@ -1205,9 +1205,36 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					}
 
 					add_flash_message(FLASH_SUCCESS, 'Optimización de la base de datos realizada correctamente.');
-					Request::redirect('/admin/configuracion/optimizar');
 					break;
-				//case 'cache':
+				case 'cache': // Eliminamos cache.
+
+					// Limpio la cache del sistema.
+					Cache::get_instance()->clean();
+
+					// Limpio la cache de vistas.
+					foreach (glob(CACHE_PATH.DS.'raintpl'.DS.'*'.DS.'*.php') as $file)
+					{
+						@unlink($file);
+					}
+
+					// Informo el resultado.
+					add_flash_message(FLASH_SUCCESS, 'Limpieza de la cache realizada correctamente.');
+					break;
+				case 'compress-logs': // Comprimimos log's viajos.
+
+					// Verifico existencia de la compresión.
+					if ( ! function_exists('gzcompress'))
+					{
+						add_flash_message(FLASH_ERROR, 'No se puede comprimir los log\'s ya que no se encuentra disponible la libreria ZLIB.');
+						break;
+					}
+
+					// Realizo la compresión.
+					Log::compress_old();
+
+					// Informo el resultado.
+					add_flash_message(FLASH_SUCCESS, 'Compresión de log\'s realizada correctamente.');
+					break;
 			}
 		}
 

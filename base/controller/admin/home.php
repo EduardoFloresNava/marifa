@@ -212,7 +212,7 @@ class Base_Controller_Admin_Home extends Controller {
 		$vista = View::factory('/admin/home/log');
 
 		// Listado de archivos.
-		$file_list = glob(APP_BASE.DS.'log'.DS.'*.log');
+		$file_list = glob(APP_BASE.DS.'log'.DS.'*.{log,log.gz}', GLOB_BRACE);
 		$file_list = array_map(create_function('$str', 'return substr($str, strlen(APP_BASE.DS.\'log\'.DS));'), $file_list);
 		$vista->assign('file_list', $file_list);
 
@@ -225,8 +225,16 @@ class Base_Controller_Admin_Home extends Controller {
 				Request::redirect('/admin/home/logs/');
 			}
 
-			// Cargo el archivo.
-			$data = file(APP_BASE.DS.'log'.DS.$file);
+			if (substr($file, -3) == '.gz')
+			{
+				// Cargo el archivo.
+				$data = explode("\n", gzuncompress(file_get_contents(APP_BASE.DS.'log'.DS.$file)));
+			}
+			else
+			{
+				// Cargo el archivo.
+				$data = file(APP_BASE.DS.'log'.DS.$file);
+			}
 
 			// Proceso las lineas.
 			$pd = array();
@@ -272,7 +280,7 @@ class Base_Controller_Admin_Home extends Controller {
 	public function action_borrar_log($file)
 	{
 		// Listado de archivos.
-		$file_list = glob(APP_BASE.DS.'log'.DS.'*.log');
+		$file_list = glob(APP_BASE.DS.'log'.DS.'*.{log,log.gz}', GLOB_BRACE);
 		$file_list = array_map(create_function('$str', 'return substr($str, strlen(APP_BASE.DS.\'log\'.DS));'), $file_list);
 
 		// Verifico si esta en la lista.
