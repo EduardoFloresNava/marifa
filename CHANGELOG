@@ -1,3 +1,15 @@
+Marifa 0.2RC4 []
+ - FEATURE: Rediseño del buscador.
+ - FEATURE: Implementado UTF-8.
+ - FEATURE: Iconos en las categorías de fotos y posts.
+ - FEATURE: Se puede actualiza la categoria de una foto.
+ - FEATURE: Mejorados los títulos para mejora del SEO.
+ - FEATURE: Implementadas URL's amigables.
+ - FEATURE: Implementadas meta-etiquetas para mejorar el SEO.
+ - FIX: Error en los permisos a la hora de enviar a la papelera o eliminar contenido.
+ - FIX: Error en el suceso de las advertencias a usuarios.
+
+
 Marifa 0.2RC3 [11/12/2012]
  - FIX: Error en el sistema de actualización a 0.2RC2.
 
