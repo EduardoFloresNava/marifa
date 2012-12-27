@@ -21,6 +21,16 @@
 					</div>
 				</div>
 
+				<div class="control-group{if="$error_categoria"} error{/if}">
+					<label class="control-label" for="categoria">Categoría</label>
+					<div class="controls">
+						<select class="span12" name="categoria" id="categoria" size="10">
+							{loop="$categorias"}
+							<option style="padding: 3px 0 3px 22px; background: transparent url({#THEME_URL#}/assets/img/categoria/{$value.imagen}) no-repeat 2px center;" value="{$value.seo}"{if="$categoria == $value.seo"}selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
+						</select>
+					</div>
+				</div>
+
 				<div class="control-group">
 					<label class="control-label">Opciones</label>
 					<div class="controls">

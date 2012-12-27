@@ -1316,10 +1316,16 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('descripcion', $model_foto->descripcion);
 		$view->assign('comentarios', ! $model_foto->comentar);
 		$view->assign('visitantes', $model_foto->visitas !== NULL);
+		$view->assign('categoria', $model_foto->categoria()->seo);
 
 		// Inicializo los errores.
 		$view->assign('error_titulo', FALSE);
 		$view->assign('error_descripcion', FALSE);
+		$view->assign('error_categoria', FALSE);
+
+		// Listado de categorias.
+		$model_categoria = new Model_Categoria;
+		$view->assign('categorias', $model_categoria->lista());
 
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu('fotos'));
@@ -1330,7 +1336,7 @@ class Base_Controller_Foto extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los datos y seteamos valores.
-			foreach (array('titulo', 'descripcion') as $k)
+			foreach (array('titulo', 'descripcion', 'categoria') as $k)
 			{
 				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
 				$view->assign($k, $$k);
@@ -1361,6 +1367,20 @@ class Base_Controller_Foto extends Controller {
 			}
 			unset($contenido_clean);
 
+			// Verificamos la categoria.
+			$model_categoria = new Model_Categoria;
+			if ( ! $model_categoria->existe_seo($categoria))
+			{
+				$view->assign('error_categoria', 'La categoría seleccionada es incorrecta.');
+				$error = TRUE;
+			}
+			else
+			{
+				$model_categoria->load_by_seo($categoria);
+				$categoria_id = $model_categoria->id;
+			}
+			unset($model_categoria);
+
 			// Actualizamos los datos.
 			if ( ! $error)
 			{
@@ -1376,6 +1396,7 @@ class Base_Controller_Foto extends Controller {
 					'descripcion' => $descripcion,
 					'comentar' => ! $comentarios,
 					'visitas' => $visitantes ? (($model_foto->visitas !== NULL) ? ($model_foto->visitas) : 0) : NULL,
+					'categoria_id' => $categoria_id
 				);
 
 				// Actualizo los datos.

@@ -43,7 +43,7 @@
 					{if="$error_categoria"}<div class="alert alert-danger">{$error_categoria}</div>{/if}
 					<select class="span12" name="categoria" id="categoria" size="10">
 						{loop="$categorias"}
-						<option value="{$value.seo}"{if="$categoria == $value.seo"} selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
+						<option style="padding: 3px 0 3px 22px; background: transparent url({#THEME_URL#}/assets/img/categoria/{$value.imagen}) no-repeat 2px center;" value="{$value.seo}"{if="$categoria == $value.seo"} selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
 					</select>
 				</div>
 
