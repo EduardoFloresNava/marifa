@@ -183,6 +183,9 @@ class Base_Controller_Buscador extends Controller {
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $vista->parse());
+
+		// Título de la página.
+		$this->template->assign('title', 'Buscador');
 	}
 
 	/**
@@ -245,10 +248,11 @@ class Base_Controller_Buscador extends Controller {
 		$vista->assign('q', '');
 
 		// Vista de relacionado.
-		$view_relacionado = View::factory('buscador/relacionado');
-		$view_relacionado->assign('post', $model_post->as_array());
-		$vista->assign('relacionado', $view_relacionado->parse());
-		unset($view_relacionado);
+		$p = $model_post->as_array();
+		$p['usuario'] = $model_post->usuario()->as_array();
+		$p['categoria'] = $model_post->categoria()->as_array();
+		$vista->assign('relacionado', array('post' => $p));
+		unset($p);
 
 		// Listado de categorias.
 		$mc = new Model_Categoria;
@@ -263,6 +267,9 @@ class Base_Controller_Buscador extends Controller {
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $vista->parse());
+
+		// Título de la página.
+		$this->template->assign('title_raw', 'Busqueda relacionada a \''.$model_post->titulo.'\' en ');
 	}
 
 	/**
@@ -288,7 +295,7 @@ class Base_Controller_Buscador extends Controller {
 		list($cantidad, $shouts) = $model_shout->get_by_tag($etiqueta, $pagina, $cantidad_por_pagina);
 
 		// Verifivo que la página seleccionada sea válida.
-		if (count($shouts) == 0 && $shouts != 1)
+		if (count($shouts) == 0 && $pagina != 1)
 		{
 			Request::redirect('/buscador/pin/'.$etiqueta);
 		}
@@ -334,12 +341,18 @@ class Base_Controller_Buscador extends Controller {
 		$vista->assign('shouts', $shouts);
 		unset($shouts);
 
+		// Seteo etiqueta.
+		$vista->assign('etiqueta', $etiqueta);
+
 		// Seteo parámetros de la plantilla base.
 		$this->template->assign('master_bar', parent::base_menu());
 		$this->template->assign('top_bar', Controller_Home::submenu('buscador'));
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $vista->parse());
+
+		// Título de la página.
+		$this->template->assign('title', 'Pin - #'.$etiqueta);
 	}
 
 }

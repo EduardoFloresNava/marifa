@@ -1,3 +1,5 @@
+{if="count($shouts) > 0"}
+<div class="alert alert-info">Publicaciones con la etiqueta: <strong>{$etiqueta}</strong></div>
 <div class="publicaciones">
 	{loop="$shouts"}
 	<div class="publicacion clearfix">
@@ -69,3 +71,6 @@
 	</div>
 	{/loop}
 </div>
+{else}
+<div class="alert">No hay publicaciones con la etiqueta: <strong>{$etiqueta}</strong>.</div>
+{/if}

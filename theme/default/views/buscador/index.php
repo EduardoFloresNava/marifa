@@ -4,57 +4,45 @@
 		<li><a href="#">Fotos</a></li>
 		<li><a href="#">Comunidades</a></li>
 	</ul>-->
-	<div class="row">
-		<div class="span12">
-			<form class="form-search" id="search" method="POST" action="/buscador/q/">
-				<div class="search-input">
-					<input type="text" name="q" class="query" value="{$q}">
-					<button type="submit"><i class="icon icon-search"></i></button>
-				</div>
-				<div class="search-options row-fluid">
-					<!--<div class="span4">
-						<div class="btn-group" data-toggle="buttons-radio">
-							<button type="button" class="btn">Google</button>
-							<button type="button" class="btn active">Marifa</button>
-						</div>
-					</div>-->
-					<div class="span6">
-						Categorías:
-						<select name="categoria">
-							<option value="todos"{if="$categoria == 'todos'"} selected="selected"{/if}>Todas</option>
-							{loop="$categorias"}
-							<option value="{$value.seo}"{if="$categoria == $value.seo"} selected="selected"{/if}>{$value.nombre}</option>
-							{/loop}
-						</select>
-					</div>
-					<div class="span6">
-						<div class="pull-right">
-							Usuario: <input name="usuario" value="{$usuario}" type="text" />
-						</div>
-					</div>
-				</div>
-			</form>
-		</div>
+	<div class="search-bar">
+		<form class="form-search clearfix" id="search" method="POST" action="/buscador/q/">
+			<input type="text" name="q" class="query show-tooltip" title="Búsqueda" value="{$q}" placeholder="Busqueda..." />
+			<select name="categoria" class="show-tooltip" title="Categoria">
+				<option value="todos"{if="$categoria == 'todos'"} selected="selected"{/if}>Todas</option>
+				{loop="$categorias"}
+				<option value="{$value.seo}"{if="$categoria == $value.seo"} selected="selected"{/if}>{$value.nombre}</option>
+				{/loop}
+			</select>
+			<input name="usuario" value="{$usuario}" type="text" placeholder="Usuario..." class="show-tooltip usuario" title="Usuario" />
+			<button type="submit" class="btn btn-success"><i class="icon-white icon-search"></i></button>
+		</form>
+		{if="isset($relacionado)"}<div class="alert alert-success relacionado"><i class="icon icon-info-sign"></i> Posts relacionados a <a href="{#SITE_URL#}/post/{$relacionado.post.categoria.seo}/{$relacionado.post.id}/{$relacionado.post.titulo|Texto::make_seo}.html">{$relacionado.post.titulo}</a> de <a href="{#SITE_URL#}/@{$relacionado.post.usuario.nick}">{$relacionado.post.usuario.nick}</a></div>{/if}
 	</div>
-	{if="isset($relacionado)"}{$relacionado}{/if}
 	{if="isset($resultados)"}
-	<div class="row">
-		<div class="span12">
-			{loop="$resultados"}
-			<div>
-				<img style="float: left;" src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
-				<div style="margin-left: 30px;">
-					<p><a href="{#SITE_URL#}/post/index/{$value.id}/">{$value.titulo}</a></p>
-					<p>{$value.fecha->fuzzy()} - <a href="{#SITE_URL#}/perfil/informacion/{$value.usuario.nick}">@{$value.usuario.nick}</a> - {@Puntos@} {$value.puntos} - {@Comentarios@} {$value.comentarios}<span class="pull-right">{$value.categoria.nombre}</span> <a href="{#SITE_URL#}/buscador/relacionados/{$value.id}">Buscar relacionados</a></p>
+		{if="count($resultados) > 0"}
+	<div class="ultimo-post-list">
+		{loop="$resultados"}
+		<div class="ultimo-post clearfix{if="$value.sponsored"} patrocinado{/if}">
+			<div class="categoria hidden-phone">
+				<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
+			</div>
+			<div class="contenido">
+				{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<a class="titulo" href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a>
+				<div class="info">
+					{@Por@}: <a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoría: <a href="/post/categoria/{$value.categoria.seo}">{$value.categoria.nombre} - <a href="{#SITE_URL#}/buscador/relacionados/{$value.id}">Buscar relacionados</a></a>
 				</div>
 			</div>
-			{else}
-			<div class="alert">
-				No hay resultados para <strong>'{$q}'</strong>.
+			<div class="fecha visible-desktop">
+				{$value.fecha->fuzzy()}
 			</div>
-			{/loop}
-			{$paginacion}{if="count($resultados) > 0"}<span>{@Mostrando@} {function="count($resultados)"} {@de@} {$total}</span>{/if}
 		</div>
+		{/loop}
 	</div>
+		{else}
+	<div class="alert alert-info">
+		No hay resultados para la búsqueda.
+	</div>
+		{/if}
+	{$paginacion}{if="count($resultados) > 0"}<span>{@Mostrando@} {function="count($resultados)"} {@de@} {$total}</span>{/if}
 	{/if}
 </div>

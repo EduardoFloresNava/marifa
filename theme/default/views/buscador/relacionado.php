@@ -1,1 +1,0 @@
-<div>Posts relacionados a {$post.titulo}</div>
