@@ -4,7 +4,7 @@
     <li class="active">Detalles de la suspensión de {$usuario.nick}</li>
 </ul>
 <div class="header clearfix">
-	<h2 class="pull-left">Detalles de la suspensión de <a href="/perfil/index/{$usuario.nick}/">{$usuario.nick}</a></h2>
+	<h2 class="pull-left">Detalles de la suspensión de <a href="/@{$usuario.nick}/">{$usuario.nick}</a></h2>
 	<div class="btn-group pull-right">
 		<a href="{#SITE_URL#}/admin/usuario/banear_usuario/{$usuario.id}" class="btn btn-danger"><i class="icon-white icon-ban-circle"></i> Banear</a>
 		<a href="{#SITE_URL#}/admin/usuario/quitar_suspension_usuario/{$usuario.id}" class="btn btn-success"><i class="icon-white icon-ok"></i> Quitar suspensión</a>
@@ -14,11 +14,11 @@
 <table class="table table-bordered">
 	<tr>
 		<th>Moderador:</th>
-		<td><a href="{#SITE_URL#}/perfil/index/{$moderador.nick}/">{$moderador.nick}</a></td>
+		<td><a href="{#SITE_URL#}/@{$moderador.nick}/">{$moderador.nick}</a></td>
 	</tr>
 	<tr>
 		<th>Usuario:</th>
-		<td><a href="{#SITE_URL#}/perfil/index/{$usuario.nick}/">{$usuario.nick}</a></td>
+		<td><a href="{#SITE_URL#}/@{$usuario.nick}/">{$usuario.nick}</a></td>
 	</tr>
 	<tr>
 		<th>Suspendido:</th>

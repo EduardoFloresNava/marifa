@@ -10,7 +10,7 @@
 					</div>
 				</div>
 				<div class="caption">
-					<h4>{$value.titulo} <small>{@por@} <a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> {function="$value.creacion->fuzzy()"}</small></h4>
+					<h4>{$value.titulo} <small>{@por@} <a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a> {function="$value.creacion->fuzzy()"}</small></h4>
 					<p>{$value.descripcion|nl2br}</p>
 					<p class="toolbar">
 						<span class="btn-toolbar">

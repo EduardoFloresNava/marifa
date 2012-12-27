@@ -46,7 +46,7 @@
 					{elseif="$value.estado == 3"}
 					<i class="icon icon-repeat"></i>
 					{/if}
-					<a class="usuario" href="{#SITE_URL#}/perfil/index/{$value.emisor.nick}/">{$value.emisor.nick}</a> <a href="{#SITE_URL#}/mensaje/ver/{$value.id}">{$value.asunto|Texto::limit_chars:20,'...', TRUE}</a> <span class="fecha">{$value.fecha->fuzzy()}</span></li>
+					<a class="usuario" href="{#SITE_URL#}/@{$value.emisor.nick}/">{$value.emisor.nick}</a> <a href="{#SITE_URL#}/mensaje/ver/{$value.id}">{$value.asunto|Texto::limit_chars:20,'...', TRUE}</a> <span class="fecha">{$value.fecha->fuzzy()}</span></li>
 				{/loop}
 			</ul>
 			{else}

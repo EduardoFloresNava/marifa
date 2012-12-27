@@ -1,5 +1,5 @@
 <div class="row-fluid">
-    <div class="span6">De: <a href="{#SITE_URL#}/perfil/index/{$mensaje.emisor.nick}">{$mensaje.emisor.nick}</a></div>
+    <div class="span6">De: <a href="{#SITE_URL#}/@{$mensaje.emisor.nick}">{$mensaje.emisor.nick}</a></div>
     <div class="span6">Fecha: {$mensaje.fecha->format('d/m/Y H:i:s')} ({$mensaje.fecha->fuzzy()})</div>
 </div>
 <div class="row-fluid">

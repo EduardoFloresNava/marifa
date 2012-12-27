@@ -5,7 +5,7 @@
     <li class="active">Advertir usuario</li>
 </ul>
 <div class="header">
-	<h2>Advertir a <a href="{#SITE_URL#}/perfil/index/{$usuario.nick}">{$usuario.nick}</a></h2>
+	<h2>Advertir a <a href="{#SITE_URL#}/@{$usuario.nick}">{$usuario.nick}</a></h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 

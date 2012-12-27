@@ -13,7 +13,7 @@
 <table class="table table-bordered">
 	<tr>
 		<th>Denunciante</th>
-		<td><a href="{#SITE_URL#}/perfil/index/{$denunciante.nick}">{$denunciante.nick}</a></td>
+		<td><a href="{#SITE_URL#}/@{$denunciante.nick}">{$denunciante.nick}</a></td>
 	</tr>
 	<tr>
 		<th>Post</th>

@@ -20,11 +20,11 @@
 	<tbody>
 		{loop="$suspensiones"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 			<td>{$value.motivo}</td>
 			<td>{$value.inicio->fuzzy()}</td>
 			<td>{$value.fin->fuzzy()}</td>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}@{$value.moderador.nick}">{$value.moderador.nick}</a></td>
 			<td>
 				<a href="{#SITE_URL#}/moderar/gestion/terminar_suspension/{$value.usuario_id}" class="btn btn-mini btn-success"><i class="icon-white icon-remove"></i> Terminar suspensi&oacute;n</a>
 			</td>

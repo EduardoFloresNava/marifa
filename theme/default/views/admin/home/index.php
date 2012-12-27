@@ -61,7 +61,7 @@
 		<ul>
 			{loop="$usuarios"}
 			<li>
-				<a href="{#SITE_URL#}/perfil/index/{$value.nick}">
+				<a href="{#SITE_URL#}/@{$value.nick}">
 					{$value.nick}
 					<span class="pull-right label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span>
 				</a>

@@ -13,7 +13,7 @@
 				<div class="contenido">
 					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<i class="icon icon-bookmark show-tooltip" title="Fijo"></i> <a class="titulo" href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a>
 					<div class="info">
-						{@Por@}: <a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoría: <a href="/post/categoria/{$value.categoria.seo}">{$value.categoria.nombre}</a>
+						{@Por@}: <a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoría: <a href="/post/categoria/{$value.categoria.seo}">{$value.categoria.nombre}</a>
 					</div>
 				</div>
 				<div class="fecha visible-desktop">
@@ -29,7 +29,7 @@
 				<div class="contenido">
 					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<a class="titulo" href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a>
 					<div class="info">
-						{@Por@}: <a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoría: <a href="/post/categoria/{$value.categoria.seo}">{$value.categoria.nombre}</a>
+						{@Por@}: <a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a> - {@Puntos@}: {$value.puntos} - {@Comentarios@}: {$value.comentarios} - Categoría: <a href="/post/categoria/{$value.categoria.seo}">{$value.categoria.nombre}</a>
 					</div>
 				</div>
 				<div class="fecha visible-desktop">
@@ -79,9 +79,9 @@
 			{loop="$ultimos_comentarios"}
 				<li>
 					{if="isset($value.post)"}
-					<b><a href="{#SITE_URL#}/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="{#SITE_URL#}/post/{$value.post.categoria.seo}/{$value.post.id}/{$value.post.titulo|Texto::make_seo}.html#c-{$value.id}">{$value.post.titulo}</a>
+					<b><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="{#SITE_URL#}/post/{$value.post.categoria.seo}/{$value.post.id}/{$value.post.titulo|Texto::make_seo}.html#c-{$value.id}">{$value.post.titulo}</a>
 					{else}
-					<b><a href="{#SITE_URL#}/perfil/informacion/{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="{#SITE_URL#}/foto/{$value.foto.categoria.seo}/{$value.foto.id}/{$value.foto.titulo|Texto::make_seo}.html#c-{$value.id}">{$value.foto.titulo}</a>
+					<b><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></b> <a href="{#SITE_URL#}/foto/{$value.foto.categoria.seo}/{$value.foto.id}/{$value.foto.titulo|Texto::make_seo}.html#c-{$value.id}">{$value.foto.titulo}</a>
 					{/if}
 				</li>
 			{/loop}
@@ -106,7 +106,7 @@
 			<h3 class="title">TOPs usuarios</h3>
 			<ol>
 			{loop="$usuario_top"}
-				<li><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.puntos}</a></li>
+				<li><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.puntos}</a></li>
 			{/loop}
 			</ol>
 		</div>

@@ -417,7 +417,7 @@ class Base_Suceso_Perfil extends Suceso {
 		// Usuario que crea el foto.
 		$model_usuario = $model_comentario->usuario();
 
-		return array('comentario' => $model_comentario->as_array(), 'foto' => $foto, 'foto_usuario' => $foto['usaurio'], 'usuario' => $model_usuario->as_array());
+		return array('comentario' => $model_comentario->as_array(), 'foto' => $foto, 'foto_usuario' => $foto['usuario'], 'usuario' => $model_usuario->as_array());
 	}
 
 	/**

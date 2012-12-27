@@ -27,7 +27,7 @@
 		{loop="$fotos"}
 		<tr>
 			<td><a href="/foto/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a></td>
-			<td><a href="/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 			<td>{$value.creacion->fuzzy()}</td>
 			<td>
 				{if="$value.estado == 0"}

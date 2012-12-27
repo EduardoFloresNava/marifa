@@ -20,7 +20,7 @@
 		{loop="$sesiones"}
 		<tr>
 			<td><code>{$value.id|strtoupper}</code></td>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 			<td>{$value.ip}</td>
 			<td>{$value.expira->fuzzy()}</td>
 			<td>

@@ -24,8 +24,8 @@
 	<tbody>
 		{loop="$denuncias"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.denunciado.id}">{$value.denunciado.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.denunciado.id}">{$value.denunciado.nick}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td>
 				{if="$value.motivo == 0"}
@@ -51,7 +51,7 @@
 			<td style="text-align: center;">
 				<div class="btn-group">
 					<a href="{#SITE_URL#}/moderar/denuncias/detalle_usuario/{$value.id}" class="btn btn-mini show-tooltip" title="Detalles"><i class="icon icon-file"></i></a>
-					<a href="{#SITE_URL#}/perfil/index/{$value.denunciado.nick}" class="btn btn-mini btn-info show-tooltip" title="Ver usuario"><i class="icon-white icon-eye-open"></i></a>
+					<a href="{#SITE_URL#}/@$value.denunciado.nick}" class="btn btn-mini btn-info show-tooltip" title="Ver usuario"><i class="icon-white icon-eye-open"></i></a>
 					{if="$value.estado == 0"}<a href="{#SITE_URL#}/moderar/denuncias/cerrar_denuncia_usuario/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Rechazar denuncia"><i class="icon-white icon-trash"></i></a>
 					<a href="{#SITE_URL#}/moderar/denuncias/cerrar_denuncia_usuario/{$value.id}/1" class="btn btn-mini btn-success show-tooltip" title="Aceptar denuncia"><i class="icon-white icon-ok"></i></a>{/if}
 					<a href="{#SITE_URL#}/moderar/denuncias/advertir_usuario/{$value.denunciado.id}" class="btn btn-mini btn-warning show-tooltip" title="Enviar advertencia"><i class="icon-white icon-warning-sign"></i></a>

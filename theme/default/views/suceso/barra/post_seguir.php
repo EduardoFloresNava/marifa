@@ -1,2 +1,2 @@
 <i class="icon icon-road"></i>
-<a href="{#SITE_URL#}/perfil/index/{$suceso.seguidor.nick}">{$suceso.seguidor.nick}</a> {@ha comenzado a seguir tu post@} <a href="{#SITE_URL#}/post/{$suceso.post.categoria.seo}/{$suceso.post.id}/{$suceso.post.titulo|Texto::make_seo}.html">{$suceso.post.titulo}</a>.
+<a href="{#SITE_URL#}/@{$suceso.seguidor.nick}">{$suceso.seguidor.nick}</a> {@ha comenzado a seguir tu post@} <a href="{#SITE_URL#}/post/{$suceso.post.categoria.seo}/{$suceso.post.id}/{$suceso.post.titulo|Texto::make_seo}.html">{$suceso.post.titulo}</a>.

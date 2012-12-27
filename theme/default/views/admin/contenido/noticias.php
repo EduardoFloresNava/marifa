@@ -28,7 +28,7 @@
 			<td># {$value.id}</td>
 			<td>{$value.contenido}</td>
 			<td>{if="$value.estado == 0"}<span class="label label-important">OCULTO</span>{else}<span class="label label-success">VISIBLE</span>{/if}</td>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td style="text-align: center;">
 				<div class="btn-group">

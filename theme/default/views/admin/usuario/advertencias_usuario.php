@@ -1,10 +1,10 @@
 <ul class="breadcrumb">
     <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario">Usuarios</a> <span class="divider">/</span></li>
-    <li class="active">Advertencias a <a href="{#SITE_URL#}/perfil/index/{$usuario.nick}">{$usuario.nick}</a></li>
+    <li class="active">Advertencias a <a href="{#SITE_URL#}/@{$usuario.nick}">{$usuario.nick}</a></li>
 </ul>
 <div class="header clearfix">
-	<h2 class="pull-left">Advertencias a <a href="{#SITE_URL#}/perfil/index/{$usuario.nick}">{$usuario.nick}</a></h2>
+	<h2 class="pull-left">Advertencias a <a href="{#SITE_URL#}/@{$usuario.nick}">{$usuario.nick}</a></h2>
 	<div class="pull-right btn-group">
 		<a href="{#SITE_URL#}/admin/usuario/" class="btn btn-small btn-success">Volver</a>
 	</div>
@@ -12,7 +12,7 @@
 {loop="$advertencias"}
 <table class="table table-bordered">
 	<tr>
-		<td><strong>Moderador:</strong> <a href="{#SITE_URL#}/perfil/index/{$value.moderador.nick}">{$value.moderador.nick}</a></td>
+		<td><strong>Moderador:</strong> <a href="{#SITE_URL#}/@{$value.moderador.nick}">{$value.moderador.nick}</a></td>
 		<td><strong>Fecha:</strong> {$value.fecha->fuzzy()} ({$value.fecha->format('d/m/Y H:i:s')})</td>
 		<td>
 			<div class="btn-group">
