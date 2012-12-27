@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
     <li class="active">Medallas</li>
 </ul>
@@ -9,14 +9,14 @@
 		<a href="{#SITE_URL#}/admin/usuario/nueva_medalla/" class="btn btn-success"><i class="icon-white icon-plus"></i> Nueva</a>
 	</div>
 </div>
-<div class="alert"><strong>&iexcl;Advertencia!</strong> Si borra una medalla, autom&aacute;ticamente todos los usuarios que tengan la medalla la perder&aacute;n.</div>
+<div class="alert"><strong>!Advertencia!</strong> Si borra una medalla, automáticamente todos los usuarios que tengan la medalla la perderán.</div>
 <table class="table table-bordered">
 	<thead>
 		<tr>
 			<th>Nombre</th>
-			<th>Descripci&oacute;n</th>
+			<th>Descripción</th>
 			<th>Tipo</th>
-			<th>Condici&oacute;n</th>
+			<th>Condición</th>
 			<th>Acciones</th>
 		</tr>
 	</thead>
@@ -56,7 +56,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="5">&iexcl;No hay medallas definidas!</td>
+			<td class="alert" colspan="5">!No hay medallas definidas!</td>
 		</tr>
 		{/loop}
 	</tbody>

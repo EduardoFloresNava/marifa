@@ -97,4 +97,14 @@ class Base_Texto {
 
 		return rtrim($matches[0]).((strlen($matches[0]) === strlen($str)) ? '' : $end_char);
 	}
+
+	/**
+	 * Transformo el texto en un texto válido para seo.
+	 * @param string $texto Texto a transformar.
+	 * @return string
+	 */
+	public static function make_seo($texto)
+	{
+		return preg_replace('/\s+/', '-', preg_replace('/[^A-Za-z0-9\s]/', '', str_replace(array('á', 'é', 'í', 'ó', 'ú', 'ñ'), array('a', 'e', 'i', 'o', 'u', 'n'), trim($texto))));
+	}
 }

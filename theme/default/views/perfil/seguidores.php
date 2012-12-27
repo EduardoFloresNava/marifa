@@ -4,14 +4,14 @@
 	<tbody>
 	{loop="$seguidores"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
 		</tr>
 	{/loop}
 	</tbody>
 </table>
 {$paginacion_seguidores}
 {else}
-	<div class="alert">{@No tiene seguidores a&uacute;n@}.</div>
+	<div class="alert">{@No tiene seguidores aún@}.</div>
 {/if}
 <h3 class="title">{@Usuarios que seguidos por@} {$usuario.nick}:</h3>
 {if="count($sigue) > 0"}
@@ -19,12 +19,12 @@
 	<tbody>
 	{loop="$sigue"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
 		</tr>
 	{/loop}
 	</tbody>
 </table>
 {$paginacion_sigue}
 {else}
-	<div class="alert">{@No sigue ning&uacute;n usuario a&uacute;n@}.</div>
+	<div class="alert">{@No sigue ningún usuario aún@}.</div>
 {/if}

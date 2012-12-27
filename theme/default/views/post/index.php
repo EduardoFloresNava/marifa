@@ -1,7 +1,7 @@
 <div class="row post">
 	<div class="span2 usuario-perfil-lateral">
 		<h3 class="title">Posteado por:</h3>
-			<a href="{#SITE_URL#}/perfil/index/{$usuario.nick}" class="thumbnail user-icon">
+			<a href="{#SITE_URL#}/@{$usuario.nick}" class="thumbnail user-icon">
 			<img src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
 			<h4 class="nick">{$usuario.nick}</h4>
 		</a>
@@ -22,12 +22,12 @@
 	<div class="span10 contenido">
 		<div class="cabecera">
 			<div class="lineal btn-group">
-				<a href="{#SITE_URL#}/post/index/{$post_anterior}" class="btn btn-mini"><i class="icon icon-chevron-left"></i></a>
-				<a href="{#SITE_URL#}/post/index/{$post_siguiente}" class="btn btn-mini"><i class="icon icon-chevron-right"></i></a>
+				<a href="{#SITE_URL#}/post/{$post_anterior.categoria.seo}/{$post_anterior.id}/{$post_anterior.titulo|Texto::make_seo}.html" class="btn btn-mini"><i class="icon icon-chevron-left"></i></a>
+				<a href="{#SITE_URL#}/post/{$post_siguiente.categoria.seo}/{$post_siguiente.id}/{$post_siguiente.titulo|Texto::make_seo}.html" class="btn btn-mini"><i class="icon icon-chevron-right"></i></a>
 			</div>
 			<h2 class="title">{$post.titulo}</h2>
 			<div class="aleatorio">
-				<a href="{#SITE_URL#}/post/index/{$post_aleatorio}" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
+				<a href="{#SITE_URL#}/post/{$post_aleatorio.categoria.seo}/{$post_aleatorio.id}/{$post_aleatorio.titulo|Texto::make_seo}.html" class="btn btn-mini pull-right"><i class="icon icon-random"></i></a>
 			</div>
 		</div>
 		<div class="contenido-post">{$post.contenido}</div>
@@ -110,7 +110,7 @@
 					<div class="span11 comentario-data">
 						<div class="clearfix head">
 							<span class="informacion">
-								<a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a>
+								<a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a>
 								<small>{function="$value.fecha->fuzzy()"}</small>
 								{if="$value.votos != 0"}<span class="badge badge-{if="$value.votos > 0"}success{else}important{/if}">{$value.votos|abs}</span>{/if}
 								{if="$value.estado == 1"}<span class="label label-warning">OCULTO</span>{elseif="$value.estado == 2"}<span class="label label-important">BORRADO</span>{/if}
@@ -146,22 +146,22 @@
 					{include="helper/bbcode_bar"}
 					{if="isset($comentario_success)"}
 					<div class="alert alert-success">
-						<strong>&iexcl;Felicidades!</strong> {$comentario_success}
+						<strong>!Felicidades!</strong> {$comentario_success}
 					</div>{/if}
 					{if="isset($comentario_error)"}
 					<div class="alert">
-						<strong>&iexcl;Error!</strong> {$comentario_error}
+						<strong>!Error!</strong> {$comentario_error}
 					</div>{/if}
 					<textarea name="comentario" data-preview="{#SITE_URL#}/post/preview/" id="comentario" class="span12" placeholder="Comentario...">{if="isset($comentario_content)"}{$comentario_content}{/if}</textarea>
 				</form>
 				{else}
 					{if="$podemos_comentar"}
 				<div class="alert">
-					<strong>&iexcl;Atenci&oacute;n!</strong> Solo usuarios registrados pueden comentar este post.
+					<strong>!Atención!</strong> Solo usuarios registrados pueden comentar este post.
 				</div>
 					{else}
 				<div class="alert">
-					<strong>&iexcl;Atenci&oacute;n!</strong> Los comentarios se encuentran cerrados.
+					<strong>!Atención!</strong> Los comentarios se encuentran cerrados.
 				</div>
 					{/if}
 				{/if}

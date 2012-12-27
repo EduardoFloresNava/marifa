@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/moderar/">Moderaci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/">Moderación</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/moderar/denuncias/">Denuncias</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/moderar/denuncias/posts/">Posts</a> <span class="divider">/</span></li>
     <li class="active">Detalles</li>
@@ -13,11 +13,11 @@
 <table class="table table-bordered">
 	<tr>
 		<th>Denunciante</th>
-		<td><a href="{#SITE_URL#}/perfil/index/{$denunciante.nick}">{$denunciante.nick}</a></td>
+		<td><a href="{#SITE_URL#}/@{$denunciante.nick}">{$denunciante.nick}</a></td>
 	</tr>
 	<tr>
 		<th>Post</th>
-		<td><a href="{#SITE_URL#}/post/index/{$post.id}">{$post.titulo}</a></td>
+		<td><a href="{#SITE_URL#}/post/{$post.categoria.seo}/{$post.id}/{$post.titulo|Texto::make_seo}.html">{$post.titulo}</a></td>
 	</tr>
 	<tr>
 		<th>Fecha</th>

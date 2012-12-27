@@ -1,11 +1,11 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li class="active">Correo</li>
 </ul>
 <h2 class="title">Correo</h2>
 {if=" ! isset($configuracion) || ! is_array($configuracion)"}
 <div class="alert alert-info">
-	Aún no se encuentra configurado el env&iacute;o de correos. Para configurarlo copie el archivo <code>/config/email.example.php</code> a <code>/config/email.php</code> y rellene con sus configuraciones.
+	Aún no se encuentra configurado el envío de correos. Para configurarlo copie el archivo <code>/config/email.example.php</code> a <code>/config/email.php</code> y rellene con sus configuraciones.
 </div>
 {else}
 <div class="alert alert-info">
@@ -14,7 +14,7 @@
 <table class="table table-bordered table-striped">
 	<thead>
 		<tr>
-			<th colspan="2">Configuraci&oacute;n del correo</th>
+			<th colspan="2">Configuración del correo</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -51,7 +51,7 @@
 					{/if}
 					{if="isset($configuracion.parametros.encryption)"}
 		<tr>
-			<th>Encriptaci&oacute;n:</th>
+			<th>Encriptación:</th>
 			<td><code>{$configuracion.parametros.encryption}</code></td>
 		</tr>
 					{/if}
@@ -63,7 +63,7 @@
 					{/if}
 					{if="isset($configuracion.parametros.password)"}
 		<tr>
-			<th>Contrase&ntilde;a:</th>
+			<th>Contraseña:</th>
 			<td><code>{$configuracion.parametros.password}</code></td>
 		</tr>
 					{/if}
@@ -91,11 +91,11 @@
 		{/if}
 	</tbody>
 </table>
-<h3 class="title">Env&iacute;o de correo de prueba</h3>
+<h3 class="title">Envío de correo de prueba</h3>
 <form method="POST" class="form-horizontal" action="{#SITE_URL#}/admin/configuracion/test_mail">
 
 	<div class="control-group">
-		<label class="control-label" for="nombre">Direcci&oacute;n de correo:</label>
+		<label class="control-label" for="nombre">Dirección de correo:</label>
 		<div class="controls">
 			<input type="text" value="{$email}" name="email" id="email" class="input-large" />
 		</div>

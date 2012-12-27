@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/moderar/">Moderaci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/moderar/">Moderación</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/moderar/denuncias/">Denuncias</a> <span class="divider">/</span></li>
     <li class="active">Posts</li>
 </ul>
@@ -24,8 +24,8 @@
 	<tbody>
 		{loop="$denuncias"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
-			<td><a href="{#SITE_URL#}/foto/index/{$value.post.id}">{$value.post.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/post/{$value.post.categoria.seo}/{$value.post.id}/{$value.post.titulo|Texto::make_seo}.html">{$value.post.titulo}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td>
 				{if="$value.motivo == 0"}
@@ -61,7 +61,6 @@
 			<td style="text-align: center;">
 				<div class="btn-group">
 					<a href="{#SITE_URL#}/moderar/denuncias/detalle_post/{$value.id}" class="btn btn-mini show-tooltip" title="Detalles"><i class="icon icon-file"></i></a>
-					<a href="{#SITE_URL#}/post/index/{$value.post.id}" class="btn btn-mini btn-info show-tooltip" title="Ver post"><i class="icon-white icon-eye-close"></i></a>
 					{if="$value.estado == 0"}<a href="/moderar/denuncias/cerrar_denuncia_post/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Rechazar denuncia"><i class="icon-white icon-trash"></i></a>
 					<a href="{#SITE_URL#}/moderar/denuncias/cerrar_denuncia_post/{$value.id}/1" class="btn btn-mini btn-success show-tooltip" title="Aceptar denuncia"><i class="icon-white icon-ok"></i></a>{/if}
 					{if="$value.post.estado != 2"}<a href="/post/editar/{$value.post.id}" class="btn btn-mini btn-primary show-tooltip" title="Editar post"><i class="icon-white icon-pencil"></i></a>
@@ -71,7 +70,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="5">&iexcl;No hay denuncias a los posts!</td>
+			<td class="alert" colspan="5">!No hay denuncias a los posts!</td>
 		</tr>
 		{/loop}
 	</tbody>

@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/configuracion/plugins">Plugins</a> <span class="divider">/</span></li>
     <li class="active">Importar plugin</li>
 </ul>

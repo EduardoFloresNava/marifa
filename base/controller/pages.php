@@ -49,6 +49,9 @@ class Base_Controller_Pages extends Controller {
 
 		// Compilamos la vista.
 		$this->template->assign('contenido', $view->parse());
+
+		// Seteamos título.
+		$this->template->assign('title', 'Protocolo');
 	}
 
 	/**
@@ -67,6 +70,9 @@ class Base_Controller_Pages extends Controller {
 		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
 
 		$this->template->assign('contenido', $view->parse());
+
+		// Seteamos título.
+		$this->template->assign('title', 'T&eacute;rminos y condiciones');
 	}
 
 	/**
@@ -85,6 +91,9 @@ class Base_Controller_Pages extends Controller {
 		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
 
 		$this->template->assign('contenido', $view->parse());
+
+		// Seteamos título.
+		$this->template->assign('title', 'Privacidad de datos');
 	}
 
 	/**
@@ -103,5 +112,8 @@ class Base_Controller_Pages extends Controller {
 		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
 
 		$this->template->assign('contenido', $view->parse());
+
+		// Seteamos título.
+		$this->template->assign('title', 'Report Abuse - DMCA');
 	}
 }

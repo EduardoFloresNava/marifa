@@ -1211,8 +1211,6 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			}
 		}
 
-
-
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
@@ -1221,6 +1219,151 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_optimizar'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Configuración de todas las opciones relacionadas al SEO.
+	 */
+	public function action_seo()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/configuracion/seo');
+
+		// Cargamos las configuraciones.
+		$model_configuracion = new Model_Configuracion;
+
+		// Cargamos los datos iniciales.
+		$vista->assign('largo_minimo', (int) $model_configuracion->get('keyword_largo_minimo', 3));
+		$vista->assign('error_largo_minimo', FALSE);
+		$vista->assign('success_largo_minimo', FALSE);
+		$vista->assign('cantidad_minima_ocurrencias', (int) $model_configuracion->get('keyword_ocurrencias_minima', 2));
+		$vista->assign('error_cantidad_minima_ocurrencias', FALSE);
+		$vista->assign('success_cantidad_minima_ocurrencias', FALSE);
+		$vista->assign('palabras_comunes', unserialize($model_configuracion->get('keyword_palabras_comunes', 'a:0:{}')));
+		$vista->assign('error_palabras_comunes', FALSE);
+		$vista->assign('success_palabras_comunes', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Verifico el largo mínimo.
+			if (isset($_POST['largo_minimo']))
+			{
+				// Limpio el valor.
+				$largo_minimo = (int) $_POST['largo_minimo'];
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('largo_minimo', $largo_minimo);
+
+				// Verifico el contenido.
+				if ($largo_minimo < 0)
+				{
+					$vista->assign('error_largo_minimo', 'El largo mínimo debe ser mayor o igual a 0 (cero).');
+				}
+				else
+				{
+					if ($largo_minimo != $model_configuracion->get('keyword_largo_minimo', NULL))
+					{
+						$model_configuracion->keyword_largo_minimo = $largo_minimo;
+						$vista->assign('success_largo_minimo', 'El largo mínimo se ha actualizado correctamente.');
+					}
+				}
+			}
+
+			// Verifico la cantidad de ocurrencias mínima.
+			if (isset($_POST['cantidad_minima_ocurrencias']))
+			{
+				// Limpio el valor.
+				$cantidad_minima_ocurrencias = (int) $_POST['cantidad_minima_ocurrencias'];
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('cantidad_minima_ocurrencias', $cantidad_minima_ocurrencias);
+
+				// Verifico el contenido.
+				if ($cantidad_minima_ocurrencias < 1)
+				{
+					$vista->assign('error_cantidad_minima_ocurrencias', 'La cantidad de ocurrencias mínima debe ser mayor o igual a 1.');
+				}
+				else
+				{
+					if ($cantidad_minima_ocurrencias != $model_configuracion->get('keyword_ocurrencias_minima', NULL))
+					{
+						$model_configuracion->keyword_ocurrencias_minima = $cantidad_minima_ocurrencias;
+						$vista->assign('success_cantidad_minima_ocurrencias', 'La cantidad de ocurrencias mínima se ha actualizado correctamente.');
+					}
+				}
+			}
+
+			// Verifico las palabras no permitidas.
+			if (isset($_POST['palabras_comunes']))
+			{
+				// Limpio el valor.
+				$palabras_comunes = trim($_POST['palabras_comunes']);
+
+				if ( ! empty($palabras_comunes))
+				{
+					// Obtengo la lista.
+					$keyword_list = explode("\n", $palabras_comunes);
+
+					// Quito espacios de cada una y verifico valides.
+					$error = FALSE;
+					foreach ($keyword_list as $k => $v)
+					{
+						// Quito espacios.
+						$v = trim($v);
+
+						if ( ! isset($v{0}))
+						{
+							$error = $v;
+							break;
+						}
+
+						// Verifico sea correcto.
+						if (preg_match('/\s+/', $v))
+						{
+							$error = $v;
+							break;
+						}
+
+						// Inserto nueva palabra.
+						$keyword_list[$k] = $v;
+					}
+				}
+				else
+				{
+					$keyword_list = array();
+					$error = FALSE;
+				}
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('palabras_comunes', $keyword_list);
+
+				// Verifico el contenido.
+				if ($error !== FALSE)
+				{
+					$vista->assign('error_palabras_comunes', 'La lista de palabras claves no permitidas deben ser una por linea. \''.$error.'\' no es correcta.');
+				}
+				else
+				{
+					if (serialize($keyword_list) != $model_configuracion->get('keyword_palabras_comunes', NULL))
+					{
+						$model_configuracion->keyword_palabras_comunes = serialize($keyword_list);
+						$vista->assign('success_palabras_comunes', 'La lista de palabras claves no permitidas se ha actualizado correctamente.');
+					}
+				}
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_seo'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

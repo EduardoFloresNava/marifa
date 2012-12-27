@@ -6,11 +6,11 @@
 				<label class="control-label" for="motivo">Motivo</label>
 				<div class="controls">
 					<select name="motivo" id="tipo">
-						<option value="0" {if="$motivo == 0"}selected="selected"{/if}>Ya est&aacute; publicada</option>
+						<option value="0" {if="$motivo == 0"}selected="selected"{/if}>Ya está publicada</option>
 						<option value="1" {if="$motivo == 1"}selected="selected"{/if}>Se hace Spam</option>
-						<option value="2" {if="$motivo == 2"}selected="selected"{/if}>La imagen est&aacute; ca&iacute;da</option>
+						<option value="2" {if="$motivo == 2"}selected="selected"{/if}>La imagen está caída</option>
 						<option value="3" {if="$motivo == 3"}selected="selected"{/if}>Es racista o irrespetuosa</option>
-						<option value="4" {if="$motivo == 4"}selected="selected"{/if}>Contiene informaci&oacute;n personal</option>
+						<option value="4" {if="$motivo == 4"}selected="selected"{/if}>Contiene información personal</option>
 						<option value="5" {if="$motivo == 5"}selected="selected"{/if}>Contiene pedofilia</option>
 						<option value="6" {if="$motivo == 6"}selected="selected"{/if}>Es gore o asqueros</option>
 						<option value="7" {if="$motivo == 7"}selected="selected"{/if}>Otra (especificar)</option>
@@ -28,7 +28,7 @@
 			</div>
 
 			<div class="form-actions">
-				<button type="submit" name="submit" value="enviar" class="btn btn-large btn-primary">Crear</button> o <a href="{#SITE_URL#}/foto/ver/{$foto}">Volver</a>
+				<button type="submit" name="submit" value="enviar" class="btn btn-large btn-primary">Crear</button> o <a href="{#SITE_URL#}/foto/{$foto.categoria.seo}/{$foto.id}/{$foto.titulo|Texto::make_seo}.html">Volver</a>
 			</div>
 		</form>
 	</div>

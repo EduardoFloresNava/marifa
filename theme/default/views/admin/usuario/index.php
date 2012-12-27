@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li class="active">Usuarios</li>
 </ul>
 <div class="header clearfix">
@@ -25,7 +25,7 @@
 	<tbody>
 		{loop="$usuarios"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
 			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.rango.imagen}" /> <strong style="color: #{function="sprintf('%06s', dechex($value.rango.color))"};">{$value.rango.nombre}</strong></td>
 			<td>{if="$value.lastactive == NULL"}<span class="label">NUNCA</span>{else}{$value.lastactive->fuzzy()}{/if}</td>
 			<td>
@@ -68,7 +68,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="6">&iexcl;No hay usuarios!</td>
+			<td class="alert" colspan="6">!No hay usuarios!</td>
 		</tr>
 		{/loop}
 	</tbody>

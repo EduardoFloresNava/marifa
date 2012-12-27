@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
 	<li><a href="{#SITE_URL#}/admin/contenido/">Contenido</a> <span class="divider">/</span></li>
     <li class="active">Noticias</li>
 </ul>
@@ -28,7 +28,7 @@
 			<td># {$value.id}</td>
 			<td>{$value.contenido}</td>
 			<td>{if="$value.estado == 0"}<span class="label label-important">OCULTO</span>{else}<span class="label label-success">VISIBLE</span>{/if}</td>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td style="text-align: center;">
 				<div class="btn-group">
@@ -40,7 +40,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="6">&iexcl;No hay noticias!</td>
+			<td class="alert" colspan="6">!No hay noticias!</td>
 		</tr>
 		{/loop}
 	</tbody>

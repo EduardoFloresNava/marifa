@@ -1,2 +1,2 @@
 <i class="icon icon-retweet"></i>
-<a href="{#SITE_URL#}/perfil/index/{$suceso.usuario.nick}">{$suceso.usuario.nick}</a> {@ha compartido tu@} <a href="{#SITE_URL#}/perfil/publicacion/{$suceso.shout.usuario.nick}/{$suceso.shout.id}">{@shout@}</a>.
+<a href="{#SITE_URL#}/@{$suceso.usuario.nick}">{$suceso.usuario.nick}</a> {@ha compartido tu@} <a href="{#SITE_URL#}/@{$suceso.shout.usuario.nick}/publicacion//{$suceso.shout.id}">{@shout@}</a>.

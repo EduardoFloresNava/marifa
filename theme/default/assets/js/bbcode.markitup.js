@@ -60,7 +60,7 @@
             dataType: 'html',
             data: { 'contenido': $(this).closest('.bbcode-bar').parent().find('textarea').val() },
             error: function (jqXHR, textStatus, errorThrown) {
-                $(this).closest('form').prepend('<div class="alert alert-danger">&iexcl;Error! Error al conectar al servidor: "'+textStatus+'"</div>');
+                $(this).closest('form').prepend('<div class="alert alert-danger">!Error! Error al conectar al servidor: "'+textStatus+'"</div>');
                 $(this).removeAttr('disabled');
             },
             success: function (data, textStatus, jqXHR) {

@@ -1,10 +1,10 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/contenido/">Contenido</a> <span class="divider">/</span></li>
-    <li class="active">Categor&iacute;as</li>
+    <li class="active">Categorías</li>
 </ul>
 <div class="header clearfix">
-	<h2 class="pull-left">Categor&iacute;as</h2>
+	<h2 class="pull-left">Categorías</h2>
 	<div class="pull-right">
 		<a href="{#SITE_URL#}/admin/contenido/agregar_categoria/" class="btn btn-success"><i class="icon-white icon-plus"></i> Agregar</a>
 	</div>
@@ -31,7 +31,7 @@
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="3">&iexcl;No hay categor&iacute;as!</td>
+			<td class="alert" colspan="3">!No hay categorías!</td>
 		</tr>
 		{/loop}
 	</tbody>

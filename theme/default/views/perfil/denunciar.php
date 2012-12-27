@@ -27,7 +27,7 @@
 			</div>
 
 			<div class="form-actions">
-				<button type="submit" name="submit" value="enviar" class="btn btn-large btn-primary">Denunciar</button> o <a href="{#SITE_URL#}/perfil/index/{$usuario}">Volver</a>
+				<button type="submit" name="submit" value="enviar" class="btn btn-large btn-primary">Denunciar</button> o <a href="{#SITE_URL#}/@{$usuario}">Volver</a>
 			</div>
 		</form>
 	</div>

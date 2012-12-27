@@ -1,2 +1,2 @@
 <i class="icon icon-user"></i>
-<a href="{#SITE_URL#}/perfil/index/{$suceso.shout.usuario.nick}">{$suceso.shout.usuario.nick}</a> {@te ha citado en un@} <a href="{#SITE_URL#}/perfil/publicacion/{$suceso.shout.usuario.nick}/{$suceso.shout.id}">{@shout@}</a>.
+<a href="{#SITE_URL#}/@{$suceso.shout.usuario.nick}">{$suceso.shout.usuario.nick}</a> {@te ha citado en un@} <a href="{#SITE_URL#}/@{$suceso.shout.usuario.nick}/publicacion/{$suceso.shout.id}">{@shout@}</a>.

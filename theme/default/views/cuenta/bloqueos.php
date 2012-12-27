@@ -3,7 +3,7 @@
 <ul class="thumbnails">
 	{loop="$bloqueos"}
 	<li class="span2">
-		<a href="{#SITE_URL#}/perfil/index/{$value.nick}" class="thumbnail user-icon">
+		<a href="{#SITE_URL#}/@{$value.nick}" class="thumbnail user-icon">
 			<img src="{function="Utils::get_gravatar($value.email, 160, 160)"}" />
 			<h4 class="nick">{$value.nick}</h4>
 		</a>
@@ -11,7 +11,7 @@
 	{/loop}
 </ul>
 {else}
-<div class="alert">No estás bloqueando ning&uacute;n usuario a&uacute;n.</div>
+<div class="alert">No estás bloqueando ningún usuario aún.</div>
 {/if}
 <form class="form-horizontal" action="" method="POST">
 	<fieldset>

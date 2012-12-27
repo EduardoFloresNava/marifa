@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
 	<li><a href="{#SITE_URL#}/admin/contenido">Contenido</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/contenido/posts">Posts</a> <span class="divider">/</span></li>
     <li class="active">Eliminar</li>
@@ -32,10 +32,10 @@
 	</div>
 
 	<div class="control-group{if="$error_razon"} error{/if}">
-		<label class="control-label" for="razon">Raz&oacute;n</label>
+		<label class="control-label" for="razon">Razón</label>
 		<div class="controls">
 			<input type="text" value="{$razon}" name="razon" id="razon" class="span10" />
-			<span class="help-block">{if="$error_razon"}{$error_razon}{else}Raz&oacute;n para el caso de un motivo personalizado.{/if}</span>
+			<span class="help-block">{if="$error_razon"}{$error_razon}{else}Razón para el caso de un motivo personalizado.{/if}</span>
 		</div>
 	</div>
 

@@ -1,11 +1,11 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/contenido">Contenido</a> <span class="divider">/</span></li>
-	<li><a href="{#SITE_URL#}/admin/contenido/categorias">Categor&iacute;as</a> <span class="divider">/</span></li>
+	<li><a href="{#SITE_URL#}/admin/contenido/categorias">Categorías</a> <span class="divider">/</span></li>
     <li class="active">Editar</li>
 </ul>
 <div class="header">
-	<h2>Editar categor&iacute;a</h2>
+	<h2>Editar categoría</h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 	<div class="control-group{if="$error_nombre"} error{/if}">

@@ -646,7 +646,7 @@ class Base_Dispatcher {
 		), $args);
 
 		// Llamo post-llamada.
-		if (method_exists($cont, 'before'))
+		if (method_exists($cont, 'after'))
 		{
 			call_user_func(array($cont, 'after'));
 		}

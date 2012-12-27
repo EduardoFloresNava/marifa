@@ -1,10 +1,10 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario">Usuarios</a> <span class="divider">/</span></li>
     <li class="active">Cambiar rango</li>
 </ul>
 <div class="header">
-	<h2>Cambiar rango de <a href="{#SITE_URL#}/perfil/index/{$usuario.nick}">{$usuario.nick}</a></h2>
+	<h2>Cambiar rango de <a href="{#SITE_URL#}/@{$usuario.nick}">{$usuario.nick}</a></h2>
 </div>
 <h4 class="title">Seleccione el rango que desea asignar:</h4>
 <ul style="list-style: none;">

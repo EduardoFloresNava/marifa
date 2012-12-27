@@ -247,6 +247,7 @@ class Base_Controller_Moderar_Home extends Controller {
 					$obj['usuario'] = $denuncia->usuario()->as_array();
 					$obj['tipo'] = 'post';
 					$obj['post'] = $denuncia->post()->as_array();
+					$obj['post']['categoria'] = $denuncia->post()->categoria()->as_array();
 					$lst[] = $obj;
 					break;
 				case 'foto':
@@ -255,6 +256,7 @@ class Base_Controller_Moderar_Home extends Controller {
 					$obj['usuario'] = $denuncia->usuario()->as_array();
 					$obj['tipo'] = 'foto';
 					$obj['foto'] = $denuncia->foto()->as_array();
+					$obj['foto']['categoria'] = $denuncia->foto()->categoria()->as_array();
 					$lst[] = $obj;
 					break;
 				case 'usuario':
@@ -283,6 +285,7 @@ class Base_Controller_Moderar_Home extends Controller {
 					$post = new Model_Post( (int) $v['id']);
 					$obj = $post->as_array();
 					$obj['usuario'] = $post->usuario()->as_array();
+					$obj['categoria'] = $post->categoria()->as_array();
 					$obj['tipo'] = 'post';
 					$lista[] = $obj;
 					break;
@@ -290,6 +293,7 @@ class Base_Controller_Moderar_Home extends Controller {
 					$post = new Model_Post_Comentario( (int) $v['id']);
 					$obj = $post->as_array();
 					$obj['post'] = $post->post()->as_array();
+					$obj['post']['categoria'] = $post->post()->categoria()->as_array();
 					$obj['usuario'] = $post->usuario()->as_array();
 					$obj['tipo'] = 'post_comentario';
 					$lista[] = $obj;
@@ -298,6 +302,7 @@ class Base_Controller_Moderar_Home extends Controller {
 					$post = new Model_Foto_Comentario( (int) $v['id']);
 					$obj = $post->as_array();
 					$obj['foto'] = $post->foto()->as_array();
+					$obj['foto']['categoria'] = $post->foto()->categoria()->as_array();
 					$obj['usuario'] = $post->usuario()->as_array();
 					$obj['tipo'] = 'foto_comentario';
 					$lista[] = $obj;

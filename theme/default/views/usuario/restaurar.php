@@ -1,6 +1,6 @@
 <form class="form-horizontal" action="" method="POST">
 	<fieldset>
-		<legend>Restaurar contrase&ntilde;a:</legend>
+		<legend>Restaurar contraseña:</legend>
 
 		<div class="control-group{if="$error_password"} error{/if}">
 			<label class="control-label" for="password">Nueva clave</label>
@@ -21,8 +21,8 @@
 		<div class="form-actions">
 			<button class="btn btn-primary">Cambiar clave</button>
 			o
-			<a href="{#SITE_URL#}/usuario/login/">&iquest;Tienes una cuenta?</a>
-			<a href="{#SITE_URL#}/usuario/register/">&iquest;Necesitas una cuenta?</a>
+			<a href="{#SITE_URL#}/usuario/login/">¿Tienes una cuenta?</a>
+			<a href="{#SITE_URL#}/usuario/register/">¿Necesitas una cuenta?</a>
 		</div>
 
 	</fieldset>

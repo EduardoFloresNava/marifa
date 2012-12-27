@@ -20,7 +20,7 @@
 		<th>Cantidad</th><td>{$rango.cantidad}</td>
 	</tr>{/if}
 	<tr>
-		<th>Puntos por d&iacute;a</th>
+		<th>Puntos por día</th>
 		<td>{$rango.puntos}</td>
 	</tr>
 	<tr>
@@ -43,7 +43,7 @@
 		<thead>
 			<tr>
 				<th>Permiso</th>
-				<th>Descripci&oacute;n</th>
+				<th>Descripción</th>
 				<td>Estado</td>
 			</tr>
 		</thead>

@@ -2,7 +2,7 @@
 {loop="$advertencias"}
 <table class="table table-bordered{if="$value.estado == 0"} aviso-nuevo{/if}">
 	<tr>
-		<td><strong>Moderador:</strong> <a href="{#SITE_URL#}/perfil/index/{$value.moderador.nick}">{$value.moderador.nick}</a></td>
+		<td><strong>Moderador:</strong> <a href="{#SITE_URL#}/@{$value.moderador.nick}">{$value.moderador.nick}</a></td>
 		<td>
 			<strong>Fecha:</strong> {$value.fecha->fuzzy()} ({$value.fecha->format('d/m/Y H:i:s')})
 			<div class="btn-group pull-right">
@@ -20,5 +20,5 @@
 	</tr>
 </table>
 {else}
-<div class="alert alert-success">&iexcl;No tienes ning&uacute;n aviso!</div>
+<div class="alert alert-success">!No tienes ningún aviso!</div>
 {/loop}

@@ -1,6 +1,6 @@
 <form class="form-horizontal" action="{#SITE_URL#}/usuario/pedir_activacion" method="POST">
 	<fieldset>
-		<legend>Pedir correo de activaci&oacute;n</legend>
+		<legend>Pedir correo de activación</legend>
 
 		<div class="control-group{if="$error_email"} error{/if}">
 			<label class="control-label" for="email">E-Mail</label>
@@ -13,9 +13,9 @@
 		<div class="form-actions">
 			<button class="btn btn-primary">Pedir correo</button>
 			o
-			<a href="{#SITE_URL#}/usuario/login/">&iquest;Iniciar sesi&oacute;n?</a>
-			<a href="{#SITE_URL#}/usuario/register/">&iquest;Necesitas una cuenta?</a>
-			<a href="{#SITE_URL#}/usuario/recovery/">&iquest;Perdi&oacute; su contrase&ntilde;a?</a>
+			<a href="{#SITE_URL#}/usuario/login/">¿Iniciar sesión?</a>
+			<a href="{#SITE_URL#}/usuario/register/">¿Necesitas una cuenta?</a>
+			<a href="{#SITE_URL#}/usuario/recovery/">¿Perdió su contraseña?</a>
 		</div>
 
 	</fieldset>

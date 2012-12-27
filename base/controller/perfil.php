@@ -104,6 +104,7 @@ class Base_Controller_Perfil extends Controller {
 	 */
 	protected function submenu_categorias($activo = NULL)
 	{
+		// Obtengo acción automática.
 		if ($activo === NULL)
 		{
 			$call = Request::current();
@@ -111,13 +112,13 @@ class Base_Controller_Perfil extends Controller {
 			unset($call);
 		}
 
-		$usuario = (Usuario::$usuario_id == $this->usuario->id) ? '' : $this->usuario->get('nick');
+		// Devuelvo el arreglo.
 		return array(
-			'muro' => array('link' => '/perfil/index/'.$usuario, 'caption' => __('Muro', FALSE), 'active' => $activo == 'muro' || $activo == 'index'),
-			'informacion' => array('link' => '/perfil/informacion/'.$usuario, 'caption' => __('Información', FALSE), 'active' =>  $activo == 'informacion'),
-			'posts' => array('link' => '/perfil/posts/'.$usuario, 'caption' => __('Posts', FALSE), 'active' =>  $activo == 'posts'),
-			'seguidores' => array('link' => '/perfil/seguidores/'.$usuario, 'caption' => __('Seguidores', FALSE), 'active' =>  $activo == 'seguidores'),
-			'medallas' => array('link' => '/perfil/medallas/'.$usuario, 'caption' => __('Medallas', FALSE), 'active' =>  $activo == 'medallas'),
+			'muro' => array('link' => SITE_URL."/@{$this->usuario->nick}", 'caption' => __('Muro', FALSE), 'active' => $activo == 'muro' || $activo == 'index' || $activo == 'publicacion'),
+			'informacion' => array('link' => SITE_URL."/@{$this->usuario->nick}/informacion", 'caption' => __('Información', FALSE), 'active' =>  $activo == 'informacion'),
+			'posts' => array('link' => SITE_URL."/@{$this->usuario->nick}/posts", 'caption' => __('Posts', FALSE), 'active' =>  $activo == 'posts'),
+			'seguidores' => array('link' => SITE_URL."/@{$this->usuario->nick}/seguidores", 'caption' => __('Seguidores', FALSE), 'active' =>  $activo == 'seguidores'),
+			'medallas' => array('link' => SITE_URL."/@{$this->usuario->nick}/medallas", 'caption' => __('Medallas', FALSE), 'active' =>  $activo == 'medallas'),
 		);
 	}
 
@@ -320,7 +321,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+		$this->template->assign('title_raw', 'Información de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -352,18 +353,21 @@ class Base_Controller_Perfil extends Controller {
 		// Verifico validez de la pagina.
 		if (count($post_list) == 0 && $pagina != 1)
 		{
-			Request::redirect('/perfil/posts/'.$usuario);
+			Request::redirect("/@$usuario/posts/");
 		}
 
 		// Paginación.
 		$paginador = new Paginator($this->usuario->cantidad_posts(), $cantidad_por_pagina);
-		$information_view->assign('paginacion', $paginador->get_view($pagina, '/perfil/posts/'.$usuario.'/%d/'));
+		$information_view->assign('paginacion', $paginador->get_view($pagina, "/@$usuario/posts/%d"));
 		unset($paginador);
 
 		// Transformamos a arreglo.
 		foreach ($post_list as $k => $v)
 		{
-			$post_list[$k] = array_merge($v->as_array(), array('puntos' => $v->puntos()));
+			$a = $v->as_array();
+			$a['puntos'] = $v->puntos();
+			$a['categoria'] = $v->categoria()->as_array();
+			$post_list[$k] = $a;
 		}
 
 		$information_view->assign('post', $post_list);
@@ -374,7 +378,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+		$this->template->assign('title_raw', 'Posts de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -408,12 +412,12 @@ class Base_Controller_Perfil extends Controller {
 		// Verifico validez de la pagina.
 		if (count($seguidores) == 0 && $pagina_sigo != 1)
 		{
-			Request::redirect('/perfil/seguidores/'.$usuario.'/1/'.$pagina_siguen);
+			Request::redirect("/@$usuario/seguidores/1/$pagina_siguen");
 		}
 
 		// Paginación.
 		$paginador = new Paginator($this->usuario->cantidad_seguidores(), $cantidad_por_pagina);
-		$information_view->assign('paginacion_seguidores', $paginador->get_view($pagina_sigo, '/perfil/seguidores/'.$usuario.'/%d/'.$pagina_siguen));
+		$information_view->assign('paginacion_seguidores', $paginador->get_view($pagina_sigo, "/@$usuario/seguidores/%d/$pagina_siguen"));
 		unset($paginador);
 
 		// Transformamos a arreglo.
@@ -430,12 +434,12 @@ class Base_Controller_Perfil extends Controller {
 		// Verifico validez de la pagina.
 		if (count($sigue) == 0 && $pagina_siguen != 1)
 		{
-			Request::redirect('/perfil/seguidores/'.$usuario.'/'.$pagina_sigo.'/1');
+			Request::redirect("/@$usuario/seguidores/$pagina_sigo");
 		}
 
 		// Paginación.
 		$paginador = new Paginator($this->usuario->cantidad_sigue(), $cantidad_por_pagina);
-		$information_view->assign('paginacion_sigue', $paginador->get_view($pagina_siguen, '/perfil/seguidores/'.$usuario.'/'.$pagina_sigo.'/%d/'));
+		$information_view->assign('paginacion_sigue', $paginador->get_view($pagina_siguen, "/@$usuario/seguidores/$pagina_sigo/%d/"));
 		unset($paginador);
 
 		// Transformamos a arreglo.
@@ -451,7 +455,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+		$this->template->assign('title_raw', 'Seguidores de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -480,7 +484,7 @@ class Base_Controller_Perfil extends Controller {
 			if ($this->usuario->id !== Usuario::$usuario_id && ! Usuario::puedo_referirlo($this->usuario->id))
 			{
 				add_flash_message(FLASH_ERROR, 'No puedes publicar en el muro de ese usuario.');
-				Request::redirect('/perfil/index/'.$this->usuario->nick);
+				Request::redirect('/@'.$this->usuario->nick);
 			}
 
 			// Obtengo datos.
@@ -692,7 +696,7 @@ class Base_Controller_Perfil extends Controller {
 				add_flash_message(FLASH_SUCCESS, 'Publicación realizada correctamente.');
 
 				// Redirecciono para evitar re-post.
-				Request::redirect('/perfil/index/'.$this->usuario->nick);
+				Request::redirect('/@'.$this->usuario->nick);
 			}
 			else
 			{
@@ -716,12 +720,12 @@ class Base_Controller_Perfil extends Controller {
 		// Que sea un número de página válido.
 		if (count($lst) == 0 && $pagina != 1)
 		{
-			Request::redirect('/perfil/muro/'.$usuario);
+			Request::redirect("/@$usuario/muro");
 		}
 
 		// Paginación.
 		$paginador = new Paginator(Suceso_Perfil::cantidad($this->usuario->id), $cantidad_por_pagina);
-		$information_view->assign('paginacion', $paginador->get_view($pagina, '/perfil/muro/'.$usuario.'/%d'));
+		$information_view->assign('paginacion', $paginador->get_view($pagina, "/@$usuario/muro/%d"));
 		unset($paginador);
 
 		$eventos = array();
@@ -761,7 +765,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+		$this->template->assign('title_raw', 'Perfil de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -784,14 +788,14 @@ class Base_Controller_Perfil extends Controller {
 		if (Usuario::$usuario_id == $this->usuario->id)
 		{
 			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres denunciar no se encuentra disponible.');
-			Request::redirect('/perfil/index/'.$this->usuario->nick);
+			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Verifico el estado.
 		if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 		{
 			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres denunciar no se encuentra disponible.');
-			Request::redirect('/perfil/index/'.$this->usuario->nick);
+			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Asignamos el título.
@@ -866,7 +870,7 @@ class Base_Controller_Perfil extends Controller {
 
 				// Informo el resultado.
 				add_flash_message(FLASH_SUCCESS, 'El usuario ha sido denunciado correctamente.');
-				Request::redirect('/perfil/index/'.$this->usuario->nick);
+				Request::redirect("/@{$this->usuario->nick}");
 			}
 		}
 
@@ -875,7 +879,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick'));
+		$this->template->assign('title_raw', 'Denunciar a '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -915,7 +919,7 @@ class Base_Controller_Perfil extends Controller {
 			{
 				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres dejar de seguir no se encuentra disponible.');
 			}
-			Request::redirect('/perfil/index/'.$this->usuario->nick);
+			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Verificaciones especiales en funcion si lo voy a seguir o dejar de seguir.
@@ -925,14 +929,14 @@ class Base_Controller_Perfil extends Controller {
 			if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 			{
 				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
-				Request::redirect('/perfil/index/'.$this->usuario->nick);
+				Request::redirect("/@{$this->usuario->nick}");
 			}
 
 			// Verifico no sea seguidor.
 			if ($this->usuario->es_seguidor(Usuario::$usuario_id))
 			{
 				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
-				Request::redirect('/perfil/index/'.$this->usuario->nick);
+				Request::redirect("/@{$this->usuario->nick}");
 			}
 
 			// Sigo al usuario.
@@ -948,7 +952,7 @@ class Base_Controller_Perfil extends Controller {
 			if ( ! $this->usuario->es_seguidor(Usuario::$usuario_id))
 			{
 				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres dejar de seguir no se encuentra disponible.');
-				Request::redirect('/perfil/index/'.$this->usuario->nick);
+				Request::redirect("/@{$this->usuario->nick}");
 			}
 
 			// Dejo de seguir al usuario.
@@ -977,7 +981,7 @@ class Base_Controller_Perfil extends Controller {
 		{
 			add_flash_message(FLASH_SUCCESS, 'Dejaste de seguir al usuario correctamente.');
 		}
-		Request::redirect('/perfil/index/'.$this->usuario->nick);
+		Request::redirect("/@{$this->usuario->nick}");
 	}
 
 	/**
@@ -1000,21 +1004,21 @@ class Base_Controller_Perfil extends Controller {
 		if (Usuario::$usuario_id == $this->usuario->id)
 		{
 			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres bloquear no se encuentra disponible.');
-			Request::redirect('/perfil/index/'.$usuario->nick);
+			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Verifico el estado.
 		if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 		{
 			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres bloquear no se encuentra disponible.');
-			Request::redirect('/perfil/index/'.$this->usuario->nick);
+			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Verifico no esté bloqueado.
 		if (Usuario::usuario()->esta_bloqueado($this->usuario->id))
 		{
 			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres bloquear no se encuentra disponible.');
-			Request::redirect('/perfil/index/'.$this->usuario->nick);
+			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Bloqueo al usuario.
@@ -1034,7 +1038,7 @@ class Base_Controller_Perfil extends Controller {
 
 		// Informo resultado.
 		add_flash_message(FLASH_SUCCESS, 'El usuario se ha bloqueado correctamente.');
-		Request::redirect('/perfil/index/'.$this->usuario->nick);
+		Request::redirect("/@{$this->usuario->nick}");
 	}
 
 	/**
@@ -1057,21 +1061,21 @@ class Base_Controller_Perfil extends Controller {
 		if (Usuario::$usuario_id == $this->usuario->id)
 		{
 			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres desbloquear no se encuentra disponible.');
-			Request::redirect('/perfil/index/'.$usuario->nick);
+			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Verifico el estado.
 		if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 		{
 			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres desbloquear no se encuentra disponible.');
-			Request::redirect('/perfil/index/'.$this->usuario->nick);
+			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Verifico esté bloqueado.
 		if ( ! Usuario::usuario()->esta_bloqueado($this->usuario->id))
 		{
 			add_flash_message(FLASH_ERROR, 'El usuario al cual quieres desbloquear no se encuentra disponible.');
-			Request::redirect('/perfil/index/'.$this->usuario->nick);
+			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Desbloqueo al usuario.
@@ -1091,7 +1095,7 @@ class Base_Controller_Perfil extends Controller {
 
 		// Informo resultado.
 		add_flash_message(FLASH_SUCCESS, 'El usuario se ha desbloqueado correctamente.');
-		Request::redirect('/perfil/index/'.$this->usuario->nick);
+		Request::redirect("/@{$this->usuario->nick}");
 	}
 
 	/**
@@ -1127,7 +1131,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->get('nick').' - Medallas');
+		$this->template->assign('title_raw', 'Medallas de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -1148,7 +1152,7 @@ class Base_Controller_Perfil extends Controller {
 		if ( ! $model_shout->existe() || $model_shout->usuario_id !== $this->usuario->id)
 		{
 			add_flash_message(FLASH_ERROR, 'La publicación no se encuentra disponible.');
-			Request::redirect('/perfil/index/'.$usuario);
+			Request::redirect("/@$suario");
 		}
 
 		// Cargamos la vista de información.
@@ -1201,7 +1205,7 @@ class Base_Controller_Perfil extends Controller {
 		unset($information_view);
 
 		// Seteamos el titulo.
-		$this->template->assign('title', 'Perfil - '.$this->usuario->nick.' - Muro');
+		$this->template->assign('title_raw', 'Publicacion en el perfil de '.$this->usuario->get('nick').' en ');
 	}
 
 	/**
@@ -1215,7 +1219,7 @@ class Base_Controller_Perfil extends Controller {
 		if ( ! Usuario::is_login() || Request::method() !== 'POST')
 		{
 			add_flash_message(FLASH_ERROR, 'La petición no es correcta.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Cargamos el usuario.
@@ -1229,7 +1233,7 @@ class Base_Controller_Perfil extends Controller {
 		if ( ! $model_shout->existe() || $model_shout->usuario_id !== $this->usuario->id)
 		{
 			add_flash_message(FLASH_ERROR, 'La publicación que desea comentar no se encuentra disponible.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Obtengo el comentario.
@@ -1240,7 +1244,7 @@ class Base_Controller_Perfil extends Controller {
 		if ( ! isset($comentario_clean{10}) || isset($comentario{600}))
 		{
 			add_flash_message(FLASH_ERROR, 'El comentario debe tener entre 10 y 400 caractéres.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 		else
 		{
@@ -1265,7 +1269,7 @@ class Base_Controller_Perfil extends Controller {
 
 			// Informo resultado.
 			add_flash_message(FLASH_SUCCESS, 'El comentario se ha realizado correctamente.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 	}
 
@@ -1281,7 +1285,7 @@ class Base_Controller_Perfil extends Controller {
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, 'La petición no es correcta.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Cargamos el usuario.
@@ -1295,14 +1299,14 @@ class Base_Controller_Perfil extends Controller {
 		if ( ! $model_shout->existe() || $model_shout->usuario_id !== $this->usuario->id)
 		{
 			add_flash_message(FLASH_ERROR, 'La publicación que desea votar no se encuentra disponible.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Verifico no sea mia.
 		if ($model_shout->usuario_id === Usuario::$usuario_id)
 		{
 			add_flash_message(FLASH_ERROR, 'La publicación que desea votar no se encuentra disponible.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Verifico voto.
@@ -1310,7 +1314,7 @@ class Base_Controller_Perfil extends Controller {
 		if ($model_shout->ya_voto(Usuario::$usuario_id) && $voto)
 		{
 			add_flash_message(FLASH_ERROR, 'La publicación que desea votar no se encuentra disponible.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Realizo la votación.
@@ -1331,7 +1335,7 @@ class Base_Controller_Perfil extends Controller {
 		//TODO: Agregar suceso.
 
 		add_flash_message(FLASH_SUCCESS, 'El voto se ha realizado correctamente.');
-		Request::redirect("/perfil/publicacion/$usuario/$shout");
+		Request::redirect("/@$usuario/publicacion/$shout");
 	}
 
 	/**
@@ -1346,7 +1350,7 @@ class Base_Controller_Perfil extends Controller {
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, 'La petición no es correcta.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Cargamos el usuario.
@@ -1360,14 +1364,14 @@ class Base_Controller_Perfil extends Controller {
 		if ( ! $model_shout->existe() || $model_shout->usuario_id !== $this->usuario->id)
 		{
 			add_flash_message(FLASH_ERROR, 'La publicación que desea agregar/quitar de los favoritos no se encuentra disponible.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Verifico no sea mia.
 		if ($model_shout->usuario_id === Usuario::$usuario_id)
 		{
 			add_flash_message(FLASH_ERROR, 'La publicación que desea agregar/quitar de los favoritos no se encuentra disponible.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Verifico si hay que agregar o quitar.
@@ -1375,7 +1379,7 @@ class Base_Controller_Perfil extends Controller {
 		if ($model_shout->es_favorito(Usuario::$usuario_id) && $agregar)
 		{
 			add_flash_message(FLASH_ERROR, 'La publicación que desea agregar/quitar de los favoritos no se encuentra disponible.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Agrego/Quito de favoritos.
@@ -1395,7 +1399,7 @@ class Base_Controller_Perfil extends Controller {
 
 		// Notifico el resultado.
 		add_flash_message(FLASH_SUCCESS, 'La publicación se ha agregado/quitado de los favoritos correctamente.');
-		Request::redirect("/perfil/publicacion/$usuario/$shout");
+		Request::redirect("/@$usuario/publicacion/$shout");
 	}
 
 	/**
@@ -1409,7 +1413,7 @@ class Base_Controller_Perfil extends Controller {
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, 'La petición no es correcta.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Cargamos el usuario.
@@ -1423,14 +1427,14 @@ class Base_Controller_Perfil extends Controller {
 		if ( ! $model_shout->existe())
 		{
 			add_flash_message(FLASH_ERROR, 'La publicación que desea compartir no se encuentra disponible.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Verifico no lo haya compartido.
 		if ($model_shout->fue_compartido(Usuario::$usuario_id))
 		{
 			add_flash_message(FLASH_ERROR, 'La publicación que desea compartir no se encuentra disponible.');
-			Request::redirect("/perfil/publicacion/$usuario/$shout");
+			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
 		// Lo comparto.
@@ -1444,7 +1448,7 @@ class Base_Controller_Perfil extends Controller {
 
 		// Notifico el resultado.
 		add_flash_message(FLASH_SUCCESS, 'La publicación se ha compartido correctamente.');
-		Request::redirect("/perfil/publicacion/$usuario/$shout");
+		Request::redirect("/@$usuario/publicacion/$shout");
 	}
 
 	/**

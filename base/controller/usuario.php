@@ -57,7 +57,7 @@ class Base_Controller_Usuario extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Inicio de Sessi&oacute;n');
+		$this->template->assign('title', 'Ingreso');
 
 		// Cargamos la vista del usuario.
 		$view_usuario = View::factory('usuario/login');
@@ -75,7 +75,7 @@ class Base_Controller_Usuario extends Controller {
 			// Verificamos estén ambos datos.
 			if ( ! isset($_POST['nick']) || empty($_POST['nick']) || ! isset($_POST['password']) || empty($_POST['password']))
 			{
-				$view_usuario->assign('error', 'Debe introducir el E-Mail o Usuario y la contrase&ntilde;a para poder acceder.');
+				$view_usuario->assign('error', 'Debe introducir el E-Mail o Usuario y la contraseña para poder acceder.');
 				$view_usuario->assign('error_nick', ! (isset($_POST['nick']) && ! empty($_POST['nick'])));
 				$view_usuario->assign('error_password', ! (isset($_POST['password']) && ! empty($_POST['password'])));
 				$view_usuario->assign('nick', isset($_POST['nick']) ? $_POST['nick'] : '');
@@ -94,7 +94,7 @@ class Base_Controller_Usuario extends Controller {
 				switch ($rst)
 				{
 					case -1: // Datos inválidos.
-						$view_usuario->assign('error', 'Los datos introducidos son inv&aacute;lidos.');
+						$view_usuario->assign('error', 'Los datos introducidos son inválidos.');
 						$view_usuario->assign('error_nick', TRUE);
 						$view_usuario->assign('error_password', TRUE);
 						break;
@@ -118,7 +118,7 @@ class Base_Controller_Usuario extends Controller {
 						Request::redirect('/', FALSE, TRUE);
 						break;
 					case Model_Usuario::ESTADO_PENDIENTE:  // Cuenta por activar.
-						$view_usuario->assign('error', 'La cuenta no ha sido validada a&uacute;n. Si no recibiste el correo de activación haz click <a href="/usuario/pedir_activacion/">aqui</a>');
+						$view_usuario->assign('error', 'La cuenta no ha sido validada aún. Si no recibiste el correo de activación haz click <a href="/usuario/pedir_activacion/">aqui</a>');
 						break;
 					case Model_Usuario::ESTADO_SUSPENDIDA: // Cuenta suspendida.
 						// Obtenemos la suspensión.
@@ -176,7 +176,7 @@ class Base_Controller_Usuario extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Registrarse');
+		$this->template->assign('title', 'Registro');
 
 		// Cargamos la vista del usuario.
 		$view_usuario = View::factory('usuario/register');
@@ -258,7 +258,7 @@ class Base_Controller_Usuario extends Controller {
 
 				if ($error)
 				{
-					$view_usuario->assign('error', 'Los datos introducidos no son v&aacute;lidos');
+					$view_usuario->assign('error', 'Los datos introducidos no son válidos');
 				}
 				else
 				{
@@ -511,7 +511,7 @@ class Base_Controller_Usuario extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Recuperar clave.');
+		$this->template->assign('title', 'Recuperar clave');
 
 		// Cargamos la vista del usuario.
 		$view_usuario = View::factory('usuario/recuperar');
@@ -671,6 +671,9 @@ class Base_Controller_Usuario extends Controller {
 
 		// Agregamos el la vista a la plantilla.
 		$this->template->assign('contenido', $view->parse());
+
+		// Título.
+		$this->template->assing('title', 'Restaurar contraseña');
 	}
 
 	/**

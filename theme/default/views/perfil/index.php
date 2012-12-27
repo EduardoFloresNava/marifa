@@ -4,7 +4,7 @@
 <table class="table table-striped table-bordered">
 	<tbody>
 		{if="isset($origen)"}<tr>
-			<th>{@Pa&iacute;s@}</th>
+			<th>{@País@}</th>
 			<td>
 				{$origen}
 			</td>
@@ -113,41 +113,41 @@
 	</thead>
 	<tbody>
 		{if="isset($idioma.idioma_espanol)"}<tr>
-			<th>{@Espa&ntilde;ol@}</th>
+			<th>{@Español@}</th>
 			<td>
 				{if="$idioma.idioma_espanol == ''"}{@Sin Respuesta@}{/if}
 				{if="$idioma.idioma_espanol == 'sin_conocimiento'"}{@Sin conocimiento@}{/if}
-				{if="$idioma.idioma_espanol == 'basico'"}{@B&aacute;sico@}{/if}
+				{if="$idioma.idioma_espanol == 'basico'"}{@Básico@}{/if}
 				{if="$idioma.idioma_espanol == 'intermedio'"}{@Intermedio@}{/if}
 				{if="$idioma.idioma_espanol == 'fluido'"}{@Fluido@}{/if}
 				{if="$idioma.idioma_espanol == 'nativo'"}{@Nativo@}{/if}
 			</td>
 		</tr>{/if}
 		{if="isset($idioma.idioma_ingles)"}<tr>
-			<th>{@Ingl&eacute;s@}</th>
+			<th>{@Inglés@}</th>
 			<td>
 				{if="$idioma.idioma_ingles == 'sin_conocimiento'"}{@Sin conocimiento@}{/if}
-				{if="$idioma.idioma_ingles == 'basico'"}{@B&aacute;sico@}{/if}
+				{if="$idioma.idioma_ingles == 'basico'"}{@Básico@}{/if}
 				{if="$idioma.idioma_ingles == 'intermedio'"}{@Intermedio@}{/if}
 				{if="$idioma.idioma_ingles == 'fluido'"}{@Fluido@}{/if}
 				{if="$idioma.idioma_ingles == 'nativo'"}{@Nativo@}{/if}
 			</td>
 		</tr>{/if}
 		{if="isset($idioma.idioma_portugues)"}<tr>
-			<th>{@Portugu&eacute;s@}</th>
+			<th>{@Portugués@}</th>
 			<td>
 				{if="$idioma.idioma_portugues == 'sin_conocimiento'"}{@Sin conocimiento@}{/if}
-				{if="$idioma.idioma_portugues == 'basico'"}{@B&aacute;sico@}{/if}
+				{if="$idioma.idioma_portugues == 'basico'"}{@Básico@}{/if}
 				{if="$idioma.idioma_portugues == 'intermedio'"}{@Intermedio@}{/if}
 				{if="$idioma.idioma_portugues == 'fluido'"}{@Fluido@}{/if}
 				{if="$idioma.idioma_portugues == 'nativo'"}{@Nativo@}{/if}
 			</td>
 		</tr>{/if}
 		{if="isset($idioma.idioma_frances)"}<tr>
-			<th>{@Franc&eacute;s@}</th>
+			<th>{@Francés@}</th>
 			<td>
 				{if="$idioma.idioma_frances == 'sin_conocimiento'"}{@Sin conocimiento@}{/if}
-				{if="$idioma.idioma_frances == 'basico'"}{@B&aacute;sico@}{/if}
+				{if="$idioma.idioma_frances == 'basico'"}{@Básico@}{/if}
 				{if="$idioma.idioma_frances == 'intermedio'"}{@Intermedio@}{/if}
 				{if="$idioma.idioma_frances == 'fluido'"}{@Fluido@}{/if}
 				{if="$idioma.idioma_frances == 'nativo'"}{@Nativo@}{/if}
@@ -157,17 +157,17 @@
 			<th>{@Italiano@}</th>
 			<td>
 				{if="$idioma.idioma_italiano == 'sin_conocimiento'"}{@Sin conocimiento@}{/if}
-				{if="$idioma.idioma_italiano == 'basico'"}{@B&aacute;sico@}{/if}
+				{if="$idioma.idioma_italiano == 'basico'"}{@Básico@}{/if}
 				{if="$idioma.idioma_italiano == 'intermedio'"}{@Intermedio@}{/if}
 				{if="$idioma.idioma_italiano == 'fluido'"}{@Fluido@}{/if}
 				{if="$idioma.idioma_italiano == 'nativo'"}{@Nativo@}{/if}
 			</td>
 		</tr>{/if}
 		{if="isset($idioma.idioma_aleman)"}<tr>
-			<th>{@Alem&aacute;n@}</th>
+			<th>{@Alemán@}</th>
 			<td>
 				{if="$idioma.idioma_aleman == 'sin_conocimiento'"}{@Sin conocimiento@}{/if}
-				{if="$idioma.idioma_aleman == 'basico'"}{@B&aacute;sico@}{/if}
+				{if="$idioma.idioma_aleman == 'basico'"}{@Básico@}{/if}
 				{if="$idioma.idioma_aleman == 'intermedio'"}{@Intermedio@}{/if}
 				{if="$idioma.idioma_aleman == 'fluido'"}{@Fluido@}{/if}
 				{if="$idioma.idioma_aleman == 'nativo'"}{@Nativo@}{/if}
@@ -177,7 +177,7 @@
 			<th>{@Otro@}</th>
 			<td>
 				{if="$idioma.idioma_otro == 'sin_conocimiento'"}{@Sin conocimiento@}{/if}
-				{if="$idioma.idioma_otro == 'basico'"}{@B&aacute;sico@}{/if}
+				{if="$idioma.idioma_otro == 'basico'"}{@Básico@}{/if}
 				{if="$idioma.idioma_otro == 'intermedio'"}{@Intermedio@}{/if}
 				{if="$idioma.idioma_otro == 'fluido'"}{@Fluido@}{/if}
 				{if="$idioma.idioma_otro == 'nativo'"}{@Nativo@}{/if}
@@ -194,7 +194,7 @@
 	</thead>
 	<tbody>
 		{if="isset($datos_profesionales.profesion)"}<tr>
-			<th>{@Profesi&oacute;n@}</th>
+			<th>{@Profesión@}</th>
 			<td>
 				{$datos_profesionales.profesion}
 			</td>
@@ -206,69 +206,69 @@
 			</td>
 		</tr>{/if}
 		{if="isset($datos_profesionales.sector)"}<tr>
-			<th>{@Profesi&oacute;n@}</th>
+			<th>{@Profesión@}</th>
 			<td>
 				{if="$datos_profesionales.sector == 'abastecimiento'"}{@Abastecimiento@}{/if}
-				{if="$datos_profesionales.sector == 'administracion'"}{@Administraci&oacute;n@}{/if}
+				{if="$datos_profesionales.sector == 'administracion'"}{@Administración@}{/if}
 				{if="$datos_profesionales.sector == 'apoderado_aduanal'"}{@Apoderado Aduanal@}{/if}
-				{if="$datos_profesionales.sector == 'asesoria_en_comercio_exterior'"}{@Asesor&iacute;a en Comercio Exterior@}{/if}
-				{if="$datos_profesionales.sector == 'asesoria_legal_internacional'"}{@Asesor&iacute;a Legal Internacional@}{/if}
-				{if="$datos_profesionales.sector == 'asistente_de_trafico'"}{@Asistente de Tr&aacute;fico@}{/if}
-				{if="$datos_profesionales.sector == 'auditoria'"}{@Auditor&iacute;a@}{/if}
+				{if="$datos_profesionales.sector == 'asesoria_en_comercio_exterior'"}{@Asesoría en Comercio Exterior@}{/if}
+				{if="$datos_profesionales.sector == 'asesoria_legal_internacional'"}{@Asesoría Legal Internacional@}{/if}
+				{if="$datos_profesionales.sector == 'asistente_de_trafico'"}{@Asistente de Tráfico@}{/if}
+				{if="$datos_profesionales.sector == 'auditoria'"}{@Auditoría@}{/if}
 				{if="$datos_profesionales.sector == 'calidad'"}{@Calidad@}{/if}
 				{if="$datos_profesionales.sector == 'call_center'"}{@Call Center@}{/if}
-				{if="$datos_profesionales.sector == 'capacitacion_comercio_exterior'"}{@Capacitaci&oacute;n Comercio Exterior@}{/if}
+				{if="$datos_profesionales.sector == 'capacitacion_comercio_exterior'"}{@Capacitación Comercio Exterior@}{/if}
 				{if="$datos_profesionales.sector == 'comercial'"}{@Comercial@}{/if}
 				{if="$datos_profesionales.sector == 'comercio_exterior'"}{@Comercio Exterior@}{/if}
 				{if="$datos_profesionales.sector == 'compras'"}{@Compras@}{/if}
-				{if="$datos_profesionales.sector == 'compras_internacionalesimportacion'"}{@Compras Internacionales/Importaci&oacute;n@}{/if}
-				{if="$datos_profesionales.sector == 'comunicacion_social'"}{@Comunicaci&oacute;n Social@}{/if}
+				{if="$datos_profesionales.sector == 'compras_internacionalesimportacion'"}{@Compras Internacionales/Importación@}{/if}
+				{if="$datos_profesionales.sector == 'comunicacion_social'"}{@Comunicación Social@}{/if}
 				{if="$datos_profesionales.sector == 'comunicaciones_externas'"}{@Comunicaciones Externas@}{/if}
 				{if="$datos_profesionales.sector == 'comunicaciones_internas'"}{@Comunicaciones Internas@}{/if}
-				{if="$datos_profesionales.sector == 'consultoria'"}{@Consultor&iacute;a@}{/if}
-				{if="$datos_profesionales.sector == 'consultorias_comercio_exterior'"}{@Consultor&iacute;as Comercio Exterior@}{/if}
+				{if="$datos_profesionales.sector == 'consultoria'"}{@Consultoría@}{/if}
+				{if="$datos_profesionales.sector == 'consultorias_comercio_exterior'"}{@Consultorías Comercio Exterior@}{/if}
 				{if="$datos_profesionales.sector == 'contabilidad'"}{@Contabilidad@}{/if}
-				{if="$datos_profesionales.sector == 'control_de_gestion'"}{@Control de Gesti&oacute;n@}{/if}
+				{if="$datos_profesionales.sector == 'control_de_gestion'"}{@Control de Gestión@}{/if}
 				{if="$datos_profesionales.sector == 'creatividad'"}{@Creatividad@}{/if}
-				{if="$datos_profesionales.sector == 'diseno'"}{@Dise&ntilde;o@}{/if}
-				{if="$datos_profesionales.sector == 'distribucion'"}{@Distribuci&oacute;n@}{/if}
+				{if="$datos_profesionales.sector == 'diseno'"}{@Diseño@}{/if}
+				{if="$datos_profesionales.sector == 'distribucion'"}{@Distribución@}{/if}
 				{if="$datos_profesionales.sector == 'ecommerce'"}{@E-commerce@}{/if}
-				{if="$datos_profesionales.sector == 'educacion'"}{@Educaci&oacute;n@}{/if}
+				{if="$datos_profesionales.sector == 'educacion'"}{@Educación@}{/if}
 				{if="$datos_profesionales.sector == 'finanzas'"}{@Finanzas@}{/if}
 				{if="$datos_profesionales.sector == 'finanzas_internacionales'"}{@Finanzas Internacionales@}{/if}
-				{if="$datos_profesionales.sector == 'gerencia_direccion_general'"}{@Gerencia / Direcci&oacute;n General@}{/if}
+				{if="$datos_profesionales.sector == 'gerencia_direccion_general'"}{@Gerencia / Dirección General@}{/if}
 				{if="$datos_profesionales.sector == 'impuestos'"}{@Impuestos@}{/if}
-				{if="$datos_profesionales.sector == 'ingenieria'"}{@Ingenier&iacute;a@}{/if}
+				{if="$datos_profesionales.sector == 'ingenieria'"}{@Ingeniería@}{/if}
 				{if="$datos_profesionales.sector == 'internet'"}{@Internet@}{/if}
-				{if="$datos_profesionales.sector == 'investigacion_y_desarrollo'"}{@Investigaci&oacute;n y Desarrollo@}{/if}
-				{if="$datos_profesionales.sector == 'jovenes_profesionales'"}{@J&oacute;venes Profesionales@}{/if}
+				{if="$datos_profesionales.sector == 'investigacion_y_desarrollo'"}{@Investigación y Desarrollo@}{/if}
+				{if="$datos_profesionales.sector == 'jovenes_profesionales'"}{@Jóvenes Profesionales@}{/if}
 				{if="$datos_profesionales.sector == 'legal'"}{@Legal@}{/if}
-				{if="$datos_profesionales.sector == 'logistica'"}{@Log&iacute;stica@}{/if}
+				{if="$datos_profesionales.sector == 'logistica'"}{@Logística@}{/if}
 				{if="$datos_profesionales.sector == 'mantenimiento'"}{@Mantenimiento@}{/if}
 				{if="$datos_profesionales.sector == 'marketing'"}{@Marketing@}{/if}
 				{if="$datos_profesionales.sector == 'medio_ambiente'"}{@Medio Ambiente@}{/if}
 				{if="$datos_profesionales.sector == 'mercadotecnia_internacional'"}{@Mercadotecnia Internacional@}{/if}
 				{if="$datos_profesionales.sector == 'multimedia'"}{@Multimedia@}{/if}
 				{if="$datos_profesionales.sector == 'otra'"}{@Otra@}{/if}
-				{if="$datos_profesionales.sector == 'pasantias'"}{@Pasant&iacute;as@}{/if}
+				{if="$datos_profesionales.sector == 'pasantias'"}{@Pasantías@}{/if}
 				{if="$datos_profesionales.sector == 'periodismo'"}{@Periodismo@}{/if}
 				{if="$datos_profesionales.sector == 'planeamiento'"}{@Planeamiento@}{/if}
-				{if="$datos_profesionales.sector == 'produccion'"}{@Producci&oacute;n@}{/if}
-				{if="$datos_profesionales.sector == 'produccion_e_ingenieria'"}{@Producci&oacute;n e Ingenier&iacute;a@}{/if}
+				{if="$datos_profesionales.sector == 'produccion'"}{@Producción@}{/if}
+				{if="$datos_profesionales.sector == 'produccion_e_ingenieria'"}{@Producción e Ingeniería@}{/if}
 				{if="$datos_profesionales.sector == 'recursos_humanos'"}{@Recursos Humanos@}{/if}
-				{if="$datos_profesionales.sector == 'relaciones_institucionales_publicas'"}{@Relaciones Institucionales / P&uacute;blicas@}{/if}
+				{if="$datos_profesionales.sector == 'relaciones_institucionales_publicas'"}{@Relaciones Institucionales / Públicas@}{/if}
 				{if="$datos_profesionales.sector == 'salud'"}{@Salud@}{/if}
 				{if="$datos_profesionales.sector == 'seguridad_industrial'"}{@Seguridad Industrial@}{/if}
 				{if="$datos_profesionales.sector == 'servicios'"}{@Servicios@}{/if}
-				{if="$datos_profesionales.sector == 'soporte_tecnico'"}{@Soporte T&eacute;cnico@}{/if}
-				{if="$datos_profesionales.sector == 'tecnologia'"}{@Tecnolog&iacute;a@}{/if}
-				{if="$datos_profesionales.sector == 'tecnologias_de_la_informacion'"}{@Tecnolog&iacute;as de la Informaci&oacute;n@}{/if}
+				{if="$datos_profesionales.sector == 'soporte_tecnico'"}{@Soporte Técnico@}{/if}
+				{if="$datos_profesionales.sector == 'tecnologia'"}{@Tecnología@}{/if}
+				{if="$datos_profesionales.sector == 'tecnologias_de_la_informacion'"}{@Tecnologías de la Información@}{/if}
 				{if="$datos_profesionales.sector == 'telecomunicaciones'"}{@Telecomunicaciones@}{/if}
 				{if="$datos_profesionales.sector == 'telemarketing'"}{@Telemarketing@}{/if}
-				{if="$datos_profesionales.sector == 'traduccion'"}{@Traducci&oacute;n@}{/if}
+				{if="$datos_profesionales.sector == 'traduccion'"}{@Traducción@}{/if}
 				{if="$datos_profesionales.sector == 'transporte'"}{@Transporte@}{/if}
 				{if="$datos_profesionales.sector == 'ventas'"}{@Ventas@}{/if}
-				{if="$datos_profesionales.sector == 'ventas_internacionalesexportacion'"}{@Ventas Internacionales/Exportaci&oacute;n@}{/if}
+				{if="$datos_profesionales.sector == 'ventas_internacionalesexportacion'"}{@Ventas Internacionales/Exportación@}{/if}
 			</td>
 		</tr>{/if}
 		{if="isset($datos_profesionales.nivel_ingresos)"}<tr>
@@ -298,7 +298,7 @@
 <table class="table table-striped table-bordered">
 	<thead>
 		<tr>
-			<th colspan="2">{@&iquest;C&oacute;mo es?@}</th>
+			<th colspan="2">{@¿Cómo es?@}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -318,8 +318,8 @@
 			<th>{@Su color de pelo es@}</th>
 			<td>
 				{if="$como_es.color_pelo == 'negro'"}{@Negro@}{/if}
-				{if="$como_es.color_pelo == 'castano_oscuro'"}{@Casta&ntilde;o oscuro@}{/if}
-				{if="$como_es.color_pelo == 'castano_claro'"}{@Casta&ntilde;o claro@}{/if}
+				{if="$como_es.color_pelo == 'castano_oscuro'"}{@Castaño oscuro@}{/if}
+				{if="$como_es.color_pelo == 'castano_claro'"}{@Castaño claro@}{/if}
 				{if="$como_es.color_pelo == 'rubio'"}{@Rubio@}{/if}
 				{if="$como_es.color_pelo == 'pelirrojo'"}{@Pelirrojo@}{/if}
 				{if="$como_es.color_pelo == 'gris'"}{@Gris@}{/if}
@@ -328,7 +328,7 @@
 				{if="$como_es.color_pelo == 'morado'"}{@Morado@}{/if}
 				{if="$como_es.color_pelo == 'azul'"}{@Azul@}{/if}
 				{if="$como_es.color_pelo == 'canoso'"}{@Canoso@}{/if}
-				{if="$como_es.color_pelo == 'tenido'"}{@Te&ntilde;ido@}{/if}
+				{if="$como_es.color_pelo == 'tenido'"}{@Teñido@}{/if}
 				{if="$como_es.color_pelo == 'rapado'"}{@Rapado@}{/if}
 				{if="$como_es.color_pelo == 'calvo'"}{@Calvo@}{/if}
 			</td>
@@ -344,12 +344,12 @@
 			</td>
 		</tr>{/if}
 		{if="isset($como_es.complexion)"}<tr>
-			<th>{@Su f&iacute;sico es@}</th>
+			<th>{@Su físico es@}</th>
 			<td>
 				{if="$como_es.complexion == 'delgado'"}{@Delgado/a@}{/if}
-				{if="$como_es.complexion == 'atletico'"}{@Atl&eacute;tico@}{/if}
+				{if="$como_es.complexion == 'atletico'"}{@Atlético@}{/if}
 				{if="$como_es.complexion == 'normal'"}{@Normal@}{/if}
-				{if="$como_es.complexion == 'kilos_mas'"}{@Algunos kilos de m&aacute;s@}{/if}
+				{if="$como_es.complexion == 'kilos_mas'"}{@Algunos kilos de más@}{/if}
 				{if="$como_es.complexion == 'corpulento'"}{@Corpulento/a@}{/if}
 			</td>
 		</tr>{/if}
@@ -371,7 +371,7 @@
 <table class="table table-striped table-bordered">
 	<thead>
 		<tr>
-			<th colspan="2">{@H&aacute;bitos personales@}</th>
+			<th colspan="2">{@Hábitos personales@}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -380,7 +380,7 @@
 			<td>
 				{if="$habitos_personales.mi_dieta == 'vegetariana'"}{@Vegetariana@}{/if}
 				{if="$habitos_personales.mi_dieta == 'lacto_vegetariana'"}{@Lacto Vegetariana@}{/if}
-				{if="$habitos_personales.mi_dieta == 'organica'"}{@Org&aacute;nica@}{/if}
+				{if="$habitos_personales.mi_dieta == 'organica'"}{@Orgánica@}{/if}
 				{if="$habitos_personales.mi_dieta == 'de_todo'"}{@De todo@}{/if}
 				{if="$habitos_personales.mi_dieta == 'comida_basura'"}{@Comida basura@}{/if}
 			</td>
@@ -434,7 +434,7 @@
 			</td>
 		</tr>{/if}
 		{if="isset($intereses_y_preferencias.musica_favorita)"}<tr>
-			<th>{@M&uacute;sica favorita@}</th>
+			<th>{@Música favorita@}</th>
 			<td>
 				{$intereses_y_preferencias.musica_favorita}
 			</td>
@@ -452,7 +452,7 @@
 			</td>
 		</tr>{/if}
 		{if="isset($intereses_y_preferencias.peliculas_favoritas)"}<tr>
-			<th>{@Pel&iacute;culas favoritas@}</th>
+			<th>{@Películas favoritas@}</th>
 			<td>
 				{$intereses_y_preferencias.peliculas_favoritas}
 			</td>
@@ -464,7 +464,7 @@
 			</td>
 		</tr>{/if}
 		{if="isset($intereses_y_preferencias.mis_heroes)"}<tr>
-			<th>{@Mis h&eacute;roes son@}</th>
+			<th>{@Mis héroes son@}</th>
 			<td>
 				{$intereses_y_preferencias.mis_heroes}
 			</td>
@@ -472,5 +472,5 @@
 	</tbody>
 </table>{/if}
 {else}
-<div class="alert"><strong>{$usuario.nick}</strong> {@a&uacute;n no ha completado su perfil. Cuando lo haga podr&aacute;s saber m&aacute;s sobre &eacute;l.@}</div>
+<div class="alert"><strong>{$usuario.nick}</strong> {@aún no ha completado su perfil. Cuando lo haga podrás saber más sobre él.@}</div>
 {/if}

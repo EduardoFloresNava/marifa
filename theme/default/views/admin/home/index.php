@@ -1,5 +1,5 @@
 <div class="header">
-	<h2>Bienvenido al centro de administraci&oacute;n de Marifa.</h2>
+	<h2>Bienvenido al centro de administración de Marifa.</h2>
 </div>
 <div class="row-fluid statistics">
 	<div class="span4">
@@ -9,7 +9,7 @@
 			{loop="$contenido"}
 			<li>
 				{if="$value.tipo == 'post'"}
-				<a href="{#SITE_URL#}/post/index/{$value.id}/">
+				<a href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">
 					<i class="icon icon-book"></i>
 					{function="Texto::limit_chars($value.titulo, 35, '...', TRUE)"}
 						{if="$value.estado == 0"}
@@ -31,7 +31,7 @@
 						{/if}
 				</a>
 				{else}
-				<a href="{#SITE_URL#}/foto/ver/{$value.id}/">
+				<a href="{#SITE_URL#}/foto/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">
 					<i class="icon icon-picture"></i>
 					{function="Texto::limit_chars($value.titulo, 35, '...', TRUE)"}
 						{if="$value.estado == 0"}
@@ -61,7 +61,7 @@
 		<ul>
 			{loop="$usuarios"}
 			<li>
-				<a href="{#SITE_URL#}/perfil/index/{$value.nick}">
+				<a href="{#SITE_URL#}/@{$value.nick}">
 					{$value.nick}
 					<span class="pull-right label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span>
 				</a>
@@ -70,7 +70,7 @@
 		</ul>
 		{else}
 		<div class="alert alert-info">
-			A&uacute;n no hay usuarios.
+			Aún no hay usuarios.
 		</div>
 		{/if}
 		<!--Ultimos usuarios.-->
@@ -79,14 +79,13 @@
 		<h3 class="title">Actualizaciones <span class="pull-right"><small>v{#VERSION}</small></span></h3>
 		{if="isset($version)"}
 		<div class="version-info">
-			Ultima versi&oacute;n disponible:
+			Ultima versión disponible:
 			<div class="pull-right">
 				{if="$version_new"}
 				<div class="btn-group" style="display: inline-block;">
 					<a href="{$download.zip}" class="btn btn-mini">ZIP</a>
 					<a href="{$download.tar}" class="btn btn-mini">TAR.GZ</a>
-				</div>
-				&nbsp;<span class="label label-info pull-right">{$version}</span>
+				</div> <span class="label label-info pull-right">{$version}</span>
 				{else}
 				<span class="label label-info">{$version}</span>
 				{/if}

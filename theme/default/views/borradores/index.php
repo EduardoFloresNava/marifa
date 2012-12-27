@@ -11,7 +11,7 @@
 	<tbody>
 	{loop="$borradores"}
 		<tr>
-			<td><a href="{#SITE_URL#}/post/index/{$value.id}" class="title"><img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" /> {$value.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html" class="title"><img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" /> {$value.titulo}</a></td>
 			<td>{if="$value.estado == 1"}<span class="badge badge-info">BORRADOR</span>{else}<span class="badge badge-info">PENDIENTE</span>{/if}</td>
 			<td>{$value.fecha->fuzzy()}</td>
 		</tr>
@@ -19,6 +19,6 @@
 	</tbody>
 </table>
 {else}
-<div class="alert">No tienes ning&uacute;n borrador</div>
+<div class="alert">No tienes ningún borrador</div>
 {/if}
 {$paginacion}

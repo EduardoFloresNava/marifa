@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario/rangos">Rangos</a> <span class="divider">/</span></li>
     <li class="active">Usuarios con el rango <span style="color: #{function="sprintf('%06s', dechex($rango.color))"};">{$rango.nombre}</span></li>
@@ -19,14 +19,14 @@
 	<tbody>
 		{loop="$usuarios"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
 			<td>{$value.email}</td>
 			<td>{$value.lastactive->fuzzy()}</td>
 			<td><span class="label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span></td>
 		</tr>
 		{else}
 		<tr>
-			<td class="alert" colspan="4">&iexcl;No hay usuarios!</td>
+			<td class="alert" colspan="4">!No hay usuarios!</td>
 		</tr>
 		{/loop}
 	</tbody>

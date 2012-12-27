@@ -41,7 +41,7 @@ else
 /**
  * Defino versión de marifa.
  */
-define('VERSION', '0.2RC3');
+define('VERSION', '0.2RC4');
 
 // Suprimimos advertencias de DateTime. Si lo deseas puedes poner una TZ estatica.
 date_default_timezone_set('UTC');
@@ -129,7 +129,7 @@ if (PRODUCTION)
 			}
 		}
 
-		die('Debes eliminar el instalador para poder acceder al sitio. Para intentar de forma autom&aacute;tica has click <a href="/?finish=1">aqu&iacute;</a>.');
+		die('Debes eliminar el instalador para poder acceder al sitio. Para intentar de forma automática has click <a href="/?finish=1">aquí</a>.');
 	}
 }
 
@@ -156,6 +156,10 @@ if (Mantenimiento::is_locked())
 {
 	if (Mantenimiento::is_locked_for(get_ip_addr()))
 	{
+		// Cabeceras para SEO.
+		header("HTTP/1.1 503 Service Unavailable");
+		header("Retry-After: 3600");
+
 		// Cargo la vista.
 		$view = View::factory('mantenimiento');
 		$view->show();

@@ -1,5 +1,5 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
 	<li><a href="{#SITE_URL#}/admin/usuario/">Usuarios</a> <span class="divider">/</span></li>
     <li><a href="{#SITE_URL#}/admin/usuario/medallas">Medallas</a> <span class="divider">/</span></li>
     <li class="active">Editar</li>
@@ -18,7 +18,7 @@
 	</div>
 
 	<div class="control-group{if="$error_descripcion"} error{/if}">
-		<label class="control-label" for="descripcion">Descripci&oacute;n</label>
+		<label class="control-label" for="descripcion">Descripción</label>
 		<div class="controls">
 			<textarea name="descripcion" id="descripcion" class="input-xxlarge">{$descripcion}</textarea>
 			<span class="help-block">{if="$error_descripcion"}{$error_descripcion}{/if}</span>
@@ -73,7 +73,7 @@
 					<option value="24"{if="$condicion==24"} selected="selected"{/if}>Denuncias</option>
 				</optgroup>
 			</select>
-			<span class="help-block">{if="$error_condicion"}{$error_condicion}{else}Condici&oacute;n que debe cumplir para ganar la medalla.{/if}</span>
+			<span class="help-block">{if="$error_condicion"}{$error_condicion}{else}Condición que debe cumplir para ganar la medalla.{/if}</span>
 		</div>
 	</div>
 
@@ -81,7 +81,7 @@
 		<label class="control-label" for="cantidad">Cantidad</label>
 		<div class="controls">
 			<input type="text" value="{$cantidad}" name="cantidad" id="cantidad" class="span10" />
-			<span class="help-block">{if="$error_cantidad"}{$error_cantidad}{else}Cantidad de la condici&oacute;n necesaria para ganar la medalla.{/if}</span>
+			<span class="help-block">{if="$error_cantidad"}{$error_cantidad}{else}Cantidad de la condición necesaria para ganar la medalla.{/if}</span>
 		</div>
 	</div>
 

@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administraci&oacute;n</a> <span class="divider">/</span></li>
-    <li><a href="{#SITE_URL#}/admin/configuracion/">Configuraci&oacute;n</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/configuracion/">Configuración</a> <span class="divider">/</span></li>
     <li class="active">Modo Mantenimiento</li>
 </ul>
 <div class="header clearfix">
@@ -10,7 +10,7 @@
 		<a href="{#SITE_URL#}/admin/configuracion/habilitar_mantenimiento/0" class="btn btn-small btn-danger"><i class="icon-white icon-off"></i> Deshabilitar</a>{/if}
 	</div>
 </div>
-{if="$is_locked_for_me"}<div class="alert alert-danger"><b>&iexcl;Alerta!</b> Si el sitio entra en modo mantenimiento no podr&aacute;s acceder a &eacute;l. Recomendamos agregar tu IP: <code>{function="get_ip_addr()"}</code></div>{/if}
+{if="$is_locked_for_me"}<div class="alert alert-danger"><b>!Alerta!</b> Si el sitio entra en modo mantenimiento no podrás acceder a él. Recomendamos agregar tu IP: <code>{function="get_ip_addr()"}</code></div>{/if}
 <form method="POST" class="form-horizontal" action="">
 
 	<div class="control-group{if="$error_ip"} error{elseif="$success_ip"} success{/if}">

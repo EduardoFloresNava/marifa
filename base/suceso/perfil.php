@@ -97,8 +97,12 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
 
-		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array());
+		return array('post' => $post, 'usuario' => $post['usuario']);
 	}
 
 	/**
@@ -110,11 +114,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
 
 		// Cargo editor.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'editor' => $model_usuario->as_array());
+		return array('post' => $post, 'usuario' => $post['usuario'], 'editor' => $model_usuario->as_array());
 	}
 
 	/**
@@ -126,11 +134,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
 
 		// Cargo datos de quien lo agregó como favorito.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'favorito' => $model_usuario->as_array());
+		return array('post' => $post, 'usuario' => $post['usuario'], 'favorito' => $model_usuario->as_array());
 	}
 
 	/**
@@ -142,11 +154,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
 
 		// Cargo datos de quien lo sigue.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'seguidor' => $model_usuario->as_array());
+		return array('post' => $post, 'usuario' => $post['usuario'], 'seguidor' => $model_usuario->as_array());
 	}
 
 	/**
@@ -158,11 +174,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
 
 		// Cargo datos de quien da los puntos.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'puntua' => $model_usuario->as_array(), 'puntos' => (int) $suceso['objeto_id2']);
+		return array('post' => $post, 'usuario' => $post['usuario'], 'puntua' => $model_usuario->as_array(), 'puntos' => (int) $suceso['objeto_id2']);
 	}
 
 	/**
@@ -174,11 +194,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
 
 		// Cargo datos de quien fija el post.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'fija' => $model_usuario->as_array(), 'tipo' => (bool) $suceso['objeto_id2']);
+		return array('post' => $post, 'usuario' => $post['usuario'], 'fija' => $model_usuario->as_array(), 'tipo' => (bool) $suceso['objeto_id2']);
 	}
 
 	/**
@@ -190,11 +214,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
 
 		// Cargo datos de quien patrocina el post.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'patrocina' => $model_usuario->as_array(), 'tipo' => (bool) $suceso['objeto_id2']);
+		return array('post' => $post, 'usuario' => $post['usuario'], 'patrocina' => $model_usuario->as_array(), 'tipo' => (bool) $suceso['objeto_id2']);
 	}
 
 	/**
@@ -206,11 +234,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo datos del post.
 		$model_post = new Model_Post( (int) $suceso['objeto_id']);
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
 
 		// Cargo datos de quien publica el post.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('post' => $model_post->as_array(), 'usuario' => $model_post->usuario()->as_array(), 'publica' => $model_usuario->as_array());
+		return array('post' => $post, 'usuario' => $post['usuario'], 'publica' => $model_usuario->as_array());
 	}
 
 	/**
@@ -225,11 +257,15 @@ class Base_Suceso_Perfil extends Suceso {
 
 		// Post donde se crea el comentario.
 		$model_post = $model_comentario->post();
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
 
 		// Usuario que crea el post.
 		$model_usuario = $model_comentario->usuario();
 
-		return array('comentario' => $model_comentario->as_array(), 'post' => $model_post->as_array(), 'post_usuario' => $model_post->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+		return array('comentario' => $model_comentario->as_array(), 'post' => $post, 'post_usuario' => $post['usuario'], 'usuario' => $model_usuario->as_array());
 	}
 
 	/**
@@ -242,13 +278,20 @@ class Base_Suceso_Perfil extends Suceso {
 		// Cargo el comentario.
 		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
 
+		// Cargo el post.
+		$model_post = $model_comentario->post();
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
+
 		// Cargo el usuario que vota.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
 		// Cargo el voto.
 		$voto = (bool) $suceso['objeto_id2'];
 
-		return array('post' => $model_comentario->post()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
+		return array('post' => $post, 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
 	}
 
 	/**
@@ -261,10 +304,17 @@ class Base_Suceso_Perfil extends Suceso {
 		// Cargo el comentario.
 		$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
 
+		// Cargo el post.
+		$model_post = $model_comentario->post();
+		$post = $model_post->as_array();
+		$post['usuario'] = $model_post->usuario()->as_array();
+		$post['categoria'] = $model_post->categoria()->as_array();
+		unset($model_post);
+
 		// Cargo el usuario que edita.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('post' => $model_comentario->post()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+		return array('post' => $post, 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
 	}
 
 	/**
@@ -276,8 +326,12 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+		$foto = $model_foto->as_array();
+		$foto['usuario'] = $model_foto->usuario()->as_array();
+		$foto['categoria'] = $model_foto->categoria()->as_array();
+		unset($model_foto);
 
-		return array('foto' => $model_foto->as_array(), 'usuario' => $model_foto->usuario()->as_array());
+		return array('foto' => $foto, 'usuario' => $foto['usuario']);
 	}
 
 	/**
@@ -289,6 +343,10 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+		$foto = $model_foto->as_array();
+		$foto['usuario'] = $model_foto->usuario()->as_array();
+		$foto['categoria'] = $model_foto->categoria()->as_array();
+		unset($model_foto);
 
 		// Cargo quien vota.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
@@ -296,7 +354,7 @@ class Base_Suceso_Perfil extends Suceso {
 		// Tipo de voto.
 		$voto = (bool) $suceso['objeto_id2'];
 
-		return array('foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
+		return array('foto' => $foto, 'foto_usuario' => $foto['usuario'], 'usuario' => $model_usuario->as_array(), 'voto' => $voto);
 	}
 
 	/**
@@ -308,11 +366,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+		$foto = $model_foto->as_array();
+		$foto['usuario'] = $model_foto->usuario()->as_array();
+		$foto['categoria'] = $model_foto->categoria()->as_array();
+		unset($model_foto);
 
 		// Cargo quien agrega a favoritos.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+		return array('foto' => $foto, 'foto_usuario' => $foto['usuario'], 'usuario' => $model_usuario->as_array());
 	}
 
 	/**
@@ -324,11 +386,15 @@ class Base_Suceso_Perfil extends Suceso {
 	{
 		// Cargo la foto.
 		$model_foto = new Model_Foto( (int) $suceso['objeto_id']);
+		$foto = $model_foto->as_array();
+		$foto['usuario'] = $model_foto->usuario()->as_array();
+		$foto['categoria'] = $model_foto->categoria()->as_array();
+		unset($model_foto);
 
 		// Cargo quien edita la foto.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('foto' => $model_foto->as_array(), 'usuario' => $model_foto->usuario()->as_array(), 'editor' => $model_usuario->as_array());
+		return array('foto' => $foto, 'usuario' => $foto['usuario'], 'editor' => $model_usuario->as_array());
 	}
 
 	/**
@@ -343,11 +409,15 @@ class Base_Suceso_Perfil extends Suceso {
 
 		// Foto en donde se crea el comentario.
 		$model_foto = $model_comentario->foto();
+		$foto = $model_foto->as_array();
+		$foto['usuario'] = $model_foto->usuario()->as_array();
+		$foto['categoria'] = $model_foto->categoria()->as_array();
+		unset($model_foto);
 
 		// Usuario que crea el foto.
 		$model_usuario = $model_comentario->usuario();
 
-		return array('comentario' => $model_comentario->as_array(), 'foto' => $model_foto->as_array(), 'foto_usuario' => $model_foto->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+		return array('comentario' => $model_comentario->as_array(), 'foto' => $foto, 'foto_usuario' => $foto['usuario'], 'usuario' => $model_usuario->as_array());
 	}
 
 	/**
@@ -363,7 +433,11 @@ class Base_Suceso_Perfil extends Suceso {
 		// Cargo el usuario que edita.
 		$model_usuario = new Model_Usuario( (int) $suceso['objeto_id1']);
 
-		return array('foto' => $model_comentario->foto()->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
+		$foto = $model_comentario->foto()->as_array();
+		$foto['usuario'] = $model_comentario->foto()->usuario()->as_array();
+		$foto['categoria'] = $model_comentario->foto()->categoria()->as_array();
+
+		return array('foto' => $foto, 'comentario_usuario' => $model_comentario->usuario()->as_array(), 'usuario' => $model_usuario->as_array());
 	}
 
 	/**
@@ -484,13 +558,25 @@ class Base_Suceso_Perfil extends Suceso {
 		if ($suceso['objeto_id2'] == 1)
 		{
 			$model_comentario = new Model_Post_Comentario( (int) $suceso['objeto_id']);
+
+			$model_post = $model_comentario->post();
+			$post = $model_post->as_array();
+			$post['usuario'] = $model_post->usuario()->as_array();
+			$post['categoria'] = $model_post->categoria()->as_array();
+			unset($model_post);
+
+			return array('post' => $post, 'usuario' => $model_usuario->as_array(), 'comentario' => $model_comentario->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array());
 		}
 		else
 		{
 			$model_comentario = new Model_Foto_Comentario( (int) $suceso['objeto_id']);
-		}
 
-		return array('usuario' => $model_usuario->as_array(), 'comentario' => $model_comentario->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array());
+			$foto = $model_comentario->foto()->as_array();
+			$foto['usuario'] = $model_comentario->foto()->usuario()->as_array();
+			$foto['categoria'] = $model_comentario->foto()->categoria()->as_array();
+
+			return array('foto' => $foto, 'usuario' => $model_usuario->as_array(), 'comentario' => $model_comentario->as_array(), 'comentario_usuario' => $model_comentario->usuario()->as_array());
+		}
 	}
 
 	/**

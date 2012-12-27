@@ -59,7 +59,7 @@ class Base_Fechahora extends DateTime {
 
 		if ($diff->y != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->y, __('a&ntilde;o', FALSE)));
+			return sprintf($key, $this->pluralize($diff->y, __('año', FALSE)));
 		}
 
 		if ($diff->m != 0)
@@ -69,7 +69,7 @@ class Base_Fechahora extends DateTime {
 
 		if ($diff->d != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->d, __('dia', FALSE)));
+			return sprintf($key, $this->pluralize($diff->d, __('día', FALSE)));
 		}
 
 		if ($diff->h != 0)
@@ -84,7 +84,7 @@ class Base_Fechahora extends DateTime {
 
 		return sprintf($key, __('instantes', FALSE));
 	}
-	
+
 	/**
 	 * Fallback de getTimestamp para PHP<5.3
 	 */

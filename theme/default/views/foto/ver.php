@@ -1,7 +1,7 @@
 <div class="row">
 	<div class="span2 usuario-perfil-lateral">
 		<h3 class="title">{@Autor@}:</h3>
-			<a href="{#SITE_URL#}/perfil/index/{$usuario.nick}" class="thumbnail user-icon">
+			<a href="{#SITE_URL#}/@{$usuario.nick}" class="thumbnail user-icon">
 			<img src="{function="Utils::get_gravatar($usuario.email, 160, 160)"}" />
 			<h4 class="nick">{$usuario.nick}</h4>
 		</a>
@@ -27,7 +27,7 @@
 		<div>
 			<h3 class="title">{$foto.titulo}<small>{$foto.creacion->fuzzy()}</small></h3>
 			<div class="thumbnail" style="margin: 0 auto; min-height: 200px">
-				<img src="{$foto.url}" />
+				<img alt="{$foto.descripcion_clean|Texto::limit_chars:30,TRUE,'...'}" src="{$foto.url}" />
 			</div>
 			<div class="contenido-foto">{$foto.descripcion}</div>
 		</div>
@@ -63,7 +63,7 @@
 			</div>
 			{if="$foto.visitas !== NULL"}<div class="btn-group">
 				<span class="btn">{@Visitas@}: {$foto.visitas}</span>
-				{if="$foto.visitas > 0"}<span class="btn">{@&Uacute;ltima visita@}: {$foto.ultima_visita->fuzzy()}</span>{/if}
+				{if="$foto.visitas > 0"}<span class="btn">{@última visita@}: {$foto.ultima_visita->fuzzy()}</span>{/if}
 			</div>{/if}
 			{if="$me != NULL && $foto.usuario_id != $me"}
 			<div class="btn-group pull-right">
@@ -81,7 +81,7 @@
 					<div class="span11 comentario-data">
 						<div class="clearfix head">
 							<span class="informacion">
-								<a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a>
+								<a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a>
 								<small>{function="$value.fecha->fuzzy()"}</small>
 								{if="$value.estado == 1"}<span class="label label-warning">OCULTO</span>{elseif="$value.estado == 2"}<span class="label label-important">BORRADO</span>{/if}
 							</span>
@@ -114,11 +114,11 @@
 			{include="helper/bbcode_bar"}
 			{if="isset($comentario_success)"}
 			<div class="alert alert-success">
-				<strong>{@&iexcl;Felicidades!@}</strong> {$comentario_success}
+				<strong>{@!Felicidades!@}</strong> {$comentario_success}
 			</div>{/if}
 			{if="isset($comentario_error)"}
 			<div class="alert alert-danger">
-				<strong>{@&iexcl;Error!@}</strong> {$comentario_error}
+				<strong>{@!Error!@}</strong> {$comentario_error}
 			</div>{/if}
 			<textarea class="span10" name="comentario" data-preview="{#SITE_URL#}/foto/preview/" id="comentario" placeholder="Comentario...">{$comentario_content}</textarea>
 		</form>

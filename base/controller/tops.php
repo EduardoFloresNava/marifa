@@ -124,6 +124,9 @@ class Base_Controller_Tops extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());
+
+		// Título del sitio.
+		$this->template->assign('title', 'Top de posts');
 	}
 
 	/**
@@ -197,6 +200,9 @@ class Base_Controller_Tops extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());
+
+		// Título del sitio.
+		$this->template->assign('title', 'Top de usuarios');
 	}
 
 }
