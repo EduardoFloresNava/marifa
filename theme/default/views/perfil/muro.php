@@ -2,7 +2,7 @@
 {if="Usuario::is_login()"}
 {if="Usuario::$usuario_id === $usuario.id || Usuario::puedo_referirlo($usuario.id)"}
 <div class="publicar">
-	<form action="{#SITE_URL#}/perfil/index/{$usuario.nick}/" method="POST">
+	<form action="{#SITE_URL#}/@{$usuario.nick}/" method="POST">
 		<ul class="nav nav-pills">
 			<li{if="$tipo == 'texto'"} class="active"{/if}><a href="#" id="publicacion-tipo-texto"><i class="icon-white icon-pencil"></i> {if="$usuario.id !== Usuario::$usuario_id"}Publicación{else}Estado{/if}</a></li>
 			<li{if="$tipo == 'foto'"} class="active"{/if}><a href="#" id="publicacion-tipo-foto"><i class="icon icon-picture"></i> Foto</a></li>

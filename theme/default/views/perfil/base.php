@@ -5,9 +5,9 @@
 	<div class="span6">
 		<h1 class="title">{$usuario.nick}{if="isset($usuario.nombre)"} <small>{$usuario.nombre}</small>{/if}</h1>
 		{if="isset($mensaje_personal)"}<div class="mensaje-personal">{$mensaje_personal|nl2br}</div>{/if}
-		{if="Usuario::is_login() && $usuario.id !== Usuario::$usuario_id"}<a href="{#SITE_URL#}/perfil/denunciar/{$usuario.nick}" class="btn btn-warning"><i class="icon-white icon-exclamation-sign"></i> Denunciar</a>
-		{if="Usuario::is_login()"}{if="!$bloqueado"}<a href="{#SITE_URL#}/perfil/bloquear/{$usuario.nick}/" class="btn btn-danger"><i class="icon-white icon-ban-circle"></i> Bloquear</a>{else}<a href="{#SITE_URL#}/perfil/desbloquear/{$usuario.nick}/" class="btn btn-success"><i class="icon-white icon-ok-sign"></i> Desbloquear</a>{/if}
-		{if="$seguidor"}<a href="{#SITE_URL#}/perfil/seguir/{$usuario.nick}/0" class="btn btn-primary"><i class="icon-white icon-minus"></i> Dejar de seguir</a>{else}<a href="{#SITE_URL#}/perfil/seguir/{$usuario.nick}/1" class="btn btn-primary"><i class="icon-white icon-plus"></i> Seguir</a>{/if}{/if}{/if}
+		{if="Usuario::is_login() && $usuario.id !== Usuario::$usuario_id"}<a href="{#SITE_URL#}/@{$usuario.nick}/denunciar" class="btn btn-warning"><i class="icon-white icon-exclamation-sign"></i> Denunciar</a>
+		{if="Usuario::is_login()"}{if="!$bloqueado"}<a href="{#SITE_URL#}/@{$usuario.nick}/bloquear" class="btn btn-danger"><i class="icon-white icon-ban-circle"></i> Bloquear</a>{else}<a href="{#SITE_URL#}/@{$usuario.nick}/desbloquear" class="btn btn-success"><i class="icon-white icon-ok-sign"></i> Desbloquear</a>{/if}
+		{if="$seguidor"}<a href="{#SITE_URL#}/@{$usuario.nick}/seguir/0" class="btn btn-primary"><i class="icon-white icon-minus"></i> Dejar de seguir</a>{else}<a href="{#SITE_URL#}/@{$usuario.nick}/seguir/1" class="btn btn-primary"><i class="icon-white icon-plus"></i> Seguir</a>{/if}{/if}{/if}
 	</div>
 	<div class="span4 profile-statistics">
 		<div class="row-fluid">
@@ -40,24 +40,24 @@
 		{$contenido}
 	</div>
 	<div class="span4">
-		<h3 class="title">Medallas<small>{function="count($medallas)"}</small></h3>
+		<h3 class="title">Medallas{if="count($medallas) > 0"}<small>{function="count($medallas)"}</small>{/if}</h3>
 		{if="count($medallas) > 0"}
 		<ul class="small-user-list clearfix">
 			{loop="$medallas"}
 			<li>
-				<a href="{#SITE_URL#}/perfil/medallas/{$usuario.nick}" class="show-tooltip" title="{$value.medalla.nombre}"><img src="{#THEME_URL#}/assets/img/medallas/{$value.medalla.imagen}" alt="{$value.medalla.nombre}" /></a>
+				<a href="{#SITE_URL#}/@{$usuario.nick}/medallas" class="show-tooltip" title="{$value.medalla.nombre}"><img src="{#THEME_URL#}/assets/img/medallas/{$value.medalla.imagen}" alt="{$value.medalla.nombre}" /></a>
 			</li>
 			{/loop}
 		</ul>
 		{else}
 		<div class="alert alert-info">!{$usuario.nick} aún no tiene ninguna medalla!</div>
 		{/if}
-		<h3 class="title">Seguidores<small>{$usuario.seguidores}</small></h3>
+		<h3 class="title">Seguidores{if="$usuario.seguidores > 0"}<small>{$usuario.seguidores}</small>{/if}</h3>
 		{if="count($seguidores) > 0"}
 		<ul class="small-user-list clearfix">
 			{loop="$seguidores"}
 			<li>
-				<a href="{#SITE_URL#}/perfil/index/{$value.nick}" class="show-tooltip" title="{$value.nick}">
+				<a href="{#SITE_URL#}/@{$value.nick}" class="show-tooltip" title="{$value.nick}">
 					<img src="{function="Utils::get_gravatar($value.email, 74, 74)"}" width="74" height="74" />
 				</a>
 			</li>
@@ -66,12 +66,12 @@
 		{else}
 		<div class="alert alert-info">!Aún no hay usuarios siguiendo a {$usuario.nick}!</div>
 		{/if}
-		<h3 class="title">Siguiendo<small>{$usuario.sigue}</small></h3>
+		<h3 class="title">Siguiendo{if="$usuario.sigue > 0"}<small>{$usuario.sigue}</small>{/if}</h3>
 		{if="count($sigue) > 0"}
 		<ul class="small-user-list clearfix">
 			{loop="$sigue"}
 			<li>
-				<a href="{#SITE_URL#}/perfil/index/{$value.nick}" class="show-tooltip" title="{$value.nick}">
+				<a href="{#SITE_URL#}/@{$value.nick}" class="show-tooltip" title="{$value.nick}">
 					<img src="{function="Utils::get_gravatar($value.email, 74, 74)"}" width="74" height="74" />
 				</a>
 			</li>

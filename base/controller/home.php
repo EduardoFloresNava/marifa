@@ -86,8 +86,9 @@ class Base_Controller_Home extends Controller {
 	/**
 	 * Portada del sitio.
 	 * @param int $pagina Número de página para lo últimos posts.
+	 * @param string $categoria Categoria de los posts. Si no se especifica se toman todas.
 	 */
-	public function action_index($pagina)
+	public function action_index($pagina, $categoria = NULL)
 	{
 		// Cargamos la portada.
 		$portada = View::factory('home/index');
@@ -95,6 +96,35 @@ class Base_Controller_Home extends Controller {
 		// Seteo el menu.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 		$this->template->assign('top_bar', self::submenu('inicio'));
+
+		// Verifico categoria.
+		if ($categoria !== NULL)
+		{
+			// Verifico formato.
+			if ( ! preg_match('/[a-z0-9_]+/i', $categoria))
+			{
+				add_flash_message(FLASH_ERROR, 'La categoría no es correcta.');
+				Request::redirect('/post/'.$pagina);
+			}
+
+			// Cargo la categoria.
+			$model_categoria = new Model_Categoria;
+
+			// Verifico sea válida.
+			if ( ! $model_categoria->existe_seo($categoria))
+			{
+				add_flash_message(FLASH_ERROR, 'La categoría no es correcta.');
+				Request::redirect('/post/'.$pagina);
+			}
+			else
+			{
+				// Cargo la categoria.
+				$model_categoria->load_by_seo($categoria);
+			}
+		}
+
+		// Seteo id de la categoria.
+		$categoria_id = isset($model_categoria) ? $model_categoria->id : NULL;
 
 		// Cargamos datos de posts.
 		$model_post = new Model_Post;
@@ -113,7 +143,7 @@ class Base_Controller_Home extends Controller {
 		if ($pagina == 1)
 		{
 			// Cargo fijos.
-			$post_sticky = $model_post->sticky(TRUE);
+			$post_sticky = $model_post->sticky(TRUE, $categoria_id);
 
 			// Extendemos la información de los posts.
 			foreach ($post_sticky as $k => $v)
@@ -131,19 +161,31 @@ class Base_Controller_Home extends Controller {
 			$portada->assign('sticky', $post_sticky);
 			unset($post_sticky);
 		}
+		else
+		{
+			$portada->assign('sticky', array());
+		}
 
 		// Ultimos posts
-		$post_list = $model_post->obtener_ultimos($pagina, $cantidad_por_pagina);
+		$post_list = $model_post->obtener_ultimos($pagina, $cantidad_por_pagina, $categoria_id);
 
 		// Verifivo validez de la pagina.
 		if (count($post_list) == 0 && $pagina != 1)
 		{
+			Profiler_Profiler::get_instance()->display();
 			Request::redirect('/');
 		}
 
 		// Paginación.
-		$paginador = new Paginator($model_post->cantidad(Model_Post::ESTADO_ACTIVO), $cantidad_por_pagina);
-		$portada->assign('paginacion', $paginador->get_view($pagina, '/home/index/%d'));
+		$paginador = new Paginator($model_post->cantidad(Model_Post::ESTADO_ACTIVO, $categoria_id, FALSE), $cantidad_por_pagina);
+		if ($categoria !== NULL)
+		{
+			$portada->assign('paginacion', $paginador->get_view($pagina, '/post/categoria/'.$categoria.'/%d'));
+		}
+		else
+		{
+			$portada->assign('paginacion', $paginador->get_view($pagina, '/post/%d/'));
+		}
 		unset($paginador);
 
 		// Extendemos la información de los posts.
@@ -169,6 +211,7 @@ class Base_Controller_Home extends Controller {
 		{
 			$a = $v->as_array();
 			$a['puntos'] = $v->puntos();
+			$a['categoria'] = $v->categoria()->as_array();
 			$post_top_list[$k] = $a;
 		}
 
@@ -187,10 +230,12 @@ class Base_Controller_Home extends Controller {
 			if ($v instanceof Model_Foto_Comentario)
 			{
 				$a['foto'] = $v->foto()->as_array();
+				$a['foto']['categoria'] = $v->foto()->categoria()->as_array();
 			}
 			else
 			{
 				$a['post'] = $v->post()->as_array();
+				$a['post']['categoria'] = $v->post()->categoria()->as_array();
 			}
 			$comentario_list[$k] = $a;
 		}
@@ -227,6 +272,8 @@ class Base_Controller_Home extends Controller {
 		foreach ($foto_list as $k => $v)
 		{
 			$foto_list[$k] = $v->as_array();
+			$foto_list[$k]['descripcion_clean'] = preg_replace('/\[([^\[\]]+)\]/', '', $v->descripcion);
+			$foto_list[$k]['categoria'] = $v->categoria()->as_array();
 		}
 		$portada->assign('ultimas_fotos', $foto_list);
 		unset($foto_list);
@@ -235,6 +282,10 @@ class Base_Controller_Home extends Controller {
 		$portada->assign('cantidad_fotos', $model_foto->cantidad(Model_Foto::ESTADO_ACTIVA));
 		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
 		unset($model_foto);
+
+		// Titulo del sitio.
+		$this->template->assign('brand_title', '');
+		$this->template->assign('title_raw', $model_configuracion->nombre.' - '.$model_configuracion->descripcion);
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());

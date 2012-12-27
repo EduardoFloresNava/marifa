@@ -25,7 +25,7 @@
 	<tbody>
 		{loop="$usuarios"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
 			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.rango.imagen}" /> <strong style="color: #{function="sprintf('%06s', dechex($value.rango.color))"};">{$value.rango.nombre}</strong></td>
 			<td>{if="$value.lastactive == NULL"}<span class="label">NUNCA</span>{else}{$value.lastactive->fuzzy()}{/if}</td>
 			<td>

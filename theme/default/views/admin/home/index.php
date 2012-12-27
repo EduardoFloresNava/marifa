@@ -9,7 +9,7 @@
 			{loop="$contenido"}
 			<li>
 				{if="$value.tipo == 'post'"}
-				<a href="{#SITE_URL#}/post/index/{$value.id}/">
+				<a href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">
 					<i class="icon icon-book"></i>
 					{function="Texto::limit_chars($value.titulo, 35, '...', TRUE)"}
 						{if="$value.estado == 0"}
@@ -31,7 +31,7 @@
 						{/if}
 				</a>
 				{else}
-				<a href="{#SITE_URL#}/foto/ver/{$value.id}/">
+				<a href="{#SITE_URL#}/foto/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">
 					<i class="icon icon-picture"></i>
 					{function="Texto::limit_chars($value.titulo, 35, '...', TRUE)"}
 						{if="$value.estado == 0"}
@@ -61,7 +61,7 @@
 		<ul>
 			{loop="$usuarios"}
 			<li>
-				<a href="{#SITE_URL#}/perfil/index/{$value.nick}">
+				<a href="{#SITE_URL#}/@{$value.nick}">
 					{$value.nick}
 					<span class="pull-right label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span>
 				</a>

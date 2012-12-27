@@ -37,7 +37,7 @@ class UserFilter extends DecodaFilter {
 	 * @return string
 	 */
 	public function parse(array $tag, $content) {
-		$tag['attributes']['href'] = SITE_URL.'/perfil/index/'.urlencode(substr($content, 1));
+		$tag['attributes']['href'] = SITE_URL.'/@'.urlencode(substr($content, 1));
 		return parent::parse($tag, $content);
 	}
 

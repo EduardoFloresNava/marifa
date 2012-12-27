@@ -119,6 +119,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		{
 			$a = $v->as_array();
 			$a['usuario'] = $v->usuario()->as_array();
+			$a['categoria'] = $v->categoria()->as_array();
 			$lst[$k] = $a;
 		}
 
@@ -229,7 +230,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		}
 
 		// Verifico el usuario y sus permisos.
-		if (Usuario::$usuario_id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_ELIMINAR_POSTS))
+		if (Usuario::$usuario_id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR))
 		{
 			add_flash_message(FLASH_ERROR, 'El post que deseas eliminar no se encuentra disponible.');
 			Request::redirect('/moderar/desaprobado/posts');

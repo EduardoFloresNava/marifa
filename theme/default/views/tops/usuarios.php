@@ -25,7 +25,7 @@
 				{else}
 				<ol>
 					{loop="$puntos"}
-					<li><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.puntos|intval}</span></a></li>
+					<li><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.puntos|intval}</span></a></li>
 					{/loop}
 				</ol>
 				{/if}
@@ -37,7 +37,7 @@
 				{else}
 				<ol>
 					{loop="$seguidores"}
-					<li><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.seguidores|intval}</span></a></li>
+					<li><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}<span class="badge pull-right">{$value.seguidores|intval}</span></a></li>
 					{/loop}
 				</ol>
 				{/if}

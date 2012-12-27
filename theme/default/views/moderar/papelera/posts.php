@@ -18,12 +18,11 @@
 	<tbody>
 		{loop="$posts"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
-			<td><a href="{#SITE_URL#}/post/index/{$value.id}">{$value.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td>
 				<div class="btn-group">
-					<a href="{#SITE_URL#}/post/index/{$value.id}" class="btn btn-mini btn-info show-tooltip" title="Ver post"><i class="icon-white icon-eye-close"></i></a>
 					<a href="{#SITE_URL#}/post/editar/{$value.id}" class="btn btn-mini btn-primary show-tooltip" title="Editar post"><i class="icon-white icon-pencil"></i></a>
 					<a href="{#SITE_URL#}/moderar/papelera/restaurar_post/{$value.id}" class="btn btn-mini btn-success show-tooltip" title="Restaurar post"><i class="icon-white icon-refresh"></i></a>
 					<a href="{#SITE_URL#}/moderar/papelera/borrar_post/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Borrar post"><i class="icon-white icon-remove"></i></a>

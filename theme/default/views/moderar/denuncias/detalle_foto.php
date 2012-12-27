@@ -13,11 +13,11 @@
 <table class="table table-bordered">
 	<tr>
 		<th>Denunciante</th>
-		<td><a href="{#SITE_URL#}/perfil/index/{$denunciante.nick}">{$denunciante.nick}</a></td>
+		<td><a href="{#SITE_URL#}/@{$denunciante.nick}">{$denunciante.nick}</a></td>
 	</tr>
 	<tr>
 		<th>Foto</th>
-		<td><a href="{#SITE_URL#}/post/index/{$foto.id}">{$foto.titulo}</a></td>
+		<td><a href="{#SITE_URL#}/foto/{$foto.categoria.seo}/{$foto.id}/{$foto.titulo|Texto::make_seo}.html">{$foto.titulo}</a></td>
 	</tr>
 	<tr>
 		<th>Fecha</th>

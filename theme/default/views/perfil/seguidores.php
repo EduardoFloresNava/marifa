@@ -4,7 +4,7 @@
 	<tbody>
 	{loop="$seguidores"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
 		</tr>
 	{/loop}
 	</tbody>
@@ -19,7 +19,7 @@
 	<tbody>
 	{loop="$sigue"}
 		<tr>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.nick}">{$value.nick}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
 		</tr>
 	{/loop}
 	</tbody>

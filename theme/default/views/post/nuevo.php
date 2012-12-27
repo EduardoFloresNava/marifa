@@ -24,6 +24,7 @@
 				<label class="control-label" for="tags">Etiquetas</label>
 				<div class="controls">
 					<input type="text" id="tags" name="tags" value="{$tags}" class="input-xxlarge" />
+					<a href="#" class="btn btn-success show-tooltip generar-etiquetas" title="Generar etiquetas"><i class="icon-white icon-tags"></i></a>
 					<span class="help-block">{if="$error_tags"}{$error_tags}{else}Listado de etiquetas separadas por ','. Las etiquetas deben ser alphanuméricas y contener espacios.{/if}</span>
 				</div>
 			</div>

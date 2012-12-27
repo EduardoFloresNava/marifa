@@ -30,6 +30,6 @@
 	</div>
 
 	<div class="form-actions">
-		<input type="submit" value="Editar" class="btn btn-large btn-primary" /> o <a href="{#SITE_URL#}/foto/ver/{$comentario.foto_id}">Volver</a>
+		<input type="submit" value="Editar" class="btn btn-large btn-primary" /> o <a href="{#SITE_URL#}/foto/{$comentario.foto.categoria.seo}/{$comentario.foto.id}/{$comentario.foto.titulo|Texto::make_seo}.html">Volver</a>
 	</div>
 </form>

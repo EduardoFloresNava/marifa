@@ -60,7 +60,7 @@
 			</div>
 
 			<div class="form-actions">
-				<button type="submit" class="btn btn-large btn-primary">Actualizar</button> o <a href="{#SITE_URL#}/post/index/{$post}/">Volver</a>
+				<button type="submit" class="btn btn-large btn-primary">Actualizar</button> o <a href="{#SITE_URL#}/post/{$post.categoria.seo}/{$post}/{$post.titulo|Texto::make_seo}.html">Volver</a>
 			</div>
 		</form>
 	</div>

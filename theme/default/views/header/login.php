@@ -9,7 +9,7 @@
 			<li><a href="{#SITE_URL#}/notificaciones/"><i class="icon icon-bullhorn"></i> Notificaciones</a></li>
 			<li><a href="{#SITE_URL#}/cuenta/"><i class="icon icon-user"></i> Cuenta</a></li>
             <li class="divider"></li>
-            <li><a href="{#SITE_URL#}/usuario/logout"><i class="icon icon-off"></i> Salir</a></li>
+            <li><a href="{#SITE_URL#}/logout"><i class="icon icon-off"></i> Salir</a></li>
         </ul>
     </div>
     <div class="btn-group pull-right">
@@ -46,7 +46,7 @@
 					{elseif="$value.estado == 3"}
 					<i class="icon icon-repeat"></i>
 					{/if}
-					<a class="usuario" href="{#SITE_URL#}/perfil/index/{$value.emisor.nick}/">{$value.emisor.nick}</a> <a href="{#SITE_URL#}/mensaje/ver/{$value.id}">{$value.asunto|Texto::limit_chars:20,'...', TRUE}</a> <span class="fecha">{$value.fecha->fuzzy()}</span></li>
+					<a class="usuario" href="{#SITE_URL#}/@{$value.emisor.nick}/">{$value.emisor.nick}</a> <a href="{#SITE_URL#}/mensaje/ver/{$value.id}">{$value.asunto|Texto::limit_chars:20,'...', TRUE}</a> <span class="fecha">{$value.fecha->fuzzy()}</span></li>
 				{/loop}
 			</ul>
 			{else}

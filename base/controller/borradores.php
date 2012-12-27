@@ -106,6 +106,9 @@ class Base_Controller_Borradores extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $vista->parse());
+
+		// Título de la página.
+		$this->template->assign('title', 'Borradores');
 	}
 
 }

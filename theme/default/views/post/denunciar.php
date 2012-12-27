@@ -33,7 +33,7 @@
 			</div>
 
 			<div class="form-actions">
-				<button type="submit" name="submit" value="enviar" class="btn btn-large btn-primary">Crear</button> o <a href="{#SITE_URL#}/post/index/{$post}">Volver</a>
+				<button type="submit" name="submit" value="enviar" class="btn btn-large btn-primary">Crear</button> o <a href="{#SITE_URL#}/post/{$post.categoria.seo}/{$post.id}/{$post.titulo|Texto::make_seo}.html">Volver</a>
 			</div>
 		</form>
 	</div>

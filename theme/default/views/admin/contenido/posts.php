@@ -45,8 +45,8 @@
 	<tbody>
 		{loop="$posts"}
 		<tr>
-			<td><a href="{#SITE_URL#}/post/index/{$value.id}">{$value.titulo}</a></td>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td><a href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td>
 				{if="$value.estado == 0"}

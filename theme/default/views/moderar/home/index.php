@@ -113,20 +113,20 @@
 				{loop="$contenido"}
 				<li>
 					{if="$value.tipo == 'post'"}
-					<a href="{#SITE_URL#}/post/index/{$value.id}">
+					<a href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">
 						<i class="icon icon-book"></i>
 						<b>{$value.titulo}</b> por <b>{$value.usuario.nick}</b>
 						<span class="pull-right">{$value.fecha->fuzzy()}</span>
 					</a>
 					{elseif="$value.tipo == 'foto_comentario'"}
-					<a href="{#SITE_URL#}/foto/ver/{$value.foto.id}">
+					<a href="{#SITE_URL#}/foto/{$value.foto.categoria.seo}/{$value.foto.id}/{$value.foto.titulo|Texto::make_seo}.html#c-{$value.id}">
 						<i class="icon icon-comment"></i>
 						<b>{$value.usuario.nick}</b> en la foto <b>{$value.foto.titulo}</b>
 						<span class="pull-right">{$value.fecha->fuzzy()}</span>
 					</a>
 					{else}
-					<a href="{#SITE_URL#}/post/index/{$value.post.id}">
-						<i class="icon icon-user"></i>
+					<a href="{#SITE_URL#}/post/{$value.post.categoria.seo}/{$value.post.id}/{$value.titulo|Texto::make_seo}.html#c-{$value.id}">
+						<i class="icon icon-comment"></i>
 						<b>{$value.usuario.nick}</b> en el post <b>{$value.post.titulo}</b>
 						<span class="pull-right">{$value.fecha->fuzzy()}</span>
 					</a>

@@ -3,7 +3,7 @@
 <ul class="thumbnails">
 	{loop="$bloqueos"}
 	<li class="span2">
-		<a href="{#SITE_URL#}/perfil/index/{$value.nick}" class="thumbnail user-icon">
+		<a href="{#SITE_URL#}/@{$value.nick}" class="thumbnail user-icon">
 			<img src="{function="Utils::get_gravatar($value.email, 160, 160)"}" />
 			<h4 class="nick">{$value.nick}</h4>
 		</a>

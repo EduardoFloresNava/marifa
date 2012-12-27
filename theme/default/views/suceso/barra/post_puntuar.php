@@ -1,2 +1,2 @@
 <i class="icon icon-asterisk"></i>
-<a href="{#SITE_URL#}/perfil/index/{$suceso.puntua.nick}">{$suceso.puntua.nick}</a> {@ha dado@} <span class="badge badge-info">{$suceso.puntos}</span> {if="$suceso.puntos == 1"}{@punto@}{else}{@puntos@}{/if} {@a tu post@} <a href="{#SITE_URL#}/post/index/{$suceso.post.id}">{$suceso.post.titulo}</a>.
+<a href="{#SITE_URL#}/@{$suceso.puntua.nick}">{$suceso.puntua.nick}</a> {@ha dado@} <span class="badge badge-info">{$suceso.puntos}</span> {if="$suceso.puntos == 1"}{@punto@}{else}{@puntos@}{/if} {@a tu post@} <a href="{#SITE_URL#}/post/{$suceso.post.categoria.seo}/{$suceso.post.id}/{$suceso.post.titulo|Texto::make_seo}.html">{$suceso.post.titulo}</a>.

@@ -65,7 +65,13 @@ class Base_Route {
 	 * Array containing parameters passed through request URL
 	 * @var array
 	 */
-	private $params = array();
+	private $parameters = array();
+
+	/**
+	 * Arreglo con los mapeos de las URL's.
+	 * @var array
+	 */
+	private $params_map = array();
 
 	/**
 	 * Get url
@@ -98,7 +104,23 @@ class Base_Route {
 
 	public function setTarget($target)
 	{
+		if (is_array($target) && isset($this->parameters['action']))
+		{
+			$this->target['action'] = $this->parameters['action'];
+			unset($this->parameters['action']);
+		}
+
 		$this->target = $target;
+	}
+
+	public function getParamsMap()
+	{
+		return $this->params_map;
+	}
+
+	public function setParamsMap($params_map)
+	{
+		$this->params_map = $params_map;
 	}
 
 	public function getMethods()
@@ -156,6 +178,16 @@ class Base_Route {
 	 */
 	public function getParameters()
 	{
+		if (is_array($this->params_map) && count($this->params_map) > 0)
+		{
+			// Aplico traducción de parámetros.
+			$p = array();
+			foreach ($this->params_map as $k => $v)
+			{
+				$p[$k] = isset($this->parameters[$v]) ? $this->parameters[$v] : NULL;
+			}
+			return $p;
+		}
 		return $this->parameters;
 	}
 
@@ -165,6 +197,12 @@ class Base_Route {
 	 */
 	public function setParameters(array $parameters)
 	{
+		if (is_array($this->target) && isset($parameters['action']))
+		{
+			$this->target['action'] = $parameters['action'];
+			unset($parameters['action']);
+		}
+
 		$this->parameters = $parameters;
 	}
 

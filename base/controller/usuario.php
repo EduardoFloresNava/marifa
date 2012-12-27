@@ -57,7 +57,7 @@ class Base_Controller_Usuario extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Inicio de Sessión');
+		$this->template->assign('title', 'Ingreso');
 
 		// Cargamos la vista del usuario.
 		$view_usuario = View::factory('usuario/login');
@@ -176,7 +176,7 @@ class Base_Controller_Usuario extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Registrarse');
+		$this->template->assign('title', 'Registro');
 
 		// Cargamos la vista del usuario.
 		$view_usuario = View::factory('usuario/register');
@@ -511,7 +511,7 @@ class Base_Controller_Usuario extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Recuperar clave.');
+		$this->template->assign('title', 'Recuperar clave');
 
 		// Cargamos la vista del usuario.
 		$view_usuario = View::factory('usuario/recuperar');
@@ -671,6 +671,9 @@ class Base_Controller_Usuario extends Controller {
 
 		// Agregamos el la vista a la plantilla.
 		$this->template->assign('contenido', $view->parse());
+
+		// Título.
+		$this->template->assing('title', 'Restaurar contraseña');
 	}
 
 	/**

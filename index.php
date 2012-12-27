@@ -156,6 +156,10 @@ if (Mantenimiento::is_locked())
 {
 	if (Mantenimiento::is_locked_for(get_ip_addr()))
 	{
+		// Cabeceras para SEO.
+		header("HTTP/1.1 503 Service Unavailable");
+		header("Retry-After: 3600");
+
 		// Cargo la vista.
 		$view = View::factory('mantenimiento');
 		$view->show();

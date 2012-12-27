@@ -25,8 +25,8 @@
 		{loop="$comentarios"}
 		<tr>
 			<td>{if="isset($value.post)"}<i class="icon icon-book"></i>{else}<i class="icon icon-picture"></i>{/if}</td>
-			<td><a href="{#SITE_URL#}/perfil/index/{$value.usuario.nick}">{$value.usuario.nick}</a></td>
-			<td>{if="isset($value.post)"}<a href="{#SITE_URL#}/post/index/{$value.post.id}">{$value.post.titulo}</a>{else}<a href="{#SITE_URL#}/post/index/{$value.foto.id}">{$value.foto.titulo}</a>{/if}</td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
+			<td>{if="isset($value.post)"}<a href="{#SITE_URL#}/post/{$value.post.categoria.seo}/{$value.post.id}/{$value.post.titulo|Texto::make_seo}.html">{$value.post.titulo}</a>{else}<a href="{#SITE_URL#}/foto/{$value.foto.categoria.seo}/{$value.foto.id}/{$value.foto.titulo|Texto::make_seo}.html">{$value.foto.titulo}</a>{/if}</td>
 			<td>{$value.fecha->fuzzy()}</td>
 			<td>
 				<div class="btn-group">

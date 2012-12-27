@@ -4,7 +4,7 @@
     <li class="active">Cambiar rango</li>
 </ul>
 <div class="header">
-	<h2>Cambiar rango de <a href="{#SITE_URL#}/perfil/index/{$usuario.nick}">{$usuario.nick}</a></h2>
+	<h2>Cambiar rango de <a href="{#SITE_URL#}/@{$usuario.nick}">{$usuario.nick}</a></h2>
 </div>
 <h4 class="title">Seleccione el rango que desea asignar:</h4>
 <ul style="list-style: none;">
