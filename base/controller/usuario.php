@@ -318,8 +318,19 @@ class Base_Controller_Usuario extends Controller {
 						}
 
 						// Registro completo.
-						$view_usuario = View::factory('usuario/register_complete');
-						$view_usuario->assign('tipo', $t_act);
+						switch ($t_act)
+						{
+							case 0: // Activación manual.
+								add_flash_message(FLASH_SUCCESS, 'El registro se ha realizado <strong>correctamente</strong>. Para poder acceder a su cuenta debe esperar que un administrador active su cuenta, cuando eso suceda serás notificado por correo.');
+								break;
+							case 1: // Activación por e-mail.
+								add_flash_message(FLASH_SUCCESS, 'El registro se ha realizado <strong>correctamente</strong>. Para poder acceder a su cuenta debe seguir las instrucciones que fueron enviadas a su casilla de <strong>E-Mail</strong>.');
+								break;
+							case 2: // Activación automática.
+								add_flash_message(FLASH_SUCCESS, 'El registro se ha realizado <strong>correctamente</strong>. Ya puedes acceder a tu cuenta iniciando sesión <a href="{#SITE_URL#}/usuario/login/">aquí</a>.');
+								break;
+						}
+						Request::redirect('/login');
 					}
 					else
 					{
@@ -476,7 +487,7 @@ class Base_Controller_Usuario extends Controller {
 				// Creo el mensaje de correo.
 				$message = Email::get_message();
 				$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
-				$message->setTo($email, $model_usuario->nick);
+				$message->setTo($model_usuario->email, $model_usuario->nick);
 
 				// Cargo la vista.
 				$message_view = View::factory('emails/register');
@@ -490,7 +501,8 @@ class Base_Controller_Usuario extends Controller {
 				$mailer->send($message);
 
 				// Registro completo.
-				$view_usuario = View::factory('usuario/pedir_activacion_completo');
+				add_flash_message(FLASH_SUCCESS, 'Se ha enviado un correo a tu cuenta de con los pasos de la activación de la cuenta. Recuerda que el enlace caduca en 24hs.');
+				Request::redirect('/login');
 			}
 		}
 
@@ -568,7 +580,7 @@ class Base_Controller_Usuario extends Controller {
 				// Creo el mensaje de correo.
 				$message = Email::get_message();
 				$message->setSubject('Restaurar contraseña de '.$model_config->get('nombre', 'Marifa'));
-				$message->setTo($email, $model_usuario->nick);
+				$message->setTo($model_usuario->email, $model_usuario->nick);
 
 				// Cargo la vista.
 				$message_view = View::factory('emails/recuperar');
@@ -582,7 +594,8 @@ class Base_Controller_Usuario extends Controller {
 				$mailer->send($message);
 
 				// Registro completo.
-				$view_usuario = View::factory('usuario/recuperar_completo');
+				add_flash_message(FLASH_SUCCESS, 'Se ha enviado un correo a tu cuenta de con los pasos para restaurar tu clave de acceso. Recuerda que el enlace caduca en 24hs.');
+				Request::redirect('/login');
 			}
 		}
 
@@ -673,7 +686,7 @@ class Base_Controller_Usuario extends Controller {
 		$this->template->assign('contenido', $view->parse());
 
 		// Título.
-		$this->template->assing('title', 'Restaurar contraseña');
+		$this->template->assign('title', 'Restaurar contraseña');
 	}
 
 	/**

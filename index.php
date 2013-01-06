@@ -92,6 +92,11 @@ define('CACHE_PATH', APP_BASE.DS.'cache');
  */
 define('VENDOR_PATH', APP_BASE.DS.'vendor'.DS);
 
+/**
+ * Iniciamos buffer.
+ */
+ob_start();
+
 // Cargamos funciones varias.
 require_once (APP_BASE.DS.'function.php');
 

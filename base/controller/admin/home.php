@@ -41,7 +41,7 @@ class Base_Controller_Admin_Home extends Controller {
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
-			Request::redirect('/usuario/login');
+			Request::redirect('/usuario/login', TRUE);
 		}
 
 		// Verifico si tiene alguno de los permisos solicitados.

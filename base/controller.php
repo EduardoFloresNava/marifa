@@ -161,6 +161,9 @@ class Base_Controller {
 		$vista->assign('mensajes', $msg_event);
 		unset($msg_event, $msg_rst);
 
+		// Listado de favoritos.
+		$vista->assign('favoritos', array());
+
 		return $vista;
 	}
 

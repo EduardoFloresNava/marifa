@@ -56,7 +56,7 @@ class Base_Dispatcher {
 		}
 
 		// Verificamos assets tema.
-		if (preg_match('/^(\/){0,1}(theme)\/([a-z0-9_]+)\/(assets)\/(css|js)\/([a-z0-9_\.]+)(\.css|\.js)$/D', $url))
+		if (preg_match('/^(\/){0,1}(theme)\/([a-z0-9_]+)\/(assets)\/(css|js)\/(.*?)(\.css|\.js)$/D', $url))
 		{
 			// Genero el path.
 			if ($url{0} == '/')

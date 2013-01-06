@@ -67,16 +67,26 @@ class Base_Controller_Home extends Controller {
 	/**
 	 * Obtenemos un CAPTCHA.
 	 */
-	public function action_captcha()
+	public function action_captcha($width, $heigth)
 	{
 		// Evito salida de la plantilla.
 		$this->template = NULL;
+
+		// Obtengo tamaño del captcha.
+		$width = abs( (int) $width);
+		$heigth = abs( (int) $heigth);
+
+		// Valido.
+		$width = $width < 50 ? 100 : $width;
+		$heigth = $heigth < 20 ? 50 : $heigth;
 
 		// Cargo archivo de terceros.
 		include_once(VENDOR_PATH.'securimage'.DS.'securimage.php');
 
 		// Genero el CAPTCHA
 		$img = new securimage;
+		$img->image_height = $heigth;
+		$img->image_width = $width;
 		$img->show();
 
 		// Evito salida de depuración.
