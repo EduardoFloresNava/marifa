@@ -50,5 +50,6 @@
 	</div>
 	<div class="btn-group">
 		<a href="#" title="Vista preliminar" class="btn-preview btn btn-small btn-success"><i class="icon-eye-open icon-white"></i></a>
+		<button type="submit" class="btn btn-small btn-primary" title="Enviar"><i class="icon-white icon-ok"></i></button>
 	</div>
 </div>
