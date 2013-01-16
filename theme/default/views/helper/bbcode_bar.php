@@ -44,7 +44,6 @@
 		<a href="#" title="Link" class="btn-link btn btn-small"><i class="icon-retweet"></i></a>
 	</div>
 	<div class="btn-group">
-		<a href="#" title="Spoiler" class="btn-spoiler btn btn-small"><i class="icon-calendar"></i></a>
 		<a href="#" title="Cita" class="btn-quote btn btn-small"><i class="icon-comment"></i></a>
 		<a href="#" title="Código" class="btn-code btn btn-small"><i class="icon-list-alt"></i></a>
 	</div>
