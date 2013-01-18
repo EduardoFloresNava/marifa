@@ -2,7 +2,7 @@
 <table class="table table-bordered">
 	<tr class="ok">
 		<th><i class="icon icon-ok"></i> Correcto</th>
-		<td>El requisito se cimple correctamente.</td>
+		<td>El requisito se cumple correctamente.</td>
 	</tr>
 	<tr class="warn">
 		<th><i class="icon icon-warning-sign"></i> Opcional</th>
@@ -14,7 +14,7 @@
 	</tr>
 </table>
 <div class="leyenda">
-	
+
 </div>
 <table class="table table-bordered">
 	<thead>
@@ -40,4 +40,4 @@
 		{/loop}
 	</tbody>
 </table>
-{if="$can_continue"}<a class="btn btn-large btn-success" href="/installer/bd/">Continuar <i class="icon-white icon-arrow-right"></i></a>{else}<a class="btn btn-large btn-primary" href="/installer/requerimientos"><i class="icon-white icon-refresh"></i> Reintentar</a>{/if}
+{if="$can_continue"}<a class="btn btn-large btn-success" href="{#SITE_URL#}/installer/bd/">Continuar <i class="icon-white icon-arrow-right"></i></a>{else}<a class="btn btn-large btn-primary" href="{#SITE_URL#}/installer/requerimientos"><i class="icon-white icon-refresh"></i> Reintentar</a>{/if}
