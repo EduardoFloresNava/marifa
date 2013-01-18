@@ -778,14 +778,14 @@ class Base_Model_Post extends Model_Dataset {
 		// Agrego categoria.
 		if ($categoria !== NULL)
 		{
-			$where .= 'AND post.post_categoria_id = ?';
+			$where .= 'AND categoria_id = ?';
 			$condiciones[] = $categoria;
 		}
 
 		// Agrego usuario.
 		if ($usuario !== NULL)
 		{
-			$where .= ' AND post.usuario_id = ?';
+			$where .= ' AND usuario_id = ?';
 			$condiciones[] = $usuario;
 		}
 
