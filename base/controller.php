@@ -39,6 +39,20 @@ class Base_Controller {
 	protected $template;
 
 	/**
+	 * Bloque con elementos que deben cargarse en la cabecera.
+	 * Cada elemento debe ser un objeto del tipo View.
+	 * @var array
+	 */
+	public $header = array();
+
+	/**
+	 * Bloque con elementos que deben cargarse en el pie de página.
+	 * Cada elemento debe ser un objeto del tipo View.
+	 * @var array
+	 */
+	public $footer = array();
+
+	/**
 	 * Cargamos la plantilla base.
 	 */
 	public function before()
@@ -181,6 +195,24 @@ class Base_Controller {
 			}
 		}
 
+		// Proceso los elementos de la cabecera y el pie.
+		$header = '';
+		foreach ($this->header as $v)
+		{
+			$header .= $v->parse();
+		}
+		$this->template->assign('header', $header);
+		unset($v, $header);
+
+		$footer = '';
+		foreach ($this->footer as $v)
+		{
+			$footer .= $v->parse();
+		}
+		$this->template->assign('footer', $footer);
+		unset($v, $footer);
+
+		// Compilo y muestro la plantilla.
 		if (is_object($this->template) && ! Request::is_ajax())
 		{
 			DEBUG || $this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
