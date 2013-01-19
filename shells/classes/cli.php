@@ -108,7 +108,7 @@ class Shell_Cli {
 		self::write("$name");
 		if ($default !== NULL)
 		{
-			self::write("[$default]: ");
+			self::write(" [$default]: ");
 		}
 		else
 		{
