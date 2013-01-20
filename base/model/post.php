@@ -1345,7 +1345,7 @@ class Base_Model_Post extends Model_Dataset {
 			$medalla = $rst->get_var(Database_Query::FIELD_INT);
 
 			// Verifico no tener la medalla.
-			if ($this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE medalla_id = ? AND usuario_id = ?', array($medalla, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT) > 0)
+			if ($this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE medalla_id = ? AND usuario_id = ?', array($medalla, $this->usuario_id))->get_var(Database_Query::FIELD_INT) > 0)
 			{
 				return FALSE;
 			}
