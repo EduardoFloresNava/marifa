@@ -237,6 +237,70 @@ class Shell_Controller_Contenido extends Shell_Controller {
 				}
 				break;
 			case 'foto':
+				if ($use_default)
+				{
+					$prefijo = 'auto_';
+					$cantidad = 20;
+					$cantidad_favoritos = 5;
+					$cantidad_votos = 10;
+					$cantidad_comentarios = 20;
+					// Cargo categorias.
+					$categorias = Database::get_instance()->query('SELECT id, nombre FROM categoria')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_STRING));
+				}
+				else
+				{
+					// Prefijo para las fotos.
+					$prefijo = trim(Shell_Cli::read_value('Prefijo para las fotos', 'auto_'));
+
+					// Cantidad de fotos.
+					do {
+						$cantidad = (int) Shell_Cli::read_value('Cantidad de fotos', '20');
+					} while ($cantidad <= 0);
+
+					// Cantidad de favoritos de la foto.
+					do {
+						$cantidad_favoritos = (int) Shell_Cli::read_value('Cantidad de favoritos de la foto', '5');
+					} while ($cantidad_favoritos <= 0);
+
+					// Cantidad de votos de la foto.
+					$cantidad_votos = (int) Shell_Cli::read_value('Cantidad de votos de la foto', '10');
+
+					// Cantidad de comentario.
+					do {
+						$cantidad_comentarios = (int) Shell_Cli::read_value('Cantidad de comentarios del post', '20');
+					} while ($cantidad_comentarios < 0);
+
+					// Cargo categorias.
+					$categorias = Database::get_instance()->query('SELECT id, nombre FROM categoria')->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_STRING));
+
+					// Verifico si es una en particular.
+					if (Shell_Cli::read_value("Desea usar una categoria en particular (Y/N)", 'N', array('Y', 'N')) == 'Y')
+					{
+						// Pido el rango a usar.
+						$categoria = array_search(Shell_Cli::option(array_values($categorias), 'Categoría para las fotos'), $categorias);
+						$categoria_string = $categorias[$categoria];
+
+						unset($categorias);
+					}
+				}
+
+				// Informe de selección.
+				Shell_Cli::write_line('');
+				Shell_Cli::write_line('');
+				Shell_Cli::write_line('Resumen de datos a crear:');
+				Shell_Cli::write_line('    Cantidad:    '.Shell_Cli::get_colored_string($cantidad, 'yellow'));
+				Shell_Cli::write_line('    Favoritos:   '.Shell_Cli::get_colored_string($cantidad_favoritos, 'yellow'));
+				Shell_Cli::write_line('    Votos:       '.Shell_Cli::get_colored_string($cantidad_votos, 'yellow'));
+				Shell_Cli::write_line('    Comentarios: '.Shell_Cli::get_colored_string($cantidad_comentarios, 'yellow'));
+				Shell_Cli::write_line('    Categoria:   '.Shell_Cli::get_colored_string(isset($categorias) ? '<ALEATORIO>' : $categoria_string, 'yellow'));
+				Shell_Cli::write_line('    Prefijo:     '.Shell_Cli::get_colored_string($prefijo, 'yellow'));
+				Shell_Cli::write_line('');
+
+				if (Shell_Cli::read_value("Los datos son correctos (Y/N)", NULL, array('Y', 'N')) == 'Y')
+				{
+					// Creamos los usuarios.
+					$this->crear_fotos($cantidad, $cantidad_favoritos, $cantidad_votos, $cantidad_comentarios, isset($categorias) ? $categorias : $categoria, $prefijo);
+				}
 				break;
 			case 'publicacion':
 				break;
@@ -287,11 +351,24 @@ class Shell_Controller_Contenido extends Shell_Controller {
 		Shell_Cli_ProgressBar::show_bar();
 	}
 
+	/**
+	 * Creamos un conjunto de posts.
+	 * @param int $cantidad Cantidad de post's.
+	 * @param int $cantidad_seguidores Cantidad de seguidores por post.
+	 * @param int $cantidad_favoritos Cantidad de favoritos por post.
+	 * @param int $cantidad_puntos Cantidad de puntos por post.
+	 * @param int $cantidad_comentarios Cantidad de comentarios por post.
+	 * @param int|array $categorias Categoría de los posts.
+	 * Puede ser un entero con el ID de la categoría o un arreglo de posibles ID's de categorías para hacerlo aleatorio con esas categorías.
+	 * @param string $prefijo Prefijo de los posts.
+	 */
 	private function crear_posts($cantidad, $cantidad_seguidores, $cantidad_favoritos, $cantidad_puntos, $cantidad_comentarios, $categorias, $prefijo)
 	{
 		// Obtengo listado de usuarios.
 		$usuarios = Database::get_instance()->query('SELECT id FROM usuario')->get_pairs(Database_Query::FIELD_INT);
 		$cantidad_usuarios = count($usuarios);
+
+		$categorias = is_array($categorias) ? array_keys($categorias) : $categorias;
 
 		// Configuro barra de progreso.
 		Shell_Cli_ProgressBar::start($cantidad, Shell_Cli::get_colored_string('Creando posts...', 'yellow'));
@@ -315,7 +392,6 @@ class Shell_Controller_Contenido extends Shell_Controller {
 			// Categoria.
 			if (is_array($categorias))
 			{
-				$categorias = array_values($categorias);
 				$categoria = $categorias[mt_rand(0, count($categorias) - 1)];
 			}
 			else
@@ -347,8 +423,10 @@ class Shell_Controller_Contenido extends Shell_Controller {
 			$model_suceso->crear($autor, 'post_nuevo', FALSE, $post_id);
 
 			// Actualizar rango y medallas.
-			//Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
-			//Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+			$model_autor = new Model_Usuario($autor);
+			$model_autor->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+			$model_autor->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+			unset($model_autor);
 
 			// Genero listado de usuarios que pueden interactuar (puntuar, agregar a favoritos, seguir, etc).
 			$usuarios_interactuar = array_diff($usuarios, array($autor));
@@ -431,11 +509,14 @@ class Shell_Controller_Contenido extends Shell_Controller {
 				// Envio sucesos de citas.
 				//Decoda::procesar($comentario, FALSE);
 
+				// Modelo del creado del comentario.
+				$model_usuario_comenta = new Model_Usuario($c_a);
+
 				// Verifico actualización del rango.
-				//Usuario::usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
+				$model_usuario_comenta->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
 
 				// Verifico actualización de medallas.
-				//Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_POSTS);
+				$model_usuario_comenta->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_POSTS);
 
 				// Actualizar medallas post.
 				$model_post->actualizar_medallas(Model_Medalla::CONDICION_POST_COMENTARIOS);
@@ -447,5 +528,251 @@ class Shell_Controller_Contenido extends Shell_Controller {
 
 		Shell_Cli_ProgressBar::set_message(Shell_Cli::get_colored_string('Posts creados correctamente', 'green'));
 		Shell_Cli_ProgressBar::show_bar();
+	}
+
+	private function crear_fotos($cantidad, $cantidad_favoritos, $cantidad_votos, $cantidad_comentarios, $categorias, $prefijo)
+	{
+		// Obtengo listado de usuarios.
+		$usuarios = Database::get_instance()->query('SELECT id FROM usuario')->get_pairs(Database_Query::FIELD_INT);
+		$cantidad_usuarios = count($usuarios);
+
+		// Proceso categorias.
+		$categorias = is_array($categorias) ? array_keys($categorias) : $categorias;
+
+		// Obtengo configuraciones de imagenes.
+		$config = configuracion_obtener(CONFIG_PATH.DS.'upload.'.FILE_EXT);
+		$resolucion_minima = $config['image_data']['resolucion_minima'];
+		$resolucion_maxima = $config['image_data']['resolucion_maxima'];
+		$img_path = $config['image_disk']['save_path'];
+		$img_url = $config['image_disk']['base_url'];
+
+		// Configuro barra de progreso.
+		Shell_Cli_ProgressBar::start($cantidad, Shell_Cli::get_colored_string('Creando fotos...', 'yellow'));
+
+		// Configuro función de ticks.
+		register_tick_function('Shell_Cli_ProgressBar::show_bar');
+
+		// Genero las fotos.
+		for ($j = 0; $j < $cantidad; $j++)
+		{
+			// Cargo modelos.
+			$model_foto = new Model_Foto;
+			$model_suceso = new Model_Suceso;
+
+			// Título del post.
+			$titulo = $prefijo.Texto::random_string(50, 'abcdefghijklmnopqrstuxyvwzABCDEFGHIJKLMNOPQRSTUXYVWZ0123456789 ');
+
+			// Autor.
+			$autor = $usuarios[mt_rand(0, $cantidad_usuarios - 1)];
+
+			// Categoria.
+			if (is_array($categorias))
+			{
+				$categoria = $categorias[mt_rand(0, count($categorias) - 1)];
+			}
+			else
+			{
+				$categoria = $categorias;
+			}
+
+			// Visitantes.
+			$visitantes = (bool) mt_rand(0, 1);
+
+			// Comentar.
+			$comentar = (bool) mt_rand(0, 1);
+
+			// Estado.
+			$estado = Model_Foto::ESTADO_ACTIVA;
+
+			// Genero la imagen.
+			$nombre_imagen = uniqid('tmp_img_', TRUE);
+			$this->make_dummy(mt_rand($resolucion_minima[0], $resolucion_maxima[0]), mt_rand($resolucion_minima[1], $resolucion_maxima[1]), $img_path.$nombre_imagen);
+
+			// Armo URL.
+			$url = $img_url.$nombre_imagen;
+
+			// Limpio memoria.
+			unset($nombre_imagen);
+
+			// Creo la foto.
+			$model_foto->crear($autor, $titulo, Shell_Loremipsum::get_content(50, 'plain'), $url, $categoria, $visitantes, $comentar, $estado);
+			$foto_id = $model_foto->id;
+
+			// Agrego suceso.
+			$model_suceso->crear($autor, 'foto_nueva', FALSE, $foto_id);
+
+			// Actualizar rango y medallas.
+			$model_autor = new Model_Usuario($autor);
+			$model_autor->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+			$model_autor->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_FOTOS);
+			unset($model_autor);
+
+			// Genero listado de usuarios que pueden interactuar (votar, agregar a favoritos, etc).
+			$usuarios_interactuar = array_diff($usuarios, array($autor));
+			shuffle($usuarios_interactuar);
+
+			/* Agrego favoritos. */
+			$favoritos = array_slice($usuarios_interactuar, 0, $cantidad_favoritos);
+			var_dump($favoritos);
+
+			foreach ($favoritos as $v) {
+				$model_foto->agregar_favorito($v);
+
+				// Actualizo medallas.
+				$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_FAVORITOS);
+
+				// Enviamos el suceso.
+				$model_suceso->crear($autor, 'foto_favorito', TRUE, $model_foto->id, $v);
+				$model_suceso->crear($v, 'foto_favorito', FALSE, $model_foto->id, $v);
+			}
+			unset($favoritos);
+
+			/* Agrego los votos. */
+
+			// Corrijo la cantidad de votos.
+			if (abs($cantidad_votos) > count($usuarios_interactuar))
+			{
+				$cantidad_votos = $cantidad_votos < 0 ? (-1) * count($usuarios_interactuar) : count($usuarios_interactuar);
+			}
+
+			// Reordeno lo usuarios.
+			shuffle($usuarios_interactuar);
+
+			// Realizo el proceso de votación.
+			for ($i = 0; $i < abs($cantidad_votos); $i++)
+			{
+				// Votamos la foto.
+				$model_foto->votar($usuarios_interactuar[$i], $cantidad_votos > 0);
+
+				// Actualizo medallas.
+				$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VOTOS_NETOS);
+				if ($cantidad_votos > 0)
+				{
+					$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VOTOS_POSITIVOS);
+				}
+				else
+				{
+					$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_VOTOS_NEGATIVOS);
+				}
+
+				// Creamos el suceso.
+				$model_suceso->crear($model_foto->usuario_id, 'foto_votar', TRUE, $foto_id, $usuarios_interactuar[$i], $cantidad_votos > 0);
+				$model_suceso->crear($usuarios_interactuar[$i], 'foto_votar', FALSE, $foto_id, $usuarios_interactuar[$i], $cantidad_votos > 0);
+			}
+
+			// Agrego comentarios.
+			for ($i = 0; $i < $cantidad_comentarios; $i++)
+			{
+				$c_a = $usuarios[mt_rand(0, $cantidad_usuarios - 1)];
+
+				// Insertamos el comentario.
+				$id = $model_foto->comentar($c_a, Shell_Loremipsum::get_content(10, 'plain'));
+
+				if ($c_a != $model_foto->usuario_id)
+				{
+					$model_suceso->crear($model_foto->usuario_id, 'foto_comentario_crear', TRUE, $id);
+					$model_suceso->crear($c_a, 'foto_comentario_crear', FALSE, $id);
+				}
+				else
+				{
+					$model_suceso->crear($model_foto->usuario_id, 'foto_comentario_crear', FALSE, $id);
+				}
+
+				// Envio sucesos de citas.
+				//Decoda::procesar($comentario, FALSE);
+
+				// Modelo del creado del comentario.
+				$model_usuario_comenta = new Model_Usuario($c_a);
+
+				// Verifico actualización del rango.
+				$model_usuario_comenta->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
+
+				// Verifico actualización de medallas.
+				$model_usuario_comenta->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_FOTOS);
+
+				// Actualizar medallas post.
+				$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_COMENTARIOS);
+			}
+
+			Shell_Cli_ProgressBar::next();
+		}
+		unregister_tick_function('Shell_Cli_ProgressBar::show_bar');
+
+		Shell_Cli_ProgressBar::set_message(Shell_Cli::get_colored_string('Fotos creadas correctamente', 'green'));
+		Shell_Cli_ProgressBar::show_bar();
+	}
+
+	protected function make_dummy($ancho, $alto, $file = NULL, $color_fondo = array(0, 0, 0), $color_texto = array(255, 255, 255), $tipo = 'png')
+	{
+		// Verifico el tipo.
+		if ($tipo != 'png' && $tipo != 'gif' && $tipo != 'jpg')
+		{
+			throw new InvalidArgumentException('El tipo de imagen debe ser png, gif o jpg.');
+		}
+
+		// Verifico tamaño máximo.
+		if ($ancho > 9999 || $alto > 9999)
+		{
+			throw new InvalidArgumentException('El máximo tamaño permitido es de 9999x9999.');
+		}
+
+		// Defino el tamaño de la fuente, siempre menor a 10.
+		$font_size = $ancho / 16;
+		if ($font_size < 9)
+		{
+			$font_size = 9;
+		}
+
+		// Fuente del texto.
+		$fuente_texto = SHELL_PATH.DS.'DroidSans.ttf';
+
+		// Genero el texto.
+		$texto = "{$ancho}x{$alto}";
+
+		// Creo la imagen.
+		$imagen = imagecreatetruecolor($ancho, $alto);
+
+		// Creamos los colores.
+		$imagen_color_fondo = imagecolorallocate($imagen, $color_fondo[0], $color_fondo[1], $color_fondo[2]);
+		$imagen_color_texto = imagecolorallocate($imagen, $color_texto[0], $color_texto[1], $color_texto[2]);
+
+		// Creo el fondo.
+		imagefilledrectangle($imagen, 0, 0, $ancho, $alto, $imagen_color_fondo);
+
+		// Inserto el fondo.
+		$cuadro_texto = imagettfbbox($font_size, 0, $fuente_texto, $texto);
+		$ancho_texto = $cuadro_texto[4] - $cuadro_texto[1];
+		$alto_texto = abs($cuadro_texto[7]) + abs($cuadro_texto[1]);
+		$posicion_texto_x = ($ancho - $ancho_texto) / 2;
+		$posicion_texto_y = ($alto - $alto_texto) / 2 + $alto_texto;
+		imagettftext($imagen, $font_size, 0, $posicion_texto_x, $posicion_texto_y, $imagen_color_texto, $fuente_texto, $texto);
+
+		// Give out the requested type.
+		switch ($tipo) {
+			case 'png':
+				if ($file === NULL)
+				{
+					header('Content-Type: image/png');
+				}
+				imagepng($imagen, $file);
+				break;
+			case 'gif':
+				if ($file === NULL)
+				{
+					header('Content-Type: image/gif');
+				}
+				imagegif($imagen, $file);
+				break;
+			case 'jpg':
+				if ($file === NULL)
+				{
+					header('Content-Type: image/jpeg');
+				}
+				imagejpeg($imagen, $file);
+				break;
+		}
+
+		// Free some memory.
+		imagedestroy($imagen);
 	}
 }
