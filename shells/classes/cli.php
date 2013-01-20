@@ -233,16 +233,38 @@ class Shell_Cli {
 	{
 	    self::write_line($title);
 
-	    $opts = array_map(create_function('$str', 'return chr(ord("a")+$str);'), array_keys($options));
+		if (count($options > 26))
+		{
+			// Obtengo arreglo 1-based.
+			$i = 1;
+			$opts = array();
+			foreach ($options as $v)
+			{
+				$opts[$i++] = $v;
+			}
 
-        foreach ($options as $k => $m)
-        {
-            $l = chr(ord('a')+$k);
-            self::write("\t$l - $m\n");
-        }
+			// Imprimo listado de opciones.
+			foreach ($opts as $k => $m)
+			{
+				self::write("\t{$k} - $m\n");
+			}
 
-        $v = self::read_value($option_text, NULL, $opts);
-        return $options[ord($v) - ord('a')];
+			// Retorno la clave.
+			return $opts[self::read_value($option_text, NULL, array_keys($opts))];
+		}
+		else
+		{
+			$opts = array_map(create_function('$str', 'return chr(ord("a")+$str);'), array_keys($options));
+
+			foreach ($options as $k => $m)
+			{
+				$l = chr(ord('a')+$k);
+				self::write("\t$l - $m\n");
+			}
+
+			$v = self::read_value($option_text, NULL, $opts);
+			return $options[ord($v) - ord('a')];
+		}
 	}
 
 	/**
@@ -422,5 +444,30 @@ class Shell_Cli {
 	public static function get_background_colors()
 	{
 		return array_keys(self::$background_colors);
+	}
+
+	/**
+	 * Obtenemos el ancho de la consola.
+	 */
+	public static function get_width()
+	{
+		// Obtengo variable de entorno.
+		$cols = (int) getenv('COLUMNS');
+
+		if ($cols > 0)
+		{
+			return $cols;
+		}
+
+		// Otra forma.
+		$cols = (int) exec('tput cols');
+
+		if ($cols > 0)
+		{
+			return $cols;
+		}
+
+		// Devolvemos un tamaño supuesto.
+		return 60;
 	}
 }

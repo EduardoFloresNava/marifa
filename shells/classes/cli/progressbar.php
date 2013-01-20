@@ -189,6 +189,14 @@ class Shell_Cli_ProgressBar {
 	}
 
 	/**
+	 * Show progress bar.
+	 */
+	public static function show_bar()
+	{
+		Shell_Cli::write(self::display());
+	}
+
+	/**
 	 * reset internal state, and send a new line so that the progress bar text is "finished"
 	 *
 	 * @static
