@@ -610,7 +610,7 @@ class Base_Model_Post extends Model_Dataset {
 		$inicio = $cantidad * ($pagina - 1);
 
 		// Obtenemos el listado.
-		$rst = $this->db->query('SELECT SUM(post_punto.cantidad) as puntos, post.id FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id WHERE post.estado = 0 GROUP BY post.id ORDER BY puntos DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT));
+		$rst = array_keys($this->db->query('SELECT post.id, SUM(post_punto.cantidad) AS puntos FROM post LEFT JOIN post_punto ON post.id = post_punto.post_id WHERE post.estado = 0 GROUP BY post.id ORDER BY puntos DESC LIMIT '.$inicio.', '.$cantidad)->get_pairs(array(Database_Query::FIELD_INT, Database_Query::FIELD_INT)));
 
 		// Armamos la lista.
 		$lst = array();
