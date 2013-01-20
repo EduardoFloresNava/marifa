@@ -182,7 +182,6 @@ class Base_Controller_Home extends Controller {
 		// Verifivo validez de la pagina.
 		if (count($post_list) == 0 && $pagina != 1)
 		{
-			Profiler_Profiler::get_instance()->display();
 			Request::redirect('/');
 		}
 

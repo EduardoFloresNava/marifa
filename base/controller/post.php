@@ -37,7 +37,7 @@ class Base_Controller_Post extends Controller {
 	 * @param Model_Post|int $post Modelo del post o ID del post.
 	 * @return string
 	 */
-	protected function post_url($post)
+	protected function post_url($post, $pagina = 1)
 	{
 		// Cargo post.
 		if ( ! is_object($post))
@@ -53,14 +53,22 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Genero la URL.
-		return '/post/'.$post->categoria()->seo.'/'.$post->id.'/'.Texto::make_seo($post->titulo).'.html';
+		if (is_string($pagina) || $pagina > 1)
+		{
+			return '/post/'.$post->categoria()->seo.'/'.$post->id.'/'.Texto::make_seo($post->titulo).'.'.$pagina.'.html';
+		}
+		else
+		{
+			return '/post/'.$post->categoria()->seo.'/'.$post->id.'/'.Texto::make_seo($post->titulo).'.html';
+		}
 	}
 
 	/**
 	 * Información de un post.
 	 * @param int $post ID del post a visualizar.
+	 * @param int $pagina Número de página de los comentarios.
 	 */
-	public function action_index($post)
+	public function action_index($post, $pagina)
 	{
 		// Convertimos el post a ID.
 		$post = (int) $post;
@@ -242,17 +250,25 @@ class Base_Controller_Post extends Controller {
 			$view->assign('comentario_ocultar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR));
 			$view->assign('comentario_editar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_EDITAR));
 
-			// Comentarios del post.
-			$cmts = $model_post->comentarios(NULL);
+			// Formato de la página.
+			$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
+			// Cantidad de elementos por pagina.
+			$model_configuracion = new Model_Configuracion;
+			$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+			// Cargo comentarios.
+			$cmts = $model_post->comentarios(Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO) ? NULL : Model_Post_Comentario::ESTADO_VISIBLE, $pagina, $cantidad_por_pagina);
+
+			// Verifivo validez de la pagina.
+			if (count($cmts) == 0 && $pagina != 1)
+			{
+				Request::redirect($this->post_url($model_post));
+			}
+
 			$l_cmt = array();
 			foreach ($cmts as $cmt)
 			{
-				// Verifico omito los no visibles si el usuario no puede verlos.
-				if ($cmt->estado !== Model_Comentario::ESTADO_VISIBLE && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
-				{
-					continue;
-				}
-
 				$cl_cmt = $cmt->as_array();
 				$cl_cmt['contenido_raw'] = $cl_cmt['contenido'];
 				$cl_cmt['contenido'] = Decoda::procesar($cl_cmt['contenido']);
@@ -270,6 +286,11 @@ class Base_Controller_Post extends Controller {
 			}
 			$view->assign('comentarios', $l_cmt);
 			unset($l_cmt, $cmts);
+
+			// Paginación.
+			$paginador = new Paginator($model_post->cantidad_comentarios(Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO) ? NULL : Model_Post_Comentario::ESTADO_VISIBLE), $cantidad_por_pagina);
+			$view->assign('paginacion', $paginador->get_view($pagina, $this->post_url($model_post, '%d')));
+			unset($paginador);
 
 			$view->assign('comentario_content', isset($_POST['comentario']) ? $_POST['comentario'] : NULL);
 			$view->assign('comentario_error', get_flash('post_comentario_error'));

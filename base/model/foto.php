@@ -220,10 +220,11 @@ class Base_Model_Foto extends Model_Dataset {
 	 * Obtenemos el listado de comentarios.
 	 * @return array
 	 */
-	public function comentarios()
+	public function comentarios($pagina, $cantidad = 20)
 	{
-		//TODO: estado de los comentarios de las fotos. Agregarlo a la base de datos.
-		$rst = $this->db->query('SELECT id FROM foto_comentario WHERE foto_id = ?', $this->primary_key['id']);
+		$start = ($pagina - 1) * $cantidad;
+
+		$rst = $this->db->query('SELECT id FROM foto_comentario WHERE foto_id = ? LIMIT '.$start.','.$cantidad, $this->primary_key['id']);
 		$rst->set_cast_type(Database_Query::FIELD_INT);
 
 		$lst = array();

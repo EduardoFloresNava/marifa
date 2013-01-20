@@ -51,12 +51,14 @@ return array(
 	// Rutas para los posts.
 	array('/post/:pagina/?', array('controller' => 'home', 'action' => 'index'), array('filters' => array('pagina' => '(\d+)'))),
 	array('/post/categoria/:categoria/?:pagina?', array('controller' => 'home', 'action' => 'index'), array('params_map' => array('pagina', 'categoria'))), // Atajo a las categorias.
-	array('/post/:categoria/:id/(:nombre).html', array('controller' => 'post', 'action' => 'index'), array('params_map' => array('id'))), // URL a una foto.
+	array('/post/:categoria/:id/:nombre.:pagina.html', array('controller' => 'post', 'action' => 'index'), array('params_map' => array('id', 'pagina'))), // URL a un post con pagina de comentarios.
+	array('/post/:categoria/:id/:nombre.html', array('controller' => 'post', 'action' => 'index'), array('params_map' => array('id'))), // URL a un post.
 
 	// Rutas para las fotos.
 	array('/foto/:pagina/?', array('controller' => 'foto', 'action' => 'index'), array('filters' => array('pagina' => '(\d+)'))),
 	array('/foto/categoria/:categoria/?:pagina?', array('controller' => 'foto', 'action' => 'index'), array('params_map' => array('pagina', 'categoria'))), // Atajo a las categorias.
-	array('/foto/:categoria/:id/(:nombre).html', array('controller' => 'foto', 'action' => 'ver'), array('params_map' => array('id'))), // URL a una foto.
+	array('/foto/:categoria/:id/:nombre.:pagina.html', array('controller' => 'foto', 'action' => 'ver'), array('params_map' => array('id', 'pagina'))), // URL a una foto con pagina de comentarios.
+	array('/foto/:categoria/:id/:nombre.html', array('controller' => 'foto', 'action' => 'ver'), array('params_map' => array('id'))), // URL a una foto.
 
 	array('/\@:usuario/?:action?/?:pagina?/?:pagina_2?', array('controller' => 'perfil', 'action' => 'index')), // Atajo al perfil del usuario.
 );

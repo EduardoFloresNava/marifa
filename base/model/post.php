@@ -351,18 +351,20 @@ class Base_Model_Post extends Model_Dataset {
 	 * @param int|array $estado Estado o arreglo de estados de los comentarios a obtener.
 	 * @return array Arreglo de modelos de comentarios.
 	 */
-	public function comentarios($estado = 0)
+	public function comentarios($estado = 0, $pagina = 1, $cantidad = 20)
 	{
+		$start = ($pagina - 1) * $cantidad;
+
 		//TODO: UTILIZAR ESTADO DE LOS COMENTARIOS.
 		//TODO: IMPLEMENTAR UTILIZACION DIRECTA DE MODELOS EN LOS RESULTADOS.
 		//TODO: DIFERENCIAR 1 estado de un arreglo. Mejora rendimiento SQL.
 		if ($estado === NULL)
 		{
-			$rst = $this->db->query('SELECT id FROM post_comentario WHERE post_id = ?', $this->primary_key['id']);
+			$rst = $this->db->query('SELECT id FROM post_comentario WHERE post_id = ? LIMIT '.$start.','.$cantidad, $this->primary_key['id']);
 		}
 		else
 		{
-			$rst = $this->db->query('SELECT id FROM post_comentario WHERE post_id = ? AND estado IN (?)', array($this->primary_key['id'], $estado));
+			$rst = $this->db->query('SELECT id FROM post_comentario WHERE post_id = ? AND estado IN (?) LIMIT '.$start.','.$cantidad, array($this->primary_key['id'], $estado));
 		}
 		$rst->set_cast_type(Database_Query::FIELD_INT);
 
