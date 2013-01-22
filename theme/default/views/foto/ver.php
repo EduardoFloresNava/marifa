@@ -107,6 +107,7 @@
 				</div>
 					{/if}
 				{/loop}
+				{$paginacion}
 			</div>
 		</div>
 		{if="$me != NULL && $puedo_comentar"}

@@ -137,6 +137,7 @@
 					</div>
 				</div>
 				{/loop}
+				{$paginacion}
 			</div>
 		</div>
 		<div class="row-fluid">
