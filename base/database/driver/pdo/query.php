@@ -82,6 +82,9 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 	{
 		parent::set_fetch_type($type);
 		$this->query->setFetchMode($this->fetch_mode_pdo($type));
+
+		// Chainable
+		return $this;
 	}
 
 	/**

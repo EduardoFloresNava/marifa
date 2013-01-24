@@ -855,6 +855,7 @@ class Installer_Controller {
 					// Realizo la tarea.
 					try {
 						$o_importador->importar();
+						$error = FALSE;
 					}
 					catch (Exception $e)
 					{

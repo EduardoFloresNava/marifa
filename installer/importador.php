@@ -70,12 +70,10 @@ class Installer_Importador {
 		{
 			// Verifico si es del timpo import_.
 			$m_name = $m->getName();
-				if (substr($m_name, 0, 7) == 'import_')
+			if (substr($m_name, 0, 7) == 'import_')
 			{
-				//$this->$m_name();
-				var_dump($m_name);
+				$this->$m_name();
 			}
 		}
-		die();
 	}
 }
