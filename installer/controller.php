@@ -276,7 +276,7 @@ class Installer_Controller {
 					// Genero arreglo de configuraciones.
 					$config = array(
 						'type' => $driver,
-						'dsn' => $host,
+						'dsn' => "mysql:dbname=$db_name;host=$host",
 						'username' => $usuario,
 						'password' => $password
 					);
