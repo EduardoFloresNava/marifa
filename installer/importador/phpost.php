@@ -150,8 +150,70 @@ class Installer_Importador_Phpost extends Installer_Importador {
 
 			// Listado de asociación de permisos.
 			$p_assoc = array(
-				//'suad'     => SUPERADMIN
-				//'sumo'     => SUPERMODERADOR
+				'suad'     => array(
+					Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS,
+					Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER,
+					Model_Usuario_Rango::PERMISO_USUARIO_BANEAR,
+					Model_Usuario_Rango::PERMISO_USUARIO_ADVERTIR,
+					Model_Usuario_Rango::PERMISO_USUARIO_ADMINISTRAR,
+					Model_Usuario_Rango::PERMISO_POST_CREAR,
+					Model_Usuario_Rango::PERMISO_POST_PUNTUAR,
+					Model_Usuario_Rango::PERMISO_POST_ELIMINAR,
+					Model_Usuario_Rango::PERMISO_POST_OCULTAR,
+					Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS,
+					Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO,
+					Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER,
+					Model_Usuario_Rango::PERMISO_POST_EDITAR,
+					Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA,
+					Model_Usuario_Rango::PERMISO_FOTO_CREAR,
+					Model_Usuario_Rango::PERMISO_FOTO_VOTAR,
+					Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR,
+					Model_Usuario_Rango::PERMISO_FOTO_OCULTAR,
+					Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS,
+					Model_Usuario_Rango::PERMISO_FOTO_VER_DESAPROBADO,
+					Model_Usuario_Rango::PERMISO_FOTO_EDITAR,
+					Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR_CERRADO,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_VOTAR,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_ELIMINAR,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_EDITAR,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO,
+					Model_Usuario_Rango::PERMISO_SITIO_ACCESO_MANTENIMIENTO,
+					Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR,
+					Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO
+				),
+				'sumo'     => array(
+					Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS,
+					Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER,
+					Model_Usuario_Rango::PERMISO_USUARIO_BANEAR,
+					Model_Usuario_Rango::PERMISO_USUARIO_ADVERTIR,
+					Model_Usuario_Rango::PERMISO_POST_CREAR,
+					Model_Usuario_Rango::PERMISO_POST_PUNTUAR,
+					Model_Usuario_Rango::PERMISO_POST_ELIMINAR,
+					Model_Usuario_Rango::PERMISO_POST_OCULTAR,
+					Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS,
+					Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO,
+					Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER,
+					Model_Usuario_Rango::PERMISO_POST_EDITAR,
+					Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA,
+					Model_Usuario_Rango::PERMISO_FOTO_CREAR,
+					Model_Usuario_Rango::PERMISO_FOTO_VOTAR,
+					Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR,
+					Model_Usuario_Rango::PERMISO_FOTO_OCULTAR,
+					Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS,
+					Model_Usuario_Rango::PERMISO_FOTO_VER_DESAPROBADO,
+					Model_Usuario_Rango::PERMISO_FOTO_EDITAR,
+					Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR_CERRADO,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_VOTAR,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_ELIMINAR,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_EDITAR,
+					Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO
+				),
 				'godp'     => Model_Usuario_Rango::PERMISO_POST_PUNTUAR,
 				'gopp'     => Model_Usuario_Rango::PERMISO_POST_CREAR,
 				'gopcp'    => Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR,
@@ -231,7 +293,7 @@ class Installer_Importador_Phpost extends Installer_Importador {
 	/**
 	 * Importamos los usuarios.
 	 */
-	public function import_usuarios()
+	protected function import_usuarios()
 	{
 		// Obtenemos la lista de usuarios.
 		$usuarios = $this->importador_db->query('SELECT user_id, user_name, user_password, user_email, user_rango, user_puntos, user_registro, user_lastlogin, user_lastactive, user_last_ip, user_activo, user_baneado FROM u_miembros')->set_fetch_type(Database_Query::FETCH_OBJ);
@@ -254,7 +316,13 @@ class Installer_Importador_Phpost extends Installer_Importador {
 			);
 
 			// Creo el usuario.
-			$this->marifa_db->insert('INSERT INTO usuario (id, nick, password, email, rango, puntos, registro, lastlogin, lastactive, lastip, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array_values($usuario_data));
+			try {
+				$this->marifa_db->insert('INSERT INTO usuario (id, nick, password, email, rango, puntos, registro, lastlogin, lastactive, lastip, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array_values($usuario_data));
+			}
+			catch (Exception $e)
+			{
+
+			}
 		}
 		unset($usuarios, $usuario, $usuario_data);
 	}
@@ -332,7 +400,7 @@ class Installer_Importador_Phpost extends Installer_Importador {
 	/**
 	 * Importo listado de seguidores entre usuarios y posts.
 	 */
-	public function import_seguidores()
+	protected function import_seguidores()
 	{
 		// 1: Usuario, 3 Post.
 
@@ -350,7 +418,7 @@ class Installer_Importador_Phpost extends Installer_Importador {
 	/**
 	 * Importo los mensajes entre los usuarios.
 	 */
-	public function import_mensajes()
+	protected function import_mensajes()
 	{
 		// Obtengo listado de mensajes.
 		$mensajes = $this->importador_db->query('SELECT mp_id, mp_to, mp_from, mp_read_to, mp_del_to, mp_subject, mp_preview, mp_date FROM u_mensajes')->set_fetch_type(Database_Query::FETCH_OBJ);
@@ -559,8 +627,8 @@ class Installer_Importador_Phpost extends Installer_Importador {
 		{
 			$noticia_data = array(
 				'id' => (int) $noticia->not_id,
-				'contenido' => $noticia->not_body,
 				'usuario_id' => (int) $noticia->not_autor,
+				'contenido' => $noticia->not_body,
 				'fecha' => date(BD_DATETIME, (int) $noticia->not_date),
 				'estado' => (int) $noticia->not_active
 			);
@@ -587,8 +655,7 @@ class Installer_Importador_Phpost extends Installer_Importador {
 				'descripcion' => $medalla->m_description,
 				'imagen' => $medalla->m_image.'_32.png',
 				'tipo' => (int) $medalla->m_type + 1,
-
-				'condicion' => $medalla->medal_id,
+				'condicion' => NULL,
 				'cantidad' => (int) $medalla->m_cant
 			);
 
@@ -627,7 +694,7 @@ class Installer_Importador_Phpost extends Installer_Importador {
 					}
 					break;
 				case 1: // Post.
-					switch ($medalla->m_cond_user)
+					switch ($medalla->m_cond_post)
 					{
 						case 1:
 							$medalla_data['condicion'] = Model_Medalla::CONDICION_POST_PUNTOS;
@@ -656,7 +723,7 @@ class Installer_Importador_Phpost extends Installer_Importador {
 					}
 					break;
 				case 2: // Foto.
-					switch ($medalla->m_cond_user)
+					switch ($medalla->m_cond_foto)
 					{
 						case 1:
 							$medalla_data['condicion'] = Model_Medalla::CONDICION_FOTO_VOTOS_POSITIVOS;
@@ -711,7 +778,7 @@ class Installer_Importador_Phpost extends Installer_Importador {
 		{
 			$categoria_data = array(
 				'id' => (int) $categoria->cid,
-				'nombre' => (int) $categoria->c_nombre,
+				'nombre' => $categoria->c_nombre,
 				'seo' => Model_Categoria::make_seo_s($categoria->c_nombre),
 				'imagen' => $categoria->c_img
 			);
@@ -899,7 +966,7 @@ class Installer_Importador_Phpost extends Installer_Importador {
 		// Importamos los puntos.
 		foreach ($puntos_comentarios as $puntos_comentario)
 		{
-			$this->marifa_db->insert('INSERT INTO post_comentario_voto (post_comentario_id, usuario_id, cantidad) VALUES (?, ?, ?)', array( (int) $puntos_comentario->tid, (int) $puntos_comentario->tuser, (int) $puntos_comentario->cant));
+			$this->marifa_db->insert('INSERT INTO post_comentario_voto (post_comentario_id, usuario_id, cantidad) VALUES (?, ?, ?)', array( (int) $puntos_comentario->tid, (int) $puntos_comentario->tuser, 1));
 		}
 		unset($puntos_comentarios, $puntos_comentario);
 
@@ -993,7 +1060,7 @@ class Installer_Importador_Phpost extends Installer_Importador {
 	protected function import_muro()
 	{
 		// Obtengo listado de publicaciones.
-		$publicaciones = $this->importador_db->query('SELECT pub_id, p_user, p_user_pub, p_date, p_comments, p_body, p_likes, p_type, p_ip FROM u_muro')->set_fetch_type(Database_Query::FETCH_OBJ);
+		$publicaciones = $this->importador_db->query('SELECT pub_id, p_user, p_user_pub, p_date, p_body, p_likes, p_type, p_ip FROM u_muro')->set_fetch_type(Database_Query::FETCH_OBJ);
 
 		// Importamos las publicaciones.
 		foreach ($publicaciones as $publicacion)
@@ -1001,25 +1068,25 @@ class Installer_Importador_Phpost extends Installer_Importador {
 			switch ( (int) $publicacion->p_type)
 			{
 				case 1: // Publicación.
-					$this->marifa_db->insert('INSERT INTO shout (id, usuario_id, mensaje, tipo, valor, fecha) VALUES (?, ?, ?, ?, ?, ?)', array( (int) $publicacion->pub_id, (int) $publicacion->p_user_pub, $publicacion->p_comments, Model_Shout::TIPO_TEXTO, NULL, date(BD_DATETIME, (int) $publicacion->p_date)));
+					$this->marifa_db->insert('INSERT INTO shout (id, usuario_id, mensaje, tipo, valor, fecha) VALUES (?, ?, ?, ?, ?, ?)', array( (int) $publicacion->pub_id, (int) $publicacion->p_user_pub, $publicacion->p_body), Model_Shout::TIPO_TEXTO, NULL, date(BD_DATETIME, (int) $publicacion->p_date));
 					break;
 				case 2: // Foto.
 					// Obtengo datos de la foto.
 					$url = $this->importador_db->query('SELECT a_url FROM u_muro_adjuntos WHERE pub_id = ?', (int) $publicacion->pub_id)->get_var();
 
-					$this->marifa_db->insert('INSERT INTO shout (id, usuario_id, mensaje, tipo, valor, fecha) VALUES (?, ?, ?, ?, ?, ?)', array( (int) $publicacion->pub_id, (int) $publicacion->p_user_pub, $publicacion->p_comments, Model_Shout::TIPO_IMAGEN, $url, date(BD_DATETIME, (int) $publicacion->p_date)));
+					$this->marifa_db->insert('INSERT INTO shout (id, usuario_id, mensaje, tipo, valor, fecha) VALUES (?, ?, ?, ?, ?, ?)', array( (int) $publicacion->pub_id, (int) $publicacion->p_user_pub, $publicacion->p_body, Model_Shout::TIPO_IMAGEN, $url, date(BD_DATETIME, (int) $publicacion->p_date)));
 					break;
 				case 3: // Enlace.
 					// Obtengo datos del enlace.
 					list($url, $title) = $this->importador_db->query('SELECT a_title, a_url FROM u_muro_adjuntos WHERE pub_id = ?', (int) $publicacion->pub_id)->get_record(Database_Query::FETCH_NUM);
 
-					$this->marifa_db->insert('INSERT INTO shout (id, usuario_id, mensaje, tipo, valor, fecha) VALUES (?, ?, ?, ?, ?, ?)', array( (int) $publicacion->pub_id, (int) $publicacion->p_user_pub, $publicacion->p_comments, Model_Shout::TIPO_ENLACE, serialize(array($url, $title)), date(BD_DATETIME, (int) $publicacion->p_date)));
+					$this->marifa_db->insert('INSERT INTO shout (id, usuario_id, mensaje, tipo, valor, fecha) VALUES (?, ?, ?, ?, ?, ?)', array( (int) $publicacion->pub_id, (int) $publicacion->p_user_pub, $publicacion->p_body, Model_Shout::TIPO_ENLACE, serialize(array($url, $title)), date(BD_DATETIME, (int) $publicacion->p_date)));
 					break;
 				case 4: // Video.
 					// Obtengo datos del video.
 					$video = $this->importador_db->query('SELECT a_url FROM u_muro_adjuntos WHERE pub_id = ?', (int) $publicacion->pub_id)->get_var();
 
-					$this->marifa_db->insert('INSERT INTO shout (id, usuario_id, mensaje, tipo, valor, fecha) VALUES (?, ?, ?, ?, ?, ?)', array( (int) $publicacion->pub_id, (int) $publicacion->p_user_pub, $publicacion->p_comments, Model_Shout::TIPO_VIDEO, 'youtube:'.$video, date(BD_DATETIME, (int) $publicacion->p_date)));
+					$this->marifa_db->insert('INSERT INTO shout (id, usuario_id, mensaje, tipo, valor, fecha) VALUES (?, ?, ?, ?, ?, ?)', array( (int) $publicacion->pub_id, (int) $publicacion->p_user_pub, $publicacion->p_body, Model_Shout::TIPO_VIDEO, 'youtube:'.$video, date(BD_DATETIME, (int) $publicacion->p_date)));
 					break;
 			}
 		}

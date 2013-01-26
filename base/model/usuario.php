@@ -168,9 +168,37 @@ class Base_Model_Usuario extends Model_Dataset {
 			// Obtenemos la información.
 			$data = $rst->get_record(Database_Query::FETCH_ASSOC, array('id' => Database_Query::FIELD_INT, 'estado' => Database_Query::FIELD_INT));
 
-			// Verificamos la contraseña.
-			$enc = new Phpass(8, FALSE);
-			if ( ! $enc->check_password($password, $data['password']) == TRUE)
+			// Verifico tipo password.
+			if (strlen($data['password']) == 60) // Marifa
+			{
+				// Verificamos la contraseña.
+				$enc = new Phpass(8, FALSE);
+				if ( ! $enc->check_password($password, $data['password']) == TRUE)
+				{
+					return -1;
+				}
+			}
+			elseif (strlen($data['password']) == 40 && sha1(strtolower($data['nick']).$password)) // SMF 1.1.x, SMF 2.0.x
+			{
+				// Codifico la contraseña.
+				$enc = new Phpass(8, FALSE);
+				$enc_password = $enc->hash_password($password);
+				unset($enc);
+
+				// Actualizo la contraseña.
+				$this->db->query('UPDATE usuario SET password = ? WHERE id = ?', array($enc_password, $data['id']));
+			}
+			elseif (strlen($data['password']) == 32 && ($data['password'] == md5(md5($password).strtolower($data['nick'])) || $data['password'] == md5($password))) // Zinfinal - phpost
+			{
+				// Codifico la contraseña.
+				$enc = new Phpass(8, FALSE);
+				$enc_password = $enc->hash_password($password);
+				unset($enc);
+
+				// Actualizo la contraseña.
+				$this->db->query('UPDATE usuario SET password = ? WHERE id = ?', array($enc_password, $data['id']));
+			}
+			else
 			{
 				return -1;
 			}
