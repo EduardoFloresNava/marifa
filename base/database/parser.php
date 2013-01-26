@@ -312,7 +312,7 @@ class Base_Database_Parser {
 		else
 		{
 			// Suponemos una cadena, la limpiamos.
-			return "\"".Database::get_instance()->escape_string($object)."\"";
+			return "\"".Database::get_instance()->escape_string(utf8_encode($object))."\"";
 		}
 	}
 
@@ -362,18 +362,26 @@ class Base_Database_Parser {
 			throw new InvalidArgumentException("No coinciden la cantidad de parametros necesarios con los provistos");
 			return $q;
 		}
+
+		// Cadena donde colocar el resultado.
+		$q_rst = '';
+
 		foreach ($params as $param)
 		{
 			// Proceso la entrada.
 			$param = $this->parse_input($param);
 
-			// Valido $n y \\n
-			$param = preg_replace('/(\$[0-9]+)/', '\\\\$0', $param);
-			$param = preg_replace('/(\\\\[0-9]+)/', '\\\\\\\\$0', $param);
+			// Busco ?.
+			$start = strpos($q, '?');
 
-			$q = preg_replace('/\?/', $param, $q, 1);
+			$q_rst .= substr($q, 0, $start).$param;
+
+			$q = substr($q, $start + 1);
 		}
-		return $q;
+
+		$q_rst .= $q;
+
+		return $q_rst;
 	}
 
 	/**
@@ -383,10 +391,7 @@ class Base_Database_Parser {
 	 */
 	public function build()
 	{
-		$query = $this->query;
-		$query = $this->parse_vars($query, $this->params);
-		$query = $this->parse_named_vars($query, $this->named_params);
-		return $query;
+		return $this->parse_named_vars($this->parse_vars($this->query, $this->params), $this->named_params);
 	}
 
 	/**

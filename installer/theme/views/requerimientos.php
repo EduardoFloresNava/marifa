@@ -40,4 +40,4 @@
 		{/loop}
 	</tbody>
 </table>
-{if="$can_continue"}<a class="btn btn-large btn-success" href="{#SITE_URL#}/installer/bd/">Continuar <i class="icon-white icon-arrow-right"></i></a>{else}<a class="btn btn-large btn-primary" href="{#SITE_URL#}/installer/requerimientos"><i class="icon-white icon-refresh"></i> Reintentar</a>{/if}
+{if="$can_continue"}<a class="btn btn-large btn-success" href="{function="Installer_Step::url_siguiente('requerimientos')"}">Continuar <i class="icon-white icon-arrow-right"></i></a>{else}<a class="btn btn-large btn-primary" href="{#SITE_URL#}/installer/requerimientos"><i class="icon-white icon-refresh"></i> Reintentar</a>{/if}

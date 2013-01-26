@@ -200,7 +200,10 @@ class Base_Request {
 			$url = substr($url, 1);
 		}
 
-		$url = SITE_URL.'/'.$url;
+		if(substr($url, 0, strlen(SITE_URL)) != SITE_URL)
+		{
+			$url = SITE_URL.'/'.$url;
+		}
 
 		// Verifico si tengo que guardar la URL.
 		if ($save_current)

@@ -102,6 +102,9 @@ abstract class Base_Database_Query implements Iterator {
 			throw new Database_Exception('Invalid fetch type');
 		}
 		$this->fetch_type = $type;
+
+		// Chainable
+		return $this;
 	}
 
 	/**
@@ -111,6 +114,9 @@ abstract class Base_Database_Query implements Iterator {
 	public function set_cast_type($cast)
 	{
 		$this->cast = $cast;
+
+		// Chainable
+		return $this;
 	}
 
 	/**

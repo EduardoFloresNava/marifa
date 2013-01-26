@@ -22,4 +22,4 @@
 	</tbody>
 </table>
 {if="!isset($execute)"}<form action="" method="POST"><input type="submit" value="Ejecutar" class="btn btn-large btn-primary" /></form>
-{else}<a href="{#SITE_URL#}/installer/configuracion/" class="btn btn-large btn-success">Continuar</a>{/if}
+{else}<a href="{function="Installer_Step::url_siguiente('bd_install')"}" class="btn btn-large btn-success">Continuar</a>{/if}

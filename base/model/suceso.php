@@ -95,9 +95,16 @@ class Base_Model_Suceso extends Model_Dataset {
 	 * @param int $objeto_id ID del objeto del suceso.
 	 * @param int $objeto_id2 ID secundario del objeto del suceso.
 	 * @param int $objeto_id3 ID terciario del objeto del suceso.
+	 * @param int $fecha Timestamp con la fecha del suceso. NULL para la hora actual.
 	 */
-	public function crear($usuario_id, $tipo, $notificar, $objeto_id, $objeto_id2 = NULL, $objeto_id3 = NULL)
+	public function crear($usuario_id, $tipo, $notificar, $objeto_id, $objeto_id2 = NULL, $objeto_id3 = NULL, $fecha = NULL)
 	{
+		// Creo la fecha.
+		if ($fecha == NULL)
+		{
+			$fecha = time();
+		}
+
 		if (is_array($usuario_id))
 		{
 			// Eliminamos repetidos.
@@ -107,9 +114,9 @@ class Base_Model_Suceso extends Model_Dataset {
 			$rst = array();
 			foreach ($usuario_id as $id)
 			{
-				list($rst[],) = $this->db->insert('INSERT INTO suceso (usuario_id, objeto_id, objeto_id1, objeto_id2, tipo, fecha, notificar) VALUES (?, ?, ?, ?, ?, ?, ?)',
-					array($id, $objeto_id, $objeto_id2, $objeto_id3, $tipo, date('Y/m/d H:i:s'), $notificar));
+				$rst[] = $this->crear($id, $tipo, $notificar, $objeto_id, $objeto_id2 = NULL, $objeto_id3 = NULL, $fecha = NULL);
 			}
+			
 			return $rst;
 		}
 		else
