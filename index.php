@@ -195,6 +195,9 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 	Plugin_Manager::get_instance()->regenerar_lista();
 }
 
+// Cargamos la lista de eventos.
+Event::load_from_plugins();
+
 // Database profiler.
 PRODUCTION || Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');
 

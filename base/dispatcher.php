@@ -220,10 +220,10 @@ class Base_Dispatcher {
 			if (is_array($target))
 			{
 				// Genero nombre del controlador.
-				if (isset($t['plugin']))
+				if (isset($target['plugin']))
 				{
 					// Formateo nombre del plugin.
-					$p_name = strtolower($t['plugin']);
+					$p_name = strtolower($target['plugin']);
 
 					// Validamos que tenga el formato requerido.
 					if (preg_match('/^[a-z0-9]+$/D', $p_name) < 1)
@@ -633,11 +633,23 @@ class Base_Dispatcher {
 		// Agrego a Stack.
 		Request::add_stack(NULL, $controller, $accion, $args, $plugin);
 
+		// Evento Pre-Inicialización de todos los controladores.
+		Event::trigger('Controller.Pre_Before', $cont);
+
+		// Evento pre-before.
+		Event::trigger('Controller.'.$controller.'.Pre_Before', $cont);
+
 		// Llamo pre-llamada.
 		if (method_exists($cont, 'before'))
 		{
 			call_user_func(array($cont, 'before'));
 		}
+
+		// Evento Pre-Ejecución de todos los controladores.
+		Event::trigger('Controller.Pre_Controller', $cont);
+
+		// Evento Pre-Ejecución del controlador.
+		Event::trigger('Controller.'.$controller.'.Pre_Controller', $cont);
 
 		// Llamo la acción.
 		$rst = call_user_func_array(array(
@@ -645,11 +657,23 @@ class Base_Dispatcher {
 				'action_'.$accion
 		), $args);
 
+		// Evento Post-Ejecución de todos los controladores.
+		Event::trigger('Controller.Post_Controller', $cont);
+
+		// Evento Post-Ejecución del controlador.
+		Event::trigger('Controller.'.$controller.'.Post_Controller', $cont);
+
 		// Llamo post-llamada.
 		if (method_exists($cont, 'after'))
 		{
 			call_user_func(array($cont, 'after'));
 		}
+
+		// Evento Post-Post-Ejecución de todos los controladores.
+		Event::trigger('Controller.Post_After', $cont);
+
+		// Evento Post-Post-Ejecución del controlador.
+		Event::trigger('Controller.'.$controller.'.Post_After', $cont);
 
 		// Quito del Stack.
 		Request::pop_stack();

@@ -117,7 +117,19 @@ class Base_Controller_Admin_Home extends Controller {
 		{
 			$listado[$activo]['active'] = TRUE;
 		}
-		return $listado;
+
+		// Evento de procesamiento de los permisos.
+		$rst = Event::trigger('Admin.Home.Menu', array($listado, $activo));
+
+		// Verifico que procesamiento se debe enviar.
+		if (is_array($rst))
+		{
+			return $rst[0];
+		}
+		else
+		{
+			return $listado;
+		}
 	}
 
 	/**
