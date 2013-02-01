@@ -87,8 +87,11 @@ class Base_RainTPL extends Lib_RainTPL {
 			$s_list = explode('/', $tpl_name, 2);
 			$plugin = strtolower($s_list[1]);
 
+			// Obtengo partes de la URL.
+			list(, $plugin_name , $vista) = explode('/', $tpl_name, 3);
+
 			// Generamos la ruta de la vista.
-			$template_name = PLUGINS_PATH.DS.$plugin.DS.'views'.DS.$tpl_name;
+			$template_name = PLUGINS_PATH.DS.$plugin_name.DS.'views'.DS.$vista;
 		}
 		else
 		{
@@ -129,4 +132,12 @@ class Base_RainTPL extends Lib_RainTPL {
 		return self::$base_url;
 	}
 
+	/**
+	 * Parseamos la vista.
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return $this->parse();
+	}
 }

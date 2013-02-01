@@ -199,7 +199,7 @@ class Base_Controller {
 		$header = '';
 		foreach ($this->header as $v)
 		{
-			$header .= $v->parse();
+			$header .= (string) $v;
 		}
 		$this->template->assign('header', $header);
 		unset($v, $header);
@@ -207,7 +207,7 @@ class Base_Controller {
 		$footer = '';
 		foreach ($this->footer as $v)
 		{
-			$footer .= $v->parse();
+			$footer .= (string) $v;
 		}
 		$this->template->assign('footer', $footer);
 		unset($v, $footer);
