@@ -11,7 +11,7 @@ return array(
 		/**
 		 * Tamaño máximo en bytes.
 		 */
-		'max_size' => 1000,
+		'max_size' => 2097152, // 2MB
 
 		/**
 		 * Donde guardar los archivos cargados.
