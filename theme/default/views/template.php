@@ -25,6 +25,7 @@
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{#THEME_URL#}/assets/ico/apple-touch-icon-114-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{#THEME_URL#}/assets/ico/apple-touch-icon-72-precomposed.png">
         <link rel="apple-touch-icon-precomposed" href="{#THEME_URL#}/assets/ico/apple-touch-icon-57-precomposed.png">
+		{$header}
     </head>
 
     <body>
@@ -110,10 +111,7 @@
 		</div>
 		{include="footer"}
 		<div class="pop-notification"></div>
-
-        <!-- Le javascript
-        ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
+		{$footer}
 		<script type="text/javascript">
 			window.site_url = "{#SITE_URL#}/";
 			window.theme_url = "{#THEME_URL#}/";
