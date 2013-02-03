@@ -26,7 +26,7 @@
 /**
  * Defino versión de marifa.
  */
-define('VERSION', '0.2RC4');
+define('VERSION', '0.2');
 
 /**
  * Cargamos el modo de depuración desde una variable de entorno.

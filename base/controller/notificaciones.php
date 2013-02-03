@@ -108,9 +108,20 @@ class Base_Controller_Notificaciones extends Controller {
 			$suceso_vista->assign('fecha', $v->fecha);
 			$suceso_vista->assign('visto', $v->visto);
 
+			// Verifico vista superior para sucesos.
+			try {
+				$vc = View::factory('/suceso/notificaciones');
+				$vc->assign('contenido', $suceso_vista->parse());
 
-			// Agregamos el evento.
-			$eventos[] = $suceso_vista->parse();
+				// Datos del suceso.
+				$vc->assign('fecha', $v->fecha);
+				$vc->assign('visto', $v->visto);
+				$eventos[] = $vc->parse();
+			}
+			catch (Exception $e)
+			{
+				$eventos[] = $suceso_vista->parse();
+			}
 		}
 
 		$view->assign('sucesos', $eventos);

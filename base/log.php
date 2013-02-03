@@ -93,6 +93,18 @@ class Base_Log {
 	 */
 	public static function setup($path, $file, $level = self::NONE)
 	{
+		// SAPI LOG.
+		if (php_sapi_name() == 'cli-server')
+		{
+			// Seteo nivel a utilizar.
+			self::$level = $level;
+
+			// Seteo como configurado.
+			self::$config = TRUE;
+
+			return;
+		}
+
 		// Obtenemos el path compilado.
 		self::$file = self::get_path($path, $file);
 
@@ -147,23 +159,30 @@ class Base_Log {
 			4 => ' DEBUG '
 		);
 
-		// Abro el archivo.
-		if ( ! $fp = @fopen(self::$file, 'a'))
-		{
-			// No se pudo realizar la apertura.
-			return FALSE;
-		}
-
 		// Armo el mensaje.
 		$message = '['.date('d-m-Y H:i:s')."] [{$levels[$level]}] $str ".PHP_EOL;
 
-		// Escribo con bloqueo exclusivo.
-		flock($fp, LOCK_EX);
-		fwrite($fp, $message);
-		flock($fp, LOCK_UN);
+		if (php_sapi_name() == 'cli-server')
+		{
+			error_log($message, 4);
+		}
+		else
+		{
+			// Abro el archivo.
+			if ( ! $fp = @fopen(self::$file, 'a'))
+			{
+				// No se pudo realizar la apertura.
+				return FALSE;
+			}
 
-		// Cierro el archivo.
-		fclose($fp);
+			// Escribo con bloqueo exclusivo.
+			flock($fp, LOCK_EX);
+			fwrite($fp, $message);
+			flock($fp, LOCK_UN);
+
+			// Cierro el archivo.
+			fclose($fp);
+		}
 
 		// Informo que se realizo de forma corecta.
 		return TRUE;
@@ -207,5 +226,22 @@ class Base_Log {
 	public static function error($str)
 	{
 		return self::log($str, self::ERROR);
+	}
+
+	/**
+	 * Comprimimos los log's antiguos.
+	 */
+	public static function compress_old()
+	{
+		foreach (glob(dirname(self::$file).DS.'*.log') as $file)
+		{
+			if ($file == self::$file)
+			{
+				continue;
+			}
+
+			file_put_contents($file.'.gz', gzcompress(file_get_contents($file)));
+			unlink($file);
+		}
 	}
 }

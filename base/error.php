@@ -313,6 +313,9 @@ class Base_Error {
 	 */
 	public static function show_error($description, $number = 500, $extended = NULL)
 	{
+		// Limpio buffer.
+		ob_clean();
+
 		// Estamos mostrando un error.
 		self::$has_error = TRUE;
 

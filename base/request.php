@@ -79,15 +79,23 @@ class Base_Request {
 
 	/**
 	 * Obtenemos la petición actual.
+	 * @param bool $object Si hay que devolverlo como un objeto en lugar de como arreglo.
 	 * @return string|NULL Petición o NULL si no hay disponible.
 	 */
-	public static function current()
+	public static function current($object = FALSE)
 	{
 		// Obtenemos la petición actual.
 		if (is_array(self::$request) && count(self::$request) > 0)
 		{
 			// Obtenemos la actual.
-			return self::$request[count(self::$request) - 1];
+			if ($object)
+			{
+				return (object) self::$request[count(self::$request) - 1];
+			}
+			else
+			{
+				return self::$request[count(self::$request) - 1];
+			}
 		}
 		else
 		{
@@ -177,7 +185,7 @@ class Base_Request {
 		// Verifico ruta guardada.
 		if ($go_saved && Cookie::cookie_exists('r_u'))
 		{
-			$url = Cookie::get_cookie_value('r_u');
+			$url = $_COOKIE['r_u'];
 			Cookie::delete_cookie('r_u');
 		}
 
@@ -192,12 +200,15 @@ class Base_Request {
 			$url = substr($url, 1);
 		}
 
-		$url = SITE_URL.'/'.$url;
+		if(substr($url, 0, strlen(SITE_URL)) != SITE_URL)
+		{
+			$url = SITE_URL.'/'.$url;
+		}
 
 		// Verifico si tengo que guardar la URL.
 		if ($save_current)
 		{
-			Cookie::set_classic_cookie('r_u', Request::peticion_to_url(Request::current()));
+			Cookie::set_classic_cookie('r_u', Request::peticion_to_url(Request::current()), 0, '/');
 		}
 
 		// Redireccionamos.

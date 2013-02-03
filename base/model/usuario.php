@@ -168,9 +168,37 @@ class Base_Model_Usuario extends Model_Dataset {
 			// Obtenemos la información.
 			$data = $rst->get_record(Database_Query::FETCH_ASSOC, array('id' => Database_Query::FIELD_INT, 'estado' => Database_Query::FIELD_INT));
 
-			// Verificamos la contraseña.
-			$enc = new Phpass(8, FALSE);
-			if ( ! $enc->check_password($password, $data['password']) == TRUE)
+			// Verifico tipo password.
+			if (strlen($data['password']) == 60) // Marifa
+			{
+				// Verificamos la contraseña.
+				$enc = new Phpass(8, FALSE);
+				if ( ! $enc->check_password($password, $data['password']) == TRUE)
+				{
+					return -1;
+				}
+			}
+			elseif (strlen($data['password']) == 40 && sha1(strtolower($data['nick']).$password)) // SMF 1.1.x, SMF 2.0.x
+			{
+				// Codifico la contraseña.
+				$enc = new Phpass(8, FALSE);
+				$enc_password = $enc->hash_password($password);
+				unset($enc);
+
+				// Actualizo la contraseña.
+				$this->db->query('UPDATE usuario SET password = ? WHERE id = ?', array($enc_password, $data['id']));
+			}
+			elseif (strlen($data['password']) == 32 && ($data['password'] == md5(md5($password).strtolower($data['nick'])) || $data['password'] == md5($password))) // Zinfinal - phpost
+			{
+				// Codifico la contraseña.
+				$enc = new Phpass(8, FALSE);
+				$enc_password = $enc->hash_password($password);
+				unset($enc);
+
+				// Actualizo la contraseña.
+				$this->db->query('UPDATE usuario SET password = ? WHERE id = ?', array($enc_password, $data['id']));
+			}
+			else
 			{
 				return -1;
 			}
@@ -880,7 +908,7 @@ class Base_Model_Usuario extends Model_Dataset {
 			$where = '';
 		}
 
-		return $this->db->query('SELECT SUM(puntos) as puntos, nick FROM (SELECT SUM(post_punto.cantidad) AS puntos, usuario.nick FROM usuario INNER JOIN post ON post.usuario_id = usuario.id LEFT JOIN post_punto ON post.id = post_punto.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0 AND usuario.estado = 1'.$where.' GROUP BY post.id ORDER BY puntos DESC LIMIT 10) as A GROUP BY nick ORDER BY puntos DESC', $params)
+		return $this->db->query('SELECT SUM(puntos) as puntos, nick FROM (SELECT SUM(post_punto.cantidad) AS puntos, usuario.nick FROM usuario INNER JOIN post ON post.usuario_id = usuario.id LEFT JOIN post_punto ON post.id = post_punto.post_id LEFT JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0 AND usuario.estado = 1'.$where.' GROUP BY post.id ORDER BY puntos DESC LIMIT 10) as A GROUP BY nick ORDER BY puntos DESC', $params)
 			->get_records(Database_Query::FETCH_ASSOC, array(
 				'puntos' => Database_Query::FIELD_INT,
 				'nick' => Database_Query::FIELD_STRING

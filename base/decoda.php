@@ -94,7 +94,6 @@ class Base_Decoda extends Decoda_Decoda {
 				'center',
 				'justify',
 
-				'spoiler',
 				'code',
 
 				'var',

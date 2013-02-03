@@ -41,7 +41,7 @@ else
 /**
  * Defino versión de marifa.
  */
-define('VERSION', '0.2RC4');
+define('VERSION', '0.2');
 
 // Suprimimos advertencias de DateTime. Si lo deseas puedes poner una TZ estatica.
 date_default_timezone_set('UTC');
@@ -91,6 +91,11 @@ define('CACHE_PATH', APP_BASE.DS.'cache');
  * Directorio de clases de 3ros.
  */
 define('VENDOR_PATH', APP_BASE.DS.'vendor'.DS);
+
+/**
+ * Iniciamos buffer.
+ */
+ob_start();
 
 // Cargamos funciones varias.
 require_once (APP_BASE.DS.'function.php');
@@ -189,6 +194,9 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 	// Generamos la lista de plugins.
 	Plugin_Manager::get_instance()->regenerar_lista();
 }
+
+// Cargamos la lista de eventos.
+Event::load_from_plugins();
 
 // Database profiler.
 PRODUCTION || Profiler_Profiler::get_instance()->set_query_explain_callback('Database::explain_profiler');

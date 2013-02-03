@@ -90,7 +90,7 @@
 			<div class="alert">No hay comentarios</div>
 			{/if}
 		</div>
-		<div>
+		<div class="home-list">
 			<h3 class="title">TOPs posts</h3>
 			{if="count($top_posts) > 0"}
 			<ol>
@@ -102,7 +102,7 @@
 			<div class="alert">No hay puntos</div>
 			{/if}
 		</div>
-		<div>
+		<div class="home-list">
 			<h3 class="title">TOPs usuarios</h3>
 			<ol>
 			{loop="$usuario_top"}

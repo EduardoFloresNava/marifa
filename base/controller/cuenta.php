@@ -717,6 +717,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view = View::factory('cuenta/bloqueos');
 
 		// Seteo parametros.
+		$view->assign('email', Usuario::usuario()->email);
 		$view->assign('usuario', '');
 		$view->assign('error_usuario', FALSE);
 

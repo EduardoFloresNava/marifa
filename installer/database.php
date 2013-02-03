@@ -53,7 +53,7 @@ $consultas[] = array(
 				`imagen` varchar(32) NOT NULL DEFAULT \'\',
 				UNIQUE INDEX `seo` (`seo`),
 				PRIMARY KEY (`id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Animaciones', 'animaciones', 'flash.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Apuntes y Monografías', 'Apuntes-y-Monografias', 'report.png'), array('error_no' => 1062)),
@@ -100,14 +100,14 @@ $consultas[] = array(
 				`valor` mediumtext,
 				`defecto` mediumtext,
 				PRIMARY KEY (`clave`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('registro', 1, 1), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('activacion_usuario', 2, 2), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('elementos_pagina', 20, 20), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('ip_mantenimiento', serialize(array()), serialize(array())), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('rango_defecto', 3, 3), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', '0.2RC4', '0.2RC4'), array('error_no' => 1062))
+		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', '0.2', '0.2'), array('error_no' => 1062))
 	)
 );
 
@@ -129,7 +129,7 @@ $consultas[] = array(
 				`comentar` bit(1) NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -148,7 +148,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				KEY `foto_id` (`foto_id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -166,7 +166,7 @@ $consultas[] = array(
 				`fecha` DATETIME NOT NULL,
 				`estado` INTEGER NOT NULL DEFAULT 0,
 				PRIMARY KEY (`id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -180,7 +180,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				PRIMARY KEY (`foto_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -195,7 +195,7 @@ $consultas[] = array(
 				`cantidad` int(11) NOT NULL,
 				PRIMARY KEY (`foto_id`,`usuario_id`,`cantidad`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -217,7 +217,7 @@ $consultas[] = array(
 				KEY `emisor_id` (`emisor_id`),
 				KEY `receptor_id` (`receptor_id`),
 				KEY `padre_id` (`padre_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -234,7 +234,7 @@ $consultas[] = array(
 				`estado` int(11) NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -261,7 +261,7 @@ $consultas[] = array(
 				KEY `usuario_id` (`usuario_id`),
 				KEY `post_categoria_id` (`categoria_id`),
 				FULLTEXT KEY `busqueda` (`titulo`,`contenido`,`tags`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -280,7 +280,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				KEY `post_id` (`post_id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -295,7 +295,7 @@ $consultas[] = array(
 				`cantidad` int(11) NOT NULL DEFAULT 1,
 				PRIMARY KEY (`post_comentario_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -309,7 +309,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				PRIMARY KEY (`post_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -329,7 +329,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				KEY `post_id` (`post_id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -343,7 +343,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				PRIMARY KEY (`post_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -361,7 +361,7 @@ $consultas[] = array(
 				PRIMARY KEY (`post_id`),
 				KEY `usuario_id` (`usuario_id`),
 				KEY `padre_id` (`padre_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -376,7 +376,7 @@ $consultas[] = array(
 				`cantidad` int(11) NOT NULL DEFAULT 1,
 				PRIMARY KEY (`post_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -390,7 +390,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				PRIMARY KEY (`post_id`,`usuario_id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -403,7 +403,7 @@ $consultas[] = array(
 				`post_id` int(11) NOT NULL,
 				`nombre` varchar(50) NOT NULL,
 				PRIMARY KEY (`post_id`,`nombre`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -419,7 +419,7 @@ $consultas[] = array(
 				`expira` datetime NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -441,7 +441,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -464,7 +464,7 @@ $consultas[] = array(
 				`estado` int(11) NOT NULL DEFAULT 0,
 				PRIMARY KEY (`id`),
 				KEY `rango` (`rango`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -484,7 +484,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`),
 				KEY `moderador_id` (`moderador_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -503,7 +503,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`),
 				KEY `moderador_id` (`moderador_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -517,7 +517,7 @@ $consultas[] = array(
 				`bloqueado_id` int(11) NOT NULL,
 				PRIMARY KEY (`usuario_id`,`bloqueado_id`),
 				KEY `bloqueado_id` (`bloqueado_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -535,7 +535,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				`estado` int(11) NOT NULL DEFAULT 0,
 				PRIMARY KEY (`id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -553,7 +553,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`usuario_id`,`nick`,`fecha`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -567,7 +567,7 @@ $consultas[] = array(
 				`campo` varchar(50) NOT NULL,
 				`valor` mediumtext,
 				PRIMARY KEY (`usuario_id`,`campo`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -588,7 +588,7 @@ $consultas[] = array(
 				`tipo` INT NOT NULL DEFAULT 0,
 				`cantidad` INT NULL DEFAULT NULL,
 				PRIMARY KEY (`id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		),
 		array('INSERT', 'INSERT INTO `usuario_rango` (`id`, `nombre`, `color`, `imagen`, `orden`, `puntos`, `tipo`, `cantidad`, `puntos_dar`) VALUES (1, \'Administrador\', 14025483, \'rosette.png\', 1, 50, 0, NULL, 20);', NULL, array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO `usuario_rango` (`id`, `nombre`, `color`, `imagen`, `orden`, `puntos`, `tipo`, `cantidad`, `puntos_dar`) VALUES (2, \'Moderador\', 16750848, \'shield.png\', 2, 30, 0, NULL, 10);', NULL, array('error_no' => 1062)),
@@ -608,7 +608,7 @@ $consultas[] = array(
 				`rango_id` int(11) NOT NULL,
 				`permiso` int(11) NOT NULL,
 				PRIMARY KEY (`rango_id`,`permiso`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		),
 		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (1, 0)', NULL, array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO usuario_rango_permiso (rango_id, permiso) VALUES (1, 1)', NULL, array('error_no' => 1062)),
@@ -723,7 +723,7 @@ $consultas[] = array(
 				`tipo` int(11) NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -738,7 +738,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`usuario_id`,`seguidor_id`),
 				KEY `seguidor_id` (`seguidor_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -757,7 +757,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				UNIQUE KEY `usuario_id` (`usuario_id`),
 				KEY `moderador_id` (`moderador_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -772,7 +772,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`usuario_id`,`visitado_id`,`fecha`),
 				KEY `visitado_id` (`visitado_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -793,7 +793,7 @@ $consultas[] = array(
 				PRIMARY KEY (`id`),
 				UNIQUE KEY `nombre` (`nombre`),
 				UNIQUE KEY `tipo` (`tipo`, `condicion`, `cantidad`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -810,7 +810,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`usuario_id`,`medalla_id`),
 				KEY `medalla_id` (`medalla_id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );

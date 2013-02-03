@@ -76,7 +76,7 @@ class Base_Database {
 			}
 
 			// Generamos el nombre de la clase Driver.
-			$driver = 'Database_Driver_'.strtolower($config['type']);
+			$driver = 'Database_Driver_'.ucfirst(strtolower($config['type']));
 
 			// Comprobamos la existencia de ese Driver para manejar la BD.
 			if ( ! class_exists($driver))

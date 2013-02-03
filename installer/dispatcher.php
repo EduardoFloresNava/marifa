@@ -246,11 +246,22 @@ class Installer_Dispatcher {
 				throw new Exception("No existe la acción '$accion'", 404);
 			}
 		}
-		else
-		{
-			// Agrego al stack para tener la llamada.
-			$cont = new Installer_Controller;
-		}
+
+		// Realizo la llamada.
+		return self::call_controller('Installer_Controller', $accion, $args);
+	}
+
+	/**
+	 * Llamamos a la acción en el controlador indicado.
+	 * @param string $controller Nombre de la clase del controlador.
+	 * @param string $accion Nombre de la acción a ejecutar.
+	 * @param array $args Listado de argumentos provistos.
+	 * @return mixed Resultado de la llamada al controlador.
+	 */
+	private static function call_controller($controller, $accion, $args)
+	{
+		// Creo instancia del objeto.
+		$cont = new $controller;
 
 		// Obtenemos la cantidad de parámetros necesaria.
 		$r_m = new ReflectionMethod($cont, 'action_'.$accion);
@@ -262,11 +273,31 @@ class Installer_Dispatcher {
 			$args[] = NULL;
 		}
 
-		// No hubo problemas, llamamos.
+		// Agrego a Stack.
+		Request::add_stack(NULL, $controller, $accion, $args, NULL);
+
+		// Llamo pre-llamada.
+		if (method_exists($cont, 'before'))
+		{
+			call_user_func(array($cont, 'before'));
+		}
+
+		// Llamo la acción.
 		$rst = call_user_func_array(array(
 				$cont,
 				'action_'.$accion
 		), $args);
+
+		// Llamo post-llamada.
+		if (method_exists($cont, 'after'))
+		{
+			call_user_func(array($cont, 'after'));
+		}
+
+		// Quito del Stack.
+		Request::pop_stack();
+
+		// Retorno el valor.
 		return $rst;
 	}
 }

@@ -67,16 +67,26 @@ class Base_Controller_Home extends Controller {
 	/**
 	 * Obtenemos un CAPTCHA.
 	 */
-	public function action_captcha()
+	public function action_captcha($width, $heigth)
 	{
 		// Evito salida de la plantilla.
 		$this->template = NULL;
+
+		// Obtengo tamaño del captcha.
+		$width = abs( (int) $width);
+		$heigth = abs( (int) $heigth);
+
+		// Valido.
+		$width = $width < 50 ? 100 : $width;
+		$heigth = $heigth < 20 ? 50 : $heigth;
 
 		// Cargo archivo de terceros.
 		include_once(VENDOR_PATH.'securimage'.DS.'securimage.php');
 
 		// Genero el CAPTCHA
 		$img = new securimage;
+		$img->image_height = $heigth;
+		$img->image_width = $width;
 		$img->show();
 
 		// Evito salida de depuración.
@@ -172,7 +182,6 @@ class Base_Controller_Home extends Controller {
 		// Verifivo validez de la pagina.
 		if (count($post_list) == 0 && $pagina != 1)
 		{
-			Profiler_Profiler::get_instance()->display();
 			Request::redirect('/');
 		}
 
@@ -293,8 +302,9 @@ class Base_Controller_Home extends Controller {
 
 	/**
 	 * Listado de usuarios del sitio.
+	 * @param int $pagina Número de página a mostrar.
 	 */
-	public function action_usuarios()
+	public function action_usuarios($pagina)
 	{
 		// Cargamos la portada.
 		$portada = View::factory('home/usuarios');
@@ -303,11 +313,24 @@ class Base_Controller_Home extends Controller {
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 		$this->template->assign('top_bar', self::submenu('usuarios'));
 
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Formato de la página.
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
 		// Cargamos modelo de usuarios.
 		$model_usuario = new Model_Usuario;
 
 		// Cargo usuarios.
-		$listado = $model_usuario->listado(-1);
+		$listado = $model_usuario->listado($pagina, $cantidad_por_pagina);
+
+		// Verifivo validez de la pagina.
+		if (count($listado) == 0 && $pagina != 1)
+		{
+			Request::redirect('/home/usuarios/');
+		}
 
 		// Listado de los online.
 		$online = Model_Session::online_list();
@@ -319,6 +342,11 @@ class Base_Controller_Home extends Controller {
 			$a['online'] = in_array($v->id, $online);
 			$listado[$k] = $a;
 		}
+
+		// Paginación.
+		$paginador = new Paginator($model_usuario->cantidad(), $cantidad_por_pagina);
+		$portada->assign('paginacion', $paginador->get_view($pagina, '/home/usuarios/%d/'));
+		unset($paginador);
 
 		$portada->assign('usuarios', $listado);
 		unset($listado);

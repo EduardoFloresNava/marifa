@@ -25,6 +25,7 @@
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{#THEME_URL#}/assets/ico/apple-touch-icon-114-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{#THEME_URL#}/assets/ico/apple-touch-icon-72-precomposed.png">
         <link rel="apple-touch-icon-precomposed" href="{#THEME_URL#}/assets/ico/apple-touch-icon-57-precomposed.png">
+		{$header}
     </head>
 
     <body>
@@ -42,7 +43,7 @@
                         <ul class="nav">
                             {loop="master_bar"}
                             <li{if="$value.active"}  class="active"{/if}>
-                                <a href="{$value.link}">{if="isset($value.icon)"}<i class="icon-white icon-{$value.icon}"></i> {/if}{$value.caption}{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
+                                <a href="{#SITE_URL#}{$value.link}">{if="isset($value.icon)"}<i class="icon-white icon-{$value.icon}"></i> {/if}{$value.caption}{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
                             </li>
                             {/loop}
                         </ul>
@@ -67,7 +68,7 @@
 			<ul class="nav nav-tabs">
 				{loop="top_bar"}
 				<li{if="$value.active"}  class="active"{/if}>
-					<a href="{$value.link}">{$value.caption}{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
+					<a href="{#SITE_URL#}{$value.link}">{$value.caption}{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
 				</li>
 				{/loop}
 			</ul>
@@ -110,10 +111,7 @@
 		</div>
 		{include="footer"}
 		<div class="pop-notification"></div>
-
-        <!-- Le javascript
-        ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
+		{$footer}
 		<script type="text/javascript">
 			window.site_url = "{#SITE_URL#}/";
 			window.theme_url = "{#THEME_URL#}/";

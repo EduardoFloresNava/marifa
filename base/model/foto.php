@@ -220,10 +220,11 @@ class Base_Model_Foto extends Model_Dataset {
 	 * Obtenemos el listado de comentarios.
 	 * @return array
 	 */
-	public function comentarios()
+	public function comentarios($pagina, $cantidad = 20)
 	{
-		//TODO: estado de los comentarios de las fotos. Agregarlo a la base de datos.
-		$rst = $this->db->query('SELECT id FROM foto_comentario WHERE foto_id = ?', $this->primary_key['id']);
+		$start = ($pagina - 1) * $cantidad;
+
+		$rst = $this->db->query('SELECT id FROM foto_comentario WHERE foto_id = ? LIMIT '.$start.','.$cantidad, $this->primary_key['id']);
 		$rst->set_cast_type(Database_Query::FIELD_INT);
 
 		$lst = array();
@@ -583,7 +584,7 @@ class Base_Model_Foto extends Model_Dataset {
 			$medalla = $rst->get_var(Database_Query::FIELD_INT);
 
 			// Verifico no tener la medalla.
-			if ($this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE medalla_id = ? AND usuario_id = ?', array($medalla, $this->primary_key['id']))->get_var(Database_Query::FIELD_INT) > 0)
+			if ($this->db->query('SELECT COUNT(*) FROM usuario_medalla WHERE medalla_id = ? AND usuario_id = ?', array($medalla, $this->usuario_id))->get_var(Database_Query::FIELD_INT) > 0)
 			{
 				return FALSE;
 			}

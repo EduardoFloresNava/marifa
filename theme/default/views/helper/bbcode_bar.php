@@ -44,11 +44,11 @@
 		<a href="#" title="Link" class="btn-link btn btn-small"><i class="icon-retweet"></i></a>
 	</div>
 	<div class="btn-group">
-		<a href="#" title="Spoiler" class="btn-spoiler btn btn-small"><i class="icon-calendar"></i></a>
 		<a href="#" title="Cita" class="btn-quote btn btn-small"><i class="icon-comment"></i></a>
 		<a href="#" title="Código" class="btn-code btn btn-small"><i class="icon-list-alt"></i></a>
 	</div>
 	<div class="btn-group">
 		<a href="#" title="Vista preliminar" class="btn-preview btn btn-small btn-success"><i class="icon-eye-open icon-white"></i></a>
+		<button type="submit" class="btn btn-small btn-primary" title="Enviar"><i class="icon-white icon-ok"></i></button>
 	</div>
 </div>

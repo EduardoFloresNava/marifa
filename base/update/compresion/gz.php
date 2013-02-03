@@ -57,4 +57,13 @@ class Base_Update_Compresion_Gz extends Update_Compresion_Compresion {
 		$pt = new Update_Compresion_Pear_Tar($path, 'gz');
 		return $pt->extract_modify($this->temp_path, '', FALSE);
 	}
+
+	/**
+	 * Extensión de los archivos del compresor.
+	 * @return string
+	 */
+	public function get_extension()
+	{
+		return 'tag.gz';
+	}
 }

@@ -53,7 +53,7 @@ class Base_Controller_Foto extends Controller {
 	 * @param Model_Foto|int $foto Modelo de la foto o ID de la foto.
 	 * @return int
 	 */
-	protected function foto_url($foto)
+	protected function foto_url($foto, $pagina = 1)
 	{
 		// Cargo foto.
 		if ( ! is_object($foto))
@@ -69,7 +69,14 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Genero la URL.
-		return '/foto/'.$foto->categoria()->seo.'/'.$foto->id.'/'.Texto::make_seo($foto->titulo).'.html';
+		if (is_string($pagina) || $pagina > 1)
+		{
+			return '/foto/'.$foto->categoria()->seo.'/'.$foto->id.'/'.Texto::make_seo($foto->titulo).'.'.$pagina.'.html';
+		}
+		else
+		{
+			return '/foto/'.$foto->categoria()->seo.'/'.$foto->id.'/'.Texto::make_seo($foto->titulo).'.html';
+		}
 	}
 
 	/**
@@ -313,8 +320,9 @@ class Base_Controller_Foto extends Controller {
 	/**
 	 * Mostramos una foto.
 	 * @param int $foto ID de la foto.
+	 * @param int $pagina Número de página de los comentarios.
 	 */
-	public function action_ver($foto)
+	public function action_ver($foto, $pagina)
 	{
 		// Convertimos la foto a ID.
 		$foto = (int) $foto;
@@ -406,8 +414,23 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('comentario_ocultar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR));
 		$view->assign('comentario_editar', Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_EDITAR));
 
+		// Formato de la página.
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
+		// Cantidad de elementos por pagina.
+		$model_configuracion = new Model_Configuracion;
+		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+
+		// Cargo comentarios.
+		$cmts = $model_foto->comentarios($pagina, $cantidad_por_pagina);
+
+		// Verifivo validez de la pagina.
+		if (count($cmts) == 0 && $pagina != 1)
+		{
+			Request::redirect($this->foto_url($model_foto));
+		}
+
 		// Comentarios del post.
-		$cmts = $model_foto->comentarios();
 		$l_cmt = array();
 		foreach ($cmts as $cmt)
 		{
@@ -417,6 +440,11 @@ class Base_Controller_Foto extends Controller {
 		}
 		$view->assign('comentarios', $l_cmt);
 		unset($l_cmt, $cmts);
+
+		// Paginación.
+		$paginador = new Paginator($model_foto->usuario()->cantidad_comentarios(), $cantidad_por_pagina);
+		$view->assign('paginacion', $paginador->get_view($pagina, $this->foto_url($model_foto, '%d')));
+		unset($paginador);
 
 		$view->assign('comentario_content', isset($_POST['comentario']) ? $_POST['comentario'] : NULL);
 		$view->assign('comentario_error', get_flash('post_comentario_error'));

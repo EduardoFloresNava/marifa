@@ -91,7 +91,7 @@ class Base_Model_Dataset extends Model {
 	 * @param array $primary_key Arreglo asociativo con los campos que componen
 	 * la clave primaria.
 	 */
-	protected function load($primary_key)
+	public function load($primary_key)
 	{
 		if ($this->data === NULL)
 		{
@@ -107,12 +107,19 @@ class Base_Model_Dataset extends Model {
 			$k_list = implode(' AND ', $k_list);
 
 			// Obtenemos los campos.
-			$rst = $this->db->query("SELECT $f_list FROM $this->table WHERE $k_list LIMIT 1", array_values($primary_key))
-				->get_record(Database_Query::FETCH_ASSOC, $this->fields);
+			$rst = $this->db->query("SELECT $f_list FROM $this->table WHERE $k_list LIMIT 1", array_values($primary_key))->get_record(Database_Query::FETCH_ASSOC, $this->fields);
 
 			if (is_array($rst))
 			{
+				// Cargo datos.
 				$this->data = $rst;
+
+				// Actualizo clave primaria.
+				foreach ($this->primary_key as $k => $v)
+				{
+					$this->primary_key[$k] = $this->data[$k];
+				}
+
 				return TRUE;
 			}
 			else
