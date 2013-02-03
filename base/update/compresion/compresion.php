@@ -108,4 +108,10 @@ abstract class Base_Update_Compresion_Compresion {
 	 */
     abstract public function decompress($path);
 
+	/**
+	 * Extensión de los archivos comprimidos.
+	 * @return string
+	 */
+	abstract public function get_extension();
+
 }

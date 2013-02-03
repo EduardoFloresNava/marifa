@@ -43,6 +43,7 @@ class Shell_Controller_Plugin extends Shell_Controller {
 	 */
 	public $lines = array(
 		'crear <directorio>',
+		'generar <directorio> [-t=path] [--exclude-default]'
 	);
 
 	/**
@@ -50,7 +51,9 @@ class Shell_Controller_Plugin extends Shell_Controller {
 	 * @var string
 	 */
 	public $help = "Realizamos tareas que automatizan tareas relacionadas a los plugins.
-    crear Creamos la estructura base de un plugin. Debe especificar el directorio donde se debe colocar el plugin. En caso de no existir será creado.";
+    crear Creamos la estructura base de un plugin. Debe especificar el directorio donde se debe colocar el plugin. En caso de no existir será creado.
+	generar Generamos el paquete para distribuir un plugin.
+	    --exclude-default  Excluye archivos de desarrollo como .git, .gitignore, nbproject";
 
 	/**
 	 * Nombre de la clase para solventar problemas de la versión de PHP.
@@ -150,8 +153,102 @@ class Plugin_{$class_name}_Index extends Plugin {
 ");
 					Shell_Cli::write_line(Shell_Cli::get_colored_string('El plugin se ha creado correctamente.', 'green'));
 				break;
+			case 'generar':
+				// Cargo directorio.
+				$directorio = isset($this->params[2]) ? $this->params[2] : NULL;
+
+				// Verifico sea válido.
+				if ( ! file_exists($directorio) || ! is_dir($directorio) || ! file_exists($directorio.'/index.php') || ! is_file($directorio.'/index.php'))
+				{
+					Shell_Cli::write_line(Shell_Cli::get_colored_string('El directorio no contiene un plugin válido.', 'red'));
+					break;
+				}
+
+				// Obtengo datos del plugin.
+				$pre = get_declared_classes();
+				include ($directorio.'/index.php');
+				$post = get_declared_classes();
+
+				$class = array_diff($post, $pre);
+
+				foreach ($class as $c)
+				{
+					if ($c == 'Plugin' || $c == 'Base_Plugin')
+					{
+						continue;
+					}
+
+					// Instancia.
+					$rc = new ReflectionClass($c);
+
+					// Obtenemos el listado de propiedades del objeto.
+					$props = $rc->getDefaultProperties();
+
+					// Verifico propiedades.
+					if (isset($props['nombre']) && isset($props['descripcion']) && isset($props['version']) && isset($props['autor']))
+					{
+						$plugin = $props;
+					}
+				}
+
+				if ( ! isset($plugin))
+				{
+					Shell_Cli::write_line(Shell_Cli::get_colored_string('El directorio no contiene un plugin válido.', 'red'));
+					break;
+				}
+
+				// Obtengo compresiones disponibles.
+				$compresores = Update_Compresion::get_list();
+
+				// Cargo compresor a utilizar
+				$compresor = Update_Compresion::get_instance(Shell_Cli::option($compresores, 'Compresor a utilizar'));
+				unset($compresores);
+
+				// Genero directorio donde armar el paquete.
+				$path = Update_Utils::sys_get_temp_dir().'/'.uniqid('marifa_').'/';
+				mkdir($path);
+
+				// Copio los archivos del plugin.
+				Update_Utils::copyr($directorio, $path.'/files/');
+
+				// Borro directorios de depuración.
+				if (isset($this->params['exclude-default']))
+				{
+					foreach (array('.gitignore', '.git', 'nbproject') as $v)
+					{
+						if (file_exists($path.'/files/'.$v))
+						{
+							Update_Utils::unlink($path.'/files/'.$v);
+						}
+					}
+				}
+
+				// Genero archivo de descripción.
+				file_put_contents($path.'/info.json', '{"nombre":"'.$plugin['nombre'].'","version":"'.$this->version_to_int($plugin['version']).'","version_string":"'.$plugin['version'].'","descripcion":"'.$plugin['descripcion'].'","tipo":"estable"}');
+
+				// Comprimo.
+				$target = isset($this->params['t']) ? $this->params['t'] : Plugin_Manager::make_name($plugin['nombre']).'.'.$compresor->get_extension();
+
+				$compresor->compress($target, $path, $path);
+
+				// Borro archivos temporales.
+				Update_Utils::unlink($path);
+
+				// Informo resultado.
+				Shell_Cli::write_line(Shell_Cli::get_colored_string('El plugin se ha empaquetado correctamente y colocado en '.Shell_Cli::get_colored_string("'$target'", 'yellow'), 'green'));
+				break;
 			default:
 				Shell_Cli::write_line(Shell_Cli::get_colored_string('Acción incorrecta', 'red'));
 		}
+	}
+
+	/**
+	 * Convertimos una versión a un número entero.
+	 * @param string $version Versión a convertir.
+	 * @return int
+	 */
+	protected function version_to_int($version)
+	{
+		return (int) preg_replace('/[^0-9]+/', '', $version);
 	}
 }

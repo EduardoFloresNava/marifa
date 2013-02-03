@@ -222,7 +222,13 @@ class Base_Update_Utils {
 		if (function_exists('finfo_open'))
 		{
 			$finfo = new finfo(FILEINFO_MIME);
-			return $finfo->file($path);
+			$mime = $finfo->file($path);
+
+			if (strpos($mime, ';') !== FALSE)
+			{
+				list ($mime, ) = explode(';', $mime);
+			}
+			return $mime;
 		}
 		elseif (function_exists('mime_content_type'))
 		{
