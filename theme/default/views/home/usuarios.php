@@ -8,4 +8,6 @@
 		</a>
 	</div>
 	{/loop}
+	<div class="clearfix"></div>
 </div>
+{$paginacion}
