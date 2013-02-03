@@ -636,7 +636,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 						// Informo del error.
 						$error = TRUE;
-						$vista->assign('error_carga', 'El paquete no es un plugins válido.');
+						$vista->assign('error_carga', 'El paquete no es un plugin válido.');
 					}
 					else
 					{

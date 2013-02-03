@@ -908,7 +908,7 @@ class Base_Model_Usuario extends Model_Dataset {
 			$where = '';
 		}
 
-		return $this->db->query('SELECT SUM(puntos) as puntos, nick FROM (SELECT SUM(post_punto.cantidad) AS puntos, usuario.nick FROM usuario INNER JOIN post ON post.usuario_id = usuario.id LEFT JOIN post_punto ON post.id = post_punto.post_id INNER JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0 AND usuario.estado = 1'.$where.' GROUP BY post.id ORDER BY puntos DESC LIMIT 10) as A GROUP BY nick ORDER BY puntos DESC', $params)
+		return $this->db->query('SELECT SUM(puntos) as puntos, nick FROM (SELECT SUM(post_punto.cantidad) AS puntos, usuario.nick FROM usuario INNER JOIN post ON post.usuario_id = usuario.id LEFT JOIN post_punto ON post.id = post_punto.post_id LEFT JOIN categoria ON post.categoria_id = categoria.id WHERE post.estado = 0 AND usuario.estado = 1'.$where.' GROUP BY post.id ORDER BY puntos DESC LIMIT 10) as A GROUP BY nick ORDER BY puntos DESC', $params)
 			->get_records(Database_Query::FETCH_ASSOC, array(
 				'puntos' => Database_Query::FIELD_INT,
 				'nick' => Database_Query::FIELD_STRING

@@ -77,4 +77,13 @@ class Base_Update_Compresion_Zip extends Update_Compresion_Compresion {
         }
     }
 
+	/**
+	 * Extensión de los archivos del compresor.
+	 * @return string
+	 */
+	public function get_extension()
+	{
+		return 'zip';
+	}
+
 }
