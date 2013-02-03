@@ -1,7 +1,4 @@
 <?php
-//TODO: LINK TO NEXT STEP.
-
-
 /**
  * controller.php is part of Marifa.
  *
