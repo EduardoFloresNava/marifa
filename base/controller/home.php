@@ -87,6 +87,7 @@ class Base_Controller_Home extends Controller {
 		$img = new securimage;
 		$img->image_height = $heigth;
 		$img->image_width = $width;
+		$img->code_length = ceil($width / 30);
 		$img->show();
 
 		// Evito salida de depuración.
