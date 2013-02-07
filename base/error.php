@@ -568,7 +568,7 @@ class Base_Error {
 	 * @param array $tb Arreglo con el stack de llamadas.
 	 * @return string Cadena representativa del Stack de llamadas.
 	 */
-	private static function parse_back_trace($tb)
+	public static function parse_back_trace($tb)
 	{
 		$backtrace = array();
 		foreach ($tb as $k => $v)
@@ -606,9 +606,9 @@ class Base_Error {
 				if (isset($v['args']))
 				{
 					$args = array();
-					foreach ($v['args'] as $v)
+					foreach ($v['args'] as $vv)
 					{
-						$args[] = gettype($v);
+						$args[] = gettype($vv);
 					}
 					$args = implode(', ', $args);
 				}
