@@ -125,11 +125,6 @@ class Base_Model_Usuario_Perfil extends Model {
 	 */
 	public function __set($name, $value)
 	{
-		if (is_array($this->fields))
-		{
-			$this->fields[$name] = $value;
-		}
-
 		if (isset($this->$name))
 		{
 			$this->db->update('UPDATE usuario_perfil SET valor = ? WHERE campo = ? AND usuario_id = ?', array($value, $name, $this->usuario_id));
@@ -137,6 +132,11 @@ class Base_Model_Usuario_Perfil extends Model {
 		else
 		{
 			$this->db->insert('INSERT INTO usuario_perfil (usuario_id, campo, valor) VALUES (?, ?, ?)', array($this->usuario_id, $name, $value));
+		}
+
+		if (is_array($this->fields))
+		{
+			$this->fields[$name] = $value;
 		}
 	}
 
