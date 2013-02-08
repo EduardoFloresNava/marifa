@@ -442,7 +442,7 @@ class Base_Controller_Foto extends Controller {
 		unset($l_cmt, $cmts);
 
 		// Paginación.
-		$paginador = new Paginator($model_foto->usuario()->cantidad_comentarios(), $cantidad_por_pagina);
+		$paginador = new Paginator($model_foto->cantidad_comentarios(Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO) ? NULL : Model_Comentario::ESTADO_VISIBLE), $cantidad_por_pagina);
 		$view->assign('paginacion', $paginador->get_view($pagina, $this->foto_url($model_foto, '%d')));
 		unset($paginador);
 
