@@ -41,7 +41,7 @@ else
 /**
  * Defino versión de marifa.
  */
-define('VERSION', '0.2.1');
+define('VERSION', '0.3.0');
 
 // Suprimimos advertencias de DateTime. Si lo deseas puedes poner una TZ estatica.
 date_default_timezone_set('UTC');

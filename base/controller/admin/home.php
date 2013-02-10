@@ -78,44 +78,50 @@ class Base_Controller_Admin_Home extends Controller {
 	public static function submenu($activo)
 	{
 		$listado = array();
-		$listado['p_general'] = array('caption' => 'General');
-		$listado['index'] = array('link' => '/admin/', 'caption' => 'Inicio', 'active' => FALSE);
-		$listado['home_logs'] = array('link' => '/admin/home/logs', 'caption' => 'Log\'s', 'active' => FALSE);
+		$listado['p_general'] = array('caption' => 'General', 'items' => array());
+		$listado['p_general']['items']['index'] = array('link' => '/admin/', 'caption' => 'Inicio', 'active' => FALSE);
+		$listado['p_general']['items']['home_logs'] = array('link' => '/admin/home/logs', 'caption' => 'Log\'s', 'active' => FALSE);
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
 		{
-			$listado['p_configuracion'] = array('caption' => 'Configuración');
-			$listado['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuración', 'active' => FALSE);
-			$listado['configuracion_seo'] = array('link' => '/admin/configuracion/seo', 'caption' => 'SEO', 'active' => FALSE);
-			$listado['configuracion_mantenimiento'] = array('link' => '/admin/configuracion/mantenimiento/', 'caption' => 'Modo Mantenimiento', 'active' => FALSE);
-			$listado['configuracion_temas'] = array('link' => '/admin/configuracion/temas/', 'caption' => 'Temas', 'active' => FALSE);
-			$listado['configuracion_plugins'] = array('link' => '/admin/configuracion/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
-			$listado['configuracion_correo'] = array('link' => '/admin/configuracion/correo/', 'caption' => 'Correo', 'active' => FALSE);
-			$listado['configuracion_optimizar'] = array('link' => '/admin/configuracion/optimizar/', 'caption' => 'Optimizaciones', 'active' => FALSE);
+			$listado['p_configuracion'] = array('caption' => 'Configuración', 'items' => array());
+			$listado['p_configuracion']['items']['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuración', 'active' => FALSE);
+			$listado['p_configuracion']['items']['configuracion_seo'] = array('link' => '/admin/configuracion/seo', 'caption' => 'SEO', 'active' => FALSE);
+			$listado['p_configuracion']['items']['configuracion_mantenimiento'] = array('link' => '/admin/configuracion/mantenimiento/', 'caption' => 'Modo Mantenimiento', 'active' => FALSE);
+			$listado['p_configuracion']['items']['configuracion_temas'] = array('link' => '/admin/configuracion/temas/', 'caption' => 'Temas', 'active' => FALSE);
+			$listado['p_configuracion']['items']['configuracion_plugins'] = array('link' => '/admin/configuracion/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
+			$listado['p_configuracion']['items']['configuracion_correo'] = array('link' => '/admin/configuracion/correo/', 'caption' => 'Correo', 'active' => FALSE);
+			$listado['p_configuracion']['items']['configuracion_optimizar'] = array('link' => '/admin/configuracion/optimizar/', 'caption' => 'Optimizaciones', 'active' => FALSE);
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
 		{
-			$listado['p_contenido'] = array('caption' => 'Contenido');
-			$listado['contenido'] = array('link' => '/admin/contenido', 'caption' => 'Informe contenido', 'active' => FALSE);
-			$listado['contenido_posts'] = array('link' => '/admin/contenido/posts', 'caption' => 'Posts', 'active' => FALSE);
-			$listado['contenido_fotos'] = array('link' => '/admin/contenido/fotos', 'caption' => 'Fotos', 'active' => FALSE);
-			$listado['contenido_categorias'] = array('link' => '/admin/contenido/categorias', 'caption' => 'Categorias', 'active' => FALSE);
-			$listado['contenido_noticias'] = array('link' => '/admin/contenido/noticias/', 'caption' => 'Noticias', 'active' => FALSE);
+			$listado['p_contenido'] = array('caption' => 'Contenido', 'items' => array());
+			$listado['p_contenido']['items']['contenido'] = array('link' => '/admin/contenido', 'caption' => 'Informe contenido', 'active' => FALSE);
+			$listado['p_contenido']['items']['contenido_posts'] = array('link' => '/admin/contenido/posts', 'caption' => 'Posts', 'active' => FALSE);
+			$listado['p_contenido']['items']['contenido_fotos'] = array('link' => '/admin/contenido/fotos', 'caption' => 'Fotos', 'active' => FALSE);
+			$listado['p_contenido']['items']['contenido_categorias'] = array('link' => '/admin/contenido/categorias', 'caption' => 'Categorias', 'active' => FALSE);
+			$listado['p_contenido']['items']['contenido_noticias'] = array('link' => '/admin/contenido/noticias/', 'caption' => 'Noticias', 'active' => FALSE);
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_ADMINISTRAR))
 		{
-			$listado['p_usuarios'] = array('caption' => 'Usuarios');
-			$listado['usuario'] = array('link' => '/admin/usuario/', 'caption' => 'General', 'active' => FALSE);
-			$listado['usuario_sesiones'] = array('link' => '/admin/usuario/sesiones', 'caption' => 'Sesiones', 'active' => FALSE);
-			$listado['usuario_rangos'] = array('link' => '/admin/usuario/rangos', 'caption' => 'Rangos', 'active' => FALSE);
-			$listado['usuario_medallas'] = array('link' => '/admin/usuario/medallas', 'caption' => 'Medallas', 'active' => FALSE);
+			$listado['p_usuarios'] = array('caption' => 'Usuarios', 'items' => array());
+			$listado['p_usuarios']['items']['usuario'] = array('link' => '/admin/usuario/', 'caption' => 'General', 'active' => FALSE);
+			$listado['p_usuarios']['items']['usuario_sesiones'] = array('link' => '/admin/usuario/sesiones', 'caption' => 'Sesiones', 'active' => FALSE);
+			$listado['p_usuarios']['items']['usuario_rangos'] = array('link' => '/admin/usuario/rangos', 'caption' => 'Rangos', 'active' => FALSE);
+			$listado['p_usuarios']['items']['usuario_medallas'] = array('link' => '/admin/usuario/medallas', 'caption' => 'Medallas', 'active' => FALSE);
+
+			$listado['p_plugins'] = array('caption' => 'Plugins', 'items' => array());
 		}
 
-		if (isset($listado[$activo]))
+		// Activo elemento interno.
+		foreach ($listado as $k => $v)
 		{
-			$listado[$activo]['active'] = TRUE;
+			if (isset($v['items'][$activo]))
+			{
+				$listado[$k]['items'][$activo]['active'] = TRUE;
+			}
 		}
 
 		// Evento de procesamiento de los permisos.
@@ -124,12 +130,22 @@ class Base_Controller_Admin_Home extends Controller {
 		// Verifico que procesamiento se debe enviar.
 		if (is_array($rst))
 		{
-			return $rst[0];
+			$listado = $rst[0];
 		}
-		else
+
+		// Proceso listado.
+		$rs = array();
+		foreach ($listado as $k => $v)
 		{
-			return $listado;
+			$rs[$k] = array('caption' => $v['caption']);
+			foreach($v['items'] as $kk => $vv)
+			{
+				$rs[$kk] = $vv;
+			}
 		}
+
+		// Envio respuesta.
+		return $rs;
 	}
 
 	/**
