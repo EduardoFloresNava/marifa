@@ -1030,12 +1030,22 @@ class Base_Model_Usuario extends Model_Dataset {
 
 	/**
 	 * Verifico si el usuario es seguidor.
-	 * @param type $usuario_id
-	 * @return type
+	 * @param int $usuario_id ID del usuario a verificar si me sigue.
+	 * @return bool
 	 */
 	public function es_seguidor($usuario_id)
 	{
 		return $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE usuario_id = ? AND seguidor_id = ?', array($this->primary_key['id'], $usuario_id))->get_var(Database_Query::FIELD_INT) > 0;
+	}
+
+	/**
+	 * Verifico si estoy siguiendo al usuario.
+	 * @param int $usuario_id ID del usuario a verificar si sigo.
+	 * @return bool
+	 */
+	public function lo_sigo($usuario_id)
+	{
+		return $this->db->query('SELECT COUNT(*) FROM usuario_seguidor WHERE seguidor_id = ? AND usuario_id = ?', array($this->primary_key['id'], $usuario_id))->get_var(Database_Query::FIELD_INT) > 0;
 	}
 
 	/**

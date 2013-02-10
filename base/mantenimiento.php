@@ -48,7 +48,7 @@ class Base_Mantenimiento {
 	 */
 	public static function is_locked_for($ip)
 	{
-		if ( ! $this->is_locked())
+		if ( ! self::is_locked())
 		{
 			return FALSE;
 		}

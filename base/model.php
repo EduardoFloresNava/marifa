@@ -49,4 +49,28 @@ class Base_Model {
 		$this->db = Database::get_instance();
 	}
 
+	/**
+	 * Creo un modelo de forma estática.
+	 * El primer argumento es el nombre del modelo, el resto los parámetros del constructor.
+	 * @param string $model Nombre del modelo.
+	 * @return Model
+	 */
+	public static function factory($model)
+	{
+		// Obtengo los argumentos.
+		$argumentos = func_get_args();
+
+		// Obtengo el nombre del modelo.
+		$model = array_shift($argumentos);
+
+		// Cargo reflection.
+		$clase = new ReflectionClass('Model_'.ucfirst($model));
+
+		// Creo la instancia.
+		$instancia = $clase->newInstanceArgs($argumentos);
+
+		// Devuelvo la instancia.
+		return $instancia;
+	}
+
 }
