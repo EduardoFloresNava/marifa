@@ -1,6 +1,6 @@
 <?php
 /**
- * configuracion.php is part of Marifa.
+ * sistema.php is part of Marifa.
  *
  * Marifa is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,16 +24,17 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Controlador para administrar configuraciones.
+ * Controlador para administrar parámetros del sistema.
+ * Con cosas relacionadas a agregados (temas, plugins, etc) y actualizaciones del sistema entre otros.
  *
  * @since      Versión 0.1
  * @package    Marifa\Base
  * @subpackage Controller\Admin
  */
-class Base_Controller_Admin_Configuracion extends Controller {
+class Base_Controller_Admin_Sistema extends Controller {
 
 	/**
-	 * Verficiamos los permisos.
+	 * Verificamos los permisos.
 	 */
 	public function before()
 	{
@@ -59,182 +60,32 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	public function action_index()
 	{
 		// Cargamos la vista.
-		$vista = View::factory('admin/configuracion/index');
+		$vista = View::factory('admin/sistema/index');
 
-		// Cargamos las configuraciones.
-		//TODO: Implementar sistema más flexible de carga y edición.
-		$model_configuracion = new Model_Configuracion;
-
-		// Cargamos los datos iniciales.
-		$vista->assign('nombre', $model_configuracion->get('nombre', 'Marifa'));
-		$vista->assign('error_nombre', FALSE);
-		$vista->assign('success_nombre', FALSE);
-		$vista->assign('descripcion', $model_configuracion->get('descripcion', 'Tu comunidad de forma simple'));
-		$vista->assign('error_descripcion', FALSE);
-		$vista->assign('success_descripcion', FALSE);
-		$vista->assign('registro', (int) $model_configuracion->get('registro', 1));
-		$vista->assign('error_registro', FALSE);
-		$vista->assign('success_registro', FALSE);
-		$vista->assign('activacion_usuario', (int) $model_configuracion->get('activacion_usuario', 1));
-		$vista->assign('error_activacion_usuario', FALSE);
-		$vista->assign('success_activacion_usuario', FALSE);
-		$vista->assign('rango_defecto', (int) $model_configuracion->get('rango_defecto', 3));
-		$vista->assign('error_rango_defecto', FALSE);
-		$vista->assign('success_rango_defecto', FALSE);
-		$vista->assign('elementos_pagina', (int) $model_configuracion->get('elementos_pagina', 20));
-		$vista->assign('error_elementos_pagina', FALSE);
-		$vista->assign('success_elementos_pagina', FALSE);
-
-		// Cargo listado rangos.
-		$model_rangos = new Model_Usuario_Rango;
-		$vista->assign('rangos_permitidos', $model_rangos->to_list());
-
-		if (Request::method() == 'POST')
+		// Verifico sistema de cache.
+		if (Cache::get_instance() instanceof Cache_Driver_Dummy)
 		{
-			// Verifico el nombre.
-			if (isset($_POST['nombre']))
-			{
-				// Limpio el valor.
-				$nombre = preg_replace('/\s+/', ' ', trim($_POST['nombre']));
-
-				// Seteo el nuevo valor a la vista.
-				$vista->assign('nombre', $nombre);
-
-				// Verifico el contenido.
-				if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{2,20}$/iD', $nombre))
-				{
-					$vista->assign('error_nombre', 'El nombre debe tener entre 2 y 20 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
-				}
-				else
-				{
-					if ($nombre !== $model_configuracion->get('nombre', NULL))
-					{
-						$model_configuracion->nombre = $nombre;
-						$vista->assign('success_nombre', 'El nombre se ha actualizado correctamente.');
-					}
-				}
-			}
-
-			// Verifico la descripción.
-			if (isset($_POST['descripcion']))
-			{
-				// Limpio el valor.
-				$descripcion = preg_replace('/\s+/', ' ', trim($_POST['descripcion']));
-
-				// Seteo el nuevo valor a la vista.
-				$vista->assign('descripcion', $descripcion);
-
-				// Verifico el contenido.
-				if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{5,30}$/iD', $descripcion))
-				{
-					$vista->assign('error_descripcion', 'La descripción debe tener entre 5 y 30 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
-				}
-				else
-				{
-					if ($descripcion !== $model_configuracion->get('descripcion', NULL))
-					{
-						$model_configuracion->descripcion = $descripcion;
-						$vista->assign('success_descripcion', 'La descripción se ha actualizado correctamente.');
-					}
-				}
-			}
-
-			// Verifico el registro.
-			if (isset($_POST['registro']))
-			{
-				// Limpio el valor.
-				$registro = (bool) $_POST['registro'];
-
-				// Seteo el nuevo valor a la vista.
-				$vista->assign('registro', $registro);
-
-				// Actualizo el valor.
-				$actual = $model_configuracion->get('registro', NULL);
-				if ($actual === NULL || $registro !== (bool) $actual)
-				{
-					$model_configuracion->registro = $registro;
-					$vista->assign('success_registro', 'El registro se ha editado correctamente.');
-				}
-			}
-
-			// Verifico como se activan los usuarios.
-			if (isset($_POST['activacion_usuario']))
-			{
-				// Limpio el valor.
-				$activacion_usuario = (int) $_POST['activacion_usuario'];
-
-				// Seteo el nuevo valor a la vista.
-				$vista->assign('activacion_usuario', $activacion_usuario);
-
-				// Verifico el valor.
-				if ($registro == 0 || $registro == 1 || $registro == 0)
-				{
-					// Actualizo el valor.
-					$actual = $model_configuracion->get('activacion_usuario', NULL);
-					if ($actual === NULL || $activacion_usuario !== (int) $actual)
-					{
-						$model_configuracion->activacion_usuario = $activacion_usuario;
-						$vista->assign('success_activacion_usuario', 'La forma de activación se ha actualizado correctamente.');
-					}
-				}
-				else
-				{
-					$vista->assign('error_activacion_usuario', 'La forma de activación seleccionada no es válida.');
-				}
-			}
-
-			// Verifico rango por defecto.
-			if (isset($_POST['rango_defecto']))
-			{
-				// Limpio el valor.
-				$rango_defecto = (int) $_POST['rango_defecto'];
-
-				// Seteo el nuevo valor a la vista.
-				$vista->assign('rango_defecto', $rango_defecto);
-
-				// Verifico el valor.
-				if (in_array($rango_defecto, array_keys($model_rangos->to_list())))
-				{
-					// Actualizo el valor.
-					$actual = $model_configuracion->get('rango_defecto', NULL);
-					if ($actual === NULL || $rango_defecto !== (int) $actual)
-					{
-						$model_configuracion->rango_defecto = $rango_defecto;
-						$vista->assign('success_rango_defecto', 'Se ha actualizado el rango para los usuarios por defecto.');
-					}
-				}
-				else
-				{
-					$vista->assign('error_rango_defecto', 'El rango seleccionado no es correcto.');
-				}
-			}
-
-			// Verifico como se activan los usuarios.
-			if (isset($_POST['elementos_pagina']))
-			{
-				// Limpio el valor.
-				$elementos_pagina = (int) $_POST['elementos_pagina'];
-
-				// Seteo el nuevo valor a la vista.
-				$vista->assign('elementos_pagina', $elementos_pagina);
-
-				// Verifico el valor.
-				if ($elementos_pagina < 5 || $elementos_pagina > 100)
-				{
-					$vista->assign('error_elementos_pagina', 'La cantidad de elementos por página ser un entero entre 5 y 100.');
-				}
-				else
-				{
-					// Actualizo el valor.
-					$actual = $model_configuracion->get('elementos_pagina', NULL);
-					if ($actual === NULL || $elementos_pagina !== (int) $actual)
-					{
-						$model_configuracion->elementos_pagina = $elementos_pagina;
-						$vista->assign('success_elementos_pagina', 'La cantidad de elementos por página se ha actualizado correctamente.');
-					}
-				}
-			}
+			add_flash_message(FLASH_ERROR, 'Para el funcionamiento correcto del sistema de actualizaciones es necesario tener configurada la cache.');
 		}
+
+		// Obtengo actualizaciones.
+		$actualizaciones_sistema = Cache::get_instance()->get('update.sistema.actualizaciones');
+
+		// Verifico si hay actualizaciones.
+		if (is_array($actualizaciones_sistema))
+		{
+			// Actualizaciones del sistema descargadas.
+			$vista->assign('sistema_descargadas', $this->actualizaciones_sistema_descargadas());
+
+			// Proceso las actualizaciones.
+			$vista->assign('sistema', $actualizaciones_sistema);
+		}
+		else
+		{
+			$vista->assign('sistema', FALSE);
+		}
+
+		// TODO: Resumen de temas, plugins y widget's (todas las actualizaciones).
 
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
@@ -243,162 +94,39 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('p_configuracion.configuracion'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('p_sistema.sistema_informacion'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
-	/**
-	 * Configuración del modo mantenimiento.
-	 */
-	public function action_mantenimiento()
+	protected function actualizaciones_sistema_descargadas()
 	{
-		// Cargamos la vista.
-		$vista = View::factory('admin/configuracion/mantenimiento');
-
-		// Cargo listado de IP's que pueden acceder en modo mantenimiento.
-		$model_configuracion = new Model_Configuracion;
-		$ips_matenimiento = unserialize($model_configuracion->get('ip_mantenimiento', 'a:0:{}'));
-
-		// Pasamos los datos a la vista.
-		$vista->assign('ip', implode(PHP_EOL, $ips_matenimiento));
-		$vista->assign('error_ip', FALSE);
-		$vista->assign('success_ip', FALSE);
-
-		if (Request::method() == 'POST')
+		// Verifico existencia del directorio.
+		if ( ! file_exists(CACHE_PATH.DS.'updates'.DS) || ! is_dir(CACHE_PATH.DS.'updates'.DS))
 		{
-			// Obtengo el listado de IP's.
-			$ips = isset($_POST['ip']) ? explode(PHP_EOL, trim($_POST['ip'])) : array();
+			return array();
+		}
 
-			// Verifico cada uno de los IP's.
-			$error = FALSE;
-			foreach ($ips as $k => $ip)
+		// Cargo listado de elementos.
+		$elementos = scandir(CACHE_PATH.DS.'updates'.DS);
+
+		// Obtengo listado de extensiones diponibles.
+		$extesiones = array_map('Update_Utils::compresion2extension', Update_Compresion::get_list());
+
+		$rst = array();
+		foreach ($elementos as $file)
+		{
+			foreach ($extesiones as $ext)
 			{
-				$ip = trim($ip);
-				$ips[$k] = $ip;
-
-				// Verifico IP.
-				if ($ip == long2ip(ip2long($ip)))
+				if (substr($file, (-1) * strlen($ext)) === $ext)
 				{
-					continue;
-				}
-
-				// Verifico rango del tipo a.b.c.d-a.b.c.d
-				if (strpos($ip, '-'))
-				{
-					list($a, $b) = explode('-', $ip);
-					if ($a != long2ip(ip2long($a)) || $b != long2ip(ip2long($b)))
-					{
-						$error = TRUE;
-						break;
-					}
-					else
-					{
-						continue;
-					}
-				}
-
-				$error = TRUE;
-				break;
-
-				//TODO: agregar soporte a rangos faltantes (CIFS /netmask,  *).
-			}
-
-			// Asigno valor a la vista.
-			$vista->assign('ip', implode(PHP_EOL, $ips));
-
-			if ($error)
-			{
-				$vista->assign('error_ip', 'Los IP\'s ingresados no son válidos.');
-			}
-			else
-			{
-				// Verifico si hay cambios.
-				if (count(array_diff($ips, $ips_matenimiento)) > 0)
-				{
-					// Actualizo los valores.
-					$model_configuracion->ip_mantenimiento = serialize($ips);
-					$ips_matenimiento = $ips;
-
-					// Actualizo si es necesario.
-					if (Mantenimiento::is_locked())
-					{
-						Mantenimiento::lock($ips);
-					}
-
-					// Informo resultado.
-					$vista->assign('success_ip', 'Listado de IP\'s actualizada correctamente.');
+					$rst[] = substr($file, 0, (-1) * (strlen($ext) + 1));
 				}
 			}
 		}
 
-		// Verifico si está habilitado el bloqueo.
-		$vista->assign('is_locked', Mantenimiento::is_locked());
-		if (Mantenimiento::is_locked())
-		{
-			$locked_for_me = Mantenimiento::is_locked_for(get_ip_addr());
-		}
-		else
-		{
-			$locked_for_me = TRUE;
-			$my_ip = get_ip_addr();
-			foreach ($ips_matenimiento as $ip)
-			{
-				if ($my_ip == $ip || IP::ip_in_range($my_ip, $ip))
-				{
-					$locked_for_me = FALSE;
-					break;
-				}
-			}
-			unset($my_ip);
-		}
-		$vista->assign('is_locked_for_me', $locked_for_me);
-		unset($locked_for_me);
-
-		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu('admin'));
-
-		// Cargamos plantilla administracion.
-		$admin_template = View::factory('admin/template');
-		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_mantenimiento'));
-
-		// Asignamos la vista a la plantilla base.
-		$this->template->assign('contenido', $admin_template->parse());
-	}
-
-	/**
-	 * Activo/Desactivo el modo mantenimiento.
-	 * @param bool $tipo 0 para deshabilitar, 1 para habilitar.
-	 */
-	public function action_habilitar_mantenimiento($tipo)
-	{
-		$tipo = (bool) $tipo;
-
-		// Verifico la acción.
-		if ($tipo == Mantenimiento::is_locked())
-		{
-			add_flash_message(FLASH_ERROR, 'El modo mantenimiento ya posee ese estado.');
-		}
-		else
-		{
-			// Ejecuto la acción deseada.
-			if ($tipo)
-			{
-				add_flash_message(FLASH_SUCCESS, 'Modo mantenimiento activado correctamente.');
-				$c = new Model_Configuracion;
-				//TODO: Verificar que alguien pueda acceder.
-				Mantenimiento::lock(unserialize($c->get('ip_mantenimiento', 'a:0:{}')));
-			}
-			else
-			{
-				add_flash_message(FLASH_SUCCESS, 'Modo mantenimiento activado correctamente.');
-				Mantenimiento::unlock();
-			}
-		}
-		Request::redirect('/admin/configuracion/mantenimiento');
+		return $rst;
 	}
 
 	/**
@@ -407,7 +135,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	public function action_plugins()
 	{
 		// Cargamos la vista.
-		$vista = View::factory('admin/configuracion/plugins');
+		$vista = View::factory('admin/sistema/plugins');
 
 		// Cargo listado de plugins.
 		$pm = Plugin_Manager::get_instance();
@@ -430,7 +158,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_plugins'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema_plugins'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -450,28 +178,28 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		if ( ! is_object($p))
 		{
 			add_flash_message(FLASH_ERROR, 'El plugin no existe.');
-			Request::redirect('/admin/configuracion/plugins');
+			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Verifico su estado.
 		if ($p->estado())
 		{
 			add_flash_message(FLASH_ERROR, 'El plugin ya se encuentra activo.');
-			Request::redirect('/admin/configuracion/plugins');
+			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Verifico posibilidad de aplicar.
 		if ( ! $p->check_support())
 		{
 			add_flash_message(FLASH_ERROR, 'El plugin no puede ser instalado por la existencia de incompatibilidades.');
-			Request::redirect('/admin/configuracion/plugins');
+			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Realizamos la instalación.
 		$p->install();
 
 		add_flash_message(FLASH_SUCCESS, 'El plugin se ha instalado correctamente.');
-		Request::redirect('/admin/configuracion/plugins');
+		Request::redirect('/admin/sistema/plugins');
 	}
 
 	/**
@@ -488,21 +216,21 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		if ( ! is_object($p))
 		{
 			add_flash_message(FLASH_ERROR, 'El plugin no existe.');
-			Request::redirect('/admin/configuracion/plugins');
+			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Verifico su estado.
 		if ( ! $p->estado())
 		{
 			add_flash_message(FLASH_ERROR, 'El plugin ya se encuentra desactivado.');
-			Request::redirect('/admin/configuracion/plugins');
+			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Realizamos la desinstalación.
 		$p->remove();
 
 		add_flash_message(FLASH_SUCCESS, 'El plugin se ha desinstalado correctamente.');
-		Request::redirect('/admin/configuracion/plugins');
+		Request::redirect('/admin/sistema/plugins');
 	}
 
 	/**
@@ -519,14 +247,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		if ( ! is_object($p))
 		{
 			add_flash_message(FLASH_ERROR, 'El plugin no existe.');
-			Request::redirect('/admin/configuracion/plugins');
+			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Verifico su estado.
 		if ($p->estado())
 		{
 			add_flash_message(FLASH_ERROR, 'El plugin se encuentra activado, no se puede borrar.');
-			Request::redirect('/admin/configuracion/plugins');
+			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Eliminamos.
@@ -534,7 +262,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		Plugin_Manager::get_instance()->regenerar_lista();
 
 		add_flash_message(FLASH_SUCCESS, 'El plugin se ha borrado correctamente.');
-		Request::redirect('/admin/configuracion/plugins');
+		Request::redirect('/admin/sistema/plugins');
 	}
 
 	/**
@@ -546,7 +274,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	public function action_agregar_plugin()
 	{
 		// Cargamos la vista.
-		$vista = View::factory('admin/configuracion/agregar_plugin');
+		$vista = View::factory('admin/sistema/agregar_plugin');
 
 		// Valores por defecto.
 		$vista->assign('error_carga', FALSE);
@@ -707,7 +435,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 							add_flash_message(FLASH_SUCCESS, 'El plugin se importó correctamente.');
 
 							// Redireccionamos.
-							Request::redirect('/admin/configuracion/plugins');
+							Request::redirect('/admin/sistema/plugins');
 						}
 					}
 				}
@@ -727,7 +455,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_plugins'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema_plugins'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -739,7 +467,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	public function action_temas()
 	{
 		// Cargamos la vista.
-		$vista = View::factory('admin/configuracion/temas');
+		$vista = View::factory('admin/sistema/temas');
 
 		// Cargo tema previsualizado y el actual.
 		if (isset($_SESSION['preview-theme']))
@@ -775,7 +503,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_temas'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema_temas'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -791,20 +519,20 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		if ( ! in_array($tema, Theme::lista()))
 		{
 			add_flash_message(FLASH_ERROR, 'El tema seleccionado para previsualizar es incorrecto.');
-			Request::redirect('/admin/configuracion/temas');
+			Request::redirect('/admin/sistema/temas');
 		}
 
 		// Verifico no sea actual.
 		if ($tema == Theme::actual(TRUE) || $tema == Theme::actual())
 		{
 			add_flash_message(FLASH_ERROR, 'El tema seleccionado para previsualizar es el actual.');
-			Request::redirect('/admin/configuracion/temas');
+			Request::redirect('/admin/sistema/temas');
 		}
 
 		// Activo el tema.
 		$_SESSION['preview-theme'] = $tema;
 		add_flash_message(FLASH_SUCCESS, 'El tema se a colocado para previsualizar correctamente');
-		Request::redirect('/admin/configuracion/temas');
+		Request::redirect('/admin/sistema/temas');
 	}
 
 	/**
@@ -824,7 +552,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		{
 			add_flash_message(FLASH_ERROR, 'No hay vista previa para deshabilitar.');
 		}
-		Request::redirect('/admin/configuracion/temas');
+		Request::redirect('/admin/sistema/temas');
 	}
 
 	/**
@@ -840,14 +568,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		if ($tema == $base)
 		{
 			add_flash_message(FLASH_ERROR, 'El tema ya es el predeterminado.');
-			Request::redirect('/admin/configuracion/temas');
+			Request::redirect('/admin/sistema/temas');
 		}
 
 		// Verificamos exista.
 		if ( ! in_array($tema, Theme::lista()))
 		{
 			add_flash_message(FLASH_ERROR, 'El tema seleccionado para setear como predeterminado es incorrecto.');
-			Request::redirect('/admin/configuracion/temas');
+			Request::redirect('/admin/sistema/temas');
 		}
 
 		// Borro preview.
@@ -860,7 +588,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		Theme::setear_tema($tema);
 
 		add_flash_message(FLASH_SUCCESS, 'El tema se ha seteado como predeterminado correctamente.');
-		Request::redirect('/admin/configuracion/temas');
+		Request::redirect('/admin/sistema/temas');
 	}
 
 	/**
@@ -873,14 +601,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		if ( ! in_array($tema, Theme::lista()))
 		{
 			add_flash_message(FLASH_ERROR, 'El tema seleccionado para eliminar es incorrecto.');
-			Request::redirect('/admin/configuracion/temas');
+			Request::redirect('/admin/sistema/temas');
 		}
 
 		// Verifico no sea el actual ni el de previsualizacion.
 		if ($tema == Theme::actual(TRUE) || $tema == Theme::actual())
 		{
 			add_flash_message(FLASH_ERROR, 'El tema no se puede borrar por estar en uso.');
-			Request::redirect('/admin/configuracion/temas');
+			Request::redirect('/admin/sistema/temas');
 		}
 
 		// Lo eliminamos.
@@ -890,7 +618,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		Theme::lista(TRUE);
 
 		add_flash_message(FLASH_SUCCESS, 'El tema se ha eliminado correctamente.');
-		Request::redirect('/admin/configuracion/temas');
+		Request::redirect('/admin/sistema/temas');
 	}
 
 	/**
@@ -899,7 +627,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	public function action_instalar_tema()
 	{
 		// Cargamos la vista.
-		$vista = View::factory('admin/configuracion/instalar_tema');
+		$vista = View::factory('admin/sistema/instalar_tema');
 
 		// Valores por defecto.
 		$vista->assign('error_carga', FALSE);
@@ -1067,7 +795,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					add_flash_message(FLASH_SUCCESS, 'El tema se instaló correctamente.');
 
 					// Redireccionamos.
-					Request::redirect('/admin/configuracion/temas');
+					Request::redirect('/admin/sistema/temas');
 				}
 			}
 		}
@@ -1079,97 +807,10 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_temas'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema_temas'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
-	}
-
-	/**
-	 * Configuración del envio de correos.
-	 */
-	public function action_correo($correo)
-	{
-		// Cargamos la vista.
-		$vista = View::factory('admin/configuracion/correo');
-
-		// Verifico si está configurado.
-		if ( ! file_exists(CONFIG_PATH.DS.'email.php'))
-		{
-			$vista->assign('configuracion', NULL);
-		}
-		else
-		{
-			// Cargo la configuración actual.
-			$configuracion = configuracion_obtener(CONFIG_PATH.DS.'email.php');
-
-			// Envio la configuración.
-			$vista->assign('configuracion', $configuracion);
-
-			// Mi correo.
-			$vista->assign('email', $correo !== NULL ? urldecode($correo) : Usuario::usuario()->email);
-		}
-
-		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu('admin'));
-
-		// Cargamos plantilla administracion.
-		$admin_template = View::factory('admin/template');
-		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_correo'));
-
-		// Asignamos la vista a la plantilla base.
-		$this->template->assign('contenido', $admin_template->parse());
-	}
-
-	/**
-	 * Enviamos un correo de prueba para verificar que todo sea correcto.
-	 */
-	public function action_test_mail()
-	{
-		// Verifico el método de envio.
-		if (Request::method() !== 'POST')
-		{
-			add_flash_message(FLASH_ERROR, 'No puedes enviar un correo de prueba si no especificas el destinatario.');
-			Request::redirect('/admin/configuracion/correo');
-		}
-
-		// Verifico que se encuentre configurado.
-		if ( ! file_exists(CONFIG_PATH.DS.'email.php'))
-		{
-			add_flash_message(FLASH_ERROR, 'No puedes enviar un correo de prueba ya que no has lo has configurado.');
-			Request::redirect('/admin/configuracion/correo');
-		}
-
-		// Verifico el correo enviado.
-		if ( ! isset($_POST['email']) || ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $_POST['email']))
-		{
-			add_flash_message(FLASH_ERROR, 'La casilla de correo ingresada no es válida.');
-			Request::redirect('/admin/configuracion/correo/'.(isset($_POST['email']) ? urlencode($_POST['email']) : '' ));
-		}
-
-		// Cargo el modelo de configuraciones.
-		$model_config = new Model_Configuracion;
-
-		// Creo el mensaje de correo.
-		$message = Email::get_message();
-		$message->setSubject('Verificación configuración correos de '.$model_config->get('nombre', 'Marifa'));
-		$message->setTo($_POST['email']);
-
-		// Cargo la vista.
-		$message_view = View::factory('emails/test');
-		$message_view->assign('titulo', $model_config->get('nombre', 'Marifa'));
-		$message->setBody($message_view->parse());
-		unset($message_view);
-
-		// Envio el email.
-		$mailer = Email::get_mailer();
-		$mailer->send($message);
-
-		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, 'El correo de prueba se ha enviado correctamente.');
-		Request::redirect('/admin/configuracion/correo');
 	}
 
 	/**
@@ -1179,7 +820,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	public function action_optimizar()
 	{
 		// Cargamos la vista.
-		$vista = View::factory('admin/configuracion/optimizar');
+		$vista = View::factory('admin/sistema/optimizar');
 
 		if (Request::method() == 'POST')
 		{
@@ -1245,154 +886,273 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_optimizar'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema_optimizar'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**
-	 * Configuración de todas las opciones relacionadas al SEO.
+	 * Verificamos las actualizaciones del sistema.
 	 */
-	public function action_seo()
+	public function action_verificar_actualizaciones()
 	{
-		// Cargamos la vista.
-		$vista = View::factory('admin/configuracion/seo');
+		try {
+			// Realizo petición.
+			$response = $this->do_update_request('http://0.0.0.0:8000/api/update/updates/v'.VERSION);
 
-		// Cargamos las configuraciones.
-		$model_configuracion = new Model_Configuracion;
+			// Verifico sea arreglo.
+			if (is_array($response))
+			{
+				// Proceso los elementos.
+				$rst = array();
+				foreach ($response as $v)
+				{
+					$rst[$v->to] = get_object_vars($v->url);
+				}
 
-		// Cargamos los datos iniciales.
-		$vista->assign('largo_minimo', (int) $model_configuracion->get('keyword_largo_minimo', 3));
-		$vista->assign('error_largo_minimo', FALSE);
-		$vista->assign('success_largo_minimo', FALSE);
-		$vista->assign('cantidad_minima_ocurrencias', (int) $model_configuracion->get('keyword_ocurrencias_minima', 2));
-		$vista->assign('error_cantidad_minima_ocurrencias', FALSE);
-		$vista->assign('success_cantidad_minima_ocurrencias', FALSE);
-		$vista->assign('palabras_comunes', unserialize($model_configuracion->get('keyword_palabras_comunes', 'a:0:{}')));
-		$vista->assign('error_palabras_comunes', FALSE);
-		$vista->assign('success_palabras_comunes', FALSE);
+				// Guardo en cache.
+				Cache::get_instance()->save('update.sistema.actualizaciones', $rst, 900);
 
-		if (Request::method() == 'POST')
+				// Vuelvo.
+				Request::redirect('/admin/sistema/');
+			}
+			else
+			{
+				// Envio a un log.
+				Log::info('Error obteniendo actualizaciones: respuesta inesperada del servidor.');
+
+				// Informo.
+				add_flash_message(FLASH_ERROR, 'Error obteniendo actualizaciones:  respuesta inesperada del servidor.');
+
+				// Vuelvo a la portada.
+				Request::redirect('/admin/sistema/');
+			}
+		}
+		catch (HttpResponseException $e)
 		{
-			// Verifico el largo mínimo.
-			if (isset($_POST['largo_minimo']))
+			// Envio a un log.
+			Log::info('Error obteniendo actualizaciones: '.$e->getMessage());
+
+			// Informo.
+			add_flash_message(FLASH_ERROR, 'Error obteniendo actualizaciones: '.$e->getMessage());
+
+			// Vuelvo a la portada.
+			Request::redirect('/admin/sistema/');
+		}
+	}
+
+	/**
+	 * Realizamos una petición al servidor de actualizaciones.
+	 * @param string $url URL a llamar.
+	 * @return mixed
+	 */
+	protected function do_update_request($url)
+	{
+		// Realizo la petición del sistema.
+		$response = Utils::remote_call($url);
+
+		// Trato decodificar json.
+		$response_json = json_decode($response);
+
+		// Verifico respuesta.
+		if ( ! $response_json)
+		{
+			Log::info('Error al conectar con el servidor de actualizaciones con la URL: '.$url);
+			return FALSE;
+		}
+		else
+		{
+			// Verifico la respuesta.
+			if (is_object($response_json) && isset($response_json->response) && isset($response_json->body))
 			{
-				// Limpio el valor.
-				$largo_minimo = (int) $_POST['largo_minimo'];
-
-				// Seteo el nuevo valor a la vista.
-				$vista->assign('largo_minimo', $largo_minimo);
-
-				// Verifico el contenido.
-				if ($largo_minimo < 0)
+				// Verifico la respuesta.
+				if ($response_json->response == 'OK')
 				{
-					$vista->assign('error_largo_minimo', 'El largo mínimo debe ser mayor o igual a 0 (cero).');
+					// Devuelvo el resultado.
+					return $response_json->body;
 				}
 				else
 				{
-					if ($largo_minimo != $model_configuracion->get('keyword_largo_minimo', NULL))
+					// Informo el error.
+					throw new HttpResponseException($response_json->body);
+				}
+			}
+			else
+			{
+				Log::info('Respuesta del servidor de actualizaciones inválida: '.var_export($response_json, TRUE));
+				return FALSE;
+			}
+		}
+	}
+
+	/**
+	 * Actualizar el sistema.
+	 * @param string $version Versión a actualizar.
+	 */
+	public function action_actualizar_sistema($version)
+	{
+		// Verifico directorio.
+		if ( ! file_exists(CACHE_PATH.DS.'updates'.DS))
+		{
+			mkdir(CACHE_PATH.DS.'updates'.DS);
+		}
+
+		// Verifico existencia archivo.
+		if (count(glob(CACHE_PATH.DS.'updates'.DS.$version.'.{'.implode(',', array_map('Update_Utils::compresion2extension', Update_Compresion::get_list())).'}', GLOB_BRACE)) <= 0)
+		{
+			// Busco URL's de la versión.
+			$upd_list = arr_get(Cache::get_instance()->get('update.sistema.actualizaciones'), $version, NULL);
+
+			// Verifico existencia.
+			if ( ! is_array($upd_list))
+			{
+				add_flash_message(FLASH_ERROR, 'La versión a la que quiere actualizar no se encuentra disponible.');
+				Request::redirect('/admin/sistema/');
+			}
+
+			// Obtengo compresiones disponibles.
+			$remotas = array_map('Update_Utils::extension2compresion', array_keys($upd_list));
+			$locales = Update_Compresion::get_list();
+
+			// Obtengo la compresión disponible.
+			$posibles = array_intersect($remotas, $locales);
+			$descargar = $upd_list[Update_Utils::compresion2extension($posibles[0])];
+			unset($remotas, $locales);
+
+			// Obtemgo el nombre del archivo temporal.
+			$tmp_file = sys_get_temp_dir().DS.uniqid();
+
+			// Trato de descargar.
+			Utils::download_file($descargar, $tmp_file);
+
+			// Guardo el archivo.
+			copy($tmp_file, CACHE_PATH.DS.'updates'.DS.$version.'.'.Update_Utils::compresion2extension($posibles[0]));
+			unlink($tmp_file);
+
+			// Informamos resultado.
+			add_flash_message(FLASH_SUCCESS, 'La descarga de la actualización se ha realizado correctamente.');
+			Request::redirect('/admin/sistema/');
+		}
+
+		// Obtengo nombre del archivo.
+		$f = glob(CACHE_PATH.DS.'updates'.DS.$version.'.{tar,tar.gz,tar.bz,zip}', GLOB_BRACE);
+		$file = array_shift($f);
+		unset($f);
+
+		// Creo directorio temporal.
+		$tmp_dir = Update_Utils::sys_get_temp_dir().DS.uniqid();
+		mkdir($tmp_dir);
+
+		// Descomprimo.
+		$compresor = Update_Compresion::get_instance(Update_Utils::mime2compresor(Update_Utils::get_mime($file)));
+		$compresor->set_temp_path($tmp_dir);
+		$compresor->decompress($file);
+
+		// Actualizo BD.
+		if (file_exists($tmp_dir.DS.'database.php'))
+		{
+			// Cargamos las consultas.
+			$queries = include($tmp_dir.DS.'database.php');
+
+			// Las procesamos.
+			$this->procesar_consultas($queries);
+		}
+
+		// Actualizo archivos.
+		Update_Utils::copyr($tmp_dir.DS.'files'.DS, APP_BASE.DS);
+
+		// Borro cache.
+		Update_Utils::unlink($tmp_dir);
+		unlink($file);
+
+		// Actualizo versión del sistema.
+		$m_config = new Model_Configuracion;
+		$m_config->version = substr($version, 1);
+
+		// Borro cache de versiones.
+		Cache::get_instance()->delete('update.sistema.actualizaciones');
+
+		// Informo el resultado.
+		add_flash_message(FLASH_SUCCESS, 'Actualización realizada correctamente.');
+		Request::redirect('/admin/sistema/');
+	}
+
+	/**
+	 * Listado de consultas de actualización a ejecutar.
+	 * @param array $database_list Arreglo de consultas a ejecutar.
+	 * @return bool
+	 */
+	protected function procesar_consultas($database_list)
+	{
+		// Error global. Permite saber si todo fue correcto para continuar.
+		$error_global = FALSE;
+
+		// Ejecuto las consultas.
+		foreach ($database_list as $k => $v)
+		{
+			// Ejecuto las consultas.
+			$error = FALSE;
+			foreach ($v[1] as $query)
+			{
+				try {
+					switch ($query[0])
 					{
-						$model_configuracion->keyword_largo_minimo = $largo_minimo;
-						$vista->assign('success_largo_minimo', 'El largo mínimo se ha actualizado correctamente.');
+						case 'INSERT':
+							list(, $c) = $db->insert($query[1], isset($query[2]) ? $query[2] : NULL);
+							if ($c <= 0)
+							{
+								throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
+							}
+							break;
+						case 'DELETE':
+							if ($db->delete($query[1], isset($query[2]) ? $query[2] : NULL) === FALSE)
+							{
+								throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
+							}
+							break;
+						case 'UPDATE':
+						case 'ALTER':
+							if ($db->update($query[1], isset($query[2]) ? $query[2] : NULL) === FALSE)
+							{
+								throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
+							}
+							break;
+						case 'QUERY':
+							if ($db->query($query[1], isset($query[2]) ? $query[2] : NULL) === FALSE)
+							{
+								throw new Exception("El resultado de la consulta: {$query[1]}' es incorrecto.");
+							}
+							break;
 					}
+				}
+				catch (Exception $e)
+				{
+					if (isset($query[3]) && isset($query[3]['error_no']))
+					{
+						if ($query[3]['error_no'] == $e->getCode())
+						{
+							continue;
+						}
+					}
+
+					$error = '['.$e->getCode().'] '.$e->getMessage();
+					break;
 				}
 			}
 
-			// Verifico la cantidad de ocurrencias mínima.
-			if (isset($_POST['cantidad_minima_ocurrencias']))
+			// Agrego el resultado.
+			if ($error === FALSE)
 			{
-				// Limpio el valor.
-				$cantidad_minima_ocurrencias = (int) $_POST['cantidad_minima_ocurrencias'];
-
-				// Seteo el nuevo valor a la vista.
-				$vista->assign('cantidad_minima_ocurrencias', $cantidad_minima_ocurrencias);
-
-				// Verifico el contenido.
-				if ($cantidad_minima_ocurrencias < 1)
-				{
-					$vista->assign('error_cantidad_minima_ocurrencias', 'La cantidad de ocurrencias mínima debe ser mayor o igual a 1.');
-				}
-				else
-				{
-					if ($cantidad_minima_ocurrencias != $model_configuracion->get('keyword_ocurrencias_minima', NULL))
-					{
-						$model_configuracion->keyword_ocurrencias_minima = $cantidad_minima_ocurrencias;
-						$vista->assign('success_cantidad_minima_ocurrencias', 'La cantidad de ocurrencias mínima se ha actualizado correctamente.');
-					}
-				}
+				$lst[$k]['success'] = TRUE;
 			}
-
-			// Verifico las palabras no permitidas.
-			if (isset($_POST['palabras_comunes']))
+			else
 			{
-				// Limpio el valor.
-				$palabras_comunes = trim($_POST['palabras_comunes']);
-
-				if ( ! empty($palabras_comunes))
-				{
-					// Obtengo la lista.
-					$keyword_list = explode("\n", $palabras_comunes);
-
-					// Quito espacios de cada una y verifico valides.
-					$error = FALSE;
-					foreach ($keyword_list as $k => $v)
-					{
-						// Quito espacios.
-						$v = trim($v);
-
-						if ( ! isset($v{0}))
-						{
-							$error = $v;
-							break;
-						}
-
-						// Verifico sea correcto.
-						if (preg_match('/\s+/', $v))
-						{
-							$error = $v;
-							break;
-						}
-
-						// Inserto nueva palabra.
-						$keyword_list[$k] = $v;
-					}
-				}
-				else
-				{
-					$keyword_list = array();
-					$error = FALSE;
-				}
-
-				// Seteo el nuevo valor a la vista.
-				$vista->assign('palabras_comunes', $keyword_list);
-
-				// Verifico el contenido.
-				if ($error !== FALSE)
-				{
-					$vista->assign('error_palabras_comunes', 'La lista de palabras claves no permitidas deben ser una por linea. \''.$error.'\' no es correcta.');
-				}
-				else
-				{
-					if (serialize($keyword_list) != $model_configuracion->get('keyword_palabras_comunes', NULL))
-					{
-						$model_configuracion->keyword_palabras_comunes = serialize($keyword_list);
-						$vista->assign('success_palabras_comunes', 'La lista de palabras claves no permitidas se ha actualizado correctamente.');
-					}
-				}
+				$lst[$k]['error'] = $error;
+				$error_global = TRUE;
 			}
 		}
 
-		// Seteamos el menu.
-		$this->template->assign('master_bar', parent::base_menu('admin'));
-
-		// Cargamos plantilla administracion.
-		$admin_template = View::factory('admin/template');
-		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_seo'));
-
-		// Asignamos la vista a la plantilla base.
-		$this->template->assign('contenido', $admin_template->parse());
+		return $error_global;
 	}
 }

@@ -277,4 +277,50 @@ class Base_Update_Utils {
 				return FALSE;
 		}
 	}
+
+	/**
+	 * Obtenemos el compresor a usar en función de la extensión del archivos.
+	 * @param string $ext Extensión del archivo.
+	 * @return string|boolean Compresor a usar.
+	 */
+	public static function extension2compresion($ext)
+	{
+		switch ($ext)
+		{
+			case 'zip':
+				return 'zip';
+			case 'tar':
+				return 'tar';
+			case 'tar.gz':
+			case 'gz':
+				return 'gz';
+			case 'tar.bz':
+			case 'bz':
+				return 'bz2';
+			default:
+				return FALSE;
+		}
+	}
+
+	/**
+	 * Obtenemos la extensión del archivo en función de la compresión.
+	 * @param string $ext Compresión del archivo.
+	 * @return string|boolean
+	 */
+	public static function compresion2extension($ext)
+	{
+		switch ($ext)
+		{
+			case 'zip':
+				return 'zip';
+			case 'tar':
+				return 'tar';
+			case 'gz':
+				return 'tar.gz';
+			case 'bz2':
+				return 'tar.bz';
+			default:
+				return FALSE;
+		}
+	}
 }

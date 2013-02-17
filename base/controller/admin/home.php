@@ -84,14 +84,17 @@ class Base_Controller_Admin_Home extends Controller {
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
 		{
+			$listado['p_sistema'] = array('caption' => 'Sistema', 'items' => array());
+			$listado['p_sistema']['items']['sistema_informacion'] = array('link' => '/admin/sistema/', 'caption' => 'Información', 'active' => FALSE);
+			$listado['p_sistema']['items']['sistema_temas'] = array('link' => '/admin/sistema/temas/', 'caption' => 'Temas', 'active' => FALSE);
+			$listado['p_sistema']['items']['sistema_plugins'] = array('link' => '/admin/sistema/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
+			$listado['p_sistema']['items']['sistema_optimizar'] = array('link' => '/admin/sistema/optimizar/', 'caption' => 'Optimizaciones', 'active' => FALSE);
+
 			$listado['p_configuracion'] = array('caption' => 'Configuración', 'items' => array());
 			$listado['p_configuracion']['items']['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuración', 'active' => FALSE);
 			$listado['p_configuracion']['items']['configuracion_seo'] = array('link' => '/admin/configuracion/seo', 'caption' => 'SEO', 'active' => FALSE);
 			$listado['p_configuracion']['items']['configuracion_mantenimiento'] = array('link' => '/admin/configuracion/mantenimiento/', 'caption' => 'Modo Mantenimiento', 'active' => FALSE);
-			$listado['p_configuracion']['items']['configuracion_temas'] = array('link' => '/admin/configuracion/temas/', 'caption' => 'Temas', 'active' => FALSE);
-			$listado['p_configuracion']['items']['configuracion_plugins'] = array('link' => '/admin/configuracion/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
 			$listado['p_configuracion']['items']['configuracion_correo'] = array('link' => '/admin/configuracion/correo/', 'caption' => 'Correo', 'active' => FALSE);
-			$listado['p_configuracion']['items']['configuracion_optimizar'] = array('link' => '/admin/configuracion/optimizar/', 'caption' => 'Optimizaciones', 'active' => FALSE);
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
@@ -114,6 +117,20 @@ class Base_Controller_Admin_Home extends Controller {
 
 			$listado['p_plugins'] = array('caption' => 'Plugins', 'items' => array());
 		}
+
+		// Activación por submenu.
+		$el = explode('.', $activo);
+		if (count($el) == 2)
+		{
+			list ($item, $subitem) = $el;
+
+			if (isset($listado[$item]) && isset($listado[$item]['items'][$subitem]))
+			{
+				$listado[$item]['items'][$subitem]['active'] = TRUE;
+			}
+			unset($item, $subitem);
+		}
+		unset($el);
 
 		// Activo elemento interno.
 		foreach ($listado as $k => $v)
@@ -140,7 +157,7 @@ class Base_Controller_Admin_Home extends Controller {
 			$rs[$k] = array('caption' => $v['caption']);
 			foreach($v['items'] as $kk => $vv)
 			{
-				$rs[$kk] = $vv;
+				$rs[$k.$kk] = $vv;
 			}
 		}
 

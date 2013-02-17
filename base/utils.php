@@ -86,7 +86,7 @@ class Base_Utils {
 		$yiq = (($r*299)+($g*587)+($b*114))/1000;
 		return ($yiq >= 128) ? '000000' : 'FFFFFF';
 	}
-	
+
 	/**
 	 * Cargamos una URL.
 	 * @param string $url URL a cargar.
@@ -116,6 +116,101 @@ class Base_Utils {
 		else
 		{
 			return @file_get_contents($url);
+		}
+	}
+
+	/**
+	 * Realizamos la descarga de un archivo.
+	 * @param string $url Url del archivo a descargar.
+	 * @param string $file Archivo donde guardar la descarga.
+	 */
+	public static function download_file($url, $file)
+	{
+		// Verificamos presencia de cURL.
+		if (function_exists('curl_init'))
+		{
+			if (is_string($file))
+			{
+				// Abrimos el archivo.
+				$fp = fopen($file, 'w+');
+			}
+			else
+			{
+				$fp =& $file;
+			}
+
+			// Iniciamos el objeto.
+			$petition = curl_init();
+
+			// Configuramos la peticion.
+			curl_setopt($petition, CURLOPT_URL, $url);
+			curl_setopt($petition, CURLOPT_TIMEOUT, 50);
+			curl_setopt($petition, CURLOPT_FILE, $fp);
+			// curl_setopt($petition, CURLOPT_FOLLOWLOCATION, true);
+
+			// Realizamos la peticion.
+			curl_exec($petition);
+
+			// Verificamos presencia de errores.
+			if (curl_errno($petition) === 0)
+			{
+				curl_close($petition);
+				fclose($fp);
+				return TRUE;
+			}
+			else
+			{
+				fclose($fp);
+				//throw new HttpException(curl_error($petition), curl_errno($petition));
+				curl_close($petition);
+				return FALSE;
+			}
+		}
+		elseif (ini_get('allow_url_fopen') === TRUE)
+		{
+			// Intentamos con lectura remota.
+
+			// Tratamos de abrir el fichero.
+			$r_fp = @fopen($url, 'r');
+
+			// Verificamos su apertura.
+			if ( ! $r_fp)
+			{
+				return FALSE;
+			}
+
+			// Abrimos el local
+			if (is_string($file))
+			{
+				$l_fp = @fopen($file, 'w+');
+			}
+			else
+			{
+				$l_fp =& $file;
+			}
+
+			// Verificamos su apertura.
+			if ( ! $r_fp)
+			{
+				@fclose($r_fp);
+				return FALSE;
+			}
+
+			// Comenzamos a mover los bytes.
+			while ( ! feof($r_fp))
+			{
+				fwrite($l_fp, fread($r_fp, 1024));
+			}
+
+			// Cerramos los archivos.
+			@fclose($r_fp);
+			@fclose($l_fp);
+
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
 		}
 	}
 
