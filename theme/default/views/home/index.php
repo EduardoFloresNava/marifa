@@ -75,7 +75,7 @@
 		<div>
 			<h3 class="title">Últimos comentarios</h3>
 			{if="count($ultimos_comentarios) > 0"}
-			<ol>
+			<ol class="last-comment-list">
 			{loop="$ultimos_comentarios"}
 				<li>
 					{if="isset($value.post)"}
