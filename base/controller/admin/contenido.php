@@ -979,7 +979,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$vista->assign('imagen', $imagen);
 
 			// Verificamos el nombre.
-			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{3,50}$/iD', $nombre))
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ ,\.:;\-_]{3,50}$/iD', $nombre))
 			{
 				$error = TRUE;
 				$vista->assign('error_nombre', 'El nombre de la categoria deben ser entre 5 y 32 caractéres alphanuméricos.');
@@ -1111,10 +1111,10 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$vista->assign('imagen', $imagen);
 
 			// Verificamos el nombre.
-			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{3,50}$/iD', $nombre))
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ ,\.:;\-_]{3,50}$/iD', $nombre))
 			{
 				$error = TRUE;
-				$vista->assign('error_nombre', 'El nombre de la categoria deben ser entre 5 y 32 caractéres alphanuméricos.');
+				$vista->assign('error_nombre', 'El nombre de la categoria deben ser entre 3 y 50 caractéres alphanuméricos.');
 			}
 
 			// Verificamos la imagen.
