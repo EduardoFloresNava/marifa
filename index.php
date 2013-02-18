@@ -147,6 +147,9 @@ Log::setup(APP_BASE.DS.'log', '%d-%m-%Y.log', PRODUCTION ? Log::INFO : Log::DEBU
 // Iniciamos las cookies.
 Cookie::start('secret_cookie_key');
 
+// Salida UTF-8.
+header('Content-type: text/html; charset=utf-8');
+
 // Iniciamos el usuario.
 Usuario::start();
 

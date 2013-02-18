@@ -35,26 +35,31 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 
 	/**
 	 * Objeto de coneccion a la base de datos.
+	 * @var resource
 	 */
 	protected $conn = NULL;
 
 	/**
 	 * IP o Host de la base de datos
+	 * @var string
 	 */
 	protected $host;
 
 	/**
 	 * Usuario del Servidor.
+	 * @var string
 	 */
 	protected $user;
 
 	/**
 	 * Contraseña del Servidor.
+	 * @var string
 	 */
 	protected $pass;
 
 	/**
 	 * Nombre de la Base de datos.
+	 * @var string
 	 */
 	protected $db;
 
@@ -74,6 +79,11 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 
 		// Conectamos a la base de datos.
 		$this->connect();
+
+		if ($data['utf8'])
+		{
+			mysql_set_charset('utf8');
+		}
 	}
 
 	/**

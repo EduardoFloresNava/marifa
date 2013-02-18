@@ -56,38 +56,38 @@ $consultas[] = array(
 			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Animaciones', 'animaciones', 'flash.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Apuntes y Monografías', 'Apuntes-y-Monografias', 'report.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Arte', 'Arte', 'palette.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Autos y Motos', 'autosymotos', 'car.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Apuntes y Monografías', 'apuntes-y-monografias', 'report.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Arte', 'arte', 'palette.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Autos y Motos', 'autos-y-motos', 'car.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Celulares', 'celulares', 'phone.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Ciencia y Educación', 'Ciencia-y-Educacion', 'lab.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Ciencia y Educación', 'ciencia-y-educacion', 'lab.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Comics', 'comics', 'comic.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Deportes', 'deportes', 'sport.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Downloads', 'downloads', 'disk.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('E-books y Tutoriales', 'ebooksytutoriales', 'ebook.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Ecología', 'Ecologia', 'nature.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Economía y Negocios', 'Economia-y-Negocios', 'economy.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('E-books y Tutoriales', 'ebooks-y-tutoriales', 'ebook.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Ecología', 'ecologia', 'nature.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Economía y Negocios', 'economia-y-negocios', 'economy.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Femme', 'femme', 'female.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Hazlo tu mismo', 'hazlotumismo', 'escuadra.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Hazlo tu mismo', 'hazlo-tu-mismo', 'escuadra.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Humor', 'humor', 'humor.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Imágenes', 'Imagenes', 'photo.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Imágenes', 'imagenes', 'photo.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Info', 'info', 'book.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Juegos', 'juegos', 'controller.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Links', 'links', 'link.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Linux', 'linux', 'tux.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Mac', 'mac', 'mac.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Manga y Anime', 'mangayanime', 'manga.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Manga y Anime', 'manga-y-anime', 'manga.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Mascotas', 'mascotas', 'pet.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Música', 'Musica', 'music.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Música', 'musica', 'music.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Noticias', 'noticias', 'newspaper.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Off Topic', 'offtopic', 'comments.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Recetas y Cocina', 'recetasycocina', 'cake.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Salud y Bienestar', 'saludybienestar', 'heart.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Off Topic', 'off-topic', 'comments.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Recetas y Cocina', 'recetas-y-cocina', 'cake.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Salud y Bienestar', 'salud-y-bienestar', 'heart.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Solidaridad', 'solidaridad', 'salva.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Prueba', 'prueba', 'tscript.png'), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Turismo', 'turismo', 'brujula.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('TV, Peliculas y series', 'tvpeliculasyseries', 'tv.png'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Videos On-line', 'videosonline', 'film.png'), array('error_no' => 1062))
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('TV, Peliculas y series', 'tv-peliculas-y-series', 'tv.png'), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO categoria (nombre, seo, imagen) VALUES (?, ?, ?)', array('Videos On-line', 'videos-online', 'film.png'), array('error_no' => 1062))
 	)
 );
 
@@ -830,7 +830,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`)
-			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+			  ) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -848,7 +848,7 @@ $consultas[] = array(
 				`fecha` datetime NOT NULL,
 				PRIMARY KEY (`id`),
 				KEY `usuario_id` (`usuario_id`,`shout_id`)
-			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+			  ) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -862,7 +862,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				`shout_id` int(11) NOT NULL,
 				PRIMARY KEY (`usuario_id`,`shout_id`)
-			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+			  ) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -876,7 +876,7 @@ $consultas[] = array(
 				`tag` varchar(100) NOT NULL,
 				`shout_id` int(11) NOT NULL,
 				PRIMARY KEY (`tag`,`shout_id`)
-			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+			  ) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -890,7 +890,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				`shout_id` int(11) NOT NULL,
 				PRIMARY KEY (`usuario_id`,`shout_id`)
-			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+			  ) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -904,7 +904,7 @@ $consultas[] = array(
 				`usuario_id` int(11) NOT NULL,
 				`shout_id` int(11) NOT NULL,
 				PRIMARY KEY (`usuario_id`,`shout_id`)
-			  ) ENGINE=MyISAM ;', NULL, array('error_no' => 1050)
+			  ) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;', NULL, array('error_no' => 1050)
 		)
 	)
 );

@@ -69,6 +69,9 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 			throw new Database_Exception('Error ejecutando la consulta \''.$query.'\': \''.mysql_error($conn).'\'', mysql_errno($conn));
 		}
 		PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
+
+		// Seteo si es UTF-8.
+		$this->use_utf8 = mysql_client_encoding($conn) == 'utf8';
 	}
 
 	/**

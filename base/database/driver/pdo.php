@@ -34,6 +34,18 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Database_Driver_Pdo extends Database_Driver {
 
 	/**
+	 * Instancia de la clase PDO.
+	 * @var PDO
+	 */
+	protected $dbh;
+
+	/**
+	 * Si se utiliza UTF-8 o no.
+	 * @var bool
+	 */
+	protected $utf8 = FALSE;
+
+	/**
 	 * Constructor de la clase.
 	 *
 	 * Acá se debe presentar toda la lógica de conección a la base de datos
@@ -79,7 +91,16 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		try
 		{
 			$this->dbh = new PDO($this->dsn, $this->username, $this->password, $this->options);
-			// Coneccion satisfactoria.
+
+			// Seteo si debo trabajar en UTF-8.
+			$qry = $this->dbh->query("SHOW VARIABLES LIKE 'character_set_client'");
+			$qry->execute();
+
+			if ($qry->fetch(PDO::FETCH_OBJ)->Value == 'utf8')
+			{
+				$this->utf8 = TRUE;
+			}
+
 			return TRUE;
 		}
 		catch (PDOException $e)
@@ -115,7 +136,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		{
 			PRODUCTION || Profiler_Profiler::get_instance()->log_query($sth->queryString);
 			// Generamos un objeto para dar compatibilidad al resto de motores.
-			return new Database_Driver_Pdo_Query($sth);
+			return new Database_Driver_Pdo_Query($sth, $this->utf8);
 		}
 		else
 		{

@@ -57,9 +57,10 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 	 * @param PDOStatement $query
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function __construct($query)
+	public function __construct($query, $utf_8 = FALSE)
 	{
 		$this->query = $query;
+		$this->use_utf8 = $utf_8;
 	}
 
 	/**

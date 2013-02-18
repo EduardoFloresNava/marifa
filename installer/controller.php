@@ -272,26 +272,25 @@ class Installer_Controller {
 				{
 					// Genero arreglo de configuraciones.
 					$config = array(
-						'type' => $driver,
-						'dsn' => "mysql:dbname=$db_name;host=$host",
+						'type'     => $driver,
+						'dsn'      => "mysql:dbname=$db_name;host=$host;charset=utf-8",
 						'username' => $usuario,
-						'password' => $password
+						'password' => $password,
+						'options'  => array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'")
 					);
 				}
 				else
 				{
 					// Genero arreglo de configuraciones.
 					$config = array(
-						'type' => $driver,
-						'host' => $host,
-						'db_name' => $db_name,
+						'type'     => $driver,
+						'host'     => $host,
+						'db_name'  => $db_name,
 						'username' => $usuario,
-						'password' => $password
+						'password' => $password,
+						'utf8'     => TRUE
 					);
 				}
-
-				//FIXME: Puede generar una falla de inyección de código PHP.
-				//FIXME: Verificar presencia de ' y escaparlos.
 
 				// Genero template.
 				$tmp = '<?php defined(\'APP_BASE\') || die(\'No direct access allowed.\');'.PHP_EOL.'return '.$this->value_to_php($config).';';
