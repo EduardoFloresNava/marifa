@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
     <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
-    <li><a href="{#SITE_URL#}/admin/configuracion/temas">Temas</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/sistema/temas">Temas</a> <span class="divider">/</span></li>
     <li class="active">Instalar tema</li>
 </ul>
 <div class="header">
@@ -17,6 +17,6 @@
 	</div>
 
 	<div class="form-actions">
-		<button type="submit" class="btn btn-large btn-primary">Instalar</button> o <a href="{#SITE_URL#}/admin/configuracion/temas">Volver</a>
+		<button type="submit" class="btn btn-large btn-primary">Instalar</button> o <a href="{#SITE_URL#}/admin/sistema/temas">Volver</a>
 	</div>
 </form>

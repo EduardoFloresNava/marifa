@@ -1,5 +1,6 @@
 <ul class="breadcrumb">
     <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/sistema/">Sistema</a> <span class="divider">/</span></li>
     <li class="active">Optimizaciones</li>
 </ul>
 <div class="header">
