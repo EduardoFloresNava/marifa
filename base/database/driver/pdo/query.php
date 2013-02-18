@@ -245,7 +245,7 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 			return $this->query->fetch($this->fetch_mode_pdo($this->fetch_type), PDO::FETCH_ORI_ABS, $this->position);
 		}
 
-		switch ($type)
+		switch ($this->fetch_type)
 		{
 			case Database_Query::FETCH_NUM:
 				// Obtenemos el arreglo.
