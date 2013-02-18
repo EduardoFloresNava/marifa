@@ -59,27 +59,27 @@ class Base_Fechahora extends DateTime {
 
 		if ($diff->y != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->y, __('año', FALSE)));
+			return sprintf($key, $this->pluralize($diff->y, __('año', FALSE), __('años', FALSE)));
 		}
 
 		if ($diff->m != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->m, __('mes', FALSE)));
+			return sprintf($key, $this->pluralize($diff->m, __('mes', FALSE), __('meses', FALSE)));
 		}
 
 		if ($diff->d != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->d, __('día', FALSE)));
+			return sprintf($key, $this->pluralize($diff->d, __('día', FALSE), __('días', FALSE)));
 		}
 
 		if ($diff->h != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->h, __('hora', FALSE)));
+			return sprintf($key, $this->pluralize($diff->h, __('hora', FALSE), __('horas', FALSE)));
 		}
 
 		if ($diff->i != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->i, __('minuto', FALSE)));
+			return sprintf($key, $this->pluralize($diff->i, __('minuto', FALSE), __('minutos', FALSE)));
 		}
 
 		return sprintf($key, __('instantes', FALSE));
@@ -99,9 +99,9 @@ class Base_Fechahora extends DateTime {
 	 * @param string $text Cadena en sigular.
 	 * @return string
 	 */
-	private function pluralize($count, $text)
+	private function pluralize($count, $singular, $plural)
 	{
-		return $count.(($count == 1) ? (" $text") : (" ${text}s"));
+		return $count.(($count == 1) ? (" $singular") : (" $plural"));
 	}
 
 }
