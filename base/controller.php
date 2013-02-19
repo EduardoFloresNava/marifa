@@ -237,7 +237,12 @@ class Base_Controller {
 
 		// Listado de elemento OFFLINE.
 		$data['posts'] = array('link' => '/', 'caption' => 'Posts', 'icon' => 'book', 'active' => FALSE);
-		$data['fotos'] = array('link' => '/foto/', 'caption' => 'Fotos', 'icon' => 'picture', 'active' => FALSE);
+
+		// Verifico sección de fotos habilitada y su privacidad.
+		if (Utils::configuracion()->get('habilitar_fotos', 1) && (Utils::configuracion()->get('privacidad_fotos', 1) || Usuario::is_login()))
+		{
+			$data['fotos'] = array('link' => '/foto/', 'caption' => 'Fotos', 'icon' => 'picture', 'active' => FALSE);
+		}
 		$data['tops'] = array('link' => '/tops/', 'caption' => 'TOPs', 'icon' => 'signal', 'active' => FALSE);
 
 		// Listado elemento por permisos.

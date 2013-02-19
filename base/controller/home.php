@@ -274,24 +274,28 @@ class Base_Controller_Home extends Controller {
 		$portada->assign('usuario_top', $usuario_top_list);
 		unset($usuario_top_list, $model_usuario);
 
-		// Cargamos ultimas fotos.
-		$model_foto = new Model_Foto;
-		$foto_list = $model_foto->obtener_ultimas(1, 1);
-
-		// Extendemos la información de las fotos.
-		foreach ($foto_list as $k => $v)
+		// Verifico si se deben mostrar las fotos.
+		if (Utils::configuracion()->get('habilitar_fotos', 1) && (Utils::configuracion()->get('privacidad_fotos', 1) || Usuario::is_login()))
 		{
-			$foto_list[$k] = $v->as_array();
-			$foto_list[$k]['descripcion_clean'] = preg_replace('/\[([^\[\]]+)\]/', '', $v->descripcion);
-			$foto_list[$k]['categoria'] = $v->categoria()->as_array();
-		}
-		$portada->assign('ultimas_fotos', $foto_list);
-		unset($foto_list);
+			// Cargamos ultimas fotos.
+			$model_foto = new Model_Foto;
+			$foto_list = $model_foto->obtener_ultimas(1, 1);
 
-		// Cantidad fotos y comentarios en fotos.
-		$portada->assign('cantidad_fotos', $model_foto->cantidad(Model_Foto::ESTADO_ACTIVA));
-		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
-		unset($model_foto);
+			// Extendemos la información de las fotos.
+			foreach ($foto_list as $k => $v)
+			{
+				$foto_list[$k] = $v->as_array();
+				$foto_list[$k]['descripcion_clean'] = preg_replace('/\[([^\[\]]+)\]/', '', $v->descripcion);
+				$foto_list[$k]['categoria'] = $v->categoria()->as_array();
+			}
+			$portada->assign('ultimas_fotos', $foto_list);
+			unset($foto_list);
+
+			// Cantidad fotos y comentarios en fotos.
+			$portada->assign('cantidad_fotos', $model_foto->cantidad(Model_Foto::ESTADO_ACTIVA));
+			$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
+			unset($model_foto);
+		}
 
 		// Titulo del sitio.
 		$this->template->assign('brand_title', '');

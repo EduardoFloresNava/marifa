@@ -81,6 +81,13 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista->assign('rango_defecto', (int) $model_configuracion->get('rango_defecto', 3));
 		$vista->assign('error_rango_defecto', FALSE);
 		$vista->assign('success_rango_defecto', FALSE);
+		$vista->assign('habilitar_fotos', (bool) $model_configuracion->get('habilitar_fotos', 1));
+		$vista->assign('error_habilitar_fotos', FALSE);
+		$vista->assign('success_habilitar_fotos', FALSE);
+		$vista->assign('privacidad_fotos', (bool) $model_configuracion->get('privacidad_fotos', 1));
+		$vista->assign('error_privacidad_fotos', FALSE);
+		$vista->assign('success_privacidad_fotos', FALSE);
+
 		$vista->assign('elementos_pagina', (int) $model_configuracion->get('elementos_pagina', 20));
 		$vista->assign('error_elementos_pagina', FALSE);
 		$vista->assign('success_elementos_pagina', FALSE);
@@ -206,6 +213,42 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				else
 				{
 					$vista->assign('error_rango_defecto', 'El rango seleccionado no es correcto.');
+				}
+			}
+
+			// Verifico el estado de las fotos.
+			if (isset($_POST['habilitar_fotos']))
+			{
+				// Limpio el valor.
+				$habilitar_fotos = (bool) $_POST['habilitar_fotos'];
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('habilitar_fotos', $habilitar_fotos);
+
+				// Actualizo el valor.
+				$actual = $model_configuracion->get('habilitar_fotos', NULL);
+				if ($actual === NULL || $habilitar_fotos !== (bool) $actual)
+				{
+					$model_configuracion->habilitar_fotos = $habilitar_fotos;
+					$vista->assign('success_habilitar_fotos', 'El estado de las fotos se ha editado correctamente.');
+				}
+			}
+
+			// Verifico la privacidad de las fotos.
+			if (isset($_POST['privacidad_fotos']))
+			{
+				// Limpio el valor.
+				$privacidad_fotos = (bool) $_POST['privacidad_fotos'];
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('privacidad_fotos', $privacidad_fotos);
+
+				// Actualizo el valor.
+				$actual = $model_configuracion->get('privacidad_fotos', NULL);
+				if ($actual === NULL || $privacidad_fotos !== (bool) $actual)
+				{
+					$model_configuracion->privacidad_fotos = $privacidad_fotos;
+					$vista->assign('success_habilitar_fotos', 'La privacidad de las fotos se ha editado correctamente.');
 				}
 			}
 

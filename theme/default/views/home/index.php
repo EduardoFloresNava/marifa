@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="span7">
+	<div class="{if="isset($ultimas_fotos)"}span7{else}span9{/if}">
 		<h3 class="title clearfix">Últimos posts<small class="pull-right leyenda">Leyenda: <span><i class="icon icon-bookmark"></i>Fijo - <i class="icon icon-certificate"></i>Patrocinado - <i class="icon icon-lock"></i>Privado</span></small></h3>
 		{if="count($sticky) == 0 && count($ultimos_posts) == 0"}
 		<div class="alert">No hay posts aún.</div>
@@ -67,10 +67,10 @@
 				<div class="span6"><i class="icon icon-book"></i>{$cantidad_posts}</div>
 				<div class="span6"><i class="icon icon-comment"></i>{$cantidad_comentarios_posts}</div>
 			</div>
-			<div class="row-fluid">
+			{if="isset($cantidad_fotos) && isset($cantidad_comentarios_fotos)"}<div class="row-fluid">
 				<div class="span6"><i class="icon icon-picture"></i>{$cantidad_fotos}</div>
 				<div class="span6"><i class="icon icon-comment"></i>{$cantidad_comentarios_fotos}</div>
-			</div>
+			</div>{/if}
 		</div>
 		<div>
 			<h3 class="title">Últimos comentarios</h3>
@@ -111,7 +111,7 @@
 			</ol>
 		</div>
 	</div>
-	<div class="span2 hidden-phone">
+	{if="isset($ultimas_fotos)"}<div class="span2 hidden-phone">
 		<div>
 			<h3 class="title">Últimas fotos</h3>
 			{if="isset($ultimas_fotos[0])"}
@@ -125,5 +125,5 @@
 			<div class="alert">No hay fotos para mostrar</div>
 			{/if}
 		</div>
-	</div>
+	</div>{/if}
 </div>

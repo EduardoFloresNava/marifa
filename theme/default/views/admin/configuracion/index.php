@@ -65,6 +65,33 @@
 	</fieldset>
 
 	<fieldset>
+		<legend>Sección fotos:</legend>
+
+		<div class="control-group{if="$error_habilitar_fotos"} error{elseif="$success_habilitar_fotos"} success{/if}">
+			<label class="control-label" for="habilitar_fotos">Estado sección fotos:</label>
+			<div class="controls">
+				<select name="habilitar_fotos" id="habilitar_fotos">
+					<option value="1"{if="$habilitar_fotos"} selected="selected"{/if}>Habilitada</option>
+					<option value="0"{if="!$habilitar_fotos"} selected="selected"{/if}>Deshabilitada</option>
+				</select>
+				<span class="help-inline">{if="$error_habilitar_fotos"}{$error_habilitar_fotos}{elseif="$success_habilitar_fotos"}{$success_habilitar_fotos}{else}Si está disponible la categoría de fotos o no. El deshabilitarla no borra las fotos existentes.{/if}</span>
+			</div>
+		</div>
+
+		<div class="control-group{if="$error_privacidad_fotos"} error{elseif="$success_privacidad_fotos"} success{/if}">
+			<label class="control-label" for="privacidad_fotos">Privacidad sección fotos:</label>
+			<div class="controls">
+				<select name="privacidad_fotos" id="privacidad_fotos">
+					<option value="1"{if="$privacidad_fotos"} selected="selected"{/if}>Pública</option>
+					<option value="0"{if="!$privacidad_fotos"} selected="selected"{/if}>Privada (solo usuarios registrados)</option>
+				</select>
+				<span class="help-inline">{if="$error_privacidad_fotos"}{$error_privacidad_fotos}{elseif="$success_privacidad_fotos"}{$success_privacidad_fotos}{else}Visibilidad de la categoría de fotos.{/if}</span>
+			</div>
+		</div>
+
+	</fieldset>
+
+	<fieldset>
 		<legend>Paginación:</legend>
 
 		<div class="control-group{if="$error_elementos_pagina"} error{elseif="$success_elementos_pagina"} success{/if}">

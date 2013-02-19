@@ -32,6 +32,18 @@ defined('APP_BASE') || die('No direct access allowed.');
  */
 class Base_Controller_Foto extends Controller {
 
+	public function before()
+	{
+		parent::before();
+
+		// Verifico permisos.
+		if ( ! (Utils::configuracion()->get('habilitar_fotos', 1) && (Utils::configuracion()->get('privacidad_fotos', 1) || Usuario::is_login())))
+		{
+			add_flash_message(FLASH_ERROR, 'No tienes acceso a está sección.');
+			Request::redirect('/');
+		}
+	}
+
 	/**
 	 * Listado de pestañas de la foto.
 	 * @param int $activo Pestaña seleccionada.
