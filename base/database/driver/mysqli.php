@@ -267,7 +267,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		{
 			$query = $this->parse_query($query, $params);
 			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
-			$rst = mysqli_query($query, $this->conn);
+			$rst = mysqli_query($this->conn, $query);
 			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($rst === TRUE)
@@ -309,7 +309,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		{
 			$query = $this->parse_query($query, $params);
 			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
-			$rst = mysqli_query($query, $this->conn);
+			$rst = mysqli_query($this->conn, $query);
 			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($rst === TRUE)
@@ -348,7 +348,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		{
 			$query = $this->parse_query($query, $params);
 			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
-			$rst = mysqli_query($query, $this->conn);
+			$rst = mysqli_query($this->conn, $query);
 			PRODUCTION || Profiler_Profiler::get_instance()->log_query($query);
 
 			if ($rst === TRUE)
@@ -359,7 +359,7 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 			else
 			{
 				// Generamos una excepción.
-				throw new Database_Exception("Error al ejecutar la consulta '$query': '".mysqli_error()."'", mysqli_errno($this->conn));
+				throw new Database_Exception("Error al ejecutar la consulta '$query': '".mysqli_error($this->conn)."'", mysqli_errno($this->conn));
 
 				// Devolvemos falso para indicar que no fue correcto.
 				return FALSE;

@@ -83,7 +83,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 	 */
 	public function num_rows()
 	{
-		return $this->query->num_rows;
+		return mysqli_num_rows($this->query);
 	}
 
 	/**
@@ -100,7 +100,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 		{
 			case Database_Query::FETCH_NUM:
 				// Obtenemos el arreglo.
-				$resultado = $this->query->fetch_array(MYSQLI_NUM);
+				$resultado = mysqli_fetch_array($this->query, MYSQLI_NUM);
 
 				// Evitamos cast de consultas erroneas o vacias.
 				if ( ! is_array($resultado))
@@ -121,7 +121,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 				return $resultado;
 			case Database_Query::FETCH_OBJ:
 				// Obtenemos el objeto.
-				$object = $this->query->fetch_object();
+				$object = mysqli_fetch_object($this->query);
 
 				// Evitamos cast de consultas erroneas o vacias.
 				if ( ! is_object($object))
@@ -142,7 +142,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 			case Database_Query::FETCH_ASSOC:
 			default:
 				// Obtenemos el arreglo.
-				$resultado = $this->query->fetch_array(MYSQLI_ASSOC);
+				$resultado = mysqli_fetch_array($this->query, MYSQLI_ASSOC);
 
 				// Evitamos cast de consultas erroneas o vacias.
 				if ( ! is_array($resultado))
@@ -189,7 +189,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 	 */
 	public function current()
 	{
-		$this->query->data_seek($this->position);
+		mysqli_data_seek($this->query, $this->position);
 		return $this->get_record($this->fetch_type, $this->cast);
 	}
 
