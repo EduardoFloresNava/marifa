@@ -108,7 +108,9 @@ $consultas[] = array(
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('ip_mantenimiento', serialize(array()), serialize(array())), array('error_no' => 1062)),
 		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('rango_defecto', 3, 3), array('error_no' => 1062)),
 		array('UPDATE', 'UPDATE configuracion SET valor = ? WHERE clave = ?', array(VERSION, 'version_actual'), array('error_no' => 1062)),
-		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', VERSION, VERSION), array('error_no' => 1062))
+		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('version_actual', VERSION, VERSION), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('habilitar_fotos', 1, 1), array('error_no' => 1062)),
+		array('INSERT', 'INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array('privacidad_fotos', 1, 1), array('error_no' => 1062))
 	)
 );
 
