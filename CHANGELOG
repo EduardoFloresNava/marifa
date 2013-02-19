@@ -1,3 +1,36 @@
+Marifa 0.3 []
+ - FEATURE: Sistema de actualización automática del núcleo.
+ - FEATURE: Driver de base de datos MySQLi.
+ - FEATURE: Implementado UTF-8 para conecciones a las bases de datos por defecto. Aumenta la seguridad.
+ - FEATURE: Agregadas configuraciones para ocultar la sección de fotos.
+ - FEATURE: Reorganizadas algunas categorías del menu de administración.
+ - FIX: Problema de edición de categorías y mejora del SEO de las mismas.
+ - FIX: Mejorado el cálculo de cantidad de caracteres en captchas.
+ - FIX: Solucionado problema de plurales de fechas incrementales (fuzzy time).
+ - FIX: Archivo de vistas faltante en tema por defecto.
+
+Marifa 0.2.1 [10/02/2013]
+ - FIX: Problema en suceso 'shout_compartir'.
+ - FIX: Solucionada falla del modo mantenimiento.
+ - FIX: Solucionada falla de actualizaciones del campos del perfil.
+ - FIX: Error en rutas de paginación de comentarios.
+ - FIX: Se muestran archivo y linea en trazas de errores.
+ - FIX: Mejorado el cálculo de cantidad de caracteres en captchas.
+
+Marifa 0.2 [03/02/2013]
+ - FEATURE: Agregadas funciones en la consola para generación de plugins.
+ - FEATURE: Sistema de eventos para facilitar la creación de plugins.
+ - FEATURE: Implementado importador PHPost.
+ - FEATURE: Paginación de comentarios en posts y fotos.
+ - FEATURE: Algunas mejoras al instalador.
+ - FEATURE: Compresión de log's viejos.
+ - FIX: Solucionados algunos errores en las instalaciones en subdirectorios.
+ - FIX: Agregados htaccess para evitar listado de directorios.
+ - FIX: Error grave en el procesamiento de consultas.
+ - FIX: Solucionados errores en los contadores.
+ - FIX: Error en validación de medallas para posts y fotos.
+ - FIX: Paginación de lista de usuarios para evitar sobrecarga con muchos usuarios.
+
 Marifa 0.2RC4 [27/12/2012]
  - FEATURE: Rediseño del buscador.
  - FEATURE: Implementado UTF-8.
