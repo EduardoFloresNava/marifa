@@ -853,9 +853,9 @@ class Base_Controller_Admin_Sistema extends Controller {
 					Cache::get_instance()->clean();
 
 					// Limpio la cache de vistas.
-					foreach (glob(CACHE_PATH.DS.'raintpl'.DS.'*'.DS.'*.php') as $file)
+					foreach (glob(CACHE_PATH.DS.'raintpl'.DS.'*', GLOB_ONLYDIR) as $file)
 					{
-						@unlink($file);
+						Update_Utils::unlink($file);
 					}
 
 					// Informo el resultado.
@@ -1049,6 +1049,9 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$compresor->set_temp_path($tmp_dir);
 		$compresor->decompress($file);
 
+		// Bloqueo para actualizar.
+		Mantenimiento::lock(array(IP::get_ip_addr()));
+
 		// Actualizo BD.
 		if (file_exists($tmp_dir.DS.'database.php'))
 		{
@@ -1069,6 +1072,18 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Actualizo versión del sistema.
 		$m_config = new Model_Configuracion;
 		$m_config->version = substr($version, 1);
+
+		// Limpio cache.
+		Cache::get_instance()->clean();
+
+		// Borro cache de vistas.
+		foreach (glob(CACHE_PATH.DS.'raintpl'.DS.'*', GLOB_ONLYDIR) as $file)
+		{
+			Update_Utils::unlink($file);
+		}
+
+		// Libero bloqueo.
+		Mantenimiento::unlock();
 
 		// Borro cache de versiones.
 		Cache::get_instance()->delete('update.sistema.actualizaciones');
