@@ -214,4 +214,19 @@ class Base_Utils {
 		}
 	}
 
+	/**
+	 * Obtenemos una instancia del modelo de configuraciones.
+	 * @return Model_Configuracion
+	 */
+	public static function configuracion()
+	{
+		static $instance = NULL;
+
+		if ($instance === NULL)
+		{
+			$instance = new Model_Configuracion;
+		}
+		return $instance;
+	}
+
 }
