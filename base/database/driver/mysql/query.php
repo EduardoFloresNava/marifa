@@ -134,7 +134,10 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 					$c = count($resultado);
 					for ($i = 0; $i < $c; $i++)
 					{
-						$resultado[$i] = $this->cast_field($resultado[$i], $cast[$i]);
+						if (isset($resultado[$i]))
+						{
+							$resultado[$i] = $this->cast_field($resultado[$i], $cast[$i]);
+						}
 					}
 				}
 
@@ -158,7 +161,10 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 					// Realizamos el cast.
 					foreach ($cast as $k => $v)
 					{
-						$object->$k = $this->cast_field($object->$k, $v);
+						if (isset($object->$k))
+						{
+							$object->$k = $this->cast_field($object->$k, $v);
+						}
 					}
 				}
 
@@ -183,7 +189,10 @@ class Base_Database_Driver_Mysql_Query extends Database_Query {
 					// Realizamos el cast.
 					foreach ($cast as $k => $v)
 					{
-						$resultado[$k] = $this->cast_field($resultado[$k], $v);
+						if (isset($resultado[$k]))
+						{
+							$resultado[$k] = $this->cast_field($resultado[$k], $v);
+						}
 					}
 				}
 
