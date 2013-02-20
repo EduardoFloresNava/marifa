@@ -150,14 +150,14 @@ Cookie::start('secret_cookie_key');
 // Salida UTF-8.
 header('Content-type: text/html; charset=utf-8');
 
-// Iniciamos el usuario.
-Usuario::start();
-
 // Cargo el tema actual.
 define('THEME', Theme::actual());
 
 // Iniciamos el manejo de errores.
 Error::get_instance()->start(DEBUG);
+
+// Iniciamos el usuario.
+Usuario::start();
 
 // Verificamos bloqueos.
 if (Mantenimiento::is_locked())
