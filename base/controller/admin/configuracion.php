@@ -1438,4 +1438,196 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
+
+	/**
+	 * Configuración de la base de datos.
+	 */
+	public function action_bd()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/configuracion/bd');
+
+		// Verifico permisos de escritura.
+		$vista->assign('error_permisos', ! is_writable(CONFIG_PATH.DS.'database.php'));
+
+		// Cargamos configuraciones de la base de datos.
+		$config = configuracion_obtener(CONFIG_PATH.DS.'database.php');
+
+		// Armo listado de drivers disponibles.
+		$drivers = array();
+
+		if (function_exists('mysql_connect'))
+		{
+			$drivers['mysql'] = 'MySQL';
+		}
+
+		if (function_exists('mysqli_connect'))
+		{
+			$drivers['mysqli'] = 'MySQLi';
+		}
+
+		if (class_exists('pdo'))
+		{
+			$drivers['pdo'] = 'PDO';
+		}
+
+		$vista->assign('drivers', $drivers);
+
+
+		// Seteo sin errores.
+		$vista->assign('error_driver', FALSE);
+		$vista->assign('error_host', FALSE);
+		$vista->assign('error_db_name', FALSE);
+		$vista->assign('error_usuario', FALSE);
+		$vista->assign('error_password', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Verifico los campos.
+			$error = FALSE;
+			foreach (array('driver', 'host', 'db_name', 'usuario', 'password') as $v)
+			{
+				if (isset($_POST[$v]))
+				{
+					$$v = $_POST[$v];
+					$vista->assign($v, $_POST[$v]);
+				}
+				else
+				{
+					$error = TRUE;
+					$vista->assign($v, '');
+					$vista->assign('error_'.$v, 'Debe ingresar el campo.');
+				}
+			}
+
+			// Verifico driver.
+			if (isset($driver) && ! in_array($driver, array_keys($drivers)))
+			{
+				$error = TRUE;
+				$vista->assign('error_driver', 'El driver ingresado no es correcto.');
+			}
+
+			if ( ! $error)
+			{
+				// Genero arreglo de configuraciones.
+				if ($driver == 'pdo')
+				{
+					// Genero arreglo de configuraciones.
+					$cfg = array(
+						'type'     => $driver,
+						'dsn'      => "mysql:dbname=$db_name;host=$host;charset=utf-8",
+						'username' => $usuario,
+						'password' => $password,
+						'options'  => array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'")
+					);
+				}
+				else
+				{
+					// Genero arreglo de configuraciones.
+					$cfg = array(
+						'type'     => $driver,
+						'host'     => $host,
+						'db_name'  => $db_name,
+						'username' => $usuario,
+						'password' => $password,
+						'utf8'     => TRUE
+					);
+				}
+
+				// Testeo la configuraciones.
+				if ( ! Database::test($cfg))
+				{
+					$vista->assign('error', 'No se ha podido conectar a la base de datos. Verifique las configuraciones.');
+				}
+				else
+				{
+					if (is_writable(CONFIG_PATH.DS.'database.php'))
+					{
+						// Aplico la configuraciones.
+						file_put_contents(CONFIG_PATH.DS.'database.php', '<?php defined(\'APP_BASE\') || die(\'No direct access allowed.\');'.PHP_EOL.'return '.$this->value_to_php($cfg).';');
+						add_flash_message(FLASH_SUCCESS, '<strong>¡Felicitaciones!</strong> Las configuraciones se han guardado correctamente.');
+					}
+					else
+					{
+						add_flash_message(FLASH_SUCCESS, '<strong>¡Felicitaciones!</strong> Las configuraciones son correctas pero no se puede realizar la actualización por falta de permisos.');
+					}
+				}
+			}
+		}
+		else
+		{
+			$vista->assign('driver', $config['type']);
+
+			if (strtoupper($config['type']) == 'PDO')
+			{
+				//TODO: Compatibilidad para otros sistemas.
+				
+				// Busco parámetros.
+				preg_match('/^mysql:dbname=(.*?);host=(.*?);(.*)$/i', arr_get($config, 'dsn', ''), $m);
+
+				$vista->assign('host', arr_get($m, 2, ''));
+				$vista->assign('db_name', arr_get($m, 1, ''));
+				$vista->assign('usuario', arr_get($config, 'username', ''));
+				$vista->assign('password', arr_get($config, 'password', ''));
+			}
+			else
+			{
+				$vista->assign('host', arr_get($config, 'host', ''));
+				$vista->assign('db_name', arr_get($config, 'db_name', ''));
+				$vista->assign('usuario', arr_get($config, 'username', ''));
+				$vista->assign('password', arr_get($config, 'password', ''));
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion_db'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Obtenemos la representación PHP de una variable.
+	 * @param mixed $value Variable a representar.
+	 * @return string
+	 */
+	private function value_to_php($value)
+	{
+		if ($value === TRUE || $value === FALSE)
+		{
+			return $value ? 'TRUE' : 'FALSE';
+		}
+		elseif (is_int($value) || is_float($value))
+		{
+			return "$value";
+		}
+		elseif (is_string($value))
+		{
+			return "'".str_replace("'", "\\'", $value)."'";
+		}
+		elseif (is_array($value))
+		{
+			$rst = array();
+			foreach ($value as $k => $v)
+			{
+				if (is_int($k))
+				{
+					$rst[] = $this->value_to_php($v);
+				}
+				else
+				{
+					$rst[] = "'$k' => ".$this->value_to_php($v);
+				}
+			}
+
+			return 'array('.implode(', ', $rst).')';
+		}
+		return 'NULL';
+	}
 }

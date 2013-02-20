@@ -93,6 +93,35 @@ class Base_Database {
 	}
 
 	/**
+	 * Verificamos una configuración de la base de datos.
+	 * @param array $config Arreglo de configuraciones de la base de datos.
+	 * @return bool
+	 */
+	public static function test($config)
+	{
+		// Generamos el nombre de la clase Driver.
+		$driver = 'Database_Driver_'.ucfirst(strtolower($config['type']));
+
+		// Comprobamos la existencia de ese Driver para manejar la BD.
+		if ( ! class_exists($driver))
+		{
+			return FALSE;
+		}
+		else
+		{
+			try {
+				// Instanciamos el Driver correspondiente.
+				self::$instance = new $driver($config);
+				return TRUE;
+			}
+			catch (Database_Exception $e)
+			{
+				return FALSE;
+			}
+		}
+	}
+
+	/**
 	 * Obtenemos la explicación de una consulta SQL.
 	 * @param string $sql Consulta a explicar.
 	 * @return array

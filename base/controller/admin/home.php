@@ -95,6 +95,7 @@ class Base_Controller_Admin_Home extends Controller {
 			$listado['p_configuracion']['items']['configuracion_seo'] = array('link' => '/admin/configuracion/seo', 'caption' => 'SEO', 'active' => FALSE);
 			$listado['p_configuracion']['items']['configuracion_mantenimiento'] = array('link' => '/admin/configuracion/mantenimiento/', 'caption' => 'Modo Mantenimiento', 'active' => FALSE);
 			$listado['p_configuracion']['items']['configuracion_correo'] = array('link' => '/admin/configuracion/correo/', 'caption' => 'Correo', 'active' => FALSE);
+			$listado['p_configuracion']['items']['configuracion_bd'] = array('link' => '/admin/configuracion/bd/', 'caption' => 'Base de Datos', 'active' => FALSE);
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
@@ -172,6 +173,12 @@ class Base_Controller_Admin_Home extends Controller {
 	{
 		// Cargamos la portada.
 		$vista = View::factory('admin/home/index');
+
+		// Verifico driver SQL.
+		if (Database::get_instance() instanceof Database_Driver_Mysql)
+		{
+			add_flash_message(FLASH_INFO, '<strong>¡Importante!</strong> Se recomienda utilizar MySQLi como driver por cuestiones de rendimiento y seguridad. Para editar estas configuraciones haga click <a href="'.SITE_URL.'/admin/configuracion/bd">aquí</a>.');
+		}
 
 		// Ultimos usuarios.
 		$model_usuario = new Model_Usuario;

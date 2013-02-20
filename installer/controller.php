@@ -127,7 +127,8 @@ class Installer_Controller {
 			array('titulo' => 'Versión PHP', 'requerido' => '> 5.2', 'actual' => phpversion(), 'estado' => version_compare(PHP_VERSION, '5.2.0', '>=')),
 			array('titulo' => 'MCrypt', 'requerido' => 'ON', 'actual' => extension_loaded('mcrypt') ? 'ON' : 'OFF', 'estado' => extension_loaded('mcrypt')),
 			'Base de Datos', // Separador.
-			array('titulo' => 'MySQL', 'requerido' => 'ON', 'actual' => function_exists('mysql_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysql_connect'), 'opcional' => class_exists('pdo')),
+			array('titulo' => 'MySQL', 'requerido' => 'ON', 'actual' => function_exists('mysql_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysql_connect'), 'opcional' => class_exists('pdo') || function_exists('mysqli_connect')),
+			array('titulo' => 'MySQLi', 'requerido' => 'ON', 'actual' => function_exists('mysqli_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysqli_connect'), 'opcional' => class_exists('pdo') || function_exists('mysql_connect')),
 			array('titulo' => 'PDO', 'requerido' => 'ON', 'actual' => class_exists('pdo') ? 'ON' : 'OFF', 'estado' => class_exists('pdo'), 'opcional' => function_exists('mysql_connect')),
 			'Cache',
 			array('titulo' => 'File', 'requerido' => 'ON', 'actual' => 'ON', 'estado' => is_writable(CACHE_PATH.DS.'file'), 'opcional' => TRUE),
@@ -213,6 +214,11 @@ class Installer_Controller {
 			$drivers['mysql'] = 'MySQL';
 		}
 
+		if (function_exists('mysqli_connect'))
+		{
+			$drivers['mysqli'] = 'MySQLi';
+		}
+
 		if (class_exists('pdo'))
 		{
 			$drivers['pdo'] = 'PDO';
@@ -221,7 +227,7 @@ class Installer_Controller {
 		$vista->assign('drivers', $drivers);
 
 		// Información por defecto.
-		$vista->assign('driver', isset($drivers['mysql']) ? 'mysql' : 'pdo');
+		$vista->assign('driver', isset($drivers['mysqli']) ? 'mysqli' : (isset($drivers['pdo']) ? 'pdo' : 'mysql'));
 		$vista->assign('error_driver', FALSE);
 		$vista->assign('host', '');
 		$vista->assign('error_host', FALSE);
@@ -251,7 +257,7 @@ class Installer_Controller {
 			}
 
 			// Verifico lo datos.
-			if ($driver == 'mysql')
+			if ($driver == 'mysql' || $driver == 'mysqli')
 			{
 				if (empty($host))
 				{
