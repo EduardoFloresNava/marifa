@@ -190,9 +190,9 @@ class Base_Database_Driver_Mysqli extends Database_Driver {
 		if ($this->is_connected() === FALSE)
 		{
 			$this->conn = @mysqli_connect($this->host, $this->user, $this->pass, $this->db);
-			if ($this->conn === FALSE)
+			if (mysqli_connect_error() || $this->conn === FALSE)
 			{
-				throw new Database_Exception('No se ha podido conectar al servidor de base de datos: "'.mysqli_error($this->conn).'"', mysql_ierrno($this->conn));
+				throw new Database_Exception('No se ha podido conectar al servidor de base de datos: "'.mysqli_connect_error().'"', mysqli_connect_errno());
 			}
 		}
 	}
