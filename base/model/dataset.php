@@ -283,4 +283,50 @@ class Base_Model_Dataset extends Model {
 
 		return $this->db->delete("DELETE FROM {$this->table} WHERE ".implode(' AND ', $k_list), $this->primary_key);
 	}
+
+	/**
+	 * Busco elementos en función de un conjunto de palabras a comparar
+	 * con un conjunto de campos.
+	 * @param array $palabras Arreglo con las palabras a buscar.
+	 * @param array $campos Arreglo con los campos a buscar.
+	 * @return array
+	 */
+	public function buscar_por_palabras($palabras, $campos, $pagina = 1, $cantidad = 20)
+	{
+		// Listado de parámetros de la consulta.
+		$parametros = array();
+
+		// Armo la consulta.
+		$sql = "SELECT ".implode(', ', array_keys($this->primary_key))." FROM {$this->table} WHERE ";
+		$where_list = array();
+
+		foreach ($campos as $campo)
+		{
+			foreach ($palabras as $palabra)
+			{
+				$where_list[] = $campo.' LIKE ?';
+				$parametros[] = '%'.$palabra.'%';
+			}
+		}
+
+		// Paginación.
+		$start = ($pagina - 1) * $cantidad;
+
+		// Genero la consulta completa.
+		$sql .= implode(' OR ', $where_list).' LIMIT '.$start.', '.$cantidad;
+
+		// Obtengo el listado de elementos.
+		$rst = $this->db->query($sql, $parametros)->set_cast_type($this->fields)->set_fetch_type(Database_Query::FETCH_ASSOC);
+
+		// Nombre de la clase.
+		$class_name = new ReflectionClass($this);
+
+		$lst = array();
+		foreach ($rst as $v)
+		{
+			$lst[] = $class_name->newInstanceArgs(array_values($v));
+		}
+
+		return $lst;
+	}
 }

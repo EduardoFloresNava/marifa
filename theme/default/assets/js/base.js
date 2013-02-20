@@ -30,7 +30,7 @@
 
 // Tooptips en los elementos.
 (function ($) {
-    $('a[rel="tooltip"],span[rel="tooltip"],.show-tooltip').tooltip();
+    $('a[rel="tooltip"],span[rel="tooltip"],.show-tooltip,[title]').tooltip();
 } (jQuery));
 
 // Grupos predefinidos de los permisos de rangos.

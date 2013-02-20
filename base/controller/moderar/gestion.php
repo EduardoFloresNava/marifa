@@ -167,4 +167,145 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		Request::redirect('/moderar/gestion/usuarios');
 	}
 
+	/**
+	 * Búsqueda avanzada de contenido.
+	 */
+	public function action_buscador()
+	{
+		/*if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
+		{
+			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			Request::redirect('/');
+		}*/
+
+		// Cargamos la vista.
+		$vista = View::factory('moderar/gestion/buscador');
+
+		// Seteo consulta enviada.
+		$vista->assign('query', '');
+
+		if (Request::method() == 'POST')
+		{
+			// Obtengo la frase.
+			$query = trim(arr_get($_POST, 'query', ''));
+
+			// Obtengo el tipo de búsqueda.
+			$tipo = (int) arr_get($_POST, 'find', 0);
+
+			if ($tipo < 0 || $tipo > 5)
+			{
+				$tipo = 0;
+			}
+
+			// Seteo en la vista.
+			$vista->assign('query', $query);
+
+			// Armo conjunto de búsqueda.
+			$palabras = $this->conjunto_busqueda($query);
+
+			if ($tipo == 0 || $tipo == 1)
+			{
+				// Busqueda de usuarios.
+				$usuarios = Model::factory('usuario')->buscar_por_palabras($palabras, array('nick', 'email'), 1, 10);
+
+				foreach ($usuarios as $k => $v)
+				{
+					$usuarios[$k] = $v->as_array();
+				}
+				$vista->assign('usuarios', $usuarios);
+				unset($usuarios);
+			}
+
+			if ($tipo == 0 || $tipo == 2)
+			{
+				// Busqueda de posts.
+				$posts = Model::factory('post')->buscar_por_palabras($palabras, array('titulo', 'contenido'), 1, 10);
+
+				foreach ($posts as $k => $v)
+				{
+					$posts[$k] = $v->as_array();
+					$posts[$k]['usuario'] = $v->usuario()->as_array();
+				}
+				$vista->assign('posts', $posts);
+				unset($posts);
+			}
+
+			if ($tipo == 0 || $tipo == 3)
+			{
+				// Busqueda de comentarios en posts.
+				$post_comentarios = Model::factory('post_comentario')->buscar_por_palabras($palabras, array('contenido'), 1, 10);
+
+				foreach ($post_comentarios as $k => $v)
+				{
+					$post_comentarios[$k] = $v->as_array();
+					$post_comentarios[$k]['post'] = $v->post()->as_array();
+					$post_comentarios[$k]['usuario'] = $v->usuario()->as_array();
+				}
+				$vista->assign('post_comentarios', $post_comentarios);
+				unset($post_comentarios);
+			}
+
+			if ($tipo == 0 || $tipo == 4)
+			{
+				// Busqueda de fotos.
+				$fotos = Model::factory('foto')->buscar_por_palabras($palabras, array('titulo', 'descripcion', 'url'), 1, 10);
+
+				foreach ($fotos as $k => $v)
+				{
+					$fotos[$k] = $v->as_array();
+					$fotos[$k]['usuario'] = $v->usuario()->as_array();
+				}
+				$vista->assign('fotos', $fotos);
+				unset($fotos);
+			}
+
+			if ($tipo == 0 || $tipo == 5)
+			{
+				// Busqueda de comentarios en fotos.
+				$foto_comentarios = Model::factory('foto_comentario')->buscar_por_palabras($palabras, array('comentario'), 1, 10);
+
+				foreach ($foto_comentarios as $k => $v)
+				{
+					$foto_comentarios[$k] = $v->as_array();
+					$foto_comentarios[$k]['usuario'] = $v->usuario()->as_array();
+					$foto_comentarios[$k]['foto'] = $v->foto()->as_array();
+				}
+				$vista->assign('foto_comentarios', $foto_comentarios);
+				unset($foto_comentarios);
+			}
+		}
+
+		// Seteamos el menu.
+		$this->template->assign('master_bar', parent::base_menu('moderar'));
+
+		// Cargamos plantilla administracion.
+		$admin_template = View::factory('moderar/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('gestion_buscador'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Obtenemos conjunto de palabras que forman la frase para buscar de forma sencilla.
+	 * @param  string $cadena Cadena a descomponer.
+	 * @return array Arreglo de palabras que componen la cadena.
+	 */
+	protected function conjunto_busqueda($cadena)
+	{
+		// Divido en palabras.
+		$palabras = explode(' ', $cadena);
+
+		// Proceso el listado de palabras.
+		foreach ($palabras as $k => $palabra)
+		{
+			$palabras[$k] = trim($palabra);
+		}
+
+		// Devuelvo los elementos.
+		return $palabras;
+	}
+
 }
