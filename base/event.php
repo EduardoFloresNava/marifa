@@ -105,7 +105,7 @@ class Base_Event {
 	 * @param bool $reversed Si se ejecuta en el orden inverso al registrado.
 	 * @return mixed
 	 */
-	public static function trigger($event, $data = '', $reversed = FALSE)
+	public static function trigger($event, &$data = NULL, $reversed = FALSE)
 	{
 		// Verifico si hay algo registrado.
 		if (isset(self::$eventos[$event]))
@@ -116,7 +116,7 @@ class Base_Event {
 				$arr = array_reverse(self::$eventos[$event]);
 				foreach($arr as $v)
 				{
-					$rst = call_user_func($v, $data, $rst);
+					$rst = call_user_func_array($v, array(&$data, &$rst));
 				}
 				return $rst;
 			}
@@ -125,7 +125,7 @@ class Base_Event {
 				$rst = NULL;
 				foreach(self::$eventos[$event] as $v)
 				{
-					$rst = call_user_func($v, $data, $rst);
+					$rst = call_user_func_array($v, array(&$data, &$rst));
 				}
 				return $rst;
 			}
