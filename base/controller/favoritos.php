@@ -52,12 +52,15 @@ class Base_Controller_Favoritos extends Controller {
 	 */
 	public static function submenu($selected = NULL)
 	{
-		$data = array();
+		// Creo el menu.
+		$menu = new Menu('favoritos_menu');
 
-		$data['posts'] = array('link' => '/favoritos', 'caption' => 'Posts', 'active' => $selected == 'posts', 'cantidad' => Usuario::usuario()->cantidad_favoritos_posts());
-		$data['fotos'] = array('link' => '/favoritos/fotos', 'caption' => 'Fotos', 'active' => $selected == 'fotos', 'cantidad' => Usuario::usuario()->cantidad_favoritos_fotos());
+		// Agreglo elementos.
+		$menu->element_set('Posts', '/favoritos/', 'posts', NULL, Usuario::usuario()->cantidad_favoritos_posts());
+		$menu->element_set('Fotos', '/favoritos/fotos/', 'fotos', NULL, Usuario::usuario()->cantidad_favoritos_fotos());
 
-		return $data;
+		// Devuelvo el menu.
+		return $menu->as_array($selected);
 	}
 
 	/**

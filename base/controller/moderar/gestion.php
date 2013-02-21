@@ -110,7 +110,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('gestion_usuarios'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('gestion.usuarios'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -282,7 +282,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('gestion_buscador'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('gestion.buscador'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

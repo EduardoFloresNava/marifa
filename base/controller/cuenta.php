@@ -54,14 +54,19 @@ class Base_Controller_Cuenta extends Controller {
 	 */
 	protected function submenu($activo)
 	{
-		return array(
-			'index' => array('link' => '/cuenta', 'caption' => 'Cuenta', 'active' => $activo == 'index'),
-			'perfil' => array('link' => '/cuenta/perfil', 'caption' => 'Perfil', 'active' => $activo == 'perfil'),
-			'bloqueados' => array('link' => '/cuenta/bloqueados', 'caption' => 'Bloqueos', 'active' =>  $activo == 'bloqueados'),
-			'password' => array('link' => '/cuenta/password', 'caption' => 'Contraseña', 'active' =>  $activo == 'password'),
-			'nick' => array('link' => '/cuenta/nick', 'caption' => 'Nicks', 'active' =>  $activo == 'nick'),
-			'avisos' => array('link' => '/cuenta/avisos', 'caption' => 'Avisos', 'active' =>  $activo == 'avisos', 'cantidad' => Usuario::usuario()->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO)),
-		);
+		// Creo el menu.
+		$menu = new Menu('cuenta_menu');
+
+		// Agrego los elementos.
+		$menu->element_set('Cuenta', '/cuenta/', 'index');
+		$menu->element_set('Perfil', '/cuenta/perfil/', 'perfil');
+		$menu->element_set('Bloqueos', '/cuenta/bloqueados/', 'bloqueados');
+		$menu->element_set('Contraseña', '/cuenta/password/', 'password');
+		$menu->element_set('Nicks', '/cuenta/nick/', 'nick');
+		$menu->element_set('Avisos', '/cuenta/avisos/', 'avisos', NULL, Usuario::usuario()->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO));
+
+		// Devuelvo el menu parseado.
+		return $menu->as_array($activo);
 	}
 
 	/**

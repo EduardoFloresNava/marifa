@@ -88,7 +88,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.index'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -190,7 +190,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_posts'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.posts'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -299,7 +299,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_post'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.post'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -786,7 +786,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_fotos'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.fotos'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -939,7 +939,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_categorias'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.categorias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1022,7 +1022,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_categorias'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.categorias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1161,7 +1161,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_categorias'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.categorias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1216,7 +1216,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_noticias'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1282,7 +1282,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_noticias'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1428,7 +1428,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_noticias'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

@@ -94,7 +94,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('p_sistema.sistema_informacion'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.informacion'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -158,7 +158,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema_plugins'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.plugins'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -455,7 +455,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema_plugins'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.plugins'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -503,7 +503,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema_temas'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.temas'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -807,7 +807,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema_temas'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.temas'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -886,7 +886,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema_optimizar'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.optimizar'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

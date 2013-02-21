@@ -43,7 +43,15 @@
                         <ul class="nav">
                             {loop="master_bar"}
                             <li{if="$value.active"}  class="active"{/if}>
-                                <a href="{#SITE_URL#}{$value.link}">{if="isset($value.icon)"}<i class="icon-white icon-{$value.icon}"></i> {/if}{$value.caption}{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
+                                <a href="{#SITE_URL#}{$value.link}">
+									{if="$key == 'sin_grupo.inicio'"}<i class="icon-white icon-home"></i> {/if}
+									{if="$key == 'sin_grupo.posts'"}<i class="icon-white icon-book"></i> {/if}
+									{if="$key == 'sin_grupo.fotos'"}<i class="icon-white icon-picture"></i> {/if}
+									{if="$key == 'sin_grupo.tops'"}<i class="icon-white icon-signal"></i> {/if}
+									{if="$key == 'sin_grupo.moderar'"}<i class="icon-white icon-eye-open"></i> {/if}
+									{if="$key == 'sin_grupo.admin'"}<i class="icon-white icon-certificate"></i> {/if}
+									{$value.caption}
+									{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
                             </li>
                             {/loop}
                         </ul>

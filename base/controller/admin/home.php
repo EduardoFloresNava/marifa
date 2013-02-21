@@ -77,93 +77,61 @@ class Base_Controller_Admin_Home extends Controller {
 	 */
 	public static function submenu($activo)
 	{
-		$listado = array();
-		$listado['p_general'] = array('caption' => 'General', 'items' => array());
-		$listado['p_general']['items']['index'] = array('link' => '/admin/', 'caption' => 'Inicio', 'active' => FALSE);
-		$listado['p_general']['items']['home_logs'] = array('link' => '/admin/home/logs', 'caption' => 'Log\'s', 'active' => FALSE);
+		// Objeto para manejo del menu.
+		$menu = new Menu('admin_menu');
+
+		// Información general.
+		$menu->group_set('General', 'general');
+		$menu->element_set('Inicio', '/admin/', 'index', 'general');
+		$menu->element_set('Log\'s', '/admin/home/logs/', 'logs', 'general');
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
 		{
-			$listado['p_sistema'] = array('caption' => 'Sistema', 'items' => array());
-			$listado['p_sistema']['items']['sistema_informacion'] = array('link' => '/admin/sistema/', 'caption' => 'Información', 'active' => FALSE);
-			$listado['p_sistema']['items']['sistema_temas'] = array('link' => '/admin/sistema/temas/', 'caption' => 'Temas', 'active' => FALSE);
-			$listado['p_sistema']['items']['sistema_plugins'] = array('link' => '/admin/sistema/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
-			$listado['p_sistema']['items']['sistema_optimizar'] = array('link' => '/admin/sistema/optimizar/', 'caption' => 'Optimizaciones', 'active' => FALSE);
+			// Sistema.
+			$menu->group_set('Sistema', 'sistema');
+			$menu->element_set('Información', '/admin/sistema/', 'informacion', 'sistema');
+			$menu->element_set('Temas', '/admin/sistema/temas/', 'temas', 'sistema');
+			$menu->element_set('Plugins', '/admin/sistema/plugins/', 'plugins', 'sistema');
+			$menu->element_set('Optimizaciones', '/admin/sistema/optimizar/', 'optimizar', 'sistema');
 
-			$listado['p_configuracion'] = array('caption' => 'Configuración', 'items' => array());
-			$listado['p_configuracion']['items']['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuración', 'active' => FALSE);
-			$listado['p_configuracion']['items']['configuracion_seo'] = array('link' => '/admin/configuracion/seo', 'caption' => 'SEO', 'active' => FALSE);
-			$listado['p_configuracion']['items']['configuracion_mantenimiento'] = array('link' => '/admin/configuracion/mantenimiento/', 'caption' => 'Modo Mantenimiento', 'active' => FALSE);
-			$listado['p_configuracion']['items']['configuracion_correo'] = array('link' => '/admin/configuracion/correo/', 'caption' => 'Correo', 'active' => FALSE);
-			$listado['p_configuracion']['items']['configuracion_bd'] = array('link' => '/admin/configuracion/bd/', 'caption' => 'Base de Datos', 'active' => FALSE);
+			// Configuraciones.
+			$menu->group_set('Configuración', 'configuracion');
+			$menu->element_set('Configuración', '/admin/configuracion/', 'configuracion', 'configuracion');
+			$menu->element_set('SEO', '/admin/configuracion/seo/', 'seo', 'configuracion');
+			$menu->element_set('Modo Mantenimiento', '/admin/configuracion/mantenimiento/', 'mantenimiento', 'configuracion');
+			$menu->element_set('Correo', '/admin/configuracion/correo/', 'correo', 'configuracion');
+			$menu->element_set('Base de Datos', '/admin/configuracion/bd/', 'bd', 'configuracion');
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
 		{
-			$listado['p_contenido'] = array('caption' => 'Contenido', 'items' => array());
-			$listado['p_contenido']['items']['contenido'] = array('link' => '/admin/contenido', 'caption' => 'Informe contenido', 'active' => FALSE);
-			$listado['p_contenido']['items']['contenido_posts'] = array('link' => '/admin/contenido/posts', 'caption' => 'Posts', 'active' => FALSE);
-			$listado['p_contenido']['items']['contenido_fotos'] = array('link' => '/admin/contenido/fotos', 'caption' => 'Fotos', 'active' => FALSE);
-			$listado['p_contenido']['items']['contenido_categorias'] = array('link' => '/admin/contenido/categorias', 'caption' => 'Categorias', 'active' => FALSE);
-			$listado['p_contenido']['items']['contenido_noticias'] = array('link' => '/admin/contenido/noticias/', 'caption' => 'Noticias', 'active' => FALSE);
+			$menu->group_set('Contenido', 'contenido');
+			$menu->element_set('Informe contenido', '/admin/contenido/', 'index', 'contenido');
+			$menu->element_set('Posts', '/admin/contenido/posts/', 'posts', 'contenido');
+			$menu->element_set('Fotos', '/admin/contenido/fotos/', 'fotos', 'contenido');
+			$menu->element_set('Categorías', '/admin/contenido/categorias/', 'categorias', 'contenido');
+			$menu->element_set('Noticias', '/admin/contenido/noticias/', 'noticias', 'contenido');
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_ADMINISTRAR))
 		{
-			$listado['p_usuarios'] = array('caption' => 'Usuarios', 'items' => array());
-			$listado['p_usuarios']['items']['usuario'] = array('link' => '/admin/usuario/', 'caption' => 'General', 'active' => FALSE);
-			$listado['p_usuarios']['items']['usuario_sesiones'] = array('link' => '/admin/usuario/sesiones', 'caption' => 'Sesiones', 'active' => FALSE);
-			$listado['p_usuarios']['items']['usuario_rangos'] = array('link' => '/admin/usuario/rangos', 'caption' => 'Rangos', 'active' => FALSE);
-			$listado['p_usuarios']['items']['usuario_medallas'] = array('link' => '/admin/usuario/medallas', 'caption' => 'Medallas', 'active' => FALSE);
-
-			$listado['p_plugins'] = array('caption' => 'Plugins', 'items' => array());
-		}
-
-		// Activación por submenu.
-		$el = explode('.', $activo);
-		if (count($el) == 2)
-		{
-			list ($item, $subitem) = $el;
-
-			if (isset($listado[$item]) && isset($listado[$item]['items'][$subitem]))
-			{
-				$listado[$item]['items'][$subitem]['active'] = TRUE;
-			}
-			unset($item, $subitem);
-		}
-		unset($el);
-
-		// Activo elemento interno.
-		foreach ($listado as $k => $v)
-		{
-			if (isset($v['items'][$activo]))
-			{
-				$listado[$k]['items'][$activo]['active'] = TRUE;
-			}
-		}
-
-		// Evento de procesamiento de los permisos.
-		$rst = Event::trigger('Admin.Home.Menu', array($listado, $activo));
-
-		// Verifico que procesamiento se debe enviar.
-		if (is_array($rst))
-		{
-			$listado = $rst[0];
-		}
-
-		// Proceso listado.
-		$rs = array();
-		foreach ($listado as $k => $v)
-		{
-			$rs[$k] = array('caption' => $v['caption']);
-			foreach($v['items'] as $kk => $vv)
-			{
-				$rs[$k.$kk] = $vv;
-			}
+			$menu->group_set('Usuarios', 'usuarios');
+			$menu->element_set('General', '/admin/usuario/', 'usuario', 'usuarios');
+			$menu->element_set('Sesiones', '/admin/usuario/sesiones/', 'sesiones', 'usuarios');
+			$menu->element_set('Rangos', '/admin/usuario/rangos/', 'rangos', 'usuarios');
+			$menu->element_set('Medallas', '/admin/usuario/medallas/', 'medallas', 'usuarios');
 		}
 
 		// Envio respuesta.
-		return $rs;
+		$el = explode('.', $activo);
+		if (count($el) == 2)
+		{
+			return $menu->as_array($el[1], $el[0], FALSE);
+		}
+		else
+		{
+			return $menu->as_array($activo, FALSE);
+		}
 	}
 
 	/**
@@ -249,7 +217,7 @@ class Base_Controller_Admin_Home extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', self::submenu('index'));
+		$admin_template->assign('top_bar', self::submenu('general.index'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -319,7 +287,7 @@ class Base_Controller_Admin_Home extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', self::submenu('home_logs'));
+		$admin_template->assign('top_bar', self::submenu('general.logs'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

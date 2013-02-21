@@ -109,17 +109,22 @@ class Base_Controller_Perfil extends Controller {
 		{
 			$call = Request::current();
 			$activo = $call['action'];
+			$activo = $activo == 'muro' || $activo == 'publicacion' ? 'index' : $activo;
 			unset($call);
 		}
 
-		// Devuelvo el arreglo.
-		return array(
-			'muro' => array('link' => SITE_URL."/@{$this->usuario->nick}", 'caption' => __('Muro', FALSE), 'active' => $activo == 'muro' || $activo == 'index' || $activo == 'publicacion'),
-			'informacion' => array('link' => SITE_URL."/@{$this->usuario->nick}/informacion", 'caption' => __('Información', FALSE), 'active' =>  $activo == 'informacion'),
-			'posts' => array('link' => SITE_URL."/@{$this->usuario->nick}/posts", 'caption' => __('Posts', FALSE), 'active' =>  $activo == 'posts'),
-			'seguidores' => array('link' => SITE_URL."/@{$this->usuario->nick}/seguidores", 'caption' => __('Seguidores', FALSE), 'active' =>  $activo == 'seguidores'),
-			'medallas' => array('link' => SITE_URL."/@{$this->usuario->nick}/medallas", 'caption' => __('Medallas', FALSE), 'active' =>  $activo == 'medallas'),
-		);
+		// Creo el menu.
+		$menu = new Menu('perfil_menu');
+
+		// Agrego elementos.
+		$menu->element_set('Muro', "/@{$this->usuario->nick}", 'muro');
+		$menu->element_set('Información', "/@{$this->usuario->nick}/informacion/", 'informacion');
+		$menu->element_set('Posts', "/@{$this->usuario->nick}/posts/", 'posts');
+		$menu->element_set('Seguidores', "/@{$this->usuario->nick}/seguidores/", 'seguidores');
+		$menu->element_set('Medallas', "/@{$this->usuario->nick}/medallas/", 'medallas');
+
+		// Devuelvo el menu.
+		return $menu->as_array($activo);
 	}
 
 	/**

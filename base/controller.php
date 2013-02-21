@@ -227,45 +227,36 @@ class Base_Controller {
 	 */
 	protected function base_menu($selected = NULL)
 	{
-		$data = array();
+		// Creo el menu.
+		$menu = new Menu('base_menu');
 
 		// Listado de elementos ONLINE.
 		if (Usuario::is_login())
 		{
-			$data['inicio'] = array('link' => '/perfil/', 'caption' => 'Inicio', 'icon' => 'home', 'active' => FALSE);
+			$menu->element_set('Inicio', '/perfil/', 'inicio');
 		}
 
 		// Listado de elemento OFFLINE.
-		$data['posts'] = array('link' => '/', 'caption' => 'Posts', 'icon' => 'book', 'active' => FALSE);
+		$menu->element_set('Posts', '/', 'posts');
 
 		// Verifico sección de fotos habilitada y su privacidad.
 		if (Utils::configuracion()->get('habilitar_fotos', 1) && (Utils::configuracion()->get('privacidad_fotos', 1) || Usuario::is_login()))
 		{
-			$data['fotos'] = array('link' => '/foto/', 'caption' => 'Fotos', 'icon' => 'picture', 'active' => FALSE);
+			$menu->element_set('Fotos', '/foto/', 'fotos');
 		}
-		$data['tops'] = array('link' => '/tops/', 'caption' => 'TOPs', 'icon' => 'signal', 'active' => FALSE);
+		$menu->element_set('TOPs', '/tops/', 'tops');
 
 		// Listado elemento por permisos.
 		if (Controller_Moderar_Home::permisos_acceso())
 		{
-			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'icon' => 'eye-open', 'active' => FALSE, 'tipo' => 'important', 'cantidad' => Controller_Moderar_Home::cantidad_pendiente());
+			$menu->element_set('Moderar', '/moderar/', 'moderar', NULL, Controller_Moderar_Home::cantidad_pendiente());
 		}
 
 		if (Controller_Admin_Home::permisos_acceso())
 		{
-			$data['admin'] = array('link' => '/admin/', 'caption' => 'Administración', 'icon' => 'certificate', 'active' => FALSE);
+			$menu->element_set('Administración', '/admin/', 'admin');
 		}
 
-		// Seleccionamos elemento.
-		if ($selected !== NULL && isset($data[$selected]))
-		{
-			$data[$selected]['active'] = TRUE;
-		}
-		else
-		{
-			$data['posts']['active'] = TRUE;
-		}
-
-		return $data;
+		return $menu->as_array($selected == NULL ? 'posts' : $selected);
 	}
 }

@@ -134,7 +134,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('desaprobado_posts'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('desaprobado.posts'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -380,7 +380,7 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('desaprobado_comentarios'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('desaprobado.comentarios'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

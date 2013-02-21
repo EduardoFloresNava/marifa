@@ -50,14 +50,19 @@ class Base_Controller_Foto extends Controller {
 	 */
 	protected function submenu($activo)
 	{
-		$lst = array();
-		$lst['index'] = array('link' => '/foto/', 'caption' => 'Fotos', 'active' => $activo == 'index');
+		// Creo el menu.
+		$menu = new Menu('foto_menu');
+
+		// Agrego elementos.
+		$menu->element_set('Fotos', '/foto/', 'index');
 		if (Usuario::is_login())
 		{
-			$lst['nuevo'] = array('link' => '/foto/nueva', 'caption' => 'Agregar Foto', 'active' => $activo == 'nuevo');
-			$lst['mis_fotos'] = array('link' => '/foto/mis_fotos', 'caption' => 'Mis Fotos', 'active' => $activo == 'mis_fotos');
+			$menu->element_set('Agregar Foto', '/foto/nueva/', 'nuevo');
+			$menu->element_set('Mis Fotos', '/foto/mis_fotos/', 'mis_fotos');
 		}
-		return $lst;
+
+		// Devuelvo el menu.
+		return $menu->as_array($activo);
 	}
 
 	/**

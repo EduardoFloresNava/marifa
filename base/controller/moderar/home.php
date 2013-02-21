@@ -134,89 +134,75 @@ class Base_Controller_Moderar_Home extends Controller {
 	 */
 	public static function submenu($activo)
 	{
-		$listado = array();
+		// Creo menu.
+		$menu = new Menu('moderar_menu');
 
-		$listado['p_principal'] = array('caption' => 'Principal');
-		$listado['index'] = array('link' => '/moderar/', 'caption' => 'Inicio', 'active' => FALSE);
+		// Portada.
+		$menu->group_set('General', 'general');
+		$menu->element_set('Inicio', '/moderar/', 'index', 'general');
 
-		if (Usuario::permiso(array(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS, Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS, Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS)))
+		// Denuncias.
+		$menu->group_set('Denuncias', 'denuncias');
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
 		{
-			$listado['p_denuncias'] = array('caption' => 'Denuncias');
-			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
-			{
-				$listado['denuncias_posts'] = array('link' => '/moderar/denuncias/posts/', 'caption' => 'Posts', 'active' => FALSE, 'cantidad' => Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE));
-			}
-
-			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
-			{
-				$listado['denuncias_fotos'] = array('link' => '/moderar/denuncias/fotos/', 'caption' => 'Fotos', 'active' => FALSE, 'cantidad' => Model_Foto_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE));
-			}
-
-			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
-			{
-				$listado['denuncias_usuarios'] = array('link' => '/moderar/denuncias/usuarios/', 'caption' => 'Usuarios', 'active' => FALSE, 'cantidad' => Model_Usuario_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE));
-			}
+			$menu->element_set('Posts', '/moderar/denuncias/posts/', 'posts', 'denuncias', Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE));
 		}
 
-		$listado['p_gestion'] = array('caption' => 'Gestión');
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
+		{
+			$menu->element_set('Fotos', '/moderar/denuncias/fotos/', 'fotos', 'denuncias', Model_Foto_Denuncia::cantidad(Model_Foto_Denuncia::ESTADO_PENDIENTE));
+		}
 
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
+		{
+			$menu->element_set('Usuarios', '/moderar/denuncias/usuarios/', 'usuarios', 'denuncias', Model_Usuario_Denuncia::cantidad(Model_Usuario_Denuncia::ESTADO_PENDIENTE));
+		}
+
+		// Gestión
+		$menu->group_set('Gestión', 'gestion');
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
 		{
-			$listado['gestion_usuarios'] = array('link' => '/moderar/gestion/usuarios/', 'caption' => 'Usuarios', 'active' => FALSE, 'cantidad' => Model_Usuario_Suspension::cantidad());
+			$menu->element_set('Usuarios', '/moderar/gestion/usuarios/', 'usuarios', 'gestion', Model_Usuario_Suspension::cantidad());
 		}
-		$listado['gestion_buscador'] = array('link' => '/moderar/gestion/buscador/', 'caption' => 'Buscador contenido', 'active' => FALSE);
+		$menu->element_set('Buscador contenido', '/moderar/gestion/buscador/', 'buscador', 'gestion');
 
-		if (Usuario::permiso(array(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA, Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA)))
+		// Papelera.
+		$menu->group_set('Papelera de reciclaje', 'papelera');
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
 		{
-			$listado['p_papelera'] = array('caption' => 'Papelera de reciclaje');
-
-			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
-			{
-				$listado['papelera_posts'] = array('link' => '/moderar/papelera/posts/', 'caption' => 'Posts eliminados', 'active' => FALSE, 'cantidad' => Model_Post::s_cantidad(Model_Post::ESTADO_PAPELERA));
-			}
-
-			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
-			{
-				$listado['papelera_fotos'] = array('link' => '/moderar/papelera/fotos/', 'caption' => 'Fotos eleminadas', 'active' => FALSE, 'cantidad' => Model_Foto::s_cantidad(Model_Foto::ESTADO_PAPELERA));
-			}
+			$menu->element_set('Posts eliminados', '/moderar/papelera/posts/', 'posts', 'papelera', Model_Post::s_cantidad(Model_Post::ESTADO_PAPELERA));
 		}
 
-		if (Usuario::permiso(array(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO, Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO)))
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			$listado['p_desaprobado'] = array('caption' => 'Contenido desaprobado');
-
-			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
-			{
-				$listado['desaprobado_posts'] = array('link' => '/moderar/desaprobado/posts', 'caption' => 'Posts', 'active' => FALSE, 'cantidad' => Model_Post::s_cantidad(Model_Post::ESTADO_PENDIENTE) + Model_Post::s_cantidad(Model_Post::ESTADO_RECHAZADO));
-			}
-
-			if (Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
-			{
-				$listado['desaprobado_comentarios'] = array('link' => '/moderar/desaprobado/comentarios/', 'caption' => 'Comentarios', 'active' => FALSE, 'cantidad' => Model_Comentario::cantidad(Model_Comentario::ESTADO_OCULTO));
-			}
+			$menu->element_set('Fotos eliminadas', '/moderar/papelera/fotos/', 'fotos', 'papelera', Model_Foto::s_cantidad(Model_Foto::ESTADO_PAPELERA));
 		}
 
-		// Seteamos el color.
-		foreach ($listado as $k => $v)
+		// Contenido desaprobado.
+		$menu->group_set('Contenido desaprobado', 'desaprobado');
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
 		{
-			if (isset($v['cantidad']))
-			{
-				if ($listado[$k]['cantidad'] > 0)
-				{
-					$listado[$k]['tipo'] = 'important';
-				}
-				else
-				{
-					$listado[$k]['tipo'] = 'success';
-				}
-			}
+			$menu->element_set('Posts', '/moderar/desaprobado/posts/', 'posts', 'desaprobado', Model_Post::s_cantidad(Model_Post::ESTADO_PENDIENTE) + Model_Post::s_cantidad(Model_Post::ESTADO_RECHAZADO));
 		}
 
-		if (isset($listado[$activo]))
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
 		{
-			$listado[$activo]['active'] = TRUE;
+			$menu->element_set('Comentarios', '/moderar/desaprobado/comentarios/', 'comentarios', 'desaprobado', Model_Comentario::cantidad(Model_Comentario::ESTADO_OCULTO));
 		}
-		return $listado;
+
+		// Envio respuesta.
+		$el = explode('.', $activo);
+		if (count($el) == 2)
+		{
+			return $menu->as_array($el[1], $el[0], FALSE);
+		}
+		else
+		{
+			return $menu->as_array($activo, FALSE);
+		}
 	}
 
 	/**
@@ -319,7 +305,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $portada->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', self::submenu('index'));
+		$admin_template->assign('top_bar', self::submenu('general.index'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

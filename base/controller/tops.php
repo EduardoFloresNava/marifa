@@ -43,13 +43,19 @@ class Base_Controller_Tops extends Controller {
 		{
 			$call = Request::current();
 			$activo = $call['action'];
+			$activo = $activo == 'posts' || $activo == 'index' ? 'posts' : $activo;
 			unset($call);
 		}
 
-		return array(
-			'posts' => array('link' => '/tops/', 'caption' => __('Posts', FALSE), 'active' => $activo == 'posts' || $activo == 'index'),
-			'usuarios' => array('link' => '/tops/usuarios/', 'caption' => __('Usuarios', FALSE), 'active' =>  $activo == 'usuarios'),
-		);
+		// Creo el menu.
+		$menu = new Menu('tops_menu');
+
+		// Agrego elementos.
+		$menu->element_set('Posts', '/tops/', 'posts');
+		$menu->element_set('Usuarios', '/tops/usuarios/', 'usuarios');
+
+		// Devuelvo el menu.
+		return $menu->as_array($activo);
 	}
 
 	/**

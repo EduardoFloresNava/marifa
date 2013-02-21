@@ -38,30 +38,21 @@ class Base_Controller_Home extends Controller {
 	 */
 	public static function submenu($selected = NULL)
 	{
-		$data = array();
+		// Creo el menu.
+		$menu = new Menu('submenu_home');
 
 		// Listado de elemento OFFLINE.
-		$data['inicio'] = array('link' => '/', 'caption' => 'Inicio', 'active' => FALSE);
-		$data['usuarios'] = array('link' => '/home/usuarios', 'caption' => 'Usuarios', 'active' => FALSE);
-		$data['buscador'] = array('link' => '/buscador', 'caption' => 'Buscador', 'active' => FALSE);
+		$menu->element_set('Inicio', '/', 'inicio');
+		$menu->element_set('Usuarios', '/home/usuarios/', 'usuarios');
+		$menu->element_set('Buscador', '/buscador/', 'buscador');
 
 		// Listado de elementos ONLINE.
 		if (Usuario::is_login())
 		{
-			$data['nuevo'] = array('link' => '/post/nuevo', 'caption' => 'Agregar Post', 'active' => FALSE);
+			$menu->element_set('Agregar Post', '/post/nuevo/', 'nuevo');
 		}
 
-		// Seleccionamos elemento.
-		if ($selected !== NULL && isset($data[$selected]))
-		{
-			$data[$selected]['active'] = TRUE;
-		}
-		else
-		{
-			$data['inicio']['active'] = TRUE;
-		}
-
-		return $data;
+		return $menu->as_array($selected == NULL ? 'inicio' : $selected);
 	}
 
 	/**

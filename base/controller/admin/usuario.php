@@ -181,7 +181,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -239,7 +239,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -471,7 +471,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -637,7 +637,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -734,7 +734,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -781,7 +781,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -802,9 +802,6 @@ class Base_Controller_Admin_Usuario extends Controller {
 			add_flash_message(FLASH_ERROR, 'El usuario del que deseas ver los detalles de la suspensión no se encuentra disponible.');
 			Request::redirect('/admin/usuario/');
 		}
-
-
-
 
 		// Verificamos esté suspendido.
 		$suspension = $model_usuario->suspension();
@@ -839,7 +836,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -976,7 +973,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1018,7 +1015,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.rangos'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1095,7 +1092,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.rangos'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1280,7 +1277,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.rangos'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1468,7 +1465,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.rangos'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1586,7 +1583,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_rangos'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.rangos'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1683,7 +1680,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_sesiones'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.sesiones'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1751,7 +1748,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.medallas'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1873,7 +1870,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.medallas'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -2031,7 +2028,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.medallas'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -2100,7 +2097,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuario_medallas'));
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.medallas'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

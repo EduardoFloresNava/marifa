@@ -53,11 +53,16 @@ class Base_Controller_Mensaje extends Controller {
 	 */
 	protected function submenu($activo)
 	{
-		return array(
-			'index' => array('link' => '/mensaje/', 'caption' => 'Bandeja entrada', 'active' => $activo == 'index', 'cantidad' => Usuario::usuario()->cantidad_mensajes_nuevos(), 'tipo' => 'success'),
-			'enviados' => array('link' => '/mensaje/enviados', 'caption' => 'Bandeja salida', 'active' => $activo == 'enviados'),
-			'nuevo' => array('link' => '/mensaje/nuevo', 'caption' => 'Enviar', 'active' => $activo == 'nuevo'),
-		);
+		// Creo el menu.
+		$menu = new Menu('mensaje_menu');
+
+		// Agrego los elementos.
+		$menu->element_set('Bandeja de entrada', '/mensaje/', 'index', NULL, Usuario::usuario()->cantidad_mensajes_nuevos());
+		$menu->element_set('Bandeja de salida', '/mensaje/enviados/', 'enviados');
+		$menu->element_set('Enviar', '/mensaje/nuevo/', 'nuevo');
+
+		// Devuelvo el menu parseado.
+		return $menu->as_array($activo);
 	}
 
 	/**

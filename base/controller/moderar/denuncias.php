@@ -123,7 +123,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_posts'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.posts'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -174,7 +174,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_posts'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.posts'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -389,7 +389,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_fotos'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.fotos'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -440,7 +440,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_fotos'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.fotos'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -654,7 +654,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_usuarios'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -701,7 +701,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_usuarios'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -889,7 +889,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_usuarios'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1028,7 +1028,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_usuarios'));
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
