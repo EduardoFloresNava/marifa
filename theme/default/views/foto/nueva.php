@@ -36,7 +36,7 @@
 				<div class="controls">
 					<input type="text" id="captcha" name="captcha" value="{$captcha}" />
 					<span class="help-block">{if="$error_captcha"}{$error_captcha}{else}Ingresa el código que aparece a continuación.{/if}</span>
-					<img src="/home/captcha" style="display: block;" />
+					<img src="{#SITE_URL#}/home/captcha" style="display: block;" />
 				</div>
 			</div>
 

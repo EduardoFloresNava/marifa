@@ -37,7 +37,7 @@
             <label class="control-label" for="captcha">CAPTCHA</label>
             <div class="controls">
                 <input type="text" id="captcha" name="captcha" value="{$captcha}" />
-				<img src="/home/captcha" style="display: block;" />
+				<img src="{#SITE_URL#}/home/captcha" style="display: block;" />
             </div>
         </div>
 
