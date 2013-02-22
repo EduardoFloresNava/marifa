@@ -62,14 +62,9 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/sistema/index');
 
-		// Verifico sistema de cache.
-		if (Cache::get_instance() instanceof Cache_Driver_Dummy)
-		{
-			add_flash_message(FLASH_ERROR, 'Para el funcionamiento correcto del sistema de actualizaciones es necesario tener configurada la cache.');
-		}
-
 		// Obtengo actualizaciones.
-		$actualizaciones_sistema = Cache::get_instance()->get('update.sistema.actualizaciones');
+		$actualizaciones_sistema = unserialize(Utils::configuracion()->get('update_sistema_actualizaciones', 'a:0:{}'));
+		$actualizaciones_last_check = Utils::configuracion()->get('update_sistema_last_check', NULL);
 
 		// Verifico si hay actualizaciones.
 		if (is_array($actualizaciones_sistema))
@@ -79,10 +74,12 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 			// Proceso las actualizaciones.
 			$vista->assign('sistema', $actualizaciones_sistema);
+			$vista->assign('sistema_last_check', Fechahora::createFromTimestamp($actualizaciones_last_check));
 		}
 		else
 		{
 			$vista->assign('sistema', FALSE);
+			$vista->assign('sistema_last_check', NULL);
 		}
 
 		// TODO: Resumen de temas, plugins y widget's (todas las actualizaciones).
@@ -899,7 +896,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 	{
 		try {
 			// Realizo petición.
-			$response = $this->do_update_request('http://0.0.0.0:8000/api/update/updates/v'.VERSION);
+			$response = $this->do_update_request('http://network.marifa.org/api/update/updates/v'.VERSION);
 
 			// Verifico sea arreglo.
 			if (is_array($response))
@@ -912,7 +909,8 @@ class Base_Controller_Admin_Sistema extends Controller {
 				}
 
 				// Guardo en cache.
-				Cache::get_instance()->save('update.sistema.actualizaciones', $rst, 900);
+				Utils::configuracion()->update_sistema_actualizaciones = serialize($rst);
+				Utils::configuracion()->update_sistema_last_check = time();
 
 				// Vuelvo.
 				Request::redirect('/admin/sistema/');
@@ -1002,7 +1000,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		if (count(glob(CACHE_PATH.DS.'updates'.DS.$version.'.{'.implode(',', array_map('Update_Utils::compresion2extension', Update_Compresion::get_list())).'}', GLOB_BRACE)) <= 0)
 		{
 			// Busco URL's de la versión.
-			$upd_list = arr_get(Cache::get_instance()->get('update.sistema.actualizaciones'), $version, NULL);
+			$upd_list = arr_get(unserialize(Utils::configuracion()->get('update_sistema_actualizaciones', 'a:0:{}')), $version, NULL);
 
 			// Verifico existencia.
 			if ( ! is_array($upd_list))
@@ -1086,7 +1084,8 @@ class Base_Controller_Admin_Sistema extends Controller {
 		Mantenimiento::unlock();
 
 		// Borro cache de versiones.
-		Cache::get_instance()->delete('update.sistema.actualizaciones');
+		Utils::configuracion()->update_sistema_actualizaciones = 'a:0:{}';
+		Utils::configuracion()->update_sistema_last_check = NULL;
 
 		// Informo el resultado.
 		add_flash_message(FLASH_SUCCESS, 'Actualización realizada correctamente.');

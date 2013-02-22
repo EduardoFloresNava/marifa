@@ -33,6 +33,46 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Fechahora extends DateTime {
 
 	/**
+	 * Creo objeto a partir de marca de tiempo.
+	 * Fallback para PHP 5.2+
+	 * @param int $timestamp Marca de tiempo.
+	 * @return Fechahora
+	 */
+	public static function createFromTimestamp($timestamp)
+	{
+		// Creo el objeto.
+		$o = new Fechahora();
+
+		// Seteo marca de tiempo.
+		$o->setTimestamp($timestamp);
+
+		// Devuelvo el objeto.
+		return $o;
+	}
+
+	/**
+	 * Actualizamos la fecha y hora a partir de la marca de tiempo.
+	 * Es un fallback para dar soporte a PHP 5.2+.
+	 * @param int $unixtimestamp Marca de tiempo a setear.
+	 * @return Fechahora Objeto para chaining.
+	 */
+	public function setTimestamp($unixtimestamp)
+	{
+		if (version_compare(PHP_VERSION, '5.3', '>='))
+		{
+			return parent::setTimestamp($unixtimestamp);
+		}
+		else
+		{
+			list($year, $month, $day, $hour, $minute, $second) = explode(' ', date('Y d m H i s', $unixtimestamp));
+			$this->setDate($year, $month, $day);
+			$this->setTime($hour, $minute, $second);
+
+			return $this;
+		}
+	}
+
+	/**
 	 * Obtenemos una fecha en formato amigable.
 	 * @return string
 	 */
