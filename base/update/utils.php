@@ -219,41 +219,26 @@ class Base_Update_Utils {
 	 */
 	public static function get_mime($path)
 	{
-		if (function_exists('finfo_open'))
-		{
-			$finfo = new finfo(FILEINFO_MIME);
-			$mime = $finfo->file($path);
+		// Cargo listado de Mimes.
+		$mimes = configuracion_obtener(CONFIG_PATH.DS.'mimes.php');
 
-			if (strpos($mime, ';') !== FALSE)
+		// Obtengo extensión.
+		$extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+		// Verifico imagenes (más efectivo.
+		if (preg_match('/^(?:jpe?g|png|[gt]if|bmp|swf)$/', $extension))
+		{
+			// Uso getimagesize() para buscar el mime-type.
+			$file = getimagesize($filename);
+
+			if (isset($file['mime']))
 			{
-				list ($mime, ) = explode(';', $mime);
+				return $file['mime'];
 			}
-			return $mime;
 		}
-		elseif (function_exists('mime_content_type'))
-		{
-			return mime_content_type($path);
-		}
-		else
-		{
-			// Obtengo la extensión.
-			$ext = pathinfo($path, PATHINFO_EXTENSION);
 
-			// Verifico el tipo.
-			//TODO: implementar mime's extra.
-			switch ($ext) {
-				case 'zip':
-					return 'application/zip';
-				case 'tar':
-					return 'application/x-tar';
-				case 'gz':
-					return 'application/x-gzip';
-				case 'bz2':
-					return 'application/x-bzip2';
-				default:
-					return 'application/octet-stream';
-			}
-		}
+		// Ultima instancia.
+		return isset($mimes[$extension]) ? $mimes[$extension][0] : FALSE;
 	}
 
 	/**
@@ -265,7 +250,9 @@ class Base_Update_Utils {
 	{
 		switch ($mime)
 		{
+			case 'application/x-zip':
 			case 'application/zip':
+			case 'application/x-zip-compressed':
 				return 'zip';
 			case 'application/x-tar':
 				return 'tar';
