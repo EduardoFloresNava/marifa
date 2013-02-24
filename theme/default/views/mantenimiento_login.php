@@ -36,7 +36,6 @@
                     </a>
                     <a class="brand" href="/">{if="isset($brand)"}{$brand}{else}Marifa{/if}</a>
                     <div class="nav-collapse">
-                        <a class="btn btn-success pull-right" href="{#SITE_URL#}/mantenimiento/salir/">Cerrar sesión</a>
                     </div>
                 </div>
             </div>
@@ -79,10 +78,33 @@
 
 			<div class="row">
 				<div class="span12">
-					<div class="alert">
-						<h2>Modo mantenimiento activado.</h2>
-						El sitio se encuentra en mantenimiento. En breve volverá a estar activo.
-					</div>
+					<form class="form-horizontal" method="POST" action="">
+						<fieldset>
+							<legend>Inicio de sesión</legend>
+
+                            {if="isset($error) && $error"}<div class="alert">{$error}</div>{/if}
+
+                            <div class="control-group{if="$error_nick"} error{/if}">
+                                <label class="control-label" for="nick">E-Mail o Usuario</label>
+                                <div class="controls">
+                                    <input type="text" class="input-xlarge" id="nick" name="nick" value="{$nick}" />
+                                    <span class="help-inline">Tu nick actual o tu E-Mail. Si has cambiado tu nick, debes colocar el último.</span>
+                                </div>
+                            </div>
+
+                            <div class="control-group{if="$error_password"} error{/if}">
+                                <label class="control-label" for="password">Contraseña</label>
+                                <div class="controls">
+                                    <input type="password" class="input-xlarge" id="password" name="password" value="" />
+                                    <span class="help-inline">Clave de acceso.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <input type="submit" value="Iniciar sesión" class="btn btn-primary btn-large" />
+                            </div>
+						</fieldset>
+					</form>
 				</div>
 			</div>
 		</div>

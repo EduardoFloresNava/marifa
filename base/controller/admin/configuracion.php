@@ -304,100 +304,212 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$model_configuracion = new Model_Configuracion;
 		$ips_matenimiento = unserialize($model_configuracion->get('ip_mantenimiento', 'a:0:{}'));
 
-		// Pasamos los datos a la vista.
+		// Datos del hard-lock.
 		$vista->assign('ip', implode(PHP_EOL, $ips_matenimiento));
 		$vista->assign('error_ip', FALSE);
 		$vista->assign('success_ip', FALSE);
 
 		if (Request::method() == 'POST')
 		{
-			// Obtengo el listado de IP's.
-			$ips = isset($_POST['ip']) ? explode(PHP_EOL, trim($_POST['ip'])) : array();
+			// Verifico accion.
+			$accion = arr_get($_POST, 'submit', NULL);
 
-			// Verifico cada uno de los IP's.
-			$error = FALSE;
-			foreach ($ips as $k => $ip)
+			if ($accion == NULL)
 			{
-				$ip = trim($ip);
-				$ips[$k] = $ip;
+				// Obtengo el listado de IP's.
+				$ips = isset($_POST['ip']) ? explode(PHP_EOL, trim($_POST['ip'])) : array();
 
-				// Verifico IP.
-				if ($ip == long2ip(ip2long($ip)))
+				// Verifico cada uno de los IP's.
+				$error = FALSE;
+				foreach ($ips as $k => $ip)
 				{
-					continue;
-				}
+					$ip = trim($ip);
+					$ips[$k] = $ip;
 
-				// Verifico rango del tipo a.b.c.d-a.b.c.d
-				if (strpos($ip, '-'))
-				{
-					list($a, $b) = explode('-', $ip);
-					if ($a != long2ip(ip2long($a)) || $b != long2ip(ip2long($b)))
-					{
-						$error = TRUE;
-						break;
-					}
-					else
+					// Verifico IP.
+					if ($ip == long2ip(ip2long($ip)))
 					{
 						continue;
 					}
-				}
 
-				$error = TRUE;
-				break;
-
-				//TODO: agregar soporte a rangos faltantes (CIFS /netmask,  *).
-			}
-
-			// Asigno valor a la vista.
-			$vista->assign('ip', implode(PHP_EOL, $ips));
-
-			if ($error)
-			{
-				$vista->assign('error_ip', 'Los IP\'s ingresados no son válidos.');
-			}
-			else
-			{
-				// Verifico si hay cambios.
-				if (count(array_diff($ips, $ips_matenimiento)) > 0)
-				{
-					// Actualizo los valores.
-					$model_configuracion->ip_mantenimiento = serialize($ips);
-					$ips_matenimiento = $ips;
-
-					// Actualizo si es necesario.
-					if (Mantenimiento::is_locked())
+					// Verifico rango del tipo a.b.c.d-a.b.c.d
+					if (strpos($ip, '-'))
 					{
-						Mantenimiento::lock($ips);
+						list($a, $b) = explode('-', $ip);
+						if ($a != long2ip(ip2long($a)) || $b != long2ip(ip2long($b)))
+						{
+							$error = TRUE;
+							break;
+						}
+						else
+						{
+							continue;
+						}
 					}
 
-					// Informo resultado.
-					$vista->assign('success_ip', 'Listado de IP\'s actualizada correctamente.');
+					$error = TRUE;
+					break;
+
+					//TODO: agregar soporte a rangos faltantes (CIFS /netmask,  *).
+				}
+
+				// Asigno valor a la vista.
+				$vista->assign('ip', implode(PHP_EOL, $ips));
+
+				if ($error)
+				{
+					$vista->assign('error_ip', 'Los IP\'s ingresados no son válidos.');
+				}
+				else
+				{
+					// Verifico si hay cambios.
+					if (count(array_diff($ips, $ips_matenimiento)) > 0)
+					{
+						// Actualizo los valores.
+						$model_configuracion->ip_mantenimiento = serialize($ips);
+						$ips_matenimiento = $ips;
+
+						// Actualizo si es necesario.
+						if (Mantenimiento::is_locked())
+						{
+							Mantenimiento::lock($ips);
+						}
+
+						// Informo resultado.
+						$vista->assign('success_ip', 'Listado de IP\'s actualizada correctamente.');
+					}
+				}
+			}
+			elseif ($accion == 'agregar-rango')
+			{
+				// Obtengo el rango.
+				$rango = (int) arr_get($_POST, 'nuevo-rango', 0);
+
+				// Verifico existencia del rango.
+				$o_rango = new Model_Usuario_Rango($rango);
+
+				if ( ! $o_rango->existe())
+				{
+					$vista->assign('error_rango_nuevo', 'El rango que quiere agregar es incorrecto.');
+				}
+				else
+				{
+					// Verifico permisos.
+					if ($o_rango->tiene_permiso(Model_Usuario_Rango::PERMISO_SITIO_ACCESO_MANTENIMIENTO))
+					{
+						$vista->assign('error_rango_nuevo', 'El rango ya tiene acceso en modo mantenimiento.');
+					}
+					else
+					{
+						// Agrego el permiso.
+						$o_rango->agregar_permiso(Model_Usuario_Rango::PERMISO_SITIO_ACCESO_MANTENIMIENTO);
+
+						add_flash_message(FLASH_SUCCESS, 'Se le ha dado acceso en modo mantenimiento al rango correctamente.');
+					}
+				}
+			}
+			elseif ($accion == 'agregar-usuario')
+			{
+				// Obtengo el usuario.
+				$usuario = arr_get($_POST, 'nuevo-usuario', '');
+
+				// Verifico existencia del usuario.
+				$o_usuario = new Model_Usuario();
+
+				if ( ! $o_usuario->exists_nick($usuario))
+				{
+					$vista->assign('error_usuario_nuevo', 'El usuario que quiere agregar es incorrecto.');
+				}
+				else
+				{
+					$o_usuario->load_by_nick($usuario);
+
+					// Usuarios actuales.
+					$u_act = Mantenimiento::usuarios_permitidos();
+
+
+					// Verifico permisos.
+					if (in_array($o_usuario->id, $u_act))
+					{
+						$vista->assign('error_usuario_nuevo', 'El usuario ya tiene acceso en modo mantenimiento.');
+					}
+					else
+					{
+						$u_act[] = $o_usuario->id;
+
+						// Agrego el usuario.
+						Utils::configuracion()->mantenimiento_usuarios = serialize($u_act);
+
+						add_flash_message(FLASH_SUCCESS, 'Se le ha dado acceso en modo mantenimiento al usuario correctamente.');
+					}
 				}
 			}
 		}
 
+		// Datos del soft-lock.
+		$g_lst_aux = Mantenimiento::grupos_permitidos();
+		$g_lst = $g_lst_aux;
+		foreach ($g_lst as $k => $v)
+		{
+			$g_lst[$k] = Model::factory('Usuario_Rango', $v)->as_array();
+		}
+		$vista->assign('rangos', $g_lst);
+
+		$r_lst_aux = Model::factory('Usuario_Rango')->listado();
+		$r_lst = array();
+		foreach ($r_lst_aux as $v)
+		{
+			if ( ! in_array($v->id, $g_lst_aux))
+			{
+				$r_lst[] = $v->as_array();
+			}
+		}
+		$vista->assign('rangos_disponibles', $r_lst);
+		unset($r_lst_aux);
+
+		$u_lst = Mantenimiento::usuarios_permitidos();
+		foreach ($u_lst as $k => $v)
+		{
+			$u_lst[$k] = Model::factory('Usuario', $v)->as_array();
+		}
+		$vista->assign('usuarios', $u_lst);
+
 		// Verifico si está habilitado el bloqueo.
-		$vista->assign('is_locked', Mantenimiento::is_locked());
+		$vista->assign('is_locked_hard', Mantenimiento::is_locked());
+		$vista->assign('is_locked_soft', Mantenimiento::is_locked(FALSE));
+
+		// Verifico permisos.
 		if (Mantenimiento::is_locked())
 		{
-			$locked_for_me = Mantenimiento::is_locked_for(get_ip_addr());
+			$locked_for_me_ip = FALSE;
 		}
 		else
 		{
-			$locked_for_me = TRUE;
+			$locked_for_me_ip = TRUE;
 			$my_ip = get_ip_addr();
 			foreach ($ips_matenimiento as $ip)
 			{
 				if ($my_ip == $ip || IP::ip_in_range($my_ip, $ip))
 				{
-					$locked_for_me = FALSE;
+					$locked_for_me_ip = FALSE;
 					break;
 				}
 			}
 			unset($my_ip);
 		}
-		$vista->assign('is_locked_for_me', $locked_for_me);
-		unset($locked_for_me);
+		$vista->assign('locked_for_me_ip', $locked_for_me_ip);
+		unset($locked_for_me_ip);
+
+		if (Mantenimiento::is_locked(FALSE))
+		{
+			$locked_for_me_usuario = FALSE;
+		}
+		else
+		{
+			$locked_for_me_usuario = ! (in_array(Usuario::$usuario_id, Mantenimiento::usuarios_permitidos()) || in_array(Usuario::usuario()->rango, Mantenimiento::grupos_permitidos()));
+		}
+		$vista->assign('locked_for_me_usuario', $locked_for_me_usuario);
+		unset($locked_for_me_usuario);
 
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
@@ -413,35 +525,101 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	}
 
 	/**
-	 * Activo/Desactivo el modo mantenimiento.
-	 * @param bool $tipo 0 para deshabilitar, 1 para habilitar.
+	 * Quito el rango de la lista que puede entrar en modo mantenimiento.
+	 * @param int $rango Rango a quitar.
 	 */
-	public function action_habilitar_mantenimiento($tipo)
+	public function action_mantenimiento_quitar_rango($rango)
 	{
-		$tipo = (bool) $tipo;
+		// Cargo el rango.
+		$o_rango = new Model_Usuario_Rango( (int) $rango);
 
-		// Verifico la acción.
-		if ($tipo == Mantenimiento::is_locked())
+		// Verifico existencia.
+		if ( ! $o_rango->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El modo mantenimiento ya posee ese estado.');
+			add_flash_message(FLASH_ERROR, 'El rango que deseas sacar de la lista de mantenimiento no es correcto.');
+			Request::redirect('/admin/configuracion/mantenimiento/');
+		}
+
+		// Verifico permiso.
+		if ( ! $o_rango->tiene_permiso(Model_Usuario_Rango::PERMISO_SITIO_ACCESO_MANTENIMIENTO))
+		{
+			add_flash_message(FLASH_ERROR, 'El rango que deseas sacar de la lista de mantenimiento no es correcto.');
+			Request::redirect('/admin/configuracion/mantenimiento/');
+		}
+
+		// Quito permiso.
+		$o_rango->borrar_permiso(Model_Usuario_Rango::PERMISO_SITIO_ACCESO_MANTENIMIENTO);
+
+		// Informo resultado.
+		add_flash_message(FLASH_SUCCESS, 'El rango se ha quitado correctamente de la lista de mantenimiento.');
+		Request::redirect('/admin/configuracion/mantenimiento/');
+	}
+
+	/**
+	 * Quito el usuario de la lista que puede acceder en modo mantenimiento.
+	 * @param int $usuario ID del usuario a quitar.
+	 */
+	public function action_mantenimiento_quitar_usuario($usuario)
+	{
+		// Aseguro tipo del usaurio.
+		$usuario = (int) $usuario;
+
+		// Cargo lista de usuarios.
+		$u_lst = Mantenimiento::usuarios_permitidos();
+
+		// Verifico existencia del usuario.
+		if (in_array($usuario, $u_lst))
+		{
+			// Actualizo lista.
+			Utils::configuracion()->mantenimiento_usuarios = serialize(array_diff($u_lst, array($usuario)));
+
+			// Informo resultado.
+			add_flash_message(FLASH_SUCCESS, 'El rango se ha quitado correctamente de la lista de mantenimiento.');
+			Request::redirect('/admin/configuracion/mantenimiento/');
 		}
 		else
 		{
-			// Ejecuto la acción deseada.
-			if ($tipo)
-			{
-				add_flash_message(FLASH_SUCCESS, 'Modo mantenimiento activado correctamente.');
-				$c = new Model_Configuracion;
-				//TODO: Verificar que alguien pueda acceder.
-				Mantenimiento::lock(unserialize($c->get('ip_mantenimiento', 'a:0:{}')));
-			}
-			else
-			{
-				add_flash_message(FLASH_SUCCESS, 'Modo mantenimiento activado correctamente.');
-				Mantenimiento::unlock();
-			}
+			add_flash_message(FLASH_ERROR, 'El usuario que deseas sacar de la lista de mantenimiento no es correcto.');
+			Request::redirect('/admin/configuracion/mantenimiento/');
 		}
-		Request::redirect('/admin/configuracion/mantenimiento');
+	}
+
+	/**
+	 * Activo/Desactivo el modo mantenimiento.
+	 * @param bool $tipo 0 para deshabilitar, 1 para habilitar.
+	 * @param bool $hard 0 para habiltiar por IP, 1 para habilitar por Usuario.
+	 */
+	public function action_habilitar_mantenimiento($tipo, $hard)
+	{
+		$tipo = (bool) $tipo;
+		$hard = (bool) $hard;
+
+		// Verifico segun accion.
+		if ($tipo)
+		{
+			// Verifico no exista bloqueo.
+			if (Mantenimiento::is_locked() || Mantenimiento::is_locked(FALSE))
+			{
+				add_flash_message(FLASH_ERROR, 'El modo mantenimiento ya se encuentra activo.');
+				Request::redirect('/admin/configuracion/mantenimiento/');
+			}
+
+			// Activo el bloqueo.
+			Mantenimiento::lock($hard);
+
+			// Envio notificacion.
+			add_flash_message(FLASH_SUCCESS, 'El modo mantenimiento se ha activado correctamente.');
+			Request::redirect('/admin/configuracion/mantenimiento/');
+		}
+		else
+		{
+			// Desactivo el mantenimiento.
+			Mantenimiento::unlock();
+
+			// Envio notificacion.
+			add_flash_message(FLASH_SUCCESS, 'El modo mantenimiento se ha desactivado correctamente.');
+			Request::redirect('/admin/configuracion/mantenimiento/');
+		}
 	}
 
 	/**

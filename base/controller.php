@@ -86,9 +86,7 @@ class Base_Controller {
 		$this->template->assign('contenido', '');
 
 		// Seteo si es mantenimiento.
-		$m = new Mantenimiento;
-		$this->template->assign('is_locked', $m->is_locked());
-		unset($m);
+		$this->template->assign('is_locked', Mantenimiento::is_locked() || Mantenimiento::is_locked(FALSE));
 	}
 
 	/**

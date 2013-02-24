@@ -617,6 +617,20 @@ class Base_Dispatcher {
 	 */
 	private static function call_controller($controller, $accion, $args, $plugin = NULL)
 	{
+		// Verifico modo mantenimiento.
+		if (Mantenimiento::is_locked(FALSE))
+		{
+			// Verifico si esta logueado.
+			if ( ! Usuario::is_login() || Mantenimiento::is_locked_for(Usuario::$usuario_id, FALSE))
+			{
+				// Verifico el metodo.
+				if ($controller !== 'Controller_Mantenimiento')
+				{
+					Request::redirect('/mantenimiento/');
+				}
+			}
+		}
+
 		// Creo instancia del objeto.
 		$cont = new $controller;
 

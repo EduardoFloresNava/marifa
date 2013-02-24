@@ -33,56 +33,126 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Mantenimiento {
 
 	/**
+	 * Obtenemos el listado de los ID's de los grupos que tiene permitido el acceso (soft-lock).
+	 * @return array
+	 */
+	public static function grupos_permitidos()
+	{
+		return Database::get_instance()
+				->query(
+						'SELECT rango_id FROM usuario_rango_permiso WHERE permiso = ?',
+						Model_Usuario_Rango::PERMISO_SITIO_ACCESO_MANTENIMIENTO
+					)
+				->get_pairs(Database_Query::FIELD_INT);
+	}
+
+	/**
+	 * Listado de ID's de usuarios que pueden acceder en modo matenimiento (soft-lock).
+	 * @return array
+	 */
+	public static function usuarios_permitidos()
+	{
+		return unserialize(Utils::configuracion()->get('mantenimiento_usuarios', 'a:0:{}'));
+	}
+
+	/**
 	 * Verificamos si hay un bloqueo activo.
+	 * @param bool $hard Si el bloqueo es a nivel usuario o IP.
 	 * @return bool
 	 */
-	public static function is_locked()
+	public static function is_locked($hard = TRUE)
 	{
-		return file_exists(APP_BASE.DS.'lock.tmp') && is_file(APP_BASE.DS.'lock.tmp');
+		if ($hard)
+		{
+			return file_exists(APP_BASE.DS.'lock.tmp') && is_file(APP_BASE.DS.'lock.tmp');
+		}
+		else
+		{
+			return (bool) Utils::configuracion()->get('soft_lock', FALSE);
+		}
 	}
 
 	/**
 	 * Verificamos si el bloqueo aplica al IP provisto.
-	 * @param string $ip
+	 * @param string|int $ip IP si es bloqueo por IP o ID del usuario en caso de ser por usuarios.
+	 * @param bool $hard Si el bloqueo es por usuario o por IP's.
 	 * @return bool
 	 */
-	public static function is_locked_for($ip)
+	public static function is_locked_for($ip, $hard = TRUE)
 	{
-		if ( ! self::is_locked())
+		if ( ! self::is_locked($hard))
 		{
 			return FALSE;
 		}
 
-		// Cargamos los rangos.
-		$range_list = file(APP_BASE.DS.'lock.tmp');
-
-		// Verificamos.
-		foreach ($range_list as $range)
+		// Verifico si es por IP o por Usuario.
+		if ($hard)
 		{
-			if ($ip == $range || IP::ip_in_range($ip, $range))
+			// Cargamos los rangos.
+			$range_list = file(APP_BASE.DS.'lock.tmp');
+
+			// Verificamos.
+			foreach ($range_list as $range)
 			{
-				// Existe en el rango.
+				if ($ip == $range || IP::ip_in_range($ip, $range))
+				{
+					// Existe en el rango.
+					return FALSE;
+				}
+			}
+
+			// No existe en los rangos.
+			return TRUE;
+		}
+		else
+		{
+			// Verifico si esta en el listado de usuarios.
+			if (in_array($ip, self::usuarios_permitidos()))
+			{
 				return FALSE;
 			}
-		}
 
-		// No existe en los rangos.
-		return TRUE;
+			// Obtengo rango del usuario.
+			$rango = Model::factory('Usuario', $ip)->rango;
+
+			// Verifico rango.
+			if (in_array($rango, self::grupos_permitidos()))
+			{
+				return FALSE;
+			}
+
+			return TRUE;
+		}
 	}
 
 	/**
 	 * Realizamos el bloqueo, excluyendo el listado de IP's y/o rangos provisto.
-	 * @param array $for Arreglo de IP's y/o rangos que tienen permitido el acceso.
-	 * Es decir, no le dan importancia al bloqueo.
+	 * @param bool $hard Si el bloqueo es por IP o por usuario.
+	 * @param array $for Arreglo de IP's y/o rangos que tienen permitido el acceso. Es decir, no le dan importancia al bloqueo.
+	 * Solo aplicable a bloqueo por IP.
 	 * @return bool
 	 */
-	public static function lock($for = array())
+	public static function lock($hard = TRUE, $for = array())
 	{
-		// Generamos el listado de rangos.
-		$range = implode(PHP_EOL, $for);
+		// Verifico no se encuentre el otro activo.
+		if ( ! self::is_locked($hard))
+		{
+			self::unlock();
+		}
 
-		// Guardamos la información
-		return file_put_contents(APP_BASE.DS.'lock.tmp', $range);
+		if ($hard)
+		{
+			// Generamos el listado de rangos.
+			$range = implode(PHP_EOL, $for);
+
+			// Guardamos la información
+			return file_put_contents(APP_BASE.DS.'lock.tmp', $range);
+		}
+		else
+		{
+			Utils::configuracion()->soft_lock = TRUE;
+			return TRUE;
+		}
 	}
 
 	/**
@@ -91,7 +161,16 @@ class Base_Mantenimiento {
 	 */
 	public static function unlock()
 	{
-		return @unlink(APP_BASE.DS.'lock.tmp');
+		if (self::is_locked(TRUE))
+		{
+			@unlink(APP_BASE.DS.'lock.tmp');
+		}
+
+		if (self::is_locked(FALSE))
+		{
+			Utils::configuracion()->soft_lock = FALSE;
+		}
+		return TRUE;
 	}
 
 }
