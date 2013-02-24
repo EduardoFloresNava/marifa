@@ -81,7 +81,7 @@
 				{/loop}
 			</ul>
 			{/if}
-			{if="isset($is_locked) && $is_locked"}<div class="alert alert-info"><b>!Importante!</b> El sitio se encuentra en modo mantenimiento, no todos los usuarios pueden acceder a el sitio.<a class="close" data-dismiss="alert">×</a></div>{/if}
+			{if="isset($is_locked) && $is_locked"}<div class="alert alert-info"><b>¡Importante!</b> El sitio se encuentra en modo mantenimiento, no todos los usuarios pueden acceder a el sitio.<a class="close" data-dismiss="alert">×</a></div>{/if}
 			{if="isset($flash_success)"}
 				{if="is_array($flash_success)"}
 				<div class="alert alert-success alert-container">

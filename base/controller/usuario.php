@@ -108,7 +108,7 @@ class Base_Controller_Usuario extends Controller {
 						// Verifico si tiene advertencias si visualizar.
 						if ($model_usuario->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO) > 0)
 						{
-							add_flash_message(FLASH_INFO, 'Tienes advertencias nuevas. Puedes verlas desde <a href="/cuenta/avisos/">aquí</a>.');
+							add_flash_message(FLASH_INFO, 'Tienes advertencias nuevas. Puedes verlas desde <a href="'.SITE_URL.'/cuenta/avisos/">aquí</a>.');
 						}
 
 						// Envio mensaje de bienvenida.
@@ -118,7 +118,7 @@ class Base_Controller_Usuario extends Controller {
 						Request::redirect('/', FALSE, TRUE);
 						break;
 					case Model_Usuario::ESTADO_PENDIENTE:  // Cuenta por activar.
-						$view_usuario->assign('error', 'La cuenta no ha sido validada aún. Si no recibiste el correo de activación haz click <a href="/usuario/pedir_activacion/">aqui</a>');
+						$view_usuario->assign('error', 'La cuenta no ha sido validada aún. Si no recibiste el correo de activación haz click <a href="'.SITE_URL.'/usuario/pedir_activacion/">aqui</a>');
 						break;
 					case Model_Usuario::ESTADO_SUSPENDIDA: // Cuenta suspendida.
 						// Obtenemos la suspensión.
@@ -327,7 +327,7 @@ class Base_Controller_Usuario extends Controller {
 								add_flash_message(FLASH_SUCCESS, 'El registro se ha realizado <strong>correctamente</strong>. Para poder acceder a su cuenta debe seguir las instrucciones que fueron enviadas a su casilla de <strong>E-Mail</strong>.');
 								break;
 							case 2: // Activación automática.
-								add_flash_message(FLASH_SUCCESS, 'El registro se ha realizado <strong>correctamente</strong>. Ya puedes acceder a tu cuenta iniciando sesión <a href="{#SITE_URL#}/usuario/login/">aquí</a>.');
+								add_flash_message(FLASH_SUCCESS, 'El registro se ha realizado <strong>correctamente</strong>. Ya puedes acceder a tu cuenta iniciando sesión <a href="'.SITE_URL.'/usuario/login/">aquí</a>.');
 								break;
 						}
 						Request::redirect('/login');
