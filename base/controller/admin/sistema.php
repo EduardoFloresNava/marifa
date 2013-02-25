@@ -318,7 +318,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 				else
 				{
 					// Cargo el mime.
-					$file['type'] = Update_Utils::get_mime($file['tmp_name']);
+					$file['type'] = Update_Utils::get_mime($file['name']);
 
 					// Verifico esté dentro de los permitidos.
 					if ( ! in_array(Update_Utils::mime2compresor($file['type']), Update_Compresion::get_list()))
