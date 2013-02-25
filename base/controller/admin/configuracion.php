@@ -33,7 +33,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Admin_Configuracion extends Controller {
 
 	/**
-	 * Verficiamos los permisos.
+	 * Verificamos los permisos.
 	 */
 	public function before()
 	{
@@ -46,7 +46,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Verifico los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permisos para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -110,14 +110,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				// Verifico el contenido.
 				if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{2,20}$/iD', $nombre))
 				{
-					$vista->assign('error_nombre', 'El nombre debe tener entre 2 y 20 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
+					$vista->assign('error_nombre', __('El nombre debe tener entre 2 y 20 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\', FALSE));
 				}
 				else
 				{
 					if ($nombre !== $model_configuracion->get('nombre', NULL))
 					{
 						$model_configuracion->nombre = $nombre;
-						$vista->assign('success_nombre', 'El nombre se ha actualizado correctamente.');
+						$vista->assign('success_nombre', __('El nombre se ha actualizado correctamente.', FALSE));
 					}
 				}
 			}
@@ -134,14 +134,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				// Verifico el contenido.
 				if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{5,30}$/iD', $descripcion))
 				{
-					$vista->assign('error_descripcion', 'La descripción debe tener entre 5 y 30 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
+					$vista->assign('error_descripcion', __('La descripción debe tener entre 5 y 30 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\', FALSE));
 				}
 				else
 				{
 					if ($descripcion !== $model_configuracion->get('descripcion', NULL))
 					{
 						$model_configuracion->descripcion = $descripcion;
-						$vista->assign('success_descripcion', 'La descripción se ha actualizado correctamente.');
+						$vista->assign('success_descripcion', __('La descripción se ha actualizado correctamente.', FALSE));
 					}
 				}
 			}
@@ -160,7 +160,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				if ($actual === NULL || $registro !== (bool) $actual)
 				{
 					$model_configuracion->registro = $registro;
-					$vista->assign('success_registro', 'El registro se ha editado correctamente.');
+					$vista->assign('success_registro', __('El registro se ha editado correctamente.', FALSE));
 				}
 			}
 
@@ -181,12 +181,12 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					if ($actual === NULL || $activacion_usuario !== (int) $actual)
 					{
 						$model_configuracion->activacion_usuario = $activacion_usuario;
-						$vista->assign('success_activacion_usuario', 'La forma de activación se ha actualizado correctamente.');
+						$vista->assign('success_activacion_usuario', __('La forma de activación se ha actualizado correctamente.', FALSE));
 					}
 				}
 				else
 				{
-					$vista->assign('error_activacion_usuario', 'La forma de activación seleccionada no es válida.');
+					$vista->assign('error_activacion_usuario', __('La forma de activación seleccionada no es válida.', FALSE));
 				}
 			}
 
@@ -207,12 +207,12 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					if ($actual === NULL || $rango_defecto !== (int) $actual)
 					{
 						$model_configuracion->rango_defecto = $rango_defecto;
-						$vista->assign('success_rango_defecto', 'Se ha actualizado el rango para los usuarios por defecto.');
+						$vista->assign('success_rango_defecto', __('Se ha actualizado el rango para los usuarios por defecto.', FALSE));
 					}
 				}
 				else
 				{
-					$vista->assign('error_rango_defecto', 'El rango seleccionado no es correcto.');
+					$vista->assign('error_rango_defecto', __('El rango seleccionado no es correcto.', FALSE));
 				}
 			}
 
@@ -230,7 +230,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				if ($actual === NULL || $habilitar_fotos !== (bool) $actual)
 				{
 					$model_configuracion->habilitar_fotos = $habilitar_fotos;
-					$vista->assign('success_habilitar_fotos', 'El estado de las fotos se ha editado correctamente.');
+					$vista->assign('success_habilitar_fotos', __('El estado de las fotos se ha editado correctamente.', FALSE));
 				}
 			}
 
@@ -248,7 +248,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				if ($actual === NULL || $privacidad_fotos !== (bool) $actual)
 				{
 					$model_configuracion->privacidad_fotos = $privacidad_fotos;
-					$vista->assign('success_habilitar_fotos', 'La privacidad de las fotos se ha editado correctamente.');
+					$vista->assign('success_habilitar_fotos', __('La privacidad de las fotos se ha editado correctamente.', FALSE));
 				}
 			}
 
@@ -264,7 +264,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				// Verifico el valor.
 				if ($elementos_pagina < 5 || $elementos_pagina > 100)
 				{
-					$vista->assign('error_elementos_pagina', 'La cantidad de elementos por página ser un entero entre 5 y 100.');
+					$vista->assign('error_elementos_pagina', __('La cantidad de elementos por página ser un entero entre 5 y 100.', FALSE));
 				}
 				else
 				{
@@ -273,16 +273,16 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					if ($actual === NULL || $elementos_pagina !== (int) $actual)
 					{
 						$model_configuracion->elementos_pagina = $elementos_pagina;
-						$vista->assign('success_elementos_pagina', 'La cantidad de elementos por página se ha actualizado correctamente.');
+						$vista->assign('success_elementos_pagina', __('La cantidad de elementos por página se ha actualizado correctamente.', FALSE));
 					}
 				}
 			}
 		}
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -358,7 +358,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 				if ($error)
 				{
-					$vista->assign('error_ip', 'Los IP\'s ingresados no son válidos.');
+					$vista->assign('error_ip', __('Los IP\'s ingresados no son válidos.', FALSE));
 				}
 				else
 				{
@@ -376,7 +376,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 						}
 
 						// Informo resultado.
-						$vista->assign('success_ip', 'Listado de IP\'s actualizada correctamente.');
+						$vista->assign('success_ip', __('Listado de IP\'s actualizada correctamente.', FALSE));
 					}
 				}
 			}
@@ -390,21 +390,21 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 				if ( ! $o_rango->existe())
 				{
-					$vista->assign('error_rango_nuevo', 'El rango que quiere agregar es incorrecto.');
+					$vista->assign('error_rango_nuevo', __('El rango que quiere agregar es incorrecto.', FALSE));
 				}
 				else
 				{
 					// Verifico permisos.
 					if ($o_rango->tiene_permiso(Model_Usuario_Rango::PERMISO_SITIO_ACCESO_MANTENIMIENTO))
 					{
-						$vista->assign('error_rango_nuevo', 'El rango ya tiene acceso en modo mantenimiento.');
+						$vista->assign('error_rango_nuevo', __('El rango ya tiene acceso en modo mantenimiento.', FALSE));
 					}
 					else
 					{
 						// Agrego el permiso.
 						$o_rango->agregar_permiso(Model_Usuario_Rango::PERMISO_SITIO_ACCESO_MANTENIMIENTO);
 
-						add_flash_message(FLASH_SUCCESS, 'Se le ha dado acceso en modo mantenimiento al rango correctamente.');
+						add_flash_message(FLASH_SUCCESS, __('Se le ha dado acceso en modo mantenimiento al rango correctamente.', FALSE));
 					}
 				}
 			}
@@ -418,7 +418,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 				if ( ! $o_usuario->exists_nick($usuario))
 				{
-					$vista->assign('error_usuario_nuevo', 'El usuario que quiere agregar es incorrecto.');
+					$vista->assign('error_usuario_nuevo', __('El usuario que quiere agregar es incorrecto.', FALSE));
 				}
 				else
 				{
@@ -431,7 +431,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					// Verifico permisos.
 					if (in_array($o_usuario->id, $u_act))
 					{
-						$vista->assign('error_usuario_nuevo', 'El usuario ya tiene acceso en modo mantenimiento.');
+						$vista->assign('error_usuario_nuevo', __('El usuario ya tiene acceso en modo mantenimiento.', FALSE));
 					}
 					else
 					{
@@ -440,7 +440,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 						// Agrego el usuario.
 						Utils::configuracion()->mantenimiento_usuarios = serialize($u_act);
 
-						add_flash_message(FLASH_SUCCESS, 'Se le ha dado acceso en modo mantenimiento al usuario correctamente.');
+						add_flash_message(FLASH_SUCCESS, __('Se le ha dado acceso en modo mantenimiento al usuario correctamente.', FALSE));
 					}
 				}
 			}
@@ -511,10 +511,10 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista->assign('locked_for_me_usuario', $locked_for_me_usuario);
 		unset($locked_for_me_usuario);
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -536,14 +536,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Verifico existencia.
 		if ( ! $o_rango->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El rango que deseas sacar de la lista de mantenimiento no es correcto.');
+			add_flash_message(FLASH_ERROR, __('El rango que deseas sacar de la lista de mantenimiento no es correcto.', FALSE));
 			Request::redirect('/admin/configuracion/mantenimiento/');
 		}
 
 		// Verifico permiso.
 		if ( ! $o_rango->tiene_permiso(Model_Usuario_Rango::PERMISO_SITIO_ACCESO_MANTENIMIENTO))
 		{
-			add_flash_message(FLASH_ERROR, 'El rango que deseas sacar de la lista de mantenimiento no es correcto.');
+			add_flash_message(FLASH_ERROR, __('El rango que deseas sacar de la lista de mantenimiento no es correcto.', FALSE));
 			Request::redirect('/admin/configuracion/mantenimiento/');
 		}
 
@@ -551,7 +551,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$o_rango->borrar_permiso(Model_Usuario_Rango::PERMISO_SITIO_ACCESO_MANTENIMIENTO);
 
 		// Informo resultado.
-		add_flash_message(FLASH_SUCCESS, 'El rango se ha quitado correctamente de la lista de mantenimiento.');
+		add_flash_message(FLASH_SUCCESS, __('El rango se ha quitado correctamente de la lista de mantenimiento.', FALSE));
 		Request::redirect('/admin/configuracion/mantenimiento/');
 	}
 
@@ -561,7 +561,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	 */
 	public function action_mantenimiento_quitar_usuario($usuario)
 	{
-		// Aseguro tipo del usaurio.
+		// Aseguro tipo del usuario.
 		$usuario = (int) $usuario;
 
 		// Cargo lista de usuarios.
@@ -574,12 +574,12 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			Utils::configuracion()->mantenimiento_usuarios = serialize(array_diff($u_lst, array($usuario)));
 
 			// Informo resultado.
-			add_flash_message(FLASH_SUCCESS, 'El rango se ha quitado correctamente de la lista de mantenimiento.');
+			add_flash_message(FLASH_SUCCESS, __('El rango se ha quitado correctamente de la lista de mantenimiento.', FALSE));
 			Request::redirect('/admin/configuracion/mantenimiento/');
 		}
 		else
 		{
-			add_flash_message(FLASH_ERROR, 'El usuario que deseas sacar de la lista de mantenimiento no es correcto.');
+			add_flash_message(FLASH_ERROR, __('El usuario que deseas sacar de la lista de mantenimiento no es correcto.', FALSE));
 			Request::redirect('/admin/configuracion/mantenimiento/');
 		}
 	}
@@ -587,28 +587,28 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	/**
 	 * Activo/Desactivo el modo mantenimiento.
 	 * @param bool $tipo 0 para deshabilitar, 1 para habilitar.
-	 * @param bool $hard 0 para habiltiar por IP, 1 para habilitar por Usuario.
+	 * @param bool $hard 0 para habilitar por IP, 1 para habilitar por Usuario.
 	 */
 	public function action_habilitar_mantenimiento($tipo, $hard)
 	{
 		$tipo = (bool) $tipo;
 		$hard = (bool) $hard;
 
-		// Verifico segun accion.
+		// Verifico según acción.
 		if ($tipo)
 		{
 			// Verifico no exista bloqueo.
 			if (Mantenimiento::is_locked() || Mantenimiento::is_locked(FALSE))
 			{
-				add_flash_message(FLASH_ERROR, 'El modo mantenimiento ya se encuentra activo.');
+				add_flash_message(FLASH_ERROR, __('El modo mantenimiento ya se encuentra activo.', FALSE));
 				Request::redirect('/admin/configuracion/mantenimiento/');
 			}
 
 			// Activo el bloqueo.
 			Mantenimiento::lock($hard);
 
-			// Envio notificacion.
-			add_flash_message(FLASH_SUCCESS, 'El modo mantenimiento se ha activado correctamente.');
+			// Envío notificación.
+			add_flash_message(FLASH_SUCCESS, __('El modo mantenimiento se ha activado correctamente.', FALSE));
 			Request::redirect('/admin/configuracion/mantenimiento/');
 		}
 		else
@@ -616,14 +616,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			// Desactivo el mantenimiento.
 			Mantenimiento::unlock();
 
-			// Envio notificacion.
-			add_flash_message(FLASH_SUCCESS, 'El modo mantenimiento se ha desactivado correctamente.');
+			// Envío notificación.
+			add_flash_message(FLASH_SUCCESS, __('El modo mantenimiento se ha desactivado correctamente.', FALSE));
 			Request::redirect('/admin/configuracion/mantenimiento/');
 		}
 	}
 
 	/**
-	 * Configuración del envio de correos.
+	 * Configuración del envió de correos.
 	 */
 	public function action_correo($correo)
 	{
@@ -640,17 +640,17 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			// Cargo la configuración actual.
 			$configuracion = configuracion_obtener(CONFIG_PATH.DS.'email.php');
 
-			// Envio la configuración.
+			// Envío la configuración.
 			$vista->assign('configuracion', $configuracion);
 
 			// Mi correo.
 			$vista->assign('email', $correo !== NULL ? urldecode($correo) : Usuario::usuario()->email);
 		}
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -665,24 +665,24 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	 */
 	public function action_test_mail()
 	{
-		// Verifico el método de envio.
+		// Verifico el método de envío.
 		if (Request::method() !== 'POST')
 		{
-			add_flash_message(FLASH_ERROR, 'No puedes enviar un correo de prueba si no especificas el destinatario.');
+			add_flash_message(FLASH_ERROR, __('No puedes enviar un correo de prueba si no especificas el destinatario.', FALSE));
 			Request::redirect('/admin/configuracion/correo');
 		}
 
 		// Verifico que se encuentre configurado.
 		if ( ! file_exists(CONFIG_PATH.DS.'email.php'))
 		{
-			add_flash_message(FLASH_ERROR, 'No puedes enviar un correo de prueba ya que no has lo has configurado.');
+			add_flash_message(FLASH_ERROR, __('No puedes enviar un correo de prueba ya que no has lo has configurado.', FALSE));
 			Request::redirect('/admin/configuracion/correo');
 		}
 
 		// Verifico el correo enviado.
 		if ( ! isset($_POST['email']) || ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $_POST['email']))
 		{
-			add_flash_message(FLASH_ERROR, 'La casilla de correo ingresada no es válida.');
+			add_flash_message(FLASH_ERROR, __('La casilla de correo ingresada no es válida.', FALSE));
 			Request::redirect('/admin/configuracion/correo/'.(isset($_POST['email']) ? urlencode($_POST['email']) : '' ));
 		}
 
@@ -691,7 +691,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 		// Creo el mensaje de correo.
 		$message = Email::get_message();
-		$message->setSubject('Verificación configuración correos de '.$model_config->get('nombre', 'Marifa'));
+		$message->setSubject(sprintf(__('Verificación configuración correos de %s', FALSE), $model_config->get('nombre', 'Marifa')));
 		$message->setTo($_POST['email']);
 
 		// Cargo la vista.
@@ -700,12 +700,12 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$message->setBody($message_view->parse());
 		unset($message_view);
 
-		// Envio el email.
+		// Envío el correo electrónico.
 		$mailer = Email::get_mailer();
 		$mailer->send($message);
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, 'El correo de prueba se ha enviado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('El correo de prueba se ha enviado correctamente.', FALSE));
 		Request::redirect('/admin/configuracion/correo');
 	}
 
@@ -745,14 +745,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				// Verifico el contenido.
 				if ($largo_minimo < 0)
 				{
-					$vista->assign('error_largo_minimo', 'El largo mínimo debe ser mayor o igual a 0 (cero).');
+					$vista->assign('error_largo_minimo', __('El largo mínimo debe ser mayor o igual a 0 (cero).', FALSE));
 				}
 				else
 				{
 					if ($largo_minimo != $model_configuracion->get('keyword_largo_minimo', NULL))
 					{
 						$model_configuracion->keyword_largo_minimo = $largo_minimo;
-						$vista->assign('success_largo_minimo', 'El largo mínimo se ha actualizado correctamente.');
+						$vista->assign('success_largo_minimo', __('El largo mínimo se ha actualizado correctamente.', FALSE));
 					}
 				}
 			}
@@ -769,14 +769,14 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				// Verifico el contenido.
 				if ($cantidad_minima_ocurrencias < 1)
 				{
-					$vista->assign('error_cantidad_minima_ocurrencias', 'La cantidad de ocurrencias mínima debe ser mayor o igual a 1.');
+					$vista->assign('error_cantidad_minima_ocurrencias', __('La cantidad de ocurrencias mínima debe ser mayor o igual a 1.', FALSE));
 				}
 				else
 				{
 					if ($cantidad_minima_ocurrencias != $model_configuracion->get('keyword_ocurrencias_minima', NULL))
 					{
 						$model_configuracion->keyword_ocurrencias_minima = $cantidad_minima_ocurrencias;
-						$vista->assign('success_cantidad_minima_ocurrencias', 'La cantidad de ocurrencias mínima se ha actualizado correctamente.');
+						$vista->assign('success_cantidad_minima_ocurrencias', __('La cantidad de ocurrencias mínima se ha actualizado correctamente.', FALSE));
 					}
 				}
 			}
@@ -828,23 +828,23 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				// Verifico el contenido.
 				if ($error !== FALSE)
 				{
-					$vista->assign('error_palabras_comunes', 'La lista de palabras claves no permitidas deben ser una por linea. \''.$error.'\' no es correcta.');
+					$vista->assign('error_palabras_comunes', sprintf(__('La lista de palabras claves no permitidas deben ser una por linea. \'%s\' no es correcta.', FALSE), $error));
 				}
 				else
 				{
 					if (serialize($keyword_list) != $model_configuracion->get('keyword_palabras_comunes', NULL))
 					{
 						$model_configuracion->keyword_palabras_comunes = serialize($keyword_list);
-						$vista->assign('success_palabras_comunes', 'La lista de palabras claves no permitidas se ha actualizado correctamente.');
+						$vista->assign('success_palabras_comunes', __('La lista de palabras claves no permitidas se ha actualizado correctamente.', FALSE));
 					}
 				}
 			}
 		}
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -911,7 +911,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				{
 					$error = TRUE;
 					$vista->assign($v, '');
-					$vista->assign('error_'.$v, 'Debe ingresar el campo.');
+					$vista->assign('error_'.$v, __('Debe ingresar el campo.', FALSE));
 				}
 			}
 
@@ -919,7 +919,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			if (isset($driver) && ! in_array($driver, array_keys($drivers)))
 			{
 				$error = TRUE;
-				$vista->assign('error_driver', 'El driver ingresado no es correcto.');
+				$vista->assign('error_driver', __('El driver ingresado no es correcto.', FALSE));
 			}
 
 			if ( ! $error)
@@ -952,7 +952,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				// Testeo la configuraciones.
 				if ( ! Database::test($cfg))
 				{
-					$vista->assign('error', 'No se ha podido conectar a la base de datos. Verifique las configuraciones.');
+					$vista->assign('error', __('No se ha podido conectar a la base de datos. Verifique las configuraciones.', FALSE));
 				}
 				else
 				{
@@ -960,11 +960,11 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					{
 						// Aplico la configuraciones.
 						file_put_contents(CONFIG_PATH.DS.'database.php', '<?php defined(\'APP_BASE\') || die(\'No direct access allowed.\');'.PHP_EOL.'return '.$this->value_to_php($cfg).';');
-						add_flash_message(FLASH_SUCCESS, '<strong>¡Felicitaciones!</strong> Las configuraciones se han guardado correctamente.');
+						add_flash_message(FLASH_SUCCESS, __('<strong>¡Felicitaciones!</strong> Las configuraciones se han guardado correctamente.', FALSE));
 					}
 					else
 					{
-						add_flash_message(FLASH_SUCCESS, '<strong>¡Felicitaciones!</strong> Las configuraciones son correctas pero no se puede realizar la actualización por falta de permisos.');
+						add_flash_message(FLASH_SUCCESS, __('<strong>¡Felicitaciones!</strong> Las configuraciones son correctas pero no se puede realizar la actualización por falta de permisos.', FALSE));
 					}
 				}
 			}
@@ -994,10 +994,10 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			}
 		}
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);

@@ -1,9 +1,9 @@
 <ul class="breadcrumb">
-    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
-    <li class="active">Configuración</li>
+    <li><a href="{#SITE_URL#}/admin/">{@Administración@}</a> <span class="divider">/</span></li>
+    <li class="active">{@Configuración@}</li>
 </ul>
 <div class="header">
-	<h2>Configuración</h2>
+	<h2>{@Configuración@}</h2>
 </div>
 <form method="POST" class="form-horizontal" action="">
 	<fieldset>

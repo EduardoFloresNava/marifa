@@ -67,7 +67,7 @@ class Base_Controller_Mantenimiento extends Controller {
 			// Mostramos vista para login.
 			$vista = View::factory('mantenimiento_login');
 
-			// Informacion general.
+			// Información general.
 			$vista->assign('error', FALSE);
 			$vista->assign('nick', '');
 			$vista->assign('error_nick', FALSE);
@@ -90,7 +90,7 @@ class Base_Controller_Mantenimiento extends Controller {
 				switch ($rst)
 				{
 					case -1: // Datos inválidos.
-						$vista->assign('error', 'Los datos introducidos son inválidos.');
+						$vista->assign('error', __('Los datos introducidos son inválidos.', FALSE));
 						$vista->assign('error_nick', TRUE);
 						$vista->assign('error_password', TRUE);
 						break;
@@ -104,17 +104,17 @@ class Base_Controller_Mantenimiento extends Controller {
 						// Verifico si tiene advertencias si visualizar.
 						if ($model_usuario->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO) > 0)
 						{
-							add_flash_message(FLASH_INFO, 'Tienes advertencias nuevas. Puedes verlas desde <a href="'.SITE_URL.'/cuenta/avisos/">aquí</a>.');
+							add_flash_message(FLASH_INFO, sprintf(__('Tienes advertencias nuevas. Puedes verlas desde <a href="%s/cuenta/avisos/">aquí</a>.', FALSE), SITE_URL));
 						}
 
 						// Envío mensaje de bienvenida.
-						add_flash_message(FLASH_SUCCESS, 'Bienvenido.');
+						add_flash_message(FLASH_SUCCESS, __('Bienvenido.', FALSE));
 
 						// Lo envío a la portada.
 						Request::redirect('/', FALSE, TRUE);
 						break;
 					case Model_Usuario::ESTADO_PENDIENTE:  // Cuenta por activar.
-						$vista->assign('error', 'La cuenta no ha sido validada aún. Si no recibiste el correo de activación haz click <a href="'.SITE_URL.'/usuario/pedir_activacion/">aquí</a>');
+						$vista->assign('error', sprintf(__('La cuenta no ha sido validada aún. Si no recibiste el correo de activación haz click <a href="%s/usuario/pedir_activacion/">aquí</a>', FALSE), SITE_URL));
 						break;
 					case Model_Usuario::ESTADO_SUSPENDIDA: // Cuenta suspendida.
 						// Obtenemos la suspensión.
@@ -161,7 +161,7 @@ class Base_Controller_Mantenimiento extends Controller {
 	public function action_salir()
 	{
 		Usuario::logout();
-		add_flash_message(FLASH_SUCCESS, 'Has cerrado sesión correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Has cerrado sesión correctamente.', FALSE));
 		Request::redirect('/mantenimiento/');
 	}
 }

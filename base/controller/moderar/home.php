@@ -40,14 +40,14 @@ class Base_Controller_Moderar_Home extends Controller {
 		// Verifico esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
 			Request::redirect('/usuario/login', TRUE);
 		}
 
-		// Verifico si tiene algun permiso.
+		// Verifico si tiene algún permiso.
 		if ( ! self::permisos_acceso())
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permisos para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -60,7 +60,7 @@ class Base_Controller_Moderar_Home extends Controller {
 	 */
 	public static function permisos_acceso()
 	{
-		// Verifico si tiene algun permiso.
+		// Verifico si tiene algún permiso.
 		$permisos = array(
 			Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS,
 			Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS,
@@ -76,7 +76,7 @@ class Base_Controller_Moderar_Home extends Controller {
 	}
 
 	/**
-	 * Cantidad de elementos que están esperando supervición.
+	 * Cantidad de elementos que están esperando supervisión.
 	 * @return int
 	 */
 	public static function cantidad_pendiente()
@@ -138,59 +138,59 @@ class Base_Controller_Moderar_Home extends Controller {
 		$menu = new Menu('moderar_menu');
 
 		// Portada.
-		$menu->group_set('General', 'general');
-		$menu->element_set('Inicio', '/moderar/', 'index', 'general');
+		$menu->group_set(__('General', FALSE), 'general');
+		$menu->element_set(__('Inicio', FALSE), '/moderar/', 'index', 'general');
 
 		// Denuncias.
-		$menu->group_set('Denuncias', 'denuncias');
+		$menu->group_set(__('Denuncias', FALSE), 'denuncias');
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
 		{
-			$menu->element_set('Posts', '/moderar/denuncias/posts/', 'posts', 'denuncias', Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE));
+			$menu->element_set(__('Posts', FALSE), '/moderar/denuncias/posts/', 'posts', 'denuncias', Model_Post_Denuncia::cantidad(Model_Post_Denuncia::ESTADO_PENDIENTE));
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			$menu->element_set('Fotos', '/moderar/denuncias/fotos/', 'fotos', 'denuncias', Model_Foto_Denuncia::cantidad(Model_Foto_Denuncia::ESTADO_PENDIENTE));
+			$menu->element_set(__('Fotos', FALSE), '/moderar/denuncias/fotos/', 'fotos', 'denuncias', Model_Foto_Denuncia::cantidad(Model_Foto_Denuncia::ESTADO_PENDIENTE));
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			$menu->element_set('Usuarios', '/moderar/denuncias/usuarios/', 'usuarios', 'denuncias', Model_Usuario_Denuncia::cantidad(Model_Usuario_Denuncia::ESTADO_PENDIENTE));
+			$menu->element_set(__('Usuarios', FALSE), '/moderar/denuncias/usuarios/', 'usuarios', 'denuncias', Model_Usuario_Denuncia::cantidad(Model_Usuario_Denuncia::ESTADO_PENDIENTE));
 		}
 
 		// Gestión
-		$menu->group_set('Gestión', 'gestion');
+		$menu->group_set(__('Gestión', FALSE), 'gestion');
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
 		{
-			$menu->element_set('Usuarios', '/moderar/gestion/usuarios/', 'usuarios', 'gestion', Model_Usuario_Suspension::cantidad());
+			$menu->element_set(__('Usuarios', FALSE), '/moderar/gestion/usuarios/', 'usuarios', 'gestion', Model_Usuario_Suspension::cantidad());
 		}
-		$menu->element_set('Buscador contenido', '/moderar/gestion/buscador/', 'buscador', 'gestion');
+		$menu->element_set(__('Buscador contenido', FALSE), '/moderar/gestion/buscador/', 'buscador', 'gestion');
 
 		// Papelera.
-		$menu->group_set('Papelera de reciclaje', 'papelera');
+		$menu->group_set(__('Papelera de reciclaje', FALSE), 'papelera');
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
 		{
-			$menu->element_set('Posts eliminados', '/moderar/papelera/posts/', 'posts', 'papelera', Model_Post::s_cantidad(Model_Post::ESTADO_PAPELERA));
+			$menu->element_set(__('Posts eliminados', FALSE), '/moderar/papelera/posts/', 'posts', 'papelera', Model_Post::s_cantidad(Model_Post::ESTADO_PAPELERA));
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			$menu->element_set('Fotos eliminadas', '/moderar/papelera/fotos/', 'fotos', 'papelera', Model_Foto::s_cantidad(Model_Foto::ESTADO_PAPELERA));
+			$menu->element_set(__('Fotos eliminadas', FALSE), '/moderar/papelera/fotos/', 'fotos', 'papelera', Model_Foto::s_cantidad(Model_Foto::ESTADO_PAPELERA));
 		}
 
 		// Contenido desaprobado.
-		$menu->group_set('Contenido desaprobado', 'desaprobado');
+		$menu->group_set(__('Contenido desaprobado', FALSE), 'desaprobado');
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
 		{
-			$menu->element_set('Posts', '/moderar/desaprobado/posts/', 'posts', 'desaprobado', Model_Post::s_cantidad(Model_Post::ESTADO_PENDIENTE) + Model_Post::s_cantidad(Model_Post::ESTADO_RECHAZADO));
+			$menu->element_set(__('Posts', FALSE), '/moderar/desaprobado/posts/', 'posts', 'desaprobado', Model_Post::s_cantidad(Model_Post::ESTADO_PENDIENTE) + Model_Post::s_cantidad(Model_Post::ESTADO_RECHAZADO));
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO))
 		{
-			$menu->element_set('Comentarios', '/moderar/desaprobado/comentarios/', 'comentarios', 'desaprobado', Model_Comentario::cantidad(Model_Comentario::ESTADO_OCULTO));
+			$menu->element_set(__('Comentarios', FALSE), '/moderar/desaprobado/comentarios/', 'comentarios', 'desaprobado', Model_Comentario::cantidad(Model_Comentario::ESTADO_OCULTO));
 		}
 
 		// Envio respuesta.
@@ -214,7 +214,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		// Cargamos la portada.
 		$portada = View::factory('moderar/home/index');
 
-		// Listado de sucesos de moderacion.
+		// Listado de sucesos de moderación.
 		//TODO: IMPLEMENTAR.
 		$portada->assign('sucesos', array());
 
@@ -301,7 +301,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla moderacion.
+		// Cargamos plantilla moderación.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $portada->parse());
 		unset($portada);

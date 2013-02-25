@@ -47,7 +47,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Verifico los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permisos para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -84,10 +84,10 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 		// TODO: Resumen de temas, plugins y widget's (todas las actualizaciones).
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -97,6 +97,10 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
+	/**
+	 * Obtenemos el listado de actualizaciones del sistema que se encuentran descargadas.
+	 * @return array Listado de actualizaciones descargadas.
+	 */
 	protected function actualizaciones_sistema_descargadas()
 	{
 		// Verifico existencia del directorio.
@@ -108,7 +112,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargo listado de elementos.
 		$elementos = scandir(CACHE_PATH.DS.'updates'.DS);
 
-		// Obtengo listado de extensiones diponibles.
+		// Obtengo listado de extensiones disponibles.
 		$extesiones = array_map('Update_Utils::compresion2extension', Update_Compresion::get_list());
 
 		$rst = array();
@@ -148,10 +152,10 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$vista->assign('plugins', $plugins);
 		unset($plugins);
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -174,28 +178,28 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$p = $pm->get($plugin);
 		if ( ! is_object($p))
 		{
-			add_flash_message(FLASH_ERROR, 'El plugin no existe.');
+			add_flash_message(FLASH_ERROR, __('El plugin no existe.', FALSE));
 			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Verifico su estado.
 		if ($p->estado())
 		{
-			add_flash_message(FLASH_ERROR, 'El plugin ya se encuentra activo.');
+			add_flash_message(FLASH_ERROR, __('El plugin ya se encuentra activo.', FALSE));
 			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Verifico posibilidad de aplicar.
 		if ( ! $p->check_support())
 		{
-			add_flash_message(FLASH_ERROR, 'El plugin no puede ser instalado por la existencia de incompatibilidades.');
+			add_flash_message(FLASH_ERROR, __('El plugin no puede ser instalado por la existencia de incompatibilidades.', FALSE));
 			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Realizamos la instalación.
 		$p->install();
 
-		add_flash_message(FLASH_SUCCESS, 'El plugin se ha instalado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('El plugin se ha instalado correctamente.', FALSE));
 		Request::redirect('/admin/sistema/plugins');
 	}
 
@@ -212,21 +216,21 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$p = $pm->get($plugin);
 		if ( ! is_object($p))
 		{
-			add_flash_message(FLASH_ERROR, 'El plugin no existe.');
+			add_flash_message(FLASH_ERROR, __('El plugin no existe.', FALSE));
 			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Verifico su estado.
 		if ( ! $p->estado())
 		{
-			add_flash_message(FLASH_ERROR, 'El plugin ya se encuentra desactivado.');
+			add_flash_message(FLASH_ERROR, __('El plugin ya se encuentra desactivado.', FALSE));
 			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Realizamos la desinstalación.
 		$p->remove();
 
-		add_flash_message(FLASH_SUCCESS, 'El plugin se ha desinstalado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('El plugin se ha desinstalado correctamente.', FALSE));
 		Request::redirect('/admin/sistema/plugins');
 	}
 
@@ -243,14 +247,14 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$p = $pm->get($plugin);
 		if ( ! is_object($p))
 		{
-			add_flash_message(FLASH_ERROR, 'El plugin no existe.');
+			add_flash_message(FLASH_ERROR, __('El plugin no existe.', FALSE));
 			Request::redirect('/admin/sistema/plugins');
 		}
 
 		// Verifico su estado.
 		if ($p->estado())
 		{
-			add_flash_message(FLASH_ERROR, 'El plugin se encuentra activado, no se puede borrar.');
+			add_flash_message(FLASH_ERROR, __('El plugin se encuentra activado, no se puede borrar.', FALSE));
 			Request::redirect('/admin/sistema/plugins');
 		}
 
@@ -258,7 +262,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		Update_Utils::unlink(Plugin_Manager::nombre_as_path($plugin));
 		Plugin_Manager::get_instance()->regenerar_lista();
 
-		add_flash_message(FLASH_SUCCESS, 'El plugin se ha borrado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('El plugin se ha borrado correctamente.', FALSE));
 		Request::redirect('/admin/sistema/plugins');
 	}
 
@@ -294,20 +298,20 @@ class Base_Controller_Admin_Sistema extends Controller {
 					{
 						case UPLOAD_ERR_INI_SIZE:
 						case UPLOAD_ERR_FORM_SIZE:
-							$vista->assign('error_carga', 'El tamaño del archivo es incorrecto.');
+							$vista->assign('error_carga', __('El tamaño del archivo es incorrecto.', FALSE));
 							break;
 						case UPLOAD_ERR_PARTIAL:
-							$vista->assign('error_carga', 'Los datos enviados están corruptos.');
+							$vista->assign('error_carga', __('Los datos enviados están corruptos.', FALSE));
 							break;
 						case UPLOAD_ERR_NO_FILE:
-							$vista->assign('error_carga', 'No has seleccionado un archivo.');
+							$vista->assign('error_carga', __('No has seleccionado un archivo.', FALSE));
 							break;
 						case UPLOAD_ERR_NO_TMP_DIR:
 						case UPLOAD_ERR_CANT_WRITE:
-							$vista->assign('error_carga', 'Error interno al cargar el archivo. Reintente. Si el error persiste contacte al administrador.');
+							$vista->assign('error_carga', __('Error interno al cargar el archivo. Reintente. Si el error persiste contacte al administrador.', FALSE));
 							break;
 						case UPLOAD_ERR_EXTENSION:
-							$vista->assign('error_carga', 'La configuración del servidor no permite archivo con esa extensión.');
+							$vista->assign('error_carga', __('La configuración del servidor no permite archivo con esa extensión.', FALSE));
 							break;
 					}
 				}
@@ -320,14 +324,14 @@ class Base_Controller_Admin_Sistema extends Controller {
 					if ( ! in_array(Update_Utils::mime2compresor($file['type']), Update_Compresion::get_list()))
 					{
 						$error = TRUE;
-						$vista->assign('error_carga', 'El tipo de archivo no es soportado. Verifique la configuración del servidor.');
+						$vista->assign('error_carga', __('El tipo de archivo no es soportado. Verifique la configuración del servidor.', FALSE));
 					}
 				}
 			}
 			else
 			{
 				$error = TRUE;
-				$vista->assign('error_carga', 'No has seleccionado un archivo.');
+				$vista->assign('error_carga', __('No has seleccionado un archivo.', FALSE));
 			}
 
 			// Verifico el contenido de los datos.
@@ -348,7 +352,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 					// Informo del error.
 					$error = TRUE;
-					$vista->assign('error_carga', 'No se pudo descomprimir el archivo. Compruebe que sea correcto.');
+					$vista->assign('error_carga', __('No se pudo descomprimir el archivo. Compruebe que sea correcto.', FALSE));
 				}
 				else
 				{
@@ -361,7 +365,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 						// Informo del error.
 						$error = TRUE;
-						$vista->assign('error_carga', 'El paquete no es un plugin válido.');
+						$vista->assign('error_carga', __('El paquete no es un plugin válido.', FALSE));
 					}
 					else
 					{
@@ -378,11 +382,11 @@ class Base_Controller_Admin_Sistema extends Controller {
 							Update_Utils::unlink($file['tmp_name']);
 							Update_Utils::unlink($tmp_dir);
 
-							//TODO: Efectuar actualizacion.
+							//TODO: Efectuar actualización.
 
 							// Informo del error.
 							$error = TRUE;
-							$vista->assign('error_carga', 'El plugin no puede ser importado porque ya existe.');
+							$vista->assign('error_carga', __('El plugin no puede ser importado porque ya existe.', FALSE));
 						}
 						else
 						{
@@ -429,7 +433,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 							Update_Utils::unlink($file['tmp_name']);
 
 							// Informo resultado.
-							add_flash_message(FLASH_SUCCESS, 'El plugin se importó correctamente.');
+							add_flash_message(FLASH_SUCCESS, __('El plugin se importó correctamente.', FALSE));
 
 							// Redireccionamos.
 							Request::redirect('/admin/sistema/plugins');
@@ -445,10 +449,10 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Directorio de los plugins.
 		$vista->assign('plugin_dir', DS.PLUGINS_PATH.DS);
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -515,20 +519,20 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Verificamos exista.
 		if ( ! in_array($tema, Theme::lista()))
 		{
-			add_flash_message(FLASH_ERROR, 'El tema seleccionado para previsualizar es incorrecto.');
+			add_flash_message(FLASH_ERROR, __('El tema seleccionado para previsualizar es incorrecto.', FALSE));
 			Request::redirect('/admin/sistema/temas');
 		}
 
 		// Verifico no sea actual.
 		if ($tema == Theme::actual(TRUE) || $tema == Theme::actual())
 		{
-			add_flash_message(FLASH_ERROR, 'El tema seleccionado para previsualizar es el actual.');
+			add_flash_message(FLASH_ERROR, __('El tema seleccionado para previsualizar es el actual.', FALSE));
 			Request::redirect('/admin/sistema/temas');
 		}
 
 		// Activo el tema.
 		$_SESSION['preview-theme'] = $tema;
-		add_flash_message(FLASH_SUCCESS, 'El tema se a colocado para previsualizar correctamente');
+		add_flash_message(FLASH_SUCCESS, __('El tema se a colocado para previsualizar correctamente', FALSE));
 		Request::redirect('/admin/sistema/temas');
 	}
 
@@ -543,11 +547,11 @@ class Base_Controller_Admin_Sistema extends Controller {
 			// Quitamos la vista previa.
 			unset($_SESSION['preview-theme']);
 
-			add_flash_message(FLASH_SUCCESS, 'Vista previa terminada correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('Vista previa terminada correctamente.', FALSE));
 		}
 		else
 		{
-			add_flash_message(FLASH_ERROR, 'No hay vista previa para deshabilitar.');
+			add_flash_message(FLASH_ERROR, __('No hay vista previa para deshabilitar.', FALSE));
 		}
 		Request::redirect('/admin/sistema/temas');
 	}
@@ -564,14 +568,14 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Verifico no sea el actual.
 		if ($tema == $base)
 		{
-			add_flash_message(FLASH_ERROR, 'El tema ya es el predeterminado.');
+			add_flash_message(FLASH_ERROR, __('El tema ya es el predeterminado.', FALSE));
 			Request::redirect('/admin/sistema/temas');
 		}
 
 		// Verificamos exista.
 		if ( ! in_array($tema, Theme::lista()))
 		{
-			add_flash_message(FLASH_ERROR, 'El tema seleccionado para setear como predeterminado es incorrecto.');
+			add_flash_message(FLASH_ERROR, __('El tema seleccionado para setear como predeterminado es incorrecto.', FALSE));
 			Request::redirect('/admin/sistema/temas');
 		}
 
@@ -584,7 +588,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Activo tema.
 		Theme::setear_tema($tema);
 
-		add_flash_message(FLASH_SUCCESS, 'El tema se ha seteado como predeterminado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('El tema se ha seteado como predeterminado correctamente.', FALSE));
 		Request::redirect('/admin/sistema/temas');
 	}
 
@@ -597,14 +601,14 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Verificamos exista.
 		if ( ! in_array($tema, Theme::lista()))
 		{
-			add_flash_message(FLASH_ERROR, 'El tema seleccionado para eliminar es incorrecto.');
+			add_flash_message(FLASH_ERROR, __('El tema seleccionado para eliminar es incorrecto.', FALSE));
 			Request::redirect('/admin/sistema/temas');
 		}
 
 		// Verifico no sea el actual ni el de previsualizacion.
 		if ($tema == Theme::actual(TRUE) || $tema == Theme::actual())
 		{
-			add_flash_message(FLASH_ERROR, 'El tema no se puede borrar por estar en uso.');
+			add_flash_message(FLASH_ERROR, __('El tema no se puede borrar por estar en uso.', FALSE));
 			Request::redirect('/admin/sistema/temas');
 		}
 
@@ -614,7 +618,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Refrescamos la cache.
 		Theme::lista(TRUE);
 
-		add_flash_message(FLASH_SUCCESS, 'El tema se ha eliminado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('El tema se ha eliminado correctamente.', FALSE));
 		Request::redirect('/admin/sistema/temas');
 	}
 
@@ -647,20 +651,20 @@ class Base_Controller_Admin_Sistema extends Controller {
 					{
 						case UPLOAD_ERR_INI_SIZE:
 						case UPLOAD_ERR_FORM_SIZE:
-							$vista->assign('error_carga', 'El tamaño del archivo es incorrecto.');
+							$vista->assign('error_carga', __('El tamaño del archivo es incorrecto.', FALSE));
 							break;
 						case UPLOAD_ERR_PARTIAL:
-							$vista->assign('error_carga', 'Los datos enviados están corruptos.');
+							$vista->assign('error_carga', __('Los datos enviados están corruptos.', FALSE));
 							break;
 						case UPLOAD_ERR_NO_FILE:
-							$vista->assign('error_carga', 'No has seleccionado un archivo.');
+							$vista->assign('error_carga', __('No has seleccionado un archivo.', FALSE));
 							break;
 						case UPLOAD_ERR_NO_TMP_DIR:
 						case UPLOAD_ERR_CANT_WRITE:
-							$vista->assign('error_carga', 'Error interno al cargar el archivo. Reintente. Si el error persiste contacte al administrador.');
+							$vista->assign('error_carga', __('Error interno al cargar el archivo. Reintente. Si el error persiste contacte al administrador.', FALSE));
 							break;
 						case UPLOAD_ERR_EXTENSION:
-							$vista->assign('error_carga', 'La configuración del servidor no permite archivo con esa extensión.');
+							$vista->assign('error_carga', __('La configuración del servidor no permite archivo con esa extensión.', FALSE));
 							break;
 					}
 				}
@@ -673,14 +677,14 @@ class Base_Controller_Admin_Sistema extends Controller {
 					if ( ! in_array(Update_Utils::mime2compresor($file['type']), Update_Compresion::get_list()))
 					{
 						$error = TRUE;
-						$vista->assign('error_carga', 'El tipo de archivo no es soportado. Verifique la configuración del servidor.');
+						$vista->assign('error_carga', __('El tipo de archivo no es soportado. Verifique la configuración del servidor.', FALSE));
 					}
 				}
 			}
 			else
 			{
 				$error = TRUE;
-				$vista->assign('error_carga', 'No has seleccionado un archivo.');
+				$vista->assign('error_carga', __('No has seleccionado un archivo.', FALSE));
 			}
 
 			// Verifico el contenido de los datos.
@@ -701,7 +705,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 					// Informo del error.
 					$error = TRUE;
-					$vista->assign('error_carga', 'No se pudo descomprimir el archivo. Compruebe que sea correcto.');
+					$vista->assign('error_carga', __('No se pudo descomprimir el archivo. Compruebe que sea correcto.', FALSE));
 				}
 				else
 				{
@@ -728,7 +732,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 							// Informo del error.
 							$error = TRUE;
-							$vista->assign('error_carga', 'El archivo de descripción del tema es inválido.');
+							$vista->assign('error_carga', __('El archivo de descripción del tema es inválido.', FALSE));
 						}
 					}
 					else
@@ -739,7 +743,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 						// Informo del error.
 						$error = TRUE;
-						$vista->assign('error_carga', 'No se trata de un tema válido.');
+						$vista->assign('error_carga', __('No se trata de un tema válido.', FALSE));
 					}
 				}
 			}
@@ -762,7 +766,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 						Update_Utils::unlink($tmp_dir);
 
 						// Informo del error.
-						$vista->assign('error_carga', '1No se pudo alojar el tema en su lugar correspondiente. Verifica los permisos del directorio de temas.');
+						$vista->assign('error_carga', __('No se pudo alojar el tema en su lugar correspondiente. Verifica los permisos del directorio de temas.', FALSE));
 						$error = TRUE;
 					}
 				}
@@ -780,7 +784,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 					Update_Utils::unlink($target_path);
 
 					// Informo del error.
-					$vista->assign('error_carga', 'No se pudo alojar el tema en su lugar correspondiente. Verifica los permisos del directorio de temas.');
+					$vista->assign('error_carga', __('No se pudo alojar el tema en su lugar correspondiente. Verifica los permisos del directorio de temas.', FALSE));
 				}
 				else
 				{
@@ -789,7 +793,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 					Update_Utils::unlink($tmp_dir);
 
 					// Informo resultado.
-					add_flash_message(FLASH_SUCCESS, 'El tema se instaló correctamente.');
+					add_flash_message(FLASH_SUCCESS, __('El tema se instaló correctamente.', FALSE));
 
 					// Redireccionamos.
 					Request::redirect('/admin/sistema/temas');
@@ -797,10 +801,10 @@ class Base_Controller_Admin_Sistema extends Controller {
 			}
 		}
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -842,7 +846,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 						} catch (Database_Exception $e) {}
 					}
 
-					add_flash_message(FLASH_SUCCESS, 'Optimización de la base de datos realizada correctamente.');
+					add_flash_message(FLASH_SUCCESS, __('Optimización de la base de datos realizada correctamente.', FALSE));
 					break;
 				case 'cache': // Eliminamos cache.
 
@@ -856,14 +860,14 @@ class Base_Controller_Admin_Sistema extends Controller {
 					}
 
 					// Informo el resultado.
-					add_flash_message(FLASH_SUCCESS, 'Limpieza de la cache realizada correctamente.');
+					add_flash_message(FLASH_SUCCESS, __('Limpieza de la cache realizada correctamente.', FALSE));
 					break;
-				case 'compress-logs': // Comprimimos log's viajos.
+				case 'compress-logs': // Comprimimos log's viejos.
 
 					// Verifico existencia de la compresión.
 					if ( ! function_exists('gzcompress'))
 					{
-						add_flash_message(FLASH_ERROR, 'No se puede comprimir los log\'s ya que no se encuentra disponible la libreria ZLIB.');
+						add_flash_message(FLASH_ERROR, __('No se puede comprimir los log\'s ya que no se encuentra disponible la biblioteca ZLIB.', FALSE));
 						break;
 					}
 
@@ -871,7 +875,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 					Log::compress_old();
 
 					// Informo el resultado.
-					add_flash_message(FLASH_SUCCESS, 'Compresión de log\'s realizada correctamente.');
+					add_flash_message(FLASH_SUCCESS, __('Compresión de log\'s realizada correctamente.', FALSE));
 					break;
 			}
 		}
@@ -921,7 +925,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 				Log::info('Error obteniendo actualizaciones: respuesta inesperada del servidor.');
 
 				// Informo.
-				add_flash_message(FLASH_ERROR, 'Error obteniendo actualizaciones:  respuesta inesperada del servidor.');
+				add_flash_message(FLASH_ERROR, __('Error obteniendo actualizaciones:  respuesta inesperada del servidor.', FALSE));
 
 				// Vuelvo a la portada.
 				Request::redirect('/admin/sistema/');
@@ -933,7 +937,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			Log::info('Error obteniendo actualizaciones: '.$e->getMessage());
 
 			// Informo.
-			add_flash_message(FLASH_ERROR, 'Error obteniendo actualizaciones: '.$e->getMessage());
+			add_flash_message(FLASH_ERROR, sprintf(__('Error obteniendo actualizaciones: %s', FALSE), $e->getMessage()));
 
 			// Vuelvo a la portada.
 			Request::redirect('/admin/sistema/');
@@ -1005,7 +1009,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			// Verifico existencia.
 			if ( ! is_array($upd_list))
 			{
-				add_flash_message(FLASH_ERROR, 'La versión a la que quiere actualizar no se encuentra disponible.');
+				add_flash_message(FLASH_ERROR, __('La versión a la que quiere actualizar no se encuentra disponible.', FALSE));
 				Request::redirect('/admin/sistema/');
 			}
 
@@ -1018,7 +1022,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			$descargar = $upd_list[Update_Utils::compresion2extension($posibles[0])];
 			unset($remotas, $locales);
 
-			// Obtemgo el nombre del archivo temporal.
+			// Obtengo el nombre del archivo temporal.
 			$tmp_file = sys_get_temp_dir().DS.uniqid();
 
 			// Trato de descargar.
@@ -1029,7 +1033,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			unlink($tmp_file);
 
 			// Informamos resultado.
-			add_flash_message(FLASH_SUCCESS, 'La descarga de la actualización se ha realizado correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('La descarga de la actualización se ha realizado correctamente.', FALSE));
 			Request::redirect('/admin/sistema/');
 		}
 
@@ -1088,7 +1092,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		Utils::configuracion()->update_sistema_last_check = NULL;
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, 'Actualización realizada correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Actualización realizada correctamente.', FALSE));
 		Request::redirect('/admin/sistema/');
 	}
 
@@ -1168,5 +1172,82 @@ class Base_Controller_Admin_Sistema extends Controller {
 		}
 
 		return $error_global;
+	}
+
+	/**
+	 * Visualización y edición de traducciones.
+	 */
+	public function action_traducciones($idioma)
+	{
+		// Cargo idioma.
+		if ( ! empty($idioma))
+		{
+			// Verifico existencia.
+			if ( ! preg_match('/^[a-z]{3}$/', $idioma))
+			{
+				add_flash_message(__('El idioma que quieres ver no existe.', FALSE));
+				Request::redirect('/admin/sistema/traducciones/');
+			}
+
+			// Cargo listado de traducciones disponibles.
+			$traducciones = $this->listado_traducciones();
+
+			// Verifico se quiera editar una traducción existente.
+			if ( ! in_array($idioma, $traducciones))
+			{
+				add_flash_message(__('El idioma que quieres ver no existe.', FALSE));
+				Request::redirect('/admin/sistema/traducciones/');
+			}
+
+			// Cargo la vista.
+			$vista = View::factory('/admin/sistema/editar_traduccion/');
+
+			// Asigno idioma a la vista.
+			$vista->assign('idioma', $idioma);
+
+			// Obtengo listado de traducciones.
+			$lang = configuracion_obtener(APP_BASE.DS.'traducciones'.DS.$idioma.'.php');
+
+			// Lo asigno a la vista.
+			$vista->assign('lang', $lang);
+		}
+		else
+		{
+			// Cargo la vista.
+			$vista = View::factory('/admin/sistema/traducciones/');
+
+			// Cargo listado de traducciones disponibles.
+			$traducciones = $this->listado_traducciones();
+
+			// Asigno a la vista.
+			$vista->assign('traducciones', $traducciones);
+		}
+
+
+		// Seteamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.traducciones'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	protected function listado_traducciones()
+	{
+		// Obtengo listado de archivos.
+		$archivos = glob(APP_BASE.DS.'traducciones'.DS.'*.php');
+
+		// Borro directorio y extensión.
+		foreach ($archivos as $k => $v)
+		{
+			$archivos[$k] = substr($v, strlen(APP_BASE.DS.'traducciones'.DS), -4);
+		}
+
+		return $archivos;
 	}
 }

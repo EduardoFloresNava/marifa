@@ -185,11 +185,11 @@ class Base_Controller_Buscador extends Controller {
 		$this->template->assign('contenido', $vista->parse());
 
 		// Título de la página.
-		$this->template->assign('title', 'Buscador');
+		$this->template->assign('title', __('Buscador', FALSE));
 	}
 
 	/**
-	 * Post con las mismas etiquetas que el selecionado.
+	 * Post con las mismas etiquetas que el seleccionado.
 	 * @param int $post ID del post a mostrar relacionados.
 	 * @param int $pagina Número de página a mostrar.
 	 */
@@ -269,7 +269,7 @@ class Base_Controller_Buscador extends Controller {
 		$this->template->assign('contenido', $vista->parse());
 
 		// Título de la página.
-		$this->template->assign('title_raw', 'Busqueda relacionada a \''.$model_post->titulo.'\' en ');
+		$this->template->assign('title_raw', sprintf(__('Búsqueda relacionada a \'%s\' en ', FALSE), $model_post->titulo));
 	}
 
 	/**
@@ -352,7 +352,7 @@ class Base_Controller_Buscador extends Controller {
 		$this->template->assign('contenido', $vista->parse());
 
 		// Título de la página.
-		$this->template->assign('title', 'Pin - #'.$etiqueta);
+		$this->template->assign('title', sprintf(__('Pin - #%s', FALSE), $etiqueta));
 	}
 
 }

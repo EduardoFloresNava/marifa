@@ -40,14 +40,14 @@ class Base_Controller_Admin_Home extends Controller {
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
 			Request::redirect('/usuario/login', TRUE);
 		}
 
 		// Verifico si tiene alguno de los permisos solicitados.
 		if ( ! self::permisos_acceso())
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permisos para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -81,45 +81,46 @@ class Base_Controller_Admin_Home extends Controller {
 		$menu = new Menu('admin_menu');
 
 		// Información general.
-		$menu->group_set('General', 'general');
-		$menu->element_set('Inicio', '/admin/', 'index', 'general');
-		$menu->element_set('Log\'s', '/admin/home/logs/', 'logs', 'general');
+		$menu->group_set(__('General', FALSE), 'general');
+		$menu->element_set(__('Inicio', FALSE), '/admin/', 'index', 'general');
+		$menu->element_set(__('Log\'s', FALSE), '/admin/home/logs/', 'logs', 'general');
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
 		{
 			// Sistema.
-			$menu->group_set('Sistema', 'sistema');
-			$menu->element_set('Información', '/admin/sistema/', 'informacion', 'sistema');
-			$menu->element_set('Temas', '/admin/sistema/temas/', 'temas', 'sistema');
-			$menu->element_set('Plugins', '/admin/sistema/plugins/', 'plugins', 'sistema');
-			$menu->element_set('Optimizaciones', '/admin/sistema/optimizar/', 'optimizar', 'sistema');
+			$menu->group_set(__('Sistema', FALSE), 'sistema');
+			$menu->element_set(__('Información', FALSE), '/admin/sistema/', 'informacion', 'sistema');
+			$menu->element_set(__('Temas', FALSE), '/admin/sistema/temas/', 'temas', 'sistema');
+			$menu->element_set(__('Plugins', FALSE), '/admin/sistema/plugins/', 'plugins', 'sistema');
+			$menu->element_set(__('Optimizaciones', FALSE), '/admin/sistema/optimizar/', 'optimizar', 'sistema');
+			$menu->element_set(__('Traducciones', FALSE), '/admin/sistema/traducciones/', 'traducciones', 'sistema');
 
 			// Configuraciones.
-			$menu->group_set('Configuración', 'configuracion');
-			$menu->element_set('Configuración', '/admin/configuracion/', 'configuracion', 'configuracion');
-			$menu->element_set('SEO', '/admin/configuracion/seo/', 'seo', 'configuracion');
-			$menu->element_set('Modo Mantenimiento', '/admin/configuracion/mantenimiento/', 'mantenimiento', 'configuracion');
-			$menu->element_set('Correo', '/admin/configuracion/correo/', 'correo', 'configuracion');
-			$menu->element_set('Base de Datos', '/admin/configuracion/bd/', 'bd', 'configuracion');
+			$menu->group_set(__('Configuración', FALSE), 'configuracion');
+			$menu->element_set(__('Configuración', FALSE), '/admin/configuracion/', 'configuracion', 'configuracion');
+			$menu->element_set(__('SEO', FALSE), '/admin/configuracion/seo/', 'seo', 'configuracion');
+			$menu->element_set(__('Modo Mantenimiento', FALSE), '/admin/configuracion/mantenimiento/', 'mantenimiento', 'configuracion');
+			$menu->element_set(__('Correo', FALSE), '/admin/configuracion/correo/', 'correo', 'configuracion');
+			$menu->element_set(__('Base de Datos', FALSE), '/admin/configuracion/bd/', 'bd', 'configuracion');
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
 		{
-			$menu->group_set('Contenido', 'contenido');
-			$menu->element_set('Informe contenido', '/admin/contenido/', 'index', 'contenido');
-			$menu->element_set('Posts', '/admin/contenido/posts/', 'posts', 'contenido');
-			$menu->element_set('Fotos', '/admin/contenido/fotos/', 'fotos', 'contenido');
-			$menu->element_set('Categorías', '/admin/contenido/categorias/', 'categorias', 'contenido');
-			$menu->element_set('Noticias', '/admin/contenido/noticias/', 'noticias', 'contenido');
+			$menu->group_set(__('Contenido', FALSE), 'contenido');
+			$menu->element_set(__('Informe contenido', FALSE), '/admin/contenido/', 'index', 'contenido');
+			$menu->element_set(__('Posts', FALSE), '/admin/contenido/posts/', 'posts', 'contenido');
+			$menu->element_set(__('Fotos', FALSE), '/admin/contenido/fotos/', 'fotos', 'contenido');
+			$menu->element_set(__('Categorías', FALSE), '/admin/contenido/categorias/', 'categorias', 'contenido');
+			$menu->element_set(__('Noticias', FALSE), '/admin/contenido/noticias/', 'noticias', 'contenido');
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_ADMINISTRAR))
 		{
-			$menu->group_set('Usuarios', 'usuarios');
-			$menu->element_set('General', '/admin/usuario/', 'usuario', 'usuarios');
-			$menu->element_set('Sesiones', '/admin/usuario/sesiones/', 'sesiones', 'usuarios');
-			$menu->element_set('Rangos', '/admin/usuario/rangos/', 'rangos', 'usuarios');
-			$menu->element_set('Medallas', '/admin/usuario/medallas/', 'medallas', 'usuarios');
+			$menu->group_set(__('Usuarios', FALSE), 'usuarios');
+			$menu->element_set(__('General', FALSE), '/admin/usuario/', 'usuario', 'usuarios');
+			$menu->element_set(__('Sesiones', FALSE), '/admin/usuario/sesiones/', 'sesiones', 'usuarios');
+			$menu->element_set(__('Rangos', FALSE), '/admin/usuario/rangos/', 'rangos', 'usuarios');
+			$menu->element_set(__('Medallas', FALSE), '/admin/usuario/medallas/', 'medallas', 'usuarios');
 		}
 
 		// Envio respuesta.
@@ -145,7 +146,7 @@ class Base_Controller_Admin_Home extends Controller {
 		// Verifico driver SQL.
 		if (Database::get_instance() instanceof Database_Driver_Mysql)
 		{
-			add_flash_message(FLASH_INFO, '<strong>¡Importante!</strong> Se recomienda utilizar MySQLi como driver por cuestiones de rendimiento y seguridad. Para editar estas configuraciones haga click <a href="'.SITE_URL.'/admin/configuracion/bd">aquí</a>.');
+			add_flash_message(FLASH_INFO, sprintf(__('<strong>¡Importante!</strong> Se recomienda utilizar MySQLi como driver por cuestiones de rendimiento y seguridad. Para editar estas configuraciones haga click <a href="%s/admin/configuracion/bd">aquí</a>.', FALSE), SITE_URL));
 		}
 
 		// Ultimos usuarios.
@@ -162,6 +163,7 @@ class Base_Controller_Admin_Home extends Controller {
 		unset($usuarios, $model_usuario);
 
 		// Obtenemos versiones de Marifa.
+		// TODO: Hacer asincronico.
 		$rst = Cache::get_instance()->get('last_version');
 		if ( ! is_array($rst))
 		{
@@ -210,10 +212,10 @@ class Base_Controller_Admin_Home extends Controller {
 
 		$vista->assign('contenido_total', Model_Post::s_cantidad() + Model_Foto::s_cantidad());
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
@@ -241,7 +243,7 @@ class Base_Controller_Admin_Home extends Controller {
 			// Verifico si esta en la lista.
 			if ( ! in_array($file, $file_list))
 			{
-				add_flash_message(FLASH_ERROR, 'El archivo no es correcto.');
+				add_flash_message(FLASH_ERROR, __('El archivo no es correcto.', FALSE));
 				Request::redirect('/admin/home/logs/');
 			}
 
@@ -306,19 +308,19 @@ class Base_Controller_Admin_Home extends Controller {
 		// Verifico si esta en la lista.
 		if ( ! in_array($file, $file_list))
 		{
-			add_flash_message(FLASH_ERROR, 'El archivo de log que deseas eliminar no es correcto.');
+			add_flash_message(FLASH_ERROR, __('El archivo de log que deseas eliminar no es correcto.', FALSE));
 			Request::redirect('/admin/home/logs/');
 		}
 
 		// Elimino el archivo.
 		if (@unlink(APP_BASE.DS.'log'.DS.$file))
 		{
-			add_flash_message(FLASH_SUCCESS, 'El archivo de log se ha eliminado correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('El archivo de log se ha eliminado correctamente.', FALSE));
 			Request::redirect('/admin/home/logs/');
 		}
 		else
 		{
-			add_flash_message(FLASH_ERROR, 'Se ha producido un falla al borrar el archivo de logs. Verifique los permisos.');
+			add_flash_message(FLASH_ERROR, __('Se ha producido un falla al borrar el archivo de logs. Verifique los permisos.', FALSE));
 			Request::redirect('/admin/home/logs/');
 		}
 	}

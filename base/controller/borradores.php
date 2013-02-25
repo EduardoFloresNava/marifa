@@ -40,7 +40,7 @@ class Base_Controller_Borradores extends Controller {
 		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder ver los borradores.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ver los borradores.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -108,7 +108,7 @@ class Base_Controller_Borradores extends Controller {
 		$this->template->assign('contenido', $vista->parse());
 
 		// Título de la página.
-		$this->template->assign('title', 'Borradores');
+		$this->template->assign('title', __('Borradores', FALSE));
 	}
 
 }

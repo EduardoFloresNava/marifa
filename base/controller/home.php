@@ -42,14 +42,14 @@ class Base_Controller_Home extends Controller {
 		$menu = new Menu('submenu_home');
 
 		// Listado de elemento OFFLINE.
-		$menu->element_set('Inicio', '/', 'inicio');
-		$menu->element_set('Usuarios', '/home/usuarios/', 'usuarios');
-		$menu->element_set('Buscador', '/buscador/', 'buscador');
+		$menu->element_set(__('Inicio', FALSE), '/', 'inicio');
+		$menu->element_set(__('Usuarios', FALSE), '/home/usuarios/', 'usuarios');
+		$menu->element_set(__('Buscador', FALSE), '/buscador/', 'buscador');
 
 		// Listado de elementos ONLINE.
 		if (Usuario::is_login())
 		{
-			$menu->element_set('Agregar Post', '/post/nuevo/', 'nuevo');
+			$menu->element_set(__('Agregar Post', FALSE), '/post/nuevo/', 'nuevo');
 		}
 
 		return $menu->as_array($selected == NULL ? 'inicio' : $selected);
@@ -105,7 +105,7 @@ class Base_Controller_Home extends Controller {
 			// Verifico formato.
 			if ( ! preg_match('/[a-z0-9_]+/i', $categoria))
 			{
-				add_flash_message(FLASH_ERROR, 'La categoría no es correcta.');
+				add_flash_message(FLASH_ERROR, __('La categoría no es correcta.', FALSE));
 				Request::redirect('/post/'.$pagina);
 			}
 
@@ -115,7 +115,7 @@ class Base_Controller_Home extends Controller {
 			// Verifico sea válida.
 			if ( ! $model_categoria->existe_seo($categoria))
 			{
-				add_flash_message(FLASH_ERROR, 'La categoría no es correcta.');
+				add_flash_message(FLASH_ERROR, __('La categoría no es correcta.', FALSE));
 				Request::redirect('/post/'.$pagina);
 			}
 			else

@@ -51,7 +51,7 @@ class Base_Controller_Pages extends Controller {
 		$this->template->assign('contenido', $view->parse());
 
 		// Seteamos título.
-		$this->template->assign('title', 'Protocolo');
+		$this->template->assign('title', __('Protocolo', FALSE));
 	}
 
 	/**
@@ -72,7 +72,7 @@ class Base_Controller_Pages extends Controller {
 		$this->template->assign('contenido', $view->parse());
 
 		// Seteamos título.
-		$this->template->assign('title', 'T&eacute;rminos y condiciones');
+		$this->template->assign('title', __('Términos y condiciones', FALSE));
 	}
 
 	/**
@@ -93,7 +93,7 @@ class Base_Controller_Pages extends Controller {
 		$this->template->assign('contenido', $view->parse());
 
 		// Seteamos título.
-		$this->template->assign('title', 'Privacidad de datos');
+		$this->template->assign('title', __('Privacidad de datos', FALSE));
 	}
 
 	/**
@@ -114,6 +114,6 @@ class Base_Controller_Pages extends Controller {
 		$this->template->assign('contenido', $view->parse());
 
 		// Seteamos título.
-		$this->template->assign('title', 'Report Abuse - DMCA');
+		$this->template->assign('title', __('Report Abuse - DMCA', FALSE));
 	}
 }

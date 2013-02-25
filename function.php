@@ -155,6 +155,10 @@ function get_site_url()
  */
 function __($str, $echo = TRUE)
 {
+	global $lang;
+
+	$str = arr_get($lang, $str, $str);
+
 	if ($echo)
 	{
 		echo $str;

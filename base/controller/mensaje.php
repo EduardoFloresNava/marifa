@@ -57,9 +57,9 @@ class Base_Controller_Mensaje extends Controller {
 		$menu = new Menu('mensaje_menu');
 
 		// Agrego los elementos.
-		$menu->element_set('Bandeja de entrada', '/mensaje/', 'index', NULL, Usuario::usuario()->cantidad_mensajes_nuevos());
-		$menu->element_set('Bandeja de salida', '/mensaje/enviados/', 'enviados');
-		$menu->element_set('Enviar', '/mensaje/nuevo/', 'nuevo');
+		$menu->element_set(__('Bandeja de entrada', FALSE), '/mensaje/', 'index', NULL, Usuario::usuario()->cantidad_mensajes_nuevos());
+		$menu->element_set(__('Bandeja de salida', FALSE), '/mensaje/enviados/', 'enviados');
+		$menu->element_set(__('Enviar', FALSE), '/mensaje/nuevo/', 'nuevo');
 
 		// Devuelvo el menu parseado.
 		return $menu->as_array($activo);
@@ -72,7 +72,7 @@ class Base_Controller_Mensaje extends Controller {
 	public function action_index($pagina)
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Mensajes - Bandeja de entrada');
+		$this->template->assign('title', __('Mensajes - Bandeja de entrada'. FALSE));
 
 		// Cantidad de elementos por pagina.
 		$model_configuracion = new Model_Configuracion;
@@ -127,7 +127,7 @@ class Base_Controller_Mensaje extends Controller {
 	public function action_enviados($pagina)
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Mensajes - Bandeja de salida');
+		$this->template->assign('title', __('Mensajes - Bandeja de salida', FALSE));
 
 		// Cantidad de elementos por pagina.
 		$model_configuracion = new Model_Configuracion;
@@ -201,7 +201,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Mensajes - Enviar mensaje');
+		$this->template->assign('title', __('Mensajes - Enviar mensaje', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('mensaje/nuevo');
@@ -249,14 +249,14 @@ class Base_Controller_Mensaje extends Controller {
 			// Verificamos el asunto.
 			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/D', $asunto))
 			{
-				$view->assign('error_asunto', 'El formato del asunto no es correcto.');
+				$view->assign('error_asunto', __('El formato del asunto no es correcto.', FALSE));
 				$error = TRUE;
 			}
 
 			// Verificamos lista de usuarios.
 			if ( ! preg_match('/^(([a-zA-Z0-9áéíóúAÉÍÓÚÑñ ]{4,16})(,(\s)?)?){1,}$/D', $para))
 			{
-				$view->assign('error_para', 'No introdujo una lista de usuarios válida.');
+				$view->assign('error_para', __('No introdujo una lista de usuarios válida.', FALSE));
 				$error = TRUE;
 			}
 			else
@@ -281,7 +281,7 @@ class Base_Controller_Mensaje extends Controller {
 							$model_usuario->load_by_nick($u);
 							if ($model_usuario->id == Usuario::$usuario_id)
 							{
-								$view->assign('error_para', "No puedes enviarte mensaje a ti mismo.");
+								$view->assign('error_para', __('No puedes enviarte mensaje a ti mismo.', FALSE));
 								$error = TRUE;
 								break;
 							}
@@ -290,7 +290,7 @@ class Base_Controller_Mensaje extends Controller {
 						}
 						else
 						{
-							$view->assign('error_para', "El usuario '$u' no es válido.");
+							$view->assign('error_para', sprintf(__('El usuario \'%s\' no es válido.', FALSE), $u));
 							$error = TRUE;
 						}
 					}
@@ -302,7 +302,7 @@ class Base_Controller_Mensaje extends Controller {
 			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
 			if ( ! isset($contenido_clean{10}) || isset($contenido{600}))
 			{
-				$view->assign('error_contenido', 'El mensaje debe tener entre 20 y 600 caractéres.');
+				$view->assign('error_contenido', __('El mensaje debe tener entre 20 y 600 caracteres.', FALSE));
 				$error = TRUE;
 			}
 			unset($contenido_clean);
@@ -351,13 +351,13 @@ class Base_Controller_Mensaje extends Controller {
 					}
 					else
 					{
-						$errors[] = "Se produjo un error cuando se creaba enviaba el mensaje a '{$u->nick}'. Reintente.";
+						$errors[] = sprintf(__('Se produjo un error cuando se creaba enviaba el mensaje a \'%s\'. Reintente.', FALSE), $u->nick);
 					}
 				}
 
 				if (count($errors) == 0)
 				{
-					add_flash_message(FLASH_SUCCESS, 'Mensajes enviados correctamente.');
+					add_flash_message(FLASH_SUCCESS, __('Mensajes enviados correctamente.', FALSE));
 					Request::redirect('/mensaje/');
 				}
 				else
@@ -389,21 +389,21 @@ class Base_Controller_Mensaje extends Controller {
 
 		if ( ! is_array($model_mensaje->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'El mensaje seleccionado no es válido.');
+			add_flash_message(FLASH_ERROR, __('El mensaje seleccionado no es válido.', FALSE));
 			Request::redirect('/mensaje/');
 		}
 
 		// Verificamos sea el receptor.
 		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
-			add_flash_message(FLASH_ERROR, 'El mensaje seleccionado no es válido.');
+			add_flash_message(FLASH_ERROR, __('El mensaje seleccionado no es válido.', FALSE));
 			Request::redirect('/mensaje/');
 		}
 
 		// Verifico el estado.
 		if ($model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
 		{
-			add_flash_message(FLASH_ERROR, 'El mensaje seleccionado no es válido.');
+			add_flash_message(FLASH_ERROR, __('El mensaje seleccionado no es válido.', FALSE));
 			Request::redirect('/mensaje/');
 		}
 
@@ -414,7 +414,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Mensajes - '.$model_mensaje->asunto);
+		$this->template->assign('title', sprintf(__('Mensajes - %s', FALSE), $model_mensaje->asunto));
 
 		// Cargamos la vista.
 		$view = View::factory('mensaje/ver');
@@ -442,7 +442,7 @@ class Base_Controller_Mensaje extends Controller {
 	}
 
 	/**
-	 * Marcamos el mensaje como no leido
+	 * Marcamos el mensaje como no leído
 	 * @param int $mensaje ID del mensaje.
 	 */
 	public function action_noleido($mensaje)
@@ -474,7 +474,7 @@ class Base_Controller_Mensaje extends Controller {
 	}
 
 	/**
-	 * Marcamos el mensaje como leido.
+	 * Marcamos el mensaje como leído.
 	 * @param int $mensaje ID del mensaje.
 	 */
 	public function action_leido($mensaje)
@@ -529,7 +529,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Mensajes - '.$model_mensaje->asunto);
+		$this->template->assign('title', sprintf(__('Mensajes - %s', FALSE), $model_mensaje->asunto));
 
 		// Cargamos la vista.
 		$view = View::factory('mensaje/enviado');
@@ -549,7 +549,7 @@ class Base_Controller_Mensaje extends Controller {
 		// Listado de mensajes hijos.
 		// $view->assign('hijos', $this->listado_conversacion($model_mensaje->padre_id));
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('nuevo'));
 
@@ -588,7 +588,7 @@ class Base_Controller_Mensaje extends Controller {
 			$data['emisor'] = $modelo_padre->emisor()->as_array();
 			$data['receptor'] = $modelo_padre->receptor()->as_array();
 
-			// Cargamos el proximo post.
+			// Cargamos el próximo post.
 			$modelo_padre = $modelo_padre->padre();
 
 			// Agregamos elemento.
@@ -611,28 +611,28 @@ class Base_Controller_Mensaje extends Controller {
 
 		if ( ! is_array($model_mensaje->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'El mensaje a eliminar no existe.');
+			add_flash_message(FLASH_ERROR, __('El mensaje a eliminar no existe.', FALSE));
 			Request::redirect('/mensaje/');
 		}
 
 		// Verificamos sea el receptor.
 		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
-			add_flash_message(FLASH_ERROR, 'El mensaje a eliminar no existe.');
+			add_flash_message(FLASH_ERROR, __('El mensaje a eliminar no existe.', FALSE));
 			Request::redirect('/mensaje/');
 		}
 
 		// Verifico el estado.
 		if ($model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
 		{
-			add_flash_message(FLASH_ERROR, 'El mensaje a eliminar no existe.');
+			add_flash_message(FLASH_ERROR, __('El mensaje a eliminar no existe.', FALSE));
 			Request::redirect('/mensaje/');
 		}
 
 		// Seteamos como eliminado.
 		$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_ELIMINADO);
 
-		add_flash_message(FLASH_SUCCESS, 'Mensaje eliminado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Mensaje eliminado correctamente.', FALSE));
 		Request::redirect('/mensaje/');
 	}
 

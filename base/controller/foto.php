@@ -39,7 +39,7 @@ class Base_Controller_Foto extends Controller {
 		// Verifico permisos.
 		if ( ! (Utils::configuracion()->get('habilitar_fotos', 1) && (Utils::configuracion()->get('privacidad_fotos', 1) || Usuario::is_login())))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes acceso a está sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes acceso a está sección.', FALSE));
 			Request::redirect('/');
 		}
 	}
@@ -54,11 +54,11 @@ class Base_Controller_Foto extends Controller {
 		$menu = new Menu('foto_menu');
 
 		// Agrego elementos.
-		$menu->element_set('Fotos', '/foto/', 'index');
+		$menu->element_set(__('Fotos', FALSE), '/foto/', 'index');
 		if (Usuario::is_login())
 		{
-			$menu->element_set('Agregar Foto', '/foto/nueva/', 'nuevo');
-			$menu->element_set('Mis Fotos', '/foto/mis_fotos/', 'mis_fotos');
+			$menu->element_set(__('Agregar Foto', FALSE), '/foto/nueva/', 'nuevo');
+			$menu->element_set(__('Mis Fotos', FALSE), '/foto/mis_fotos/', 'mis_fotos');
 		}
 
 		// Devuelvo el menu.
@@ -81,7 +81,7 @@ class Base_Controller_Foto extends Controller {
 		// Verifico existencia.
 		if ( ! $foto->existe())
 		{
-			add_flash_message(FALSH_ERROR, 'La foto no es válida');
+			add_flash_message(FALSH_ERROR, __('La foto no es válida', FALSE));
 			Request::redirect('/foto/');
 		}
 
@@ -108,7 +108,7 @@ class Base_Controller_Foto extends Controller {
 			// Verifico formato.
 			if ( ! preg_match('/[a-z0-9_]+/i', $categoria))
 			{
-				add_flash_message(FLASH_ERROR, 'La categoria no es correcta.');
+				add_flash_message(FLASH_ERROR, __('La categoría no es correcta.', FALSE));
 				Request::redirect('/foto/'.$pagina);
 			}
 
@@ -118,7 +118,7 @@ class Base_Controller_Foto extends Controller {
 			// Verifico sea válida.
 			if ( ! $model_categoria->existe_seo($categoria))
 			{
-				add_flash_message(FLASH_ERROR, 'La categoría no es correcta.');
+				add_flash_message(FLASH_ERROR, __('La categoría no es correcta.', FALSE));
 				Request::redirect('/foto/'.$pagina);
 			}
 			else
@@ -238,22 +238,22 @@ class Base_Controller_Foto extends Controller {
 		{
 			if ($pagina > 1)
 			{
-				$this->template->assign('title', 'Fotos - Página '.$pagina);
+				$this->template->assign('title', sprintf(__('Fotos - Página %s', FALSE), $pagina));
 			}
 			else
 			{
-				$this->template->assign('title', 'Fotos');
+				$this->template->assign('title', __('Fotos', FALSE));
 			}
 		}
 		else
 		{
 			if ($pagina > 1)
 			{
-				$this->template->assign('title', 'Fotos en '.$model_categoria->nombre.' - Página '.$pagina);
+				$this->template->assign('title', sprintf(__('Fotos en %s - Página %i', FALSE), $model_categoria->nombre, $pagina));
 			}
 			else
 			{
-				$this->template->assign('title', 'Fotos en '.$model_categoria->nombre);
+				$this->template->assign('title', sprintf(__('Fotos en %s', FALSE), $model_categoria->nombre));
 			}
 		}
 
@@ -270,12 +270,12 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos si esta conectado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder ver esta sección.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ver esta sección.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Mis Fotos');
+		$this->template->assign('title', __('Mis Fotos', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('foto/index');
@@ -350,19 +350,19 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto a la que intentas acceder no está disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto a la que intentas acceder no está disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el estado.
 		if ($model_foto->usuario_id !== Usuario::$usuario_id && $model_foto->estado !== Model_Foto::ESTADO_ACTIVA && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DESAPROBADO) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto a la que intentas acceder no está disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto a la que intentas acceder no está disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Foto - '.$model_foto->as_object()->titulo);
+		$this->template->assign('title', sprintf(__('Foto - %s', FALSE), $model_foto->as_object()->titulo));
 
 		// Cargamos la vista.
 		$view = View::factory('foto/ver');
@@ -491,11 +491,11 @@ class Base_Controller_Foto extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, 'Debes estar logueado para poder seguir usuarios.');
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder seguir usuarios.', FALSE));
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, 'Debes estar logueado para poder dejar de seguir usuarios.');
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE));
 			}
 			Request::redirect('/usuario/login');
 		}
@@ -509,11 +509,11 @@ class Base_Controller_Foto extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres dejar de seguir no se encuentra disponible.');
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
 			}
 			Request::redirect($this->foto_url($foto));
 		}
@@ -523,29 +523,29 @@ class Base_Controller_Foto extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres dejar de seguir no se encuentra disponible.');
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
 			}
 			Request::redirect($this->foto_url($foto));
 		}
 
-		// Verificaciones especiales en funcion si lo voy a seguir o dejar de seguir.
+		// Verificaciones especiales en función si lo voy a seguir o dejar de seguir.
 		if ($seguir)
 		{
 			// Verifico el estado.
 			if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 			{
-				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
 				Request::redirect($this->foto_url($foto));
 			}
 
 			// Verifico no sea seguidor.
 			if ($model_usuario->es_seguidor(Usuario::$usuario_id))
 			{
-				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres seguir no se encuentra disponible.');
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
 				Request::redirect($this->foto_url($foto));
 			}
 
@@ -561,7 +561,7 @@ class Base_Controller_Foto extends Controller {
 			// Verifico sea seguidor.
 			if ( ! $model_usuario->es_seguidor(Usuario::$usuario_id))
 			{
-				add_flash_message(FLASH_ERROR, 'El usuario al cual quieres dejar de seguir no se encuentra disponible.');
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
 				Request::redirect($this->foto_url($foto));
 			}
 
@@ -585,11 +585,11 @@ class Base_Controller_Foto extends Controller {
 		// Informo resultado.
 		if ($seguir)
 		{
-			add_flash_message(FLASH_SUCCESS, 'Comenzaste a seguir al usuario correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('Comenzaste a seguir al usuario correctamente.', FALSE));
 		}
 		else
 		{
-			add_flash_message(FLASH_SUCCESS, 'Dejaste de seguir al usuario correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('Dejaste de seguir al usuario correctamente.', FALSE));
 		}
 		Request::redirect($this->foto_url($foto));
 	}
@@ -607,14 +607,14 @@ class Base_Controller_Foto extends Controller {
 
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder ver esta sección.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ver esta sección.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
 		// Verificamos los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VOTAR))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes los permisos suficientes para votar fotos.');
+			add_flash_message(FLASH_ERROR, __('No tienes los permisos suficientes para votar fotos.', FALSE));
 			Request::redirect('/foto/');
 		}
 
@@ -624,28 +624,28 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas votar no se encuenta disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas votar no se encuentra disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el estado de la foto.
 		if ($model_foto->estado !== Model_Foto::ESTADO_ACTIVA)
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas votar no se encuenta disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas votar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Verificamos el autor.
 		if ($model_foto->usuario_id === Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas votar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas votar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Verificamos si puede votar.
 		if ($model_foto->ya_voto(Usuario::$usuario_id))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas votar ya la has votado.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas votar ya la has votado.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -676,7 +676,7 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, 'El voto fue guardado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('El voto fue guardado correctamente.', FALSE));
 		Request::redirect($this->foto_url($model_foto));
 	}
 
@@ -692,7 +692,7 @@ class Base_Controller_Foto extends Controller {
 		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder agregar la foto a tus favoritos.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder agregar la foto a tus favoritos.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
@@ -702,28 +702,28 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que quiere poner como favorito no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el estado de la foto.
 		if ($model_foto->estado != Model_Foto::ESTADO_ACTIVA)
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que quiere poner como favorito no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Verifica autor.
 		if ($model_foto->usuario_id === Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que quiere poner como favorito no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Verificamos que no sea favorito.
 		if ($model_foto->es_favorito(Usuario::$usuario_id))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto ya está en tus favoritos.');
+			add_flash_message(FLASH_ERROR, __('La foto ya está en tus favoritos.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -746,7 +746,7 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, 'Foto agregada a favoritos correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Foto agregada a favoritos correctamente.', FALSE));
 		Request::redirect($this->foto_url($model_foto));
 	}
 
@@ -756,7 +756,7 @@ class Base_Controller_Foto extends Controller {
 	 */
 	public function action_comentar($foto)
 	{
-		// Verificamos el método de envio.
+		// Verificamos el método de envío.
 		if (Request::method() != 'POST')
 		{
 			Request::redirect($this->foto_url($foto));
@@ -765,7 +765,7 @@ class Base_Controller_Foto extends Controller {
 		// Verifico esté conectado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder realizar comentarios.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder realizar comentarios.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
@@ -778,14 +778,14 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que quiere comentar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que quiere comentar no se encuentra disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Verifico se pueda comentar.
 		if ( ! (Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR_CERRADO) || ($model_foto->soporta_comentarios() && Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_COMENTAR))))
 		{
-			$_SESSION['post_comentario_error'] = 'No tienes permisos para realizar comentarios en esa foto.';
+			$_SESSION['post_comentario_error'] = __('No tienes permisos para realizar comentarios en esa foto.', FALSE);
 			Request::redirect($this->foto_url($foto));
 		}
 
@@ -796,7 +796,7 @@ class Base_Controller_Foto extends Controller {
 		$comentario_clean = preg_replace('/\[.*\]/', '', $comentario);
 		if ( ! isset($comentario_clean{10}) || isset($comentario{400}))
 		{
-			$_SESSION['post_comentario_error'] = 'El comentario debe tener entre 20 y 400 caracteres.';
+			$_SESSION['post_comentario_error'] = __('El comentario debe tener entre 20 y 400 caracteres.', FALSE);
 
 			// Evitamos la visualización de la plantilla.
 			$this->template = NULL;
@@ -834,7 +834,7 @@ class Base_Controller_Foto extends Controller {
 			}
 
 			// Informo el resultado.
-			$_SESSION['post_comentario_success'] = 'El comentario se ha realizado correctamente.';
+			$_SESSION['post_comentario_success'] = __('El comentario se ha realizado correctamente.', FALSE);
 			Request::redirect($this->foto_url($foto));
 		}
 	}
@@ -849,7 +849,7 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder ocultar/mostrar comentarios en fotos.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ocultar/mostrar comentarios en fotos.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
@@ -861,7 +861,7 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'El comentario que deseas ocultar/mostrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El comentario que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -871,19 +871,19 @@ class Base_Controller_Foto extends Controller {
 		// Verifico el estado.
 		if (($tipo && $model_comentario->estado !== 1) || ( ! $tipo && $model_comentario->estado !== 0))
 		{
-			add_flash_message(FLASH_ERROR, 'El comentario que deseas ocultar/mostrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El comentario que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_comentario->foto()));
 		}
 
 		// Verifico los permisos.
 		if ($model_comentario->estado == 0 && Usuario::$usuario_id !== $model_comentario->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes los permisos para ocultar/mostrar comentarios.');
+			add_flash_message(FLASH_ERROR, __('No tienes los permisos para ocultar/mostrar comentarios.', FALSE));
 			Request::redirect($this->foto_url($model_comentario->foto()));
 		}
 		elseif ($model_comentario->estado == 1 && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes los permisos para ocultar/mostrar comentarios.');
+			add_flash_message(FLASH_ERROR, __('No tienes los permisos para ocultar/mostrar comentarios.', FALSE));
 			Request::redirect($this->foto_url($model_comentario->foto()));
 		}
 
@@ -912,7 +912,7 @@ class Base_Controller_Foto extends Controller {
 			}
 		}
 
-		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.', FALSE));
 		Request::redirect($this->foto_url($model_comentario->foto()));
 	}
 
@@ -925,14 +925,14 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder borrar comentarios en fotos.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder borrar comentarios en fotos.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_ELIMINAR))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes los permisos para borrar comentarios.');
+			add_flash_message(FLASH_ERROR, __('No tienes los permisos para borrar comentarios.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -944,14 +944,14 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'El comentario que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El comentario que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/');
 		}
 
 		// Verifico el estado.
 		if ($model_comentario->estado === 2)
 		{
-			add_flash_message(FLASH_ERROR, 'El comentario que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El comentario que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_comentario->foto()));
 		}
 
@@ -978,7 +978,7 @@ class Base_Controller_Foto extends Controller {
 			}
 		}
 
-		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> El comentario se ha borrado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> El comentario se ha borrado correctamente.', FALSE));
 		Request::redirect($this->foto_url($model_comentario->foto()));
 	}
 
@@ -991,7 +991,7 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder editar comentarios en fotos.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder editar comentarios en fotos.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
@@ -1003,21 +1003,21 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'El comentario que deseas editar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El comentario que deseas editar no se encuentra disponible.', FALSE));
 			Request::redirect('/');
 		}
 
 		// Verifico el estado.
 		if ($model_comentario->estado === 2)
 		{
-			add_flash_message(FLASH_ERROR, 'El comentario que deseas editar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El comentario que deseas editar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_comentario->foto()));
 		}
 
 		// Verifico permisos estado.
 		if ($model_comentario->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_EDITAR))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes los permisos para editar el comentario.');
+			add_flash_message(FLASH_ERROR, __('No tienes los permisos para editar el comentario.', FALSE));
 			Request::redirect($this->foto_url($model_comentario->foto()));
 		}
 
@@ -1047,7 +1047,7 @@ class Base_Controller_Foto extends Controller {
 			$comentario_clean = preg_replace('/\[.*\]/', '', $contenido);
 			if ( ! isset($comentario_clean{20}) || isset($contenido{400}))
 			{
-				$vista->assign('error_contenido', 'El comentario debe tener entre 20 y 400 caracteres.');
+				$vista->assign('error_contenido', __('El comentario debe tener entre 20 y 400 caracteres.', FALSE));
 			}
 			else
 			{
@@ -1077,7 +1077,7 @@ class Base_Controller_Foto extends Controller {
 					}
 				}
 
-				$_SESSION['post_comentario_success'] = 'El comentario se ha actualizado correctamente.';
+				$_SESSION['post_comentario_success'] = __('El comentario se ha actualizado correctamente.', FALSE);
 				Request::redirect($this->foto_url($model_comentario->foto()));
 			}
 		}
@@ -1098,19 +1098,19 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos usuario conectado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes loguearte para poder agregar fotos.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder agregar fotos.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico los permisos para crear foto.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_CREAR))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permisos para crear fotos.');
+			add_flash_message(FLASH_ERROR, __('No tienes permisos para crear fotos.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Nueva foto');
+		$this->template->assign('title', __('Nueva foto', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('foto/nueva');
@@ -1153,7 +1153,7 @@ class Base_Controller_Foto extends Controller {
 			// Verificamos el titulo.
 			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/D', $titulo))
 			{
-				$view->assign('error_titulo', 'El formato del título no es correcto.');
+				$view->assign('error_titulo', __('El formato del título no es correcto.', FALSE));
 				$error = TRUE;
 			}
 
@@ -1163,7 +1163,7 @@ class Base_Controller_Foto extends Controller {
 			// Verificamos la descripcion.
 			if ( ! isset($descripcion_clean{20}) || isset($descripcion{600}))
 			{
-				$view->assign('error_descripcion', 'La descripción debe tener entre 20 y 600 caractéres.');
+				$view->assign('error_descripcion', __('La descripción debe tener entre 20 y 600 caracteres.', FALSE));
 				$error = TRUE;
 			}
 			unset($contenido_clean);
@@ -1174,7 +1174,7 @@ class Base_Controller_Foto extends Controller {
 				// Verifico IMG.
 				if ( ! isset($_FILES['img']) || $_FILES['img']['error'] == UPLOAD_ERR_NO_FILE)
 				{
-					$view->assign('error_url', 'La dirección de la URL no es válida.');
+					$view->assign('error_url', __('La dirección de la URL no es válida.', FALSE));
 					$error = TRUE;
 				}
 			}
@@ -1182,7 +1182,7 @@ class Base_Controller_Foto extends Controller {
 			// Verifico la categoria.
 			if ( ! $model_categorias->existe_seo($categoria))
 			{
-				$view->assign('error_categoria', 'La categoria seleccionada es incorrecta.');
+				$view->assign('error_categoria', __('La categoría seleccionada es incorrecta.', FALSE));
 				$error = TRUE;
 			}
 
@@ -1191,7 +1191,7 @@ class Base_Controller_Foto extends Controller {
 			$securimage = new securimage;
 			if ($securimage->check($captcha) === FALSE)
 			{
-				$view->assign('error_captcha', 'El código introducido no es correcto.');
+				$view->assign('error_captcha', __('El código introducido no es correcto.', FALSE));
 				$error = TRUE;
 			}
 
@@ -1204,7 +1204,7 @@ class Base_Controller_Foto extends Controller {
 				$model_foto = new Model_Foto;
 				if ($model_foto->existe(array('titulo' => $titulo)))
 				{
-					$view->assign('error_titulo', 'Ya existe una foto con ese título.');
+					$view->assign('error_titulo', __('Ya existe una foto con ese título.', FALSE));
 					$error = TRUE;
 				}
 			}
@@ -1225,7 +1225,7 @@ class Base_Controller_Foto extends Controller {
 						}
 						else
 						{
-							$view->assign('error_url', 'Se produjo un error al cargar la imagen.');
+							$view->assign('error_url', __('Se produjo un error al cargar la imagen.', FALSE));
 							$error = TRUE;
 						}
 					}
@@ -1248,7 +1248,7 @@ class Base_Controller_Foto extends Controller {
 						}
 						else
 						{
-							$view->assign('error_url', 'Se produjo un error al cargar la imagen.');
+							$view->assign('error_url', __('Se produjo un error al cargar la imagen.', FALSE));
 							$error = TRUE;
 						}
 					}
@@ -1269,7 +1269,7 @@ class Base_Controller_Foto extends Controller {
 				// Formateamos los campos.
 				$titulo = trim(preg_replace('/\s+/', ' ', $titulo));
 
-				// Obtengo el ID de la categoria.
+				// Obtengo el ID de la categoría.
 				$model_categorias->load_by_seo($categoria);
 
 				//TODO: implementar en revisión.
@@ -1292,12 +1292,12 @@ class Base_Controller_Foto extends Controller {
 					Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_FOTOS);
 
 					// Informo el resultado.
-					add_flash_message(FLASH_SUCCESS, 'Foto creada correctamente.');
+					add_flash_message(FLASH_SUCCESS, __('Foto creada correctamente.', FALSE));
 					Request::redirect($this->foto_url($model_foto));
 				}
 				else
 				{
-					$view->assign('error', 'Se produjo un error cuando se creaba la foto. Reintente.');
+					$view->assign('error', __('Se produjo un error cuando se creaba la foto. Reintente.', FALSE));
 				}
 			}
 		}
@@ -1317,7 +1317,7 @@ class Base_Controller_Foto extends Controller {
 		// Verifico esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder borrar una foto.');
+			add_flash_message(FLASH_ERROR, 'Debes iniciar sesión para poder borrar una foto.');
 			Request::redirect('/usuario/login/');
 		}
 
@@ -1327,26 +1327,26 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que quieres denunciar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que quieres denunciar no se encuentra disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Verificamos que no sea autor.
 		if ($model_foto->usuario_id === Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que quieres denunciar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que quieres denunciar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Verifico que esté activa.
 		if ($model_foto->estado !== Model_Foto::ESTADO_ACTIVA)
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que quieres denunciar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que quieres denunciar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Denunciar foto');
+		$this->template->assign('title', __('Denunciar foto', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('foto/denunciar');
@@ -1379,7 +1379,7 @@ class Base_Controller_Foto extends Controller {
 			if ( ! in_array($motivo, array(0, 1, 2, 3, 4, 5, 6, 7)))
 			{
 				$error = TRUE;
-				$view->assign('error_motivo', 'No ha seleccionado un motivo válido.');
+				$view->assign('error_motivo', __('No ha seleccionado un motivo válido.', FALSE));
 			}
 
 			// Verifico la razón si corresponde.
@@ -1388,7 +1388,7 @@ class Base_Controller_Foto extends Controller {
 				if ( ! isset($comentario{10}) || isset($comentario{400}))
 				{
 					$error = TRUE;
-					$view->assign('error_comentario', 'La descripción de la denuncia debe tener entre 10 y 400 caracteres.');
+					$view->assign('error_comentario', __('La descripción de la denuncia debe tener entre 10 y 400 caracteres.', FALSE));
 				}
 			}
 			else
@@ -1396,7 +1396,7 @@ class Base_Controller_Foto extends Controller {
 				if (isset($comentario{400}))
 				{
 					$error = TRUE;
-					$view->assign('error_comentario', 'La descripción de la denuncia debe tener entre 10 y 400 caracteres.');
+					$view->assign('error_comentario', __('La descripción de la denuncia debe tener entre 10 y 400 caracteres.', FALSE));
 				}
 				$comentario = NULL;
 			}
@@ -1422,7 +1422,7 @@ class Base_Controller_Foto extends Controller {
 				}
 
 				// Seteamos mensaje flash y volvemos.
-				add_flash_message(FLASH_SUCCESS, 'Denuncia enviada correctamente.');
+				add_flash_message(FLASH_SUCCESS, __('Denuncia enviada correctamente.', FALSE));
 				Request::redirect($this->foto_url($model_foto));
 			}
 		}
@@ -1445,7 +1445,7 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos usuario conectado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para editar fotos.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para editar fotos.', FALSE));
 			Request::redirect('/usuario/login/', TRUE);
 		}
 
@@ -1456,19 +1456,19 @@ class Base_Controller_Foto extends Controller {
 		// Verifico la existencia.
 		if ( ! $model_foto->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que quiere editar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que quiere editar no se encuentra disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Verifico los permisos.
 		if ($model_foto->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_EDITAR))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas editar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas editar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Editar foto');
+		$this->template->assign('title', __('Editar foto', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('foto/editar');
@@ -1490,7 +1490,7 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('error_descripcion', FALSE);
 		$view->assign('error_categoria', FALSE);
 
-		// Listado de categorias.
+		// Listado de categorías.
 		$model_categoria = new Model_Categoria;
 		$view->assign('categorias', $model_categoria->lista());
 
@@ -1519,17 +1519,17 @@ class Base_Controller_Foto extends Controller {
 			// Verificamos el titulo.
 			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/D', $titulo))
 			{
-				$view->assign('error_titulo', 'El formato del título no es correcto.');
+				$view->assign('error_titulo', __('El formato del título no es correcto.', FALSE));
 				$error = TRUE;
 			}
 
 			// Verificamos quitando BBCODE.
 			$descripcion_clean = preg_replace('/\[([^\[\]]+)\]/', '', $descripcion);
 
-			// Verificamos la descripcion.
+			// Verificamos la descripción.
 			if ( ! isset($descripcion_clean{20}) || isset($descripcion{600}))
 			{
-				$view->assign('error_descripcion', 'La descripción debe tener entre 20 y 600 caractéres.');
+				$view->assign('error_descripcion', __('La descripción debe tener entre 20 y 600 caracteres.', FALSE));
 				$error = TRUE;
 			}
 			unset($contenido_clean);
@@ -1538,7 +1538,7 @@ class Base_Controller_Foto extends Controller {
 			$model_categoria = new Model_Categoria;
 			if ( ! $model_categoria->existe_seo($categoria))
 			{
-				$view->assign('error_categoria', 'La categoría seleccionada es incorrecta.');
+				$view->assign('error_categoria', __('La categoría seleccionada es incorrecta.', FALSE));
 				$error = TRUE;
 			}
 			else
@@ -1581,7 +1581,7 @@ class Base_Controller_Foto extends Controller {
 						$model_suceso->crear($model_foto->usuario_id, 'foto_editar', FALSE, $model_foto->id, Usuario::$usuario_id);
 					}
 
-					add_flash_message(FLASH_SUCCESS, 'La foto se ha actualizado correctamente.');
+					add_flash_message(FLASH_SUCCESS, __('La foto se ha actualizado correctamente.', FALSE));
 					Request::redirect($this->foto_url($model_foto));
 				}
 			}
@@ -1599,7 +1599,7 @@ class Base_Controller_Foto extends Controller {
 	{
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder ocultar/mostrar fotos.');
+			add_flash_message(FLASH_ERROR, __/'Debes iniciar sesión para poder ocultar/mostrar fotos.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
@@ -1611,14 +1611,14 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas ocultar/mostrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __/'La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_OCULTAR) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DESAPROBADO) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas ocultar/mostrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __/'La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -1636,7 +1636,7 @@ class Base_Controller_Foto extends Controller {
 		}
 		else
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas ocultar/mostrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __/'La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -1656,20 +1656,20 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Acción realizada correctamente.');
+		add_flash_message(FLASH_SUCCESS, __/'<b>!Felicitaciones!</b> Acción realizada correctamente.', FALSE));
 		Request::redirect($this->foto_url($model_foto));
 	}
 
 	/**
 	 * Borramos o enviamos a la papelera a una foto
 	 * @param int $foto ID de la foto a borrar o enviar a la papelera.
-	 * @param bool $tipo 1 la borra, -1 la envia a la papelera.
+	 * @param bool $tipo 1 la borra, -1 la envía a la papelera.
 	 */
 	public function action_borrar_foto($foto, $tipo)
 	{
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder eliminar una foto.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder eliminar una foto.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
@@ -1681,14 +1681,14 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_foto->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -1701,7 +1701,7 @@ class Base_Controller_Foto extends Controller {
 			}
 			elseif ($model_foto->estado === Model_Foto::ESTADO_PAPELERA || $model_foto === Model_Foto::ESTADO_BORRADA)
 			{
-				add_flash_message(FLASH_ERROR, 'La foto que deseas borrar no se encuentra disponible.');
+				add_flash_message(FLASH_ERROR, __('La foto que deseas borrar no se encuentra disponible.', FALSE));
 				Request::redirect($this->foto_url($model_foto));
 			}
 			else
@@ -1730,7 +1730,7 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, 'Acción realizada correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Acción realizada correctamente.', FALSE));
 		Request::redirect($this->foto_url($model_foto));
 	}
 
@@ -1742,7 +1742,7 @@ class Base_Controller_Foto extends Controller {
 	{
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder restaurar fotos.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder restaurar fotos.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
@@ -1754,21 +1754,21 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que intentas restaurar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que intentas restaurar no se encuentra disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_foto->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que intentas restaurar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que intentas restaurar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Verifico el estado de la foto.
 		if ($model_foto->estado !== Model_Foto::ESTADO_PAPELERA)
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que intentas restaurar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que intentas restaurar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -1788,7 +1788,7 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, 'La foto se ha restaurado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('La foto se ha restaurado correctamente.', FALSE));
 		Request::redirect($this->foto_url($model_foto));
 	}
 

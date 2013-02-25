@@ -40,7 +40,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		// Verifico esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -54,7 +54,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 	{
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -106,7 +106,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		// Seteamos el menu.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -124,7 +124,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 	{
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -136,14 +136,14 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 		if ( ! $model_usuario->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El usuario del que desea terminar la suspención no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El usuario del que desea terminar la suspensión no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/gestion/usuarios');
 		}
 
 		// Verifico el estado.
 		if ($model_usuario->estado !== Model_Usuario::ESTADO_SUSPENDIDA)
 		{
-			add_flash_message(FLASH_ERROR, 'El usuario del que desea terminar la suspención no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El usuario del que desea terminar la suspensión no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/gestion/usuarios');
 		}
 
@@ -163,7 +163,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, 'Suspensión anulada correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Suspensión anulada correctamente.', FALSE));
 		Request::redirect('/moderar/gestion/usuarios');
 	}
 
@@ -172,6 +172,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 	 */
 	public function action_buscador()
 	{
+		//TODO: PERMISO ACCESO AL BUSCADOR DE CONTENIDO.
 		/*if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_SUSPENDER))
 		{
 			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
@@ -205,7 +206,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 			if ($tipo == 0 || $tipo == 1)
 			{
-				// Busqueda de usuarios.
+				// Búsqueda de usuarios.
 				$usuarios = Model::factory('usuario')->buscar_por_palabras($palabras, array('nick', 'email'), 1, 10);
 
 				foreach ($usuarios as $k => $v)
@@ -218,7 +219,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 			if ($tipo == 0 || $tipo == 2)
 			{
-				// Busqueda de posts.
+				// Búsqueda de posts.
 				$posts = Model::factory('post')->buscar_por_palabras($palabras, array('titulo', 'contenido'), 1, 10);
 
 				foreach ($posts as $k => $v)
@@ -232,7 +233,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 			if ($tipo == 0 || $tipo == 3)
 			{
-				// Busqueda de comentarios en posts.
+				// Búsqueda de comentarios en posts.
 				$post_comentarios = Model::factory('post_comentario')->buscar_por_palabras($palabras, array('contenido'), 1, 10);
 
 				foreach ($post_comentarios as $k => $v)
@@ -247,7 +248,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 			if ($tipo == 0 || $tipo == 4)
 			{
-				// Busqueda de fotos.
+				// Búsqueda de fotos.
 				$fotos = Model::factory('foto')->buscar_por_palabras($palabras, array('titulo', 'descripcion', 'url'), 1, 10);
 
 				foreach ($fotos as $k => $v)
@@ -261,7 +262,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 			if ($tipo == 0 || $tipo == 5)
 			{
-				// Busqueda de comentarios en fotos.
+				// Búsqueda de comentarios en fotos.
 				$foto_comentarios = Model::factory('foto_comentario')->buscar_por_palabras($palabras, array('comentario'), 1, 10);
 
 				foreach ($foto_comentarios as $k => $v)
@@ -275,10 +276,10 @@ class Base_Controller_Moderar_Gestion extends Controller {
 			}
 		}
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);

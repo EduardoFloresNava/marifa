@@ -51,8 +51,8 @@ class Base_Controller_Tops extends Controller {
 		$menu = new Menu('tops_menu');
 
 		// Agrego elementos.
-		$menu->element_set('Posts', '/tops/', 'posts');
-		$menu->element_set('Usuarios', '/tops/usuarios/', 'usuarios');
+		$menu->element_set(__('Posts', FALSE), '/tops/', 'posts');
+		$menu->element_set(__('Usuarios', FALSE), '/tops/usuarios/', 'usuarios');
 
 		// Devuelvo el menu.
 		return $menu->as_array($activo);
@@ -132,7 +132,7 @@ class Base_Controller_Tops extends Controller {
 		$this->template->assign('contenido', $portada->parse());
 
 		// Título del sitio.
-		$this->template->assign('title', 'Top de posts');
+		$this->template->assign('title', __('Top de posts', FALSE));
 	}
 
 	/**
@@ -208,7 +208,7 @@ class Base_Controller_Tops extends Controller {
 		$this->template->assign('contenido', $portada->parse());
 
 		// Título del sitio.
-		$this->template->assign('title', 'Top de usuarios');
+		$this->template->assign('title', __('Top de usuarios', FALSE));
 	}
 
 }

@@ -40,7 +40,7 @@ class Base_Controller_Notificaciones extends Controller {
 	{
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a tus notificaciones.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a tus notificaciones.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -127,6 +127,8 @@ class Base_Controller_Notificaciones extends Controller {
 		$view->assign('sucesos', $eventos);
 		unset($sucesos);
 
+		$this->template->assign('title', __('Notificaciones', FALSE));
+
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $view->parse());
 	}
@@ -143,7 +145,7 @@ class Base_Controller_Notificaciones extends Controller {
 		$model_suceso->vistas(Usuario::$usuario_id);
 
 		// Notifico y redirecciono.
-		add_flash_message(FLASH_SUCCESS, 'Las notificaciones han sido marcadas como leidas correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Las notificaciones han sido marcadas como leídas correctamente.', FALSE));
 		Request::redirect('/notificaciones/');
 	}
 
