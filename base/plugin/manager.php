@@ -176,7 +176,7 @@ class Base_Plugin_Manager {
 			$plugins[$dir] = $enabled;
 		}
 
-		// Liberamos memoria inutil.
+		// Liberamos memoria inútil.
 		unset($dirs);
 		unset($old_data);
 
@@ -261,14 +261,13 @@ class Base_Plugin_Manager {
 			// Verificamos que sea válido.
 			if ( ! is_array($old_data))
 			{
-				// No obteniamos lo que esperabamos, usamos una configuración
-				// por defecto.
+				// No obteníamos lo que esperábamos, usamos una configuración por defecto.
 				$old_data = array();
 			}
 		}
 		else
 		{
-			// Ponemos una información vacia.
+			// Ponemos una información vacía.
 			$old_data = array();
 		}
 
