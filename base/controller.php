@@ -231,28 +231,28 @@ class Base_Controller {
 		// Listado de elementos ONLINE.
 		if (Usuario::is_login())
 		{
-			$menu->element_set('Inicio', '/perfil/', 'inicio');
+			$menu->element_set(__('Inicio', FALSE), '/perfil/', 'inicio');
 		}
 
 		// Listado de elemento OFFLINE.
-		$menu->element_set('Posts', '/', 'posts');
+		$menu->element_set(__('Posts', FALSE), '/', 'posts');
 
 		// Verifico sección de fotos habilitada y su privacidad.
 		if (Utils::configuracion()->get('habilitar_fotos', 1) && (Utils::configuracion()->get('privacidad_fotos', 1) || Usuario::is_login()))
 		{
-			$menu->element_set('Fotos', '/foto/', 'fotos');
+			$menu->element_set(__('Fotos', FALSE), '/foto/', 'fotos');
 		}
-		$menu->element_set('TOPs', '/tops/', 'tops');
+		$menu->element_set(__('TOPs', FALSE), '/tops/', 'tops');
 
 		// Listado elemento por permisos.
 		if (Controller_Moderar_Home::permisos_acceso())
 		{
-			$menu->element_set('Moderar', '/moderar/', 'moderar', NULL, Controller_Moderar_Home::cantidad_pendiente());
+			$menu->element_set(__('Moderar', FALSE), '/moderar/', 'moderar', NULL, Controller_Moderar_Home::cantidad_pendiente());
 		}
 
 		if (Controller_Admin_Home::permisos_acceso())
 		{
-			$menu->element_set('Administración', '/admin/', 'admin');
+			$menu->element_set(__('Administración', FALSE), '/admin/', 'admin');
 		}
 
 		return $menu->as_array($selected == NULL ? 'posts' : $selected);
