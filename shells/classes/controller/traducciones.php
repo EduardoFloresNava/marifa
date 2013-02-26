@@ -86,7 +86,7 @@ class Shell_Controller_Traducciones extends Shell_Controller {
 		// Proceso listado.
 		foreach ($traducciones as $traduccion)
 		{
-			$a = str_replace('\'', '\\\'', $traduccion);
+			$a = str_replace(array('\\', '\''), array('\\\\', '\\\''), $traduccion);
 			fwrite($fp,  "\t'$a' => '[$a]',\n");
 		}
 
