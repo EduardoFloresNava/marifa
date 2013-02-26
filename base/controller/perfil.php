@@ -39,7 +39,7 @@ class Base_Controller_Perfil extends Controller {
 	protected $usuario;
 
 	/**
-	 * Constructor de la clase. Seteamos el elemento del menu actual.
+	 * Constructor de la clase. Seteamos el elemento del menú actual.
 	 */
 	public function before()
 	{
@@ -113,7 +113,7 @@ class Base_Controller_Perfil extends Controller {
 			unset($call);
 		}
 
-		// Creo el menu.
+		// Creo el menú.
 		$menu = new Menu('perfil_menu');
 
 		// Agrego elementos.
@@ -123,7 +123,7 @@ class Base_Controller_Perfil extends Controller {
 		$menu->element_set(__('Seguidores', FALSE), "/@{$this->usuario->nick}/seguidores/", 'seguidores');
 		$menu->element_set(__('Medallas', FALSE), "/@{$this->usuario->nick}/medallas/", 'medallas');
 
-		// Devuelvo el menu.
+		// Devuelvo el menú.
 		return $menu->as_array($activo);
 	}
 
@@ -208,7 +208,7 @@ class Base_Controller_Perfil extends Controller {
 	}
 
 	/**
-	 * Informacion del perfil del usuario.
+	 * Información del perfil del usuario.
 	 * @param string $usuario ID o nick del usuario.
 	 */
 	public function action_informacion($usuario)
@@ -306,7 +306,7 @@ class Base_Controller_Perfil extends Controller {
 		}
 		$information_view->assign('usuario', $this->usuario->as_array());
 
-		// Procesamos pais.
+		// Procesamos país.
 		$country = Utils::prop($this->usuario->perfil(), 'origen');
 		if ($country !== NULL)
 		{
@@ -585,13 +585,13 @@ class Base_Controller_Perfil extends Controller {
 								preg_match('@^(?:(http|https)://)?([^/]+)@i', $url, $matches);
 								$domain = isset($matches[2]) ? $matches[2] : '';
 
-								// Proceso según el tipo de video.
+								// Proceso según el tipo de vídeo.
 								switch ($domain) {
 									case 'www.youtube.com':
 									case 'youtube.com':
 										if ( ! preg_match('#^http://\w{0,3}.?youtube+\.\w{2,3}/watch\?v=([\w-]{11})#', $url, $match))
 										{
-											$information_view->assign('error_url', __('La URL del video de youtube no es válida.', FALSE));
+											$information_view->assign('error_url', __('La URL del vídeo de youtube no es válida.', FALSE));
 											$error = TRUE;
 										}
 										else
@@ -603,7 +603,7 @@ class Base_Controller_Perfil extends Controller {
 									case 'player.vimeo.com':
 										if ( ! preg_match('#http://(?:\w+.)?vimeo.com/(?:video/|moogaloop\.swf\?clip_id=|)(\w+)#i', $url, $match))
 										{
-											$information_view->assign('error_url', __('La URL del video de vimeo no es válida.', FALSE));
+											$information_view->assign('error_url', __('La URL del vídeo de vimeo no es válida.', FALSE));
 											$error = TRUE;
 										}
 										else
@@ -614,13 +614,13 @@ class Base_Controller_Perfil extends Controller {
 											}
 											else
 											{
-												$information_view->assign('error_url', __('La URL del video de vimeo no es válida.', FALSE));
+												$information_view->assign('error_url', __('La URL del vídeo de vimeo no es válida.', FALSE));
 												$error = TRUE;
 											}
 										}
 										break;
 									default:
-										$information_view->assign('error_url', __('La URL del video no es válida.', FALSE));
+										$information_view->assign('error_url', __('La URL del vídeo no es válida.', FALSE));
 										$error = TRUE;
 								}
 								break;
@@ -667,7 +667,7 @@ class Base_Controller_Perfil extends Controller {
 				// Cargo modelo de sucesos.
 				$model_suceso = new Model_Suceso;
 
-				// Envio sucesos de citas a los usuarios.
+				// Envío sucesos de citas a los usuarios.
 				foreach ($users as $v)
 				{
 					if ($v !== Usuario::$usuario_id && $v !== $this->usuario->id)
@@ -682,7 +682,7 @@ class Base_Controller_Perfil extends Controller {
 					Database::get_instance()->insert('INSERT INTO shout_tag (tag, shout_id) VALUES (?, ?)', array($tag, $id));
 				}
 
-				// Envio el suceso correspondiente.
+				// Envío el suceso correspondiente.
 				if ($this->usuario->id !== Usuario::$usuario_id)
 				{
 					$model_suceso->crear($this->usuario->id, 'usuario_shout', TRUE, $id, $this->usuario->id);
@@ -857,7 +857,7 @@ class Base_Controller_Perfil extends Controller {
 				// Creo la denuncia.
 				$id = $this->usuario->denunciar(Usuario::$usuario_id, $motivo, $comentario);
 
-				// Envio el suceso
+				// Envío el suceso
 				$model_suceso = new Model_Suceso;
 				if (Usuario::$usuario_id != $this->usuario->id)
 				{
@@ -923,7 +923,7 @@ class Base_Controller_Perfil extends Controller {
 			Request::redirect("/@{$this->usuario->nick}");
 		}
 
-		// Verificaciones especiales en funcion si lo voy a seguir o dejar de seguir.
+		// Verificaciones especiales en función si lo voy a seguir o dejar de seguir.
 		if ($seguir)
 		{
 			// Verifico el estado.
@@ -960,7 +960,7 @@ class Base_Controller_Perfil extends Controller {
 			$this->usuario->fin_seguir(Usuario::$usuario_id);
 		}
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$tipo = $seguir ? 'usuario_seguir' : 'usuario_fin_seguir';
 		$model_suceso = new Model_Suceso;
 		if ($this->usuario->id != Usuario::$usuario_id)
@@ -1025,7 +1025,7 @@ class Base_Controller_Perfil extends Controller {
 		// Bloqueo al usuario.
 		Usuario::usuario()->bloquear($this->usuario->id);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if ($this->usuario->id != Usuario::$usuario_id)
 		{
@@ -1082,7 +1082,7 @@ class Base_Controller_Perfil extends Controller {
 		// Desbloqueo al usuario.
 		Usuario::usuario()->desbloquear($this->usuario->id);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if ($this->usuario->id != Usuario::$usuario_id)
 		{
@@ -1174,7 +1174,7 @@ class Base_Controller_Perfil extends Controller {
 		// Proceso valor si es tipo especial.
 		if ($model_shout->tipo == Model_Shout::TIPO_VIDEO)
 		{
-			// Obtengo clase de video.
+			// Obtengo clase de vídeo.
 			$shout['valor'] = explode(':', $model_shout->valor);
 		}
 		elseif($model_shout->tipo == Model_Shout::TIPO_ENLACE)
@@ -1303,7 +1303,7 @@ class Base_Controller_Perfil extends Controller {
 			Request::redirect("/@$usuario/publicacion/$shout");
 		}
 
-		// Verifico no sea mia.
+		// Verifico no sea mía.
 		if ($model_shout->usuario_id === Usuario::$usuario_id)
 		{
 			add_flash_message(FLASH_ERROR, __('La publicación que desea votar no se encuentra disponible.', FALSE));
@@ -1347,7 +1347,7 @@ class Base_Controller_Perfil extends Controller {
 	 */
 	public function action_favorito_publicacion($usuario, $shout, $agregar)
 	{
-		// Verifico método de envio.
+		// Verifico método de envío.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('La petición no es correcta.', FALSE));
@@ -1453,7 +1453,7 @@ class Base_Controller_Perfil extends Controller {
 	}
 
 	/**
-	 * Lista de usuarios para autocompletado AJAX.
+	 * Lista de usuarios para auto-completado AJAX.
 	 */
 	public function action_usuarios_permitidos()
 	{

@@ -76,7 +76,7 @@ class Base_Controller_Moderar_Home extends Controller {
 	}
 
 	/**
-	 * Cantidad de elementos que están esperando supervisión.
+	 * Cantidad de elementos que están esperando ser supervisados.
 	 * @return int
 	 */
 	public static function cantidad_pendiente()
@@ -134,7 +134,7 @@ class Base_Controller_Moderar_Home extends Controller {
 	 */
 	public static function submenu($activo)
 	{
-		// Creo menu.
+		// Creo menú.
 		$menu = new Menu('moderar_menu');
 
 		// Portada.
@@ -193,7 +193,7 @@ class Base_Controller_Moderar_Home extends Controller {
 			$menu->element_set(__('Comentarios', FALSE), '/moderar/desaprobado/comentarios/', 'comentarios', 'desaprobado', Model_Comentario::cantidad(Model_Comentario::ESTADO_OCULTO));
 		}
 
-		// Envio respuesta.
+		// Envío respuesta.
 		$el = explode('.', $activo);
 		if (count($el) == 2)
 		{
@@ -298,7 +298,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		$portada->assign('contenido', $lista);
 		unset($lista);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla moderación.
@@ -306,6 +306,9 @@ class Base_Controller_Moderar_Home extends Controller {
 		$admin_template->assign('contenido', $portada->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', self::submenu('general.index'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -319,7 +322,7 @@ class Base_Controller_Moderar_Home extends Controller {
 		// Obtengo el contenido y evitamos XSS.
 		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
 
-		// Evito salida por template.
+		// Evito salida de la plantilla base.
 		$this->template = NULL;
 
 		// Proceso contenido.

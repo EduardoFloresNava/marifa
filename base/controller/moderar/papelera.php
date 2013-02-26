@@ -33,11 +33,11 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Moderar_Papelera extends Controller {
 
 	/**
-	 * Verificamos que esté logueado para poder realizar las acciones.
+	 * Verificamos que esté identificado para poder realizar las acciones.
 	 */
 	public function before()
 	{
-		// Verifico esté logueado.
+		// Verifico esté identificado.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
@@ -62,7 +62,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
-		// Cantidad de elementos por pagina.
+		// Cantidad de elementos por página.
 		$model_configuracion = new Model_Configuracion;
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
@@ -93,18 +93,21 @@ class Base_Controller_Moderar_Papelera extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de posts.
+		// Asignamos listado de posts.
 		$vista->assign('posts', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('papelera.posts'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Papelera', FALSE).' - '.__('Posts', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -263,18 +266,21 @@ class Base_Controller_Moderar_Papelera extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de fotos.
+		// Asigno listado de fotos.
 		$vista->assign('fotos', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('papelera.fotos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Papelera', FALSE).' - '.__('Fotos', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

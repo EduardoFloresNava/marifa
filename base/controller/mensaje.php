@@ -24,7 +24,7 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Controlador de mensajeria entre usuarios.
+ * Controlador de mensajería entre usuarios.
  *
  * @since      Versión 0.1
  * @package    Marifa\Base
@@ -53,7 +53,7 @@ class Base_Controller_Mensaje extends Controller {
 	 */
 	protected function submenu($activo)
 	{
-		// Creo el menu.
+		// Creo el menú.
 		$menu = new Menu('mensaje_menu');
 
 		// Agrego los elementos.
@@ -61,7 +61,7 @@ class Base_Controller_Mensaje extends Controller {
 		$menu->element_set(__('Bandeja de salida', FALSE), '/mensaje/enviados/', 'enviados');
 		$menu->element_set(__('Enviar', FALSE), '/mensaje/nuevo/', 'nuevo');
 
-		// Devuelvo el menu parseado.
+		// Devuelvo el menú procesado.
 		return $menu->as_array($activo);
 	}
 
@@ -143,7 +143,7 @@ class Base_Controller_Mensaje extends Controller {
 		$model_mensajes = new Model_Mensaje;
 		$enviados = $model_mensajes->enviados(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
 
-		// Verifivo validez de la pagina.
+		// Verifico validez de la pagina.
 		if (count($enviados) == 0 && $pagina != 1)
 		{
 			Request::redirect('/mensaje/enviados/');
@@ -182,7 +182,7 @@ class Base_Controller_Mensaje extends Controller {
 	 */
 	public function action_nuevo($tipo, $mensaje_id)
 	{
-		// Verificamos si es reenvio o respuesta.
+		// Verificamos si es reenvío o respuesta.
 		// 1 - Responder.
 		// 2 - Reenviar.
 		if ($tipo == 1 || $tipo == 2)
@@ -219,14 +219,14 @@ class Base_Controller_Mensaje extends Controller {
 			$view->assign($k, '');
 		}
 
-		// Obtenemos los datos y seteamos valores.
+		// Obtenemos los datos y asignamos valores.
 		foreach (array('para', 'asunto', 'contenido') as $k)
 		{
 			$$k = isset($_POST[$k]) ? $_POST[$k] : '';
 			$view->assign($k, $$k);
 		}
 
-		// Por defecto segun tipo de llamada.
+		// Por defecto según tipo de llamada.
 		if (isset($padre))
 		{
 			if ($tipo == 1)
@@ -367,7 +367,7 @@ class Base_Controller_Mensaje extends Controller {
 			}
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('nuevo'));
 
@@ -377,7 +377,7 @@ class Base_Controller_Mensaje extends Controller {
 
 	/**
 	 * Vemos un mensaje recibido por el usuario.
-	 * @param type $mensaje
+	 * @param int $mensaje
 	 */
 	public function action_ver($mensaje)
 	{
@@ -407,7 +407,7 @@ class Base_Controller_Mensaje extends Controller {
 			Request::redirect('/mensaje/');
 		}
 
-		// Seteamos como leido.
+		// Seteamos como leído.
 		if ($model_mensaje->estado == Model_Mensaje::ESTADO_NUEVO)
 		{
 			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_LEIDO);
@@ -433,7 +433,7 @@ class Base_Controller_Mensaje extends Controller {
 		// Listado de mensajes hijos.
 		// $view->assign('hijos', $this->listado_conversacion($model_mensaje->padre_id));
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('nuevo'));
 
@@ -464,7 +464,7 @@ class Base_Controller_Mensaje extends Controller {
 			Request::redirect('/mensaje/');
 		}
 
-		// Seteamos como leido.
+		// Marcamos como no leído.
 		if ($model_mensaje->estado == Model_Mensaje::ESTADO_LEIDO)
 		{
 			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_NUEVO);
@@ -496,7 +496,7 @@ class Base_Controller_Mensaje extends Controller {
 			Request::redirect('/mensaje/');
 		}
 
-		// Seteamos como leido.
+		// Marcamos como leído.
 		if ($model_mensaje->estado == Model_Mensaje::ESTADO_NUEVO)
 		{
 			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_LEIDO);
@@ -629,7 +629,7 @@ class Base_Controller_Mensaje extends Controller {
 			Request::redirect('/mensaje/');
 		}
 
-		// Seteamos como eliminado.
+		// Marcamos como eliminado.
 		$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_ELIMINADO);
 
 		add_flash_message(FLASH_SUCCESS, __('Mensaje eliminado correctamente.', FALSE));
@@ -644,7 +644,7 @@ class Base_Controller_Mensaje extends Controller {
 		// Obtengo el contenido y evitamos XSS.
 		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
 
-		// Evito salida por template.
+		// Evito salida de la plantilla base.
 		$this->template = NULL;
 
 		// Proceso contenido.

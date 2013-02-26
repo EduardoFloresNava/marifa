@@ -39,7 +39,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 	 */
 	public function before()
 	{
-		// Verifico estar logueado.
+		// Verifico estar identificado.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
@@ -64,7 +64,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Obtengo el contenido y evitamos XSS.
 		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
 
-		// Evito salida por template.
+		// Evito salida de la plantilla base.
 		$this->template = NULL;
 
 		// Proceso contenido.
@@ -111,7 +111,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$cantidad_pendientes = $model_usuarios->cantidad(Model_Usuario::ESTADO_PENDIENTE);
 		$cantidad_total = $cantidad_activas + $cantidad_suspendidas + $cantidad_baneadas;
 
-		// Seteo las cantidad.
+		// Asigno las cantidad.
 		$vista->assign('cantidad_activas', $cantidad_activas);
 		$vista->assign('cantidad_suspendidas', $cantidad_suspendidas);
 		$vista->assign('cantidad_baneadas', $cantidad_baneadas);
@@ -162,7 +162,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de usuarios.
+		// Asignamos listado de usuarios.
 		$vista->assign('usuarios', $lst);
 		unset($lst);
 
@@ -174,14 +174,17 @@ class Base_Controller_Admin_Usuario extends Controller {
 		}
 		$vista->assign('rangos', $lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuarios', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -232,14 +235,17 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Información del usuario del que se ven las advertencias.
 		$vista->assign('usuario', $model_usuario->as_array());
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Advertencias', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -286,7 +292,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 	/**
 	 * Activamos la cuenta del usuario.
-	 * @param type $id
+	 * @param int $id
 	 */
 	public function action_activar_usuario($id)
 	{
@@ -333,7 +339,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$message->setBody($message_view->parse());
 			unset($message_view);
 
-			// Envio el email.
+			// Envío el email.
 			$mailer = Email::get_mailer();
 			$mailer->send($message);
 		}
@@ -399,7 +405,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marco sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -410,7 +416,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$vista->assign('motivo', $motivo);
 			$vista->assign('fin', $fin);
 
-			// Quitamos BBCode para dimenciones.
+			// Quitamos BBCode para dimensiones.
 			$motivo_clean = preg_replace('/\[([^\[\]]+)\]/', '', $motivo);
 
 			if ( ! isset($motivo_clean{10}) || isset($motivo_clean{200}))
@@ -446,7 +452,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				$model_suspension = new Model_Usuario_Suspension;
 				$s_id = $model_suspension->nueva($id, Usuario::$usuario_id, $motivo, $fin);
 
-				// Envio el suceso.
+				// Envío el suceso.
 				$model_suceso = new Model_Suceso;
 				if (Usuario::$usuario_id != $id)
 				{
@@ -464,7 +470,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -472,6 +478,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Suspender', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -575,7 +584,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -624,13 +633,13 @@ class Base_Controller_Admin_Usuario extends Controller {
 					$model_suceso->crear($id, 'usuario_advertir', FALSE, $adv_id);
 				}
 
-				// Seteamos mensaje flash y volvemos.
+				// Asignamos mensaje flash y volvemos.
 				add_flash_message(FLASH_SUCCESS, __('Advertencia enviada correctamente.', FALSE));
 				Request::redirect('/admin/usuario');
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -639,13 +648,16 @@ class Base_Controller_Admin_Usuario extends Controller {
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
 
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Advertir', FALSE));
+
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**
 	 * Baneamos a un usuario
-	 * @param int $id ID del usuario a banear.
+	 * @param int $id ID del usuario a bloquear.
 	 */
 	public function action_banear_usuario($id)
 	{
@@ -681,7 +693,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -690,7 +702,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			// Valores para cambios.
 			$vista->assign('razon', $razon);
 
-			// Quitamos BBCode para dimenciones.
+			// Quitamos BBCode para dimensiones.
 			$razon_clean = preg_replace('/\[([^\[\]]+)\]/', '', $razon);
 
 			if ( ! isset($razon_clean{10}) || isset($razon_clean{200}))
@@ -705,7 +717,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 				// Evitamos XSS.
 				$razon = htmlentities($razon, ENT_NOQUOTES, 'UTF-8');
 
-				// Baneamos al usuario.
+				// Bloqueamos al usuario.
 				$model_baneos = new Model_Usuario_Baneo;
 				$ban_id = $model_baneos->nuevo($id, Usuario::$usuario_id, 0, $razon);
 
@@ -727,7 +739,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -735,6 +747,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Banear', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -773,7 +788,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('baneo', $baneo->as_array());
 		$vista->assign('usuario', $model_usuario->as_array());
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -782,6 +797,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		unset($vista);
 
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Detalles baneo', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -828,7 +846,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('usuario', $model_usuario->as_array());
 		$vista->assign('restante', $suspension->restante());
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -838,12 +856,15 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
 
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Detalles suspensión', FALSE));
+
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**
-	 * Quitamos lel baneo de un usuario.
+	 * Quitamos el baneo de un usuario.
 	 * @param int $id ID del usuario a quitar la suspensión.
 	 */
 	public function action_desbanear_usuario($id)
@@ -894,7 +915,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 	/**
 	 * Cambiamos el rango de un usuario.
 	 * @param int $usuario ID del usuario al que se le cambia el rango.
-	 * @param int $rango ID del rango a setear.
+	 * @param int $rango ID del rango a asignar.
 	 */
 	public function action_cambiar_rango($usuario, $rango)
 	{
@@ -938,7 +959,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			// Actualizo el rango.
 			$model_usuario->actualizar_campo('rango', $rango);
 
-			// Envio el suceso.
+			// Envío el suceso.
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $model_usuario->id)
 			{
@@ -958,7 +979,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargo la vista.
 		$vista = View::factory('admin/usuario/cambiar_rango');
 
-		// Seteo la información.
+		// Asigno la información.
 		$vista->assign('usuario', $model_usuario->as_array());
 
 		// Cargamos los rangos.
@@ -974,6 +995,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.usuario'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Cambiar rango', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1000,7 +1024,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$lst[$k]['usuarios'] = $v->cantidad_usuarios();
 		}
 
-		// Seteamos listado de rangos.
+		// Asignamos listado de rangos.
 		$vista->assign('rangos', $lst);
 		unset($lst);
 
@@ -1008,7 +1032,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_config = new Model_Configuracion;
 		$vista->assign('rango_defecto', (int) $model_config->get('rango_defecto', 1));
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1016,6 +1040,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.rangos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Rangos', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1073,7 +1100,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$listado[$k] = $v->as_array();
 		}
 
-		// Seteamos listado de usuarios.
+		// Asignamos listado de usuarios.
 		$vista->assign('usuarios', $listado);
 		unset($listado);
 
@@ -1085,7 +1112,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		}
 		$vista->assign('rangos', $lst);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1093,6 +1120,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.rangos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Rango', FALSE).' - '.__('Listado de usuarios', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1163,7 +1193,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('cantidad', '');
 		$vista->assign('error_cantidad', FALSE);
 
-		// Cargamos el listado de imagens para rangos disponibles.
+		// Cargamos el listado de imágenes para rangos disponibles.
 		$imagenes_rangos = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
 		unset($imagenes_rangos[1], $imagenes_rangos[0]); // Quitamos . y ..
 
@@ -1171,7 +1201,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -1262,15 +1292,13 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 				//TODO: agregar suceso de administración.
 
-				// Seteo FLASH message.
+				// Informo y vuelvo.
 				add_flash_message(FLASH_SUCCESS, __('El rango se creó correctamente', FALSE));
-
-				// Redireccionamos.
 				Request::redirect('/admin/usuario/rangos');
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1278,6 +1306,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.rangos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Rangos', FALSE).' - '.__('Nuevo', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1326,7 +1357,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -1447,7 +1478,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 					$model_rango->actualizar_campo('tipo', $tipo);
 				}
 
-				// Actualizo la cantidads.
+				// Actualizo la cantidades.
 				if ($model_rango->cantidad != $cantidad)
 				{
 					$model_rango->actualizar_campo('cantidad', $cantidad);
@@ -1458,7 +1489,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1466,6 +1497,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.rangos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Rango', FALSE).' - '.__('Editar', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1563,7 +1597,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$model_config = new Model_Configuracion;
 		$vista->assign('rango_defecto', (int) $model_config->get('rango_defecto', 1));
 
-		// Seteamos datos del rango.
+		// Asignamos datos del rango.
 		$vista->assign('rango', $model_rango->as_array());
 
 		// Permisos del rango.
@@ -1576,7 +1610,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$lst[$k] = $v->as_array();
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1584,6 +1618,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.rangos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Rango', FALSE).' - '.__('Ver', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1631,7 +1668,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 	}
 
 	/**
-	 * Listado de sessiones de usuarios activas.
+	 * Listado de sesiones de usuarios activas.
 	 * @param int $pagina Número de página a mostrar.
 	 */
 	public function action_sesiones($pagina)
@@ -1645,10 +1682,10 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/usuario/sesiones');
 
-		// Modelo de sessiones.
+		// Modelo de sesiones.
 		$model_session = new Model_Session(session_id());
 
-		// Quitamos sessiones terminadas.
+		// Quitamos sesiones terminadas.
 		$model_session->limpiar();
 
 		// Cargamos el listado de usuarios.
@@ -1669,11 +1706,11 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de noticias.
+		// Asignamos listado de noticias.
 		$vista->assign('sesiones', $lst);
 		unset($lst);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1682,23 +1719,26 @@ class Base_Controller_Admin_Usuario extends Controller {
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.sesiones'));
 
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Sessiones', FALSE));
+
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**
 	 * Borramos un rango.
-	 * @param string $id ID de la session a borrar.
+	 * @param string $id ID de la sesión a borrar.
 	 */
 	public function action_terminar_session($id)
 	{
-		// Cargamos el modelo del session.
+		// Cargamos el modelo del sesión.
 		$model_session = new Model_Session( (int) $id);
 
 		// Verificamos exista.
 		if ($model_session->existe())
 		{
-			// Terminamos la session.
+			// Terminamos la sesión.
 			$model_session->borrar();
 			add_flash_message(FLASH_SUCCESS, __('Se terminó correctamente la sesión.', FALSE));
 		}
@@ -1733,7 +1773,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$lst[$k] = $v->as_array();
 		}
 
-		// Seteamos listado de medallas.
+		// Asignamos listado de medallas.
 		$vista->assign('medallas', $lst);
 		unset($lst);
 
@@ -1741,7 +1781,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$paginador = new Paginator(Model_Medalla::cantidad(), $cantidad_por_pagina);
 		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/usuario/medallas/%s/'));
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1749,6 +1789,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.medallas'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Medallas', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1775,7 +1818,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('cantidad', '');
 		$vista->assign('error_cantidad', FALSE);
 
-		// Cargamos el listado de imagenws para las medallas disponibles.
+		// Cargamos el listado de imágenes para las medallas disponibles.
 		$imagenes_medallas = glob(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS.'*_16.{png,jpg,gif}', GLOB_BRACE);
 		if ( ! is_array($imagenes_medallas))
 		{
@@ -1792,7 +1835,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marco sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -1855,15 +1898,13 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 				//TODO: agregar suceso de administración.
 
-				// Seteo FLASH message.
+				// Informamos y volvemos.
 				add_flash_message(FLASH_SUCCESS, __('La medalla se creó correctamente', FALSE));
-
-				// Redireccionamos.
 				Request::redirect('/admin/usuario/medallas/');
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1871,6 +1912,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.medallas'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Medallas', FALSE).' - '.__('Nueva', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1923,7 +1967,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -2004,7 +2048,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 					$model_medalla->actualizar_campo('tipo', $tipo);
 				}
 
-				// Actualizo el condicion.
+				// Actualizo el condición.
 				if ($model_medalla->condicion != $condicion)
 				{
 					$model_medalla->actualizar_campo('condicion', $condicion);
@@ -2021,7 +2065,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -2029,6 +2073,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.medallas'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Medalla', FALSE).' - '.__('Editar', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -2086,11 +2133,11 @@ class Base_Controller_Admin_Usuario extends Controller {
 			$listado[$k] = $v->as_array();
 		}
 
-		// Seteamos listado de usuarios.
+		// Asignamos listado de usuarios.
 		$vista->assign('usuarios', $listado);
 		unset($listado);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -2098,6 +2145,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('usuarios.medallas'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Administración', FALSE).' - '. __('Usuario', FALSE).' - '.__('Medallas', FALSE).' - '.__('Usuarios con la medalla', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

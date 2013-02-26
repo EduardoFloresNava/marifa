@@ -33,7 +33,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Tops extends Controller {
 
 	/**
-	 * Menu secundario.
+	 * Menú secundario.
 	 * @param string $activo Elemento activo actualmente.
 	 * @return array
 	 */
@@ -47,14 +47,14 @@ class Base_Controller_Tops extends Controller {
 			unset($call);
 		}
 
-		// Creo el menu.
+		// Creo el menú.
 		$menu = new Menu('tops_menu');
 
 		// Agrego elementos.
 		$menu->element_set(__('Posts', FALSE), '/tops/', 'posts');
 		$menu->element_set(__('Usuarios', FALSE), '/tops/usuarios/', 'usuarios');
 
-		// Devuelvo el menu.
+		// Devuelvo el menú.
 		return $menu->as_array($activo);
 	}
 
@@ -68,24 +68,24 @@ class Base_Controller_Tops extends Controller {
 		// Cargamos la portada.
 		$portada = View::factory('tops/index');
 
-		// Seteo el menu.
+		// Seteo el menú.
 		$this->template->assign('master_bar', parent::base_menu('tops'));
 		$this->template->assign('top_bar', $this->submenu());
 
-		// Cargo las categorias.
+		// Cargo las categorías.
 		$model_categorias = new Model_Categoria;
 
 		// Seteo el listado en la vista.
 		$portada->assign('categorias', $model_categorias->lista());
 
-		// Obtengo la categoria por POST.
+		// Obtengo la categoría por POST.
 		//TODO: hacer una mejora con jQuery.
 		if (isset($_POST['categoria']))
 		{
 			$categoria = $_POST['categoria'];
 		}
 
-		// Verifico si existe la categoria.
+		// Verifico si existe la categoría.
 		$categoria = (trim($categoria) == '') ? NULL : trim($categoria);
 		if ($categoria !== NULL && $categoria != 'todas')
 		{
@@ -105,7 +105,7 @@ class Base_Controller_Tops extends Controller {
 			$categoria_id = NULL;
 		}
 
-		// Seteo la categoria actual.
+		// Seteo la categoría actual.
 		$portada->assign('categoria', $categoria);
 
 		// Obtengo el período.
@@ -137,8 +137,8 @@ class Base_Controller_Tops extends Controller {
 
 	/**
 	 * Mostramos tops de usuarios.
-	 * @param string $categoria Categoria para filtar los tops de usuario.
-	 * @param int $periodo Período para filtar usuarios.
+	 * @param string $categoria Categoría para filtrar los tops de usuario.
+	 * @param int $periodo Período para filtrar usuarios.
 	 */
 
 	public function action_usuarios($categoria, $periodo)
@@ -146,24 +146,24 @@ class Base_Controller_Tops extends Controller {
 		// Cargamos la portada.
 		$portada = View::factory('tops/usuarios');
 
-		// Seteo el menu.
+		// Seteo el menú.
 		$this->template->assign('master_bar', parent::base_menu('tops'));
 		$this->template->assign('top_bar', $this->submenu());
 
-		// Cargo las categorias.
+		// Cargo las categorías.
 		$model_categorias = new Model_Categoria;
 
 		// Seteo el listado en la vista.
 		$portada->assign('categorias', $model_categorias->lista());
 
-		// Obtengo la categoria por POST.
+		// Obtengo la categoría por POST.
 		//TODO: hacer una mejora con jQuery.
 		if (isset($_POST['categoria']))
 		{
 			$categoria = $_POST['categoria'];
 		}
 
-		// Verifico si existe la categoria.
+		// Verifico si existe la categoría.
 		$categoria = (trim($categoria) == '') ? NULL : trim($categoria);
 		if ($categoria !== NULL && $categoria != 'todas')
 		{
@@ -183,7 +183,7 @@ class Base_Controller_Tops extends Controller {
 			$categoria_id = NULL;
 		}
 
-		// Seteo la categoria actual.
+		// Seteo la categoría actual.
 		$portada->assign('categoria', $categoria);
 
 		// Obtengo el período.

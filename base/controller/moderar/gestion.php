@@ -33,11 +33,11 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Moderar_Gestion extends Controller {
 
 	/**
-	 * Verificamos que esté logueado para poder realizar las acciones.
+	 * Verificamos que esté identificado para poder realizar las acciones.
 	 */
 	public function before()
 	{
-		// Verifico esté logueado.
+		// Verifico esté identificado.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
@@ -99,11 +99,11 @@ class Base_Controller_Moderar_Gestion extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de suspensiones.
+		// Asignamos listado de suspensiones.
 		$vista->assign('suspensiones', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -111,6 +111,9 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('gestion.usuarios'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Gestión', FALSE).' - '.__('Usuarios', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -182,7 +185,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('moderar/gestion/buscador');
 
-		// Seteo consulta enviada.
+		// Asigno consulta enviada.
 		$vista->assign('query', '');
 
 		if (Request::method() == 'POST')
@@ -198,7 +201,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 				$tipo = 0;
 			}
 
-			// Seteo en la vista.
+			// Asigno en la vista.
 			$vista->assign('query', $query);
 
 			// Armo conjunto de búsqueda.
@@ -276,7 +279,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -284,6 +287,9 @@ class Base_Controller_Moderar_Gestion extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('gestion.buscador'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Gestión', FALSE).' - '.__('Buscador', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

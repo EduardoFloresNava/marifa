@@ -68,7 +68,7 @@ class Base_Controller_Notificaciones extends Controller {
 		// Cargamos notificaciones.
 		$sucesos = Suceso_Barra::obtener_listado_completo(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
 
-		// Verifivo validez de la pagina.
+		// Verifico validez de la pagina.
 		if (count($sucesos) == 0 && $pagina != 1)
 		{
 			Request::redirect('/notificaciones/');
@@ -141,10 +141,10 @@ class Base_Controller_Notificaciones extends Controller {
 		// Cargo sucesos.
 		$model_suceso = new Model_Suceso;
 
-		// Seteo como vistas.
+		// Marco como vistas.
 		$model_suceso->vistas(Usuario::$usuario_id);
 
-		// Notifico y redirecciono.
+		// Notifico y vuelvo.
 		add_flash_message(FLASH_SUCCESS, __('Las notificaciones han sido marcadas como leídas correctamente.', FALSE));
 		Request::redirect('/notificaciones/');
 	}
@@ -263,7 +263,7 @@ class Base_Controller_Notificaciones extends Controller {
 		// Evito plantilla base.
 		$this->template = NULL;
 
-		// Envio resultado.
+		// Envío resultado.
 		$view->show();
 
 		exit;

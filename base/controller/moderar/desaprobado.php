@@ -33,11 +33,11 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Moderar_Desaprobado extends Controller {
 
 	/**
-	 * Verificamos que el usuario esté logueado.
+	 * Verificamos que el usuario esté identificado.
 	 */
 	public function before()
 	{
-		// Verifico que esté logueado.
+		// Verifico que esté identificado.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
@@ -123,11 +123,11 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de posts.
+		// Asigno listado de posts.
 		$vista->assign('posts', $lst);
 		unset($lst);
 
-		// Seteamos el menú.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -135,6 +135,9 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('desaprobado.posts'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Contenido desaprobado', FALSE).' - '.__('Posts', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -369,11 +372,11 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de comentarios.
+		// Asignamos listado de comentarios.
 		$vista->assign('comentarios', $lst);
 		unset($lst);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -381,6 +384,9 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('desaprobado.comentarios'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Contenido desaprobado', FALSE).' - '.__('Comentarios', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

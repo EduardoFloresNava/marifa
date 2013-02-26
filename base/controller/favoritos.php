@@ -55,11 +55,11 @@ class Base_Controller_Favoritos extends Controller {
 		// Creo el menu.
 		$menu = new Menu('favoritos_menu');
 
-		// Agreglo elementos.
+		// Arreglo elementos.
 		$menu->element_set(__('Posts', FALSE), '/favoritos/', 'posts', NULL, Usuario::usuario()->cantidad_favoritos_posts());
 		$menu->element_set(__('Fotos', FALSE), '/favoritos/fotos/', 'fotos', NULL, Usuario::usuario()->cantidad_favoritos_fotos());
 
-		// Devuelvo el menu.
+		// Devuelvo el menú.
 		return $menu->as_array($selected);
 	}
 
@@ -82,7 +82,7 @@ class Base_Controller_Favoritos extends Controller {
 		// Cargamos el listado de favoritos.
 		$favoritos = Usuario::usuario()->listado_posts_favoritos($pagina, $cantidad_por_pagina);
 
-		// Verifivo que la página seleccionada sea válida.
+		// Verifico que la página seleccionada sea válida.
 		if (count($favoritos) == 0 && $pagina != 1)
 		{
 			Request::redirect('/favoritos/');
@@ -103,11 +103,11 @@ class Base_Controller_Favoritos extends Controller {
 			$favoritos[$k] = $a;
 		}
 
-		// Seteo parámetros a la vista.
+		// Asigno parámetros a la vista.
 		$vista->assign('favoritos', $favoritos);
 		unset($favoritos);
 
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', self::submenu('posts'));
 
@@ -137,7 +137,7 @@ class Base_Controller_Favoritos extends Controller {
 		// Cargamos el listado de favoritos.
 		$favoritos = Usuario::usuario()->listado_fotos_favoritos($pagina, $cantidad_por_pagina);
 
-		// Verifivo que la página seleccionada sea válida.
+		// Verifico que la página seleccionada sea válida.
 		if (count($favoritos) == 0 && $pagina != 1)
 		{
 			Request::redirect('/favoritos/fotos/');
@@ -158,11 +158,11 @@ class Base_Controller_Favoritos extends Controller {
 			$favoritos[$k] = $a;
 		}
 
-		// Seteo parámetros a la vista.
+		// Asigno parámetros a la vista.
 		$vista->assign('favoritos', $favoritos);
 		unset($favoritos);
 
-		// Seteo el menu.
+		// Asigno el menu.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', self::submenu('fotos'));
 

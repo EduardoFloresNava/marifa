@@ -88,18 +88,18 @@ class Base_Controller_Home extends Controller {
 	/**
 	 * Portada del sitio.
 	 * @param int $pagina Número de página para lo últimos posts.
-	 * @param string $categoria Categoria de los posts. Si no se especifica se toman todas.
+	 * @param string $categoria Categoría de los posts. Si no se especifica se toman todas.
 	 */
 	public function action_index($pagina, $categoria = NULL)
 	{
 		// Cargamos la portada.
 		$portada = View::factory('home/index');
 
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 		$this->template->assign('top_bar', self::submenu('inicio'));
 
-		// Verifico categoria.
+		// Verifico categoría.
 		if ($categoria !== NULL)
 		{
 			// Verifico formato.
@@ -109,7 +109,7 @@ class Base_Controller_Home extends Controller {
 				Request::redirect('/post/'.$pagina);
 			}
 
-			// Cargo la categoria.
+			// Cargo la categoría.
 			$model_categoria = new Model_Categoria;
 
 			// Verifico sea válida.
@@ -120,12 +120,12 @@ class Base_Controller_Home extends Controller {
 			}
 			else
 			{
-				// Cargo la categoria.
+				// Cargo la categoría.
 				$model_categoria->load_by_seo($categoria);
 			}
 		}
 
-		// Seteo id de la categoria.
+		// Asigno id de la categoría.
 		$categoria_id = isset($model_categoria) ? $model_categoria->id : NULL;
 
 		// Cargamos datos de posts.
@@ -159,7 +159,7 @@ class Base_Controller_Home extends Controller {
 				$post_sticky[$k] = $a;
 			}
 
-			// Seteo y limpio.
+			// Asigno y limpio.
 			$portada->assign('sticky', $post_sticky);
 			unset($post_sticky);
 		}
@@ -168,10 +168,10 @@ class Base_Controller_Home extends Controller {
 			$portada->assign('sticky', array());
 		}
 
-		// Ultimos posts
+		// Últimos posts
 		$post_list = $model_post->obtener_ultimos($pagina, $cantidad_por_pagina, $categoria_id);
 
-		// Verifivo validez de la pagina.
+		// Verifico valides de la pagina.
 		if (count($post_list) == 0 && $pagina != 1)
 		{
 			Request::redirect('/');
@@ -305,7 +305,7 @@ class Base_Controller_Home extends Controller {
 		// Cargamos la portada.
 		$portada = View::factory('home/usuarios');
 
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 		$this->template->assign('top_bar', self::submenu('usuarios'));
 
@@ -322,7 +322,7 @@ class Base_Controller_Home extends Controller {
 		// Cargo usuarios.
 		$listado = $model_usuario->listado($pagina, $cantidad_por_pagina);
 
-		// Verifivo validez de la pagina.
+		// Verifico validez de la pagina.
 		if (count($listado) == 0 && $pagina != 1)
 		{
 			Request::redirect('/home/usuarios/');
@@ -346,6 +346,9 @@ class Base_Controller_Home extends Controller {
 
 		$portada->assign('usuarios', $listado);
 		unset($listado);
+
+		// Asigno el título.
+		$this->template->assign('title', __('Usuarios', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());

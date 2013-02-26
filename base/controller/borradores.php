@@ -33,11 +33,11 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Borradores extends Controller {
 
 	/**
-	 * Verifico que esté logueado para poder acceder a las secciones.
+	 * Verifico que esté identificado para poder acceder a las secciones.
 	 */
 	public function before()
 	{
-		// Verifico que esté logueado.
+		// Verifico que esté identificado.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ver los borradores.', FALSE));
@@ -97,11 +97,11 @@ class Base_Controller_Borradores extends Controller {
 			$borradores[$k] = $a;
 		}
 
-		// Seteo parámetros a la vista.
+		// Asigno parámetros a la vista.
 		$vista->assign('borradores', $borradores);
 		unset($borradores);
 
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 
 		// Asignamos la vista a la plantilla base.

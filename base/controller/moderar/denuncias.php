@@ -33,11 +33,11 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Moderar_Denuncias extends Controller {
 
 	/**
-	 * Verificamos que el usuario esté logueado.
+	 * Verificamos que el usuario esté identificado.
 	 */
 	public function before()
 	{
-		// Verifico que esté logueado.
+		// Verifico que esté identificado.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
@@ -73,7 +73,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$tipo = 0;
 		}
 
-		// Cantidad de elementos por pagina.
+		// Cantidad de elementos por página.
 		$model_configuracion = new Model_Configuracion;
 		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
 
@@ -112,11 +112,11 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de denuncias.
+		// Asignamos listado de denuncias.
 		$vista->assign('denuncias', $lst);
 		unset($lst);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -124,6 +124,9 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.posts'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Posts', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -158,7 +161,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargo la vista.
 		$vista = View::factory('moderar/denuncias/detalle_post');
 
-		// Seteamos los datos.
+		// Asignamos los datos.
 		$vista->assign('denuncia', $model_denuncia->as_array());
 		$vista->assign('denunciante', $model_denuncia->usuario()->as_array());
 
@@ -167,7 +170,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$vista->assign('post', $post);
 		unset($post);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -175,6 +178,9 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.posts'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Post', FALSE).' - '.__('Detalles'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -237,7 +243,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			// Actualizo el estado.
 			$model_denuncia->actualizar_campo('estado', Model_Post_Denuncia::ESTADO_APLICADA);
 
-			// Envio el suceso.
+			// Envío el suceso.
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $model_denuncia->usuario_id)
 			{
@@ -378,11 +384,11 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de denuncias.
+		// Asignamos listado de denuncias.
 		$vista->assign('denuncias', $lst);
 		unset($lst);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -390,6 +396,9 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.fotos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Fotos', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -424,7 +433,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargo la vista.
 		$vista = View::factory('moderar/denuncias/detalle_foto');
 
-		// Seteamos los datos.
+		// Asignamos los datos.
 		$vista->assign('denuncia', $model_denuncia->as_array());
 		$vista->assign('denunciante', $model_denuncia->usuario()->as_array());
 
@@ -433,7 +442,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$vista->assign('foto', $foto);
 		unset($foto);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -441,6 +450,9 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.fotos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Foto', FALSE).' - '.__('Detalles'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -643,11 +655,11 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de denuncias.
+		// Asignamos listado de denuncias.
 		$vista->assign('denuncias', $lst);
 		unset($lst);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -656,12 +668,15 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
 
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Usuarios', FALSE));
+
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**
-	 * Vermos los detalles de una denuncia a un usuario.
+	 * Vemos los detalles de una denuncia a un usuario.
 	 * @param int $denuncia ID de la denuncia a ver lo detalles.
 	 */
 	public function action_detalle_usuario($denuncia)
@@ -689,12 +704,12 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargo la vista.
 		$vista = View::factory('moderar/denuncias/detalle_usuario');
 
-		// Seteamos los datos.
+		// Asignamos los datos.
 		$vista->assign('denuncia', $model_denuncia->as_array());
 		$vista->assign('denunciante', $model_denuncia->usuario()->as_array());
 		$vista->assign('denunciado', $model_denuncia->denunciado()->as_array());
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -702,6 +717,9 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Usuario', FALSE).' - '.__('Detalles'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -827,7 +845,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marco sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -882,7 +900,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -890,6 +908,9 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Usuario', FALSE).' - '.__('Advertir'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -956,7 +977,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marco sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -1015,13 +1036,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 					$model_suceso->crear($id, 'usuario_suspender', FALSE, $s_id);
 				}
 
-				// Seteamos mensaje flash y volvemos.
+				// Asignamos mensaje flash y volvemos.
 				add_flash_message(FLASH_SUCCESS, __('Usuario suspendido correctamente.', FALSE));
 				Request::redirect('/moderar/denuncias/usuarios/');
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
 		// Cargamos plantilla administración.
@@ -1029,6 +1050,9 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Usuario', FALSE).' - '.__('Suspender'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

@@ -239,7 +239,7 @@ class Base_Controller_Post extends Controller {
 				}
 			}
 
-			// Categoria del post.
+			// Categoría del post.
 			$view->assign('categoria', $model_post->categoria()->as_array());
 
 			// Etiquetas.
@@ -260,7 +260,7 @@ class Base_Controller_Post extends Controller {
 			// Cargo comentarios.
 			$cmts = $model_post->comentarios(Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO) ? NULL : Model_Post_Comentario::ESTADO_VISIBLE, $pagina, $cantidad_por_pagina);
 
-			// Verifivo validez de la pagina.
+			// Verifico validez de la pagina.
 			if (count($cmts) == 0 && $pagina != 1)
 			{
 				Request::redirect($this->post_url($model_post));
@@ -298,7 +298,7 @@ class Base_Controller_Post extends Controller {
 		}
 
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 		$this->template->assign('top_bar', Controller_Home::submenu('index'));
 
@@ -313,7 +313,7 @@ class Base_Controller_Post extends Controller {
 	 */
 	public function action_editar($post)
 	{
-		// Verificamos usuario logueado.
+		// Verificamos que el usuario este identificado.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder editar posts.', FALSE));
@@ -375,7 +375,7 @@ class Base_Controller_Post extends Controller {
 			$view->assign($k, FALSE);
 		}
 
-		// Listado de categorias.
+		// Listado de categorías.
 		$model_categoria = new Model_Categoria;
 		$view->assign('categorias', $model_categoria->lista());
 
@@ -459,7 +459,7 @@ class Base_Controller_Post extends Controller {
 					// Elimino espacios extra.
 					$tags[$k] = trim(strtolower($v));
 
-					// Verifico no sea vacia.
+					// Verifico no sea vacía.
 					if ($tags[$k] == '')
 					{
 						unset($tags[$k]);
@@ -698,7 +698,7 @@ class Base_Controller_Post extends Controller {
 			Request::redirect('/usuario/login');
 		}
 
-		// Verificamos el método de envio.
+		// Verificamos el método de envío.
 		if (Request::method() != 'POST')
 		{
 			Request::redirect($this->post_url($model_post));
@@ -988,7 +988,7 @@ class Base_Controller_Post extends Controller {
 		// Actualizo el estado.
 		$model_comentario->actualizar_estado($tipo ? Model_Post_Comentario::ESTADO_VISIBLE : Model_Post_Comentario::ESTADO_OCULTO);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id == $model_comentario->usuario_id)
 		{
@@ -1055,7 +1055,7 @@ class Base_Controller_Post extends Controller {
 		// Actualizo el estado.
 		$model_comentario->actualizar_estado(Model_Post_Comentario::ESTADO_BORRADO);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id == $model_comentario->usuario_id)
 		{
@@ -1179,9 +1179,12 @@ class Base_Controller_Post extends Controller {
 			}
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 		$this->template->assign('top_bar', Controller_Home::submenu());
+
+		// Asigno sel título.
+		$this->template->assign('title', __('Editar comentario - Post', FALSE));
 
 		// Asignamos la vista.
 		$this->template->assign('contenido', $vista->parse());
@@ -1202,11 +1205,11 @@ class Base_Controller_Post extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, 'Debes iniciar sesión para poder seguir usuarios.');
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder seguir usuarios.', FALSE));
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, 'Debes iniciar sesión para poder dejar de seguir usuarios.');
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE));
 			}
 			Request::redirect('/usuario/login');
 		}
@@ -1280,7 +1283,7 @@ class Base_Controller_Post extends Controller {
 			$model_usuario->fin_seguir(Usuario::$usuario_id);
 		}
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$tipo = $seguir ? 'usuario_seguir' : 'usuario_fin_seguir';
 		$model_suceso = new Model_Suceso;
 		if ($model_usuario->id != Usuario::$usuario_id)
@@ -1420,7 +1423,7 @@ class Base_Controller_Post extends Controller {
 		// Actualizo el parámetro.
 		$model_post->setear_sticky($tipo);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id != $model_post->usuario_id)
 		{
@@ -1491,7 +1494,7 @@ class Base_Controller_Post extends Controller {
 		// Actualizo el parámetro.
 		$model_post->setear_sponsored($tipo);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id != $model_post->usuario_id)
 		{
@@ -1588,7 +1591,7 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sessión para poder aprobar/rechazar posts.', FALSE));
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder aprobar/rechazar posts.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
@@ -2035,7 +2038,7 @@ class Base_Controller_Post extends Controller {
 			}
 			unset($contenido_clean);
 
-			// Verificamos la categoria.
+			// Verificamos la categoría.
 			$model_categoria = new Model_Categoria;
 			if ( ! $model_categoria->existe_seo($categoria))
 			{
@@ -2082,7 +2085,7 @@ class Base_Controller_Post extends Controller {
 					// Elimino espacios extra.
 					$tags[$k] = trim(strtolower($v));
 
-					// Verifico no sea vacia.
+					// Verifico no sea vacía.
 					if ($tags[$k] == '')
 					{
 						unset($tags[$k]);
@@ -2180,7 +2183,7 @@ class Base_Controller_Post extends Controller {
 			}
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 		$this->template->assign('top_bar', Controller_Home::submenu('nuevo'));
 

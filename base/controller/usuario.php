@@ -57,7 +57,7 @@ class Base_Controller_Usuario extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', __('Ingreso'), FALSE);
+		$this->template->assign('title', __('Ingreso', FALSE));
 
 		// Cargamos la vista del usuario.
 		$view_usuario = View::factory('usuario/login');
@@ -288,7 +288,7 @@ class Base_Controller_Usuario extends Controller {
 
 						if ($t_act == 1)
 						{
-							// Genero el token de activacion.
+							// Genero el token de activación.
 							$model_activar = new Model_Usuario_Recuperacion;
 							$token = $model_activar->crear($id, $email, Model_Usuario_Recuperacion::TIPO_ACTIVACION);
 
@@ -307,7 +307,7 @@ class Base_Controller_Usuario extends Controller {
 							$message->setBody($message_view->parse());
 							unset($message_view);
 
-							// Envio el email.
+							// Envío el email.
 							$mailer = Email::get_mailer();
 							$mailer->send($message);
 						}

@@ -37,7 +37,7 @@ class Base_Controller_Pages extends Controller {
 	 */
 	public function action_protocolo()
 	{
-		// Menu principal.
+		// Menú principal.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 
 		// Asignamos la vista.
@@ -55,7 +55,7 @@ class Base_Controller_Pages extends Controller {
 	}
 
 	/**
-	 * Terminos y condiciones.
+	 * Términos y condiciones.
 	 */
 	public function action_tyc()
 	{
@@ -80,7 +80,7 @@ class Base_Controller_Pages extends Controller {
 	 */
 	public function action_privacidad()
 	{
-		// Menu principal.
+		// Menú principal.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 
 		// Asignamos la vista.
@@ -101,7 +101,7 @@ class Base_Controller_Pages extends Controller {
 	 */
 	public function action_dmca()
 	{
-		// Menu principal.
+		// Menú principal.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 
 		// Asignamos la vista.

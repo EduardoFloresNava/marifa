@@ -50,7 +50,7 @@ class Base_Controller_Foto extends Controller {
 	 */
 	protected function submenu($activo)
 	{
-		// Creo el menu.
+		// Creo el menú.
 		$menu = new Menu('foto_menu');
 
 		// Agrego elementos.
@@ -61,7 +61,7 @@ class Base_Controller_Foto extends Controller {
 			$menu->element_set(__('Mis Fotos', FALSE), '/foto/mis_fotos/', 'mis_fotos');
 		}
 
-		// Devuelvo el menu.
+		// Devuelvo el menú.
 		return $menu->as_array($activo);
 	}
 
@@ -102,7 +102,7 @@ class Base_Controller_Foto extends Controller {
 	 */
 	public function action_index($pagina, $categoria)
 	{
-		// Verifico categoria.
+		// Verifico categoría.
 		if ($categoria !== NULL)
 		{
 			// Verifico formato.
@@ -112,7 +112,7 @@ class Base_Controller_Foto extends Controller {
 				Request::redirect('/foto/'.$pagina);
 			}
 
-			// Cargo la categoria.
+			// Cargo la categoría.
 			$model_categoria = new Model_Categoria;
 
 			// Verifico sea válida.
@@ -123,15 +123,15 @@ class Base_Controller_Foto extends Controller {
 			}
 			else
 			{
-				// Cargo la categoria.
+				// Cargo la categoría.
 				$model_categoria->load_by_seo($categoria);
 			}
 		}
 
-		// Seteo id de la categoria.
+		// Seteo id de la categoría.
 		$categoria_id = isset($model_categoria) ? $model_categoria->id : NULL;
 
-		// Cargo menu superior.
+		// Cargo menú superior.
 		$menu = View::factory('foto/header');
 		if (isset($model_categoria))
 		{
@@ -163,7 +163,7 @@ class Base_Controller_Foto extends Controller {
 		$model_fotos = new Model_Foto;
 		$fotos = $model_fotos->obtener_ultimas($pagina, $cantidad_por_pagina, $categoria_id);
 
-		// Verifivo validez de la pagina.
+		// Verifico validez de la pagina.
 		if (count($fotos) == 0 && $pagina != 1)
 		{
 			if ($categoria_id === NULL)
@@ -229,7 +229,7 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('fotos', $fotos);
 		unset($fotos);
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('fotos'));
 		//$this->template->assign('top_bar', $this->submenu('index'));
 
@@ -291,7 +291,7 @@ class Base_Controller_Foto extends Controller {
 		$model_fotos = new Model_Foto;
 		$fotos = $model_fotos->obtener_ultimas_usuario(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
 
-		// Verifivo validez de la pagina.
+		// Verifico validez de la pagina.
 		if (count($fotos) == 0 && $pagina != 1)
 		{
 			Request::redirect('/foto/');
@@ -326,7 +326,7 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('fotos', $fotos);
 		unset($fotos);
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('fotos'));
 		$this->template->assign('top_bar', $this->submenu('mis_fotos'));
 
@@ -441,7 +441,7 @@ class Base_Controller_Foto extends Controller {
 		// Cargo comentarios.
 		$cmts = $model_foto->comentarios($pagina, $cantidad_por_pagina);
 
-		// Verifivo validez de la pagina.
+		// Verifico validez de la pagina.
 		if (count($cmts) == 0 && $pagina != 1)
 		{
 			Request::redirect($this->foto_url($model_foto));
@@ -468,7 +468,7 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('comentario_success', get_flash('post_comentario_success'));
 
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('fotos'));
 		$this->template->assign('top_bar', $this->submenu('index'));
 
@@ -569,7 +569,7 @@ class Base_Controller_Foto extends Controller {
 			$model_usuario->fin_seguir(Usuario::$usuario_id);
 		}
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$tipo = $seguir ? 'usuario_seguir' : 'usuario_fin_seguir';
 		$model_suceso = new Model_Suceso;
 		if ($model_usuario->id != Usuario::$usuario_id)
@@ -733,7 +733,7 @@ class Base_Controller_Foto extends Controller {
 		// Agregamos medallas.
 		$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_FAVORITOS);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id != $model_foto->usuario_id)
 		{
@@ -811,7 +811,7 @@ class Base_Controller_Foto extends Controller {
 			// Insertamos el comentario.
 			$id = $model_foto->comentar(Usuario::$usuario_id, $comentario);
 
-			// Envio sucesos de citas.
+			// Envío sucesos de citas.
 			Decoda::procesar($comentario, FALSE);
 
 			// Verifico actualización del rango.
@@ -821,7 +821,7 @@ class Base_Controller_Foto extends Controller {
 			$model_foto->actualizar_medallas(Model_Medalla::CONDICION_FOTO_COMENTARIOS);
 			Usuario::usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_FOTOS);
 
-			// Envio el suceso.
+			// Envío el suceso.
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $model_foto->usuario_id)
 			{
@@ -892,7 +892,7 @@ class Base_Controller_Foto extends Controller {
 		// Actualizo el estado.
 		$model_comentario->actualizar_campo('estado', $tipo ? Model_Foto_Comentario::ESTADO_VISIBLE : Model_Foto_Comentario::ESTADO_OCULTO);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id == $model_comentario->usuario_id)
 		{
@@ -958,7 +958,7 @@ class Base_Controller_Foto extends Controller {
 		// Actualizo el estado.
 		$model_comentario->actualizar_campo('estado', Model_Foto_Comentario::ESTADO_BORRADO);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id == $model_comentario->usuario_id)
 		{
@@ -1024,6 +1024,9 @@ class Base_Controller_Foto extends Controller {
 		// Cargo la vista.
 		$vista = View::factory('/foto/editar_comentario');
 
+		// Asigno título.
+		$this->template->assign('title', __('Foto - Editar comentario', FALSE));
+
 		// Seteo información del comentario.
 		$vista->assign('contenido', $model_comentario->comentario);
 		$vista->assign('error_contenido', FALSE);
@@ -1082,7 +1085,7 @@ class Base_Controller_Foto extends Controller {
 			}
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('foto'));
 		$this->template->assign('top_bar', Controller_Home::submenu());
 
@@ -1115,7 +1118,7 @@ class Base_Controller_Foto extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('foto/nueva');
 
-		// Cargo el listado de categorias.
+		// Cargo el listado de categorías.
 		$model_categorias = new Model_Categoria;
 		$categorias = $model_categorias->lista();
 
@@ -1160,7 +1163,7 @@ class Base_Controller_Foto extends Controller {
 			// Verificamos quitando BBCODE.
 			$descripcion_clean = preg_replace('/\[([^\[\]]+)\]/', '', $descripcion);
 
-			// Verificamos la descripcion.
+			// Verificamos la descripción.
 			if ( ! isset($descripcion_clean{20}) || isset($descripcion{600}))
 			{
 				$view->assign('error_descripcion', __('La descripción debe tener entre 20 y 600 caracteres.', FALSE));
@@ -1179,7 +1182,7 @@ class Base_Controller_Foto extends Controller {
 				}
 			}
 
-			// Verifico la categoria.
+			// Verifico la categoría.
 			if ( ! $model_categorias->existe_seo($categoria))
 			{
 				$view->assign('error_categoria', __('La categoría seleccionada es incorrecta.', FALSE));
@@ -1427,7 +1430,7 @@ class Base_Controller_Foto extends Controller {
 			}
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('fotos'));
 		$this->template->assign('top_bar', Controller_Home::submenu());
 
@@ -1485,7 +1488,7 @@ class Base_Controller_Foto extends Controller {
 		$view->assign('visitantes', $model_foto->visitas !== NULL);
 		$view->assign('categoria', $model_foto->categoria()->seo);
 
-		// Inicializo los errores.
+		// Asigno valores por defecto a los errores.
 		$view->assign('error_titulo', FALSE);
 		$view->assign('error_descripcion', FALSE);
 		$view->assign('error_categoria', FALSE);
@@ -1494,7 +1497,7 @@ class Base_Controller_Foto extends Controller {
 		$model_categoria = new Model_Categoria;
 		$view->assign('categorias', $model_categoria->lista());
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('fotos'));
 		$this->template->assign('top_bar', $this->submenu('index'));
 
@@ -1534,7 +1537,7 @@ class Base_Controller_Foto extends Controller {
 			}
 			unset($contenido_clean);
 
-			// Verificamos la categoria.
+			// Verificamos la categoría.
 			$model_categoria = new Model_Categoria;
 			if ( ! $model_categoria->existe_seo($categoria))
 			{
@@ -1599,7 +1602,7 @@ class Base_Controller_Foto extends Controller {
 	{
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __/'Debes iniciar sesión para poder ocultar/mostrar fotos.', FALSE));
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ocultar/mostrar fotos.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
@@ -1611,14 +1614,14 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __/'La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			add_flash_message(FLASH_ERROR, __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_OCULTAR) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DESAPROBADO) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, __/'La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			add_flash_message(FLASH_ERROR, __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -1636,7 +1639,7 @@ class Base_Controller_Foto extends Controller {
 		}
 		else
 		{
-			add_flash_message(FLASH_ERROR, __/'La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			add_flash_message(FLASH_ERROR, __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -1656,7 +1659,7 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, __/'<b>!Felicitaciones!</b> Acción realizada correctamente.', FALSE));
+		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Acción realizada correctamente.', FALSE));
 		Request::redirect($this->foto_url($model_foto));
 	}
 
@@ -1800,7 +1803,7 @@ class Base_Controller_Foto extends Controller {
 		// Obtengo el contenido y evitamos XSS.
 		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
 
-		// Evito salida por template.
+		// Evito salida de la plantilla base.
 		$this->template = NULL;
 
 		// Proceso contenido.

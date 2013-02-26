@@ -65,7 +65,7 @@ class Base_Controller_Cuenta extends Controller {
 		$menu->element_set(__('Nicks', FALSE), '/cuenta/nick/', 'nick');
 		$menu->element_set(__('Avisos', FALSE), '/cuenta/avisos/', 'avisos', NULL, Usuario::usuario()->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO));
 
-		// Devuelvo el menu parseado.
+		// Devuelvo el menú procesado.
 		return $menu->as_array($activo);
 	}
 
@@ -84,7 +84,7 @@ class Base_Controller_Cuenta extends Controller {
 		$model_usuario = Usuario::usuario();
 		$model_usuario->perfil()->load_list(array('origen', 'sexo', 'nacimiento'));
 
-		// Seteamos los datos actuales.
+		// Asignamos los datos actuales.
 		$view->assign('error', array());
 		$view->assign('email', $model_usuario->email);
 		$view->assign('estado_email', 0);
@@ -225,10 +225,10 @@ class Base_Controller_Cuenta extends Controller {
 				}
 			}
 
-			// Verificamos el pais.
+			// Verificamos el país.
 			if (isset($_POST['origen']) && ! empty($_POST['origen']))
 			{
-				// Obtenemos el pais y el estado.
+				// Obtenemos el país y el estado.
 				list($pais, $estado) = explode('.', trim(strtoupper($_POST['origen'])));
 
 				if ( ! isset($lista_pais[$pais]))
@@ -260,7 +260,7 @@ class Base_Controller_Cuenta extends Controller {
 			$view->assign('error', $errors);
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('index'));
 
@@ -284,7 +284,7 @@ class Base_Controller_Cuenta extends Controller {
 
 		$view->assign('email', $model_usuario->email);
 
-		// Seteamos los datos actuales.
+		// Asignamos los datos actuales.
 		$view->assign('error', array());
 
 		$fields = array(
@@ -702,7 +702,7 @@ class Base_Controller_Cuenta extends Controller {
 			$view->assign('error', $errors);
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('perfil'));
 
@@ -721,7 +721,7 @@ class Base_Controller_Cuenta extends Controller {
 		// Cargamos la vista.
 		$view = View::factory('cuenta/bloqueos');
 
-		// Seteo parametros.
+		// Asigno parámetros.
 		$view->assign('email', Usuario::usuario()->email);
 		$view->assign('usuario', '');
 		$view->assign('error_usuario', FALSE);
@@ -731,7 +731,7 @@ class Base_Controller_Cuenta extends Controller {
 			// Obtengo el usuario.
 			$usuario = isset($_POST['usuario']) ? trim($_POST['usuario']) : '';
 
-			// Seteo a la vista.
+			// Asigno a la vista.
 			$view->assign('usuario', $usuario);
 
 			$error = FALSE;
@@ -793,7 +793,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Bloqueo el usuario.
 				Usuario::usuario()->bloquear($model_usuario->id);
 
-				// Envio el suceso.
+				// Envío el suceso.
 				$model_suceso = new Model_Suceso;
 				if (Usuario::$usuario_id != $model_usuario->id)
 				{
@@ -805,7 +805,7 @@ class Base_Controller_Cuenta extends Controller {
 					$model_suceso->crear($model_usuario->id, 'usuario_bloqueo', FALSE, Usuario::$usuario_id, $model_usuario->id, 0);
 				}
 
-				// Envio notificación.
+				// Envío notificación.
 				add_flash_message(FLASH_SUCCESS, __('El usuario fue bloqueado correctamente.', FALSE));
 				Request::redirect('/cuenta/bloqueados');
 			}
@@ -820,7 +820,7 @@ class Base_Controller_Cuenta extends Controller {
 		}
 		$view->assign('bloqueos', $bloqueos);
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('bloqueados'));
 
@@ -910,7 +910,7 @@ class Base_Controller_Cuenta extends Controller {
 			}
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('password'));
 
@@ -953,7 +953,7 @@ class Base_Controller_Cuenta extends Controller {
 		}
 		else
 		{
-			// Obtengo fecha de refgistro.
+			// Obtengo fecha de registro.
 			$fecha_cambio = Usuario::usuario()->registro->format('U');
 		}
 
@@ -1191,7 +1191,7 @@ class Base_Controller_Cuenta extends Controller {
 			Request::redirect('/cuenta/avisos');
 		}
 
-		// Seteo como leido.
+		// Marco como leído.
 		$model_aviso->actualizar_campo('estado', Model_Usuario_Aviso::ESTADO_VISTO);
 
 		// Informo resultado.
@@ -1224,7 +1224,7 @@ class Base_Controller_Cuenta extends Controller {
 			Request::redirect('/cuenta/avisos');
 		}
 
-		// Seteo como oculto.
+		// Marco como oculto.
 		$model_aviso->actualizar_campo('estado', Model_Usuario_Aviso::ESTADO_OCULTO);
 
 		// Informo resultado.
