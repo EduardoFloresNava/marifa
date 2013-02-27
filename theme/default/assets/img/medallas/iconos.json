@@ -1,0 +1,82 @@
+{
+  "blue_bronze": {
+    "small": "blue_bronze_16.png",
+    "medium": "blue_bronze_32.png"
+  },
+  "blue_gold": {
+    "small": "blue_gold_16.png",
+    "medium": "blue_gold_32.png"
+  },
+  "blue_silver": {
+    "small": "blue_silver_16.png",
+    "medium": "blue_silver_32.png"
+  },
+  "bug": {
+    "small": "bug_16.png",
+    "medium": "bug_32.png"
+  },
+  "green_bronze": {
+    "small": "green_bronze_16.png",
+    "medium": "green_bronze_32.png"
+  },
+  "green_gold": {
+    "small": "green_gold_16.png",
+    "medium": "green_gold_32.png"
+  },
+  "green_silver": {
+    "small": "green_silver_16.png",
+    "medium": "green_silver_32.png"
+  },
+  "light": {
+    "small": "light_16.png",
+    "medium": "light_32.png"
+  },
+  "medt_bronze": {
+    "small": "medt_bronze_16.png",
+    "medium": "medt_bronze_32.png"
+  },
+  "medt_diamon": {
+    "small": "medt_diamon_16.png",
+    "medium": "medt_diamon_32.png"
+  },
+  "medt_gold": {
+    "small": "medt_gold_16.png",
+    "medium": "medt_gold_32.png"
+  },
+  "medt_gold_u": {
+    "small": "medt_gold_u_16.png",
+    "medium": "medt_gold_u_32.png"
+  },
+  "medt_mod": {
+    "small": "medt_mod_16.png",
+    "medium": "medt_mod_32.png"
+  },
+  "medt_silver": {
+    "small": "medt_silver_16.png",
+    "medium": "medt_silver_32.png"
+  },
+  "placa": {
+    "small": "placa_16.png",
+    "medium": "placa_32.png"
+  },
+  "red_bronze": {
+    "small": "red_bronze_16.png",
+    "medium": "red_bronze_32.png"
+  },
+  "red_gold": {
+    "small": "red_gold_16.png",
+    "medium": "red_gold_32.png"
+  },
+  "red_silver": {
+    "small": "red_silver_16.png",
+    "medium": "red_silver_32.png"
+  },
+  "rosette": {
+    "small": "rosette_16.png",
+    "medium": "rosette_32.png"
+  },
+  "shield": {
+    "small": "shield_16.png",
+    "medium": "shield_32.png"
+  }
+}

@@ -21,7 +21,7 @@
 	<tbody>
 		{loop="$categorias"}
 		<tr>
-			<td><img src="{#THEME_URL#}/assets/img/categoria/{$value.imagen}" /></td>
+			<td><img src="{#THEME_URL#}/assets/img/categoria/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS, $value.imagen, 'small')"}" /></td>
 			<td>{$value.nombre}</td>
 			<td>{$value.seo}</td>
 			<td>

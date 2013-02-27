@@ -133,7 +133,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	}
 
 	/**
-	 * Vermos los detalles de una denuncia.
+	 * Vemos los detalles de una denuncia.
 	 * @param int $denuncia ID de la denuncia a ver.
 	 */
 	public function action_detalle_post($denuncia)
@@ -223,7 +223,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			// Actualizo el estado.
 			$model_denuncia->actualizar_campo('estado', Model_Post_Denuncia::ESTADO_RECHAZADA);
 
-			// Envio el suceso.
+			// Envío el suceso.
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $model_denuncia->usuario_id)
 			{
@@ -405,7 +405,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 	}
 
 	/**
-	 * Vermos los detalles de una denuncia a una foto.
+	 * Vemos los detalles de una denuncia a una foto.
 	 * @param int $denuncia ID de la denuncia de la cual se quiere ver.
 	 */
 	public function action_detalle_foto($denuncia)

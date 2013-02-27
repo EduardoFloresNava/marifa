@@ -5,7 +5,7 @@
     <li class="active">Usuarios con la medalla <strong>{$medalla.nombre}</strong></li>
 </ul>
 <div class="header">
-	<h2>Usuarios con la medalla <img class="show-tooltip" title="{$medalla.nombre}" src="{#THEME_URL#}/assets/img/medallas/{$medalla.imagen}" width="20" height="20" /></h2>
+	<h2>Usuarios con la medalla <img class="show-tooltip" title="{$medalla.nombre}" src="{#THEME_URL#}/assets/img/medallas/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS, $medalla.imagen, 'small')"}" width="16" height="16" /></h2>
 </div>
 <table class="table table-bordered">
 	<thead>

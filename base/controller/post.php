@@ -760,7 +760,7 @@ class Base_Controller_Post extends Controller {
 					$model_suceso->crear($model_post->usuario_id, 'post_comentario_crear', FALSE, $id);
 				}
 
-				// Envio sucesos de citas.
+				// Envío sucesos de citas.
 				Decoda::procesar($comentario, FALSE);
 
 				// Verifico actualización del rango.
@@ -1997,7 +1997,7 @@ class Base_Controller_Post extends Controller {
 		$model_categoria = new Model_Categoria;
 		$view->assign('categorias', $model_categoria->lista());
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 		$this->template->assign('top_bar', Controller_Home::submenu('nuevo'));
 

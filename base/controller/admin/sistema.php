@@ -38,7 +38,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 	 */
 	public function before()
 	{
-		// Verifico estar logueado.
+		// Verifico estar identificado.
 		if ( ! Usuario::is_login())
 		{
 			Request::redirect('/usuario/login');
@@ -152,7 +152,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$vista->assign('plugins', $plugins);
 		unset($plugins);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -449,7 +449,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Directorio de los plugins.
 		$vista->assign('plugin_dir', DS.PLUGINS_PATH.DS);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -470,7 +470,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/sistema/temas');
 
-		// Cargo tema previsualizado y el actual.
+		// Cargo tema que tiene vista preliminar activa y el actual.
 		if (isset($_SESSION['preview-theme']))
 		{
 			$vista->assign('preview', Theme::actual());
@@ -497,10 +497,10 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$vista->assign('temas', $themes);
 		unset($themes);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -541,7 +541,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 	 */
 	public function action_terminar_preview_tema()
 	{
-		// Verificamos si existe la previsualizacion.
+		// Verificamos si hay una vista preliminar activa.
 		if (isset($_SESSION['preview-theme']))
 		{
 			// Quitamos la vista previa.
@@ -579,7 +579,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			Request::redirect('/admin/sistema/temas');
 		}
 
-		// Borro preview.
+		// Borro vista preliminar.
 		if (isset($_SESSION['preview-theme']))
 		{
 			unset($_SESSION['preview-theme']);
@@ -605,7 +605,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			Request::redirect('/admin/sistema/temas');
 		}
 
-		// Verifico no sea el actual ni el de previsualizacion.
+		// Verifico no sea el actual ni el que tiene la vista preliminar activa.
 		if ($tema == Theme::actual(TRUE) || $tema == Theme::actual())
 		{
 			add_flash_message(FLASH_ERROR, __('El tema no se puede borrar por estar en uso.', FALSE));
@@ -637,7 +637,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		{
 			$error = FALSE;
 
-			// Verifico el envio correcto de datos.
+			// Verifico el envío correcto de datos.
 			if (isset($_FILES['theme']))
 			{
 				// Cargo los datos del archivo.
@@ -772,7 +772,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 				}
 			}
 
-			// Realizo actualizacion.
+			// Realizo actualización.
 			if ( ! $error)
 			{
 				// Realizo el movimiento.
@@ -801,7 +801,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -828,7 +828,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			$tipo = isset($_POST['submit']) ? $_POST['submit'] : '';
 			switch ($tipo)
 			{
-				case 'database': // Obtimizamos las tablas.
+				case 'database': // Optimizamos las tablas.
 					$db = Database::get_instance();
 
 					foreach (array('categoria', 'configuracion', 'noticia', 'post_tag', 'session', 'suceso', 'rango', 'rango_permiso') as $tabla)
@@ -880,10 +880,10 @@ class Base_Controller_Admin_Sistema extends Controller {
 			}
 		}
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($portada);
@@ -921,7 +921,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			}
 			else
 			{
-				// Envio a un log.
+				// Envío a un log.
 				Log::info('Error obteniendo actualizaciones: respuesta inesperada del servidor.');
 
 				// Informo.
@@ -933,7 +933,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		}
 		catch (HttpResponseException $e)
 		{
-			// Envio a un log.
+			// Envío a un log.
 			Log::info('Error obteniendo actualizaciones: '.$e->getMessage());
 
 			// Informo.
@@ -1224,7 +1224,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		}
 
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.

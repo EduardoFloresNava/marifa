@@ -529,7 +529,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			// Actualizamos el estado.
 			$model_usuario->actualizar_estado(Model_Usuario::ESTADO_ACTIVA);
 
-			// Envio el suceso.
+			// Envío el suceso.
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $id)
 			{
@@ -1194,8 +1194,8 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('error_cantidad', FALSE);
 
 		// Cargamos el listado de imágenes para rangos disponibles.
-		$imagenes_rangos = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
-		unset($imagenes_rangos[1], $imagenes_rangos[0]); // Quitamos . y ..
+		$o_iconos = new Icono(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
+		$imagenes_rangos = $o_iconos->listado_elementos('small');
 
 		$vista->assign('imagenes_rangos', $imagenes_rangos);
 
@@ -1237,7 +1237,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 
 			// Verificamos la imagen.
-			if ( ! in_array($imagen, $imagenes_rangos))
+			if ( ! in_array($imagen, array_keys($imagenes_rangos)))
 			{
 				$error = TRUE;
 				$vista->assign('error_imagen', __('No ha seleccionado una imagen válida.', FALSE));
@@ -1332,9 +1332,9 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/usuario/editar_rango');
 
-		// Cargamos el listado de imagenes para rangos disponibles.
-		$imagenes_rangos = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
-		unset($imagenes_rangos[1], $imagenes_rangos[0]); // Quitamos . y ..
+		// Cargamos el listado de imágenes para rangos disponibles.
+		$o_iconos = new Icono(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS);
+		$imagenes_rangos = $o_iconos->listado_elementos('small');
 
 		$vista->assign('imagenes_rangos', $imagenes_rangos);
 
@@ -1393,7 +1393,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 
 			// Verificamos la imagen.
-			if ( ! in_array($imagen, $imagenes_rangos))
+			if ( ! in_array($imagen, array_keys($imagenes_rangos)))
 			{
 				$error = TRUE;
 				$vista->assign('error_imagen', __('No ha seleccionado una imagen válida.', FALSE));
@@ -1818,19 +1818,10 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista->assign('cantidad', '');
 		$vista->assign('error_cantidad', FALSE);
 
-		// Cargamos el listado de imágenes para las medallas disponibles.
-		$imagenes_medallas = glob(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS.'*_16.{png,jpg,gif}', GLOB_BRACE);
-		if ( ! is_array($imagenes_medallas))
-		{
-			$imagenes_medallas = array();
-		}
-		else
-		{
-			foreach ($imagenes_medallas as $k => $v)
-			{
-				$imagenes_medallas[$k] = substr($v, strlen(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS));
-			}
-		}
+		// Cargo listado de imágenes.
+		$o_iconos = new Icono(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS);
+		$imagenes_medallas = $o_iconos->listado_elementos('small');
+
 		$vista->assign('imagenes_medallas', $imagenes_medallas);
 
 		if (Request::method() == 'POST')
@@ -1867,7 +1858,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 
 			// Verificamos la imagen.
-			if ( ! in_array($imagen, $imagenes_medallas))
+			if ( ! in_array($imagen, array_keys($imagenes_medallas)))
 			{
 				$error = TRUE;
 				$vista->assign('error_imagen', __('No ha seleccionado una imagen válida.', FALSE));
@@ -1941,16 +1932,8 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista = View::factory('admin/usuario/editar_medalla');
 
 		// Cargamos el listado de imágenes para las medallas disponibles.
-		$img_medallas = glob(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS.'*_32.{png,jpg,gif}', GLOB_BRACE);
-		$imagenes_medallas = array();
-		if (is_array($img_medallas))
-		{
-			foreach ($img_medallas as $v)
-			{
-				$imagenes_medallas[substr($v, strlen(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS), -6).'16'.substr($v, -4)] = substr($v, strlen(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS));
-			}
-		}
-		unset($img_medallas);
+		$o_iconos = new Icono(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS);
+		$imagenes_medallas = $o_iconos->listado_elementos('small');
 		$vista->assign('imagenes_medallas', $imagenes_medallas);
 
 		// Valores por defecto y errores.
@@ -1999,7 +1982,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 
 			// Verificamos la imagen.
-			if ( ! in_array($imagen, $imagenes_medallas))
+			if ( ! in_array($imagen, array_keys($imagenes_medallas)))
 			{
 				$error = TRUE;
 				$vista->assign('error_imagen', __('No ha seleccionado una imagen válida.', FALSE));

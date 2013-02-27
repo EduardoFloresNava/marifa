@@ -37,7 +37,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 	 */
 	public function before()
 	{
-		// Verifico estar logueado.
+		// Verifico estar identificado.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para acceder a esta sección.', FALSE));
@@ -179,11 +179,11 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de posts.
+		// Asignamos listado de posts.
 		$vista->assign('posts', $lst);
 		unset($lst);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -232,7 +232,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -292,7 +292,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -327,7 +327,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Obtengo el estado.
 		switch ($model_post->estado)
 		{
-			case 0: // Activo
+			case Model_Post::ESTADO_ACTIVO: // Activo
 				if ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
@@ -374,12 +374,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 5)
+				elseif ($estado == Model_Post::ESTADO_RECHAZADO)
 				{
 					// Rechazamos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(5);
+					$model_post->actualizar_estado(Model_Post::ESTADO_RECHAZADO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -397,12 +397,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 6)
+				elseif ($estado == Model_Post::ESTADO_PAPELERA)
 				{
 					// Enviamos a la papelera.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(6);
+					$model_post->actualizar_estado(Model_Post::ESTADO_PAPELERA);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -427,13 +427,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
-			case 1: // Borrador
-				if ($estado == 2)
+			case Model_Post::ESTADO_BORRADOR: // Borrador
+				if ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -458,18 +458,18 @@ class Base_Controller_Admin_Contenido extends Controller {
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
-			case 2: // Borrado
+			case Model_Post::ESTADO_BORRADO: // Borrado
 				// No hay acciones posibles a este punto.
 				add_flash_message(FLASH_ERROR, __('No puedes realizar esa acción.', FALSE));
 				Request::redirect('/admin/contenido/posts');
 				break;
-			case 3: // Pendiente
-				if ($estado == 0)
+			case Model_Post::ESTADO_PENDIENTE: // Pendiente
+				if ($estado == Model_Post::ESTADO_ACTIVO)
 				{
 					// Aprobamos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(0);
+					$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -483,16 +483,22 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 5)
+				elseif ($estado == Model_Post::ESTADO_RECHAZADO)
 				{
 					// Rechazamos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(5);
+					$model_post->actualizar_estado(Model_Post::ESTADO_RECHAZADO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -510,12 +516,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2)
+				elseif ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -540,13 +546,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
-			case 4: // Oculto
-				if ($estado == 0)
+			case Model_Post::ESTADO_OCULTO: // Oculto
+				if ($estado == Model_Estado::ESTADO_ACTIVO)
 				{
 					// Mostrar.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(0);
+					$model_post->actualizar_estado(Model_Estado::ESTADO_ACTIVO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -560,16 +566,22 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_ocultar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2)
+				elseif ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -594,13 +606,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
-			case 5: // Rechazado
-				if ($estado == 0)
+			case Model_Post::ESTADO_RECHAZADO: // Rechazado
+				if ($estado == Model_Post::ESTADO_ACTIVO)
 				{
 					// Aprobamos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(0);
+					$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -614,16 +626,22 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2)
+				elseif ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -648,13 +666,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
-			case 6: // Papelera
-				if ($estado == 0)
+			case Model_Post::ESTADO_PAPELERA: // Papelera
+				if ($estado == Model_Post::ESTADO_ACTIVO)
 				{
 					// Restauramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(0);
+					$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -668,16 +686,22 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_restaurar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2)
+				elseif ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
 					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
@@ -775,11 +799,11 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de fotos.
+		// Asignamos listado de fotos.
 		$vista->assign('fotos', $lst);
 		unset($lst);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -836,7 +860,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 	}
 
 	/**
-	 * Seteamos como visible una foto.
+	 * Marcamos como visible una foto.
 	 * @param int $id ID de la foto a mostrar
 	 */
 	public function action_mostrar_foto($id)
@@ -872,6 +896,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 		{
 			$model_suceso->crear($model_foto->usuario_id, 'foto_ocultar', FALSE, $model_foto->id, Usuario::$usuario_id, 1);
 		}
+
+		// Verifico actualización del rango.
+		$model_foto->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+
+		// Actualizo medalla.
+		$model_foto->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_FOTOS);
 
 		// Informamos.
 		add_flash_message(FLASH_SUCCESS, __('La foto se ha marcado como visible correctamente.', FALSE));
@@ -928,11 +958,11 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos el listado de categorías.
 		$lst = $model_categorias->lista();
 
-		// Seteamos listado de las categorías.
+		// Asignamos listado de las categorías.
 		$vista->assign('categorias', $lst);
 		unset($lst);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -954,8 +984,8 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$vista = View::factory('admin/contenido/nueva_categoria');
 
 		// Cargamos el listado de imágenes para rangos disponibles.
-		$imagenes_categorias = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS);
-		unset($imagenes_categorias[1], $imagenes_categorias[0]); // Quitamos . y ..
+		$o_iconos = new Icono(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS);
+		$imagenes_categorias = $o_iconos->listado_elementos('small');
 
 		$vista->assign('imagenes_categorias', $imagenes_categorias);
 
@@ -967,7 +997,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -986,7 +1016,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 			}
 
 			// Verificamos la imagen.
-			if ( ! in_array($imagen, $imagenes_categorias))
+			if ( ! in_array($imagen, array_keys($imagenes_categorias)))
 			{
 				$error = TRUE;
 				$vista->assign('error_imagen', __('No ha seleccionado una imagen válida.', FALSE));
@@ -1015,7 +1045,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1086,8 +1116,8 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$vista = View::factory('admin/contenido/editar_categoria');
 
 		// Cargamos el listado de imágenes para rangos disponibles.
-		$imagenes_categorias = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS);
-		unset($imagenes_categorias[1], $imagenes_categorias[0]); // Quitamos . y ..
+		$o_iconos = new Icono(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS);
+		$imagenes_categorias = $o_iconos->listado_elementos('small');
 
 		$vista->assign('imagenes_categorias', $imagenes_categorias);
 
@@ -1099,7 +1129,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -1118,7 +1148,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 			}
 
 			// Verificamos la imagen.
-			if ( ! in_array($imagen, $imagenes_categorias))
+			if ( ! in_array($imagen, array_keys($imagenes_categorias)))
 			{
 				$error = TRUE;
 				$vista->assign('error_imagen', __('No ha seleccionado una imagen válida.', FALSE));
@@ -1154,7 +1184,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1205,11 +1235,11 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de noticias.
+		// Asignamos listado de noticias.
 		$vista->assign('noticias', $lst);
 		unset($lst);
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1267,15 +1297,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 				//TODO: agregar suceso de administración.
 
-				// Seteo FLASH message.
+				// Informo y vuelvo.
 				add_flash_message(FLASH_SUCCESS, __('La noticia se creó correctamente', FALSE));
-
-				// Redireccionamos.
 				Request::redirect('/admin/contenido/noticias');
 			}
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1296,7 +1324,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Obtengo el contenido y evitamos XSS.
 		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
 
-		// Evito salida por template.
+		// Evito salida de la plantilla base.
 		$this->template = NULL;
 
 		// Proceso contenido.
@@ -1421,7 +1449,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 			unset($contenido_clean);
 		}
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.

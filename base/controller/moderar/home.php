@@ -37,7 +37,7 @@ class Base_Controller_Moderar_Home extends Controller {
 	 */
 	public function before()
 	{
-		// Verifico esté logueado.
+		// Verifico esté identificado.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));

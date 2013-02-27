@@ -29,7 +29,7 @@
 		<div class="controls">
 			<select name="imagen" id="imagen">
 				{loop="$imagenes_rangos"}
-				<option style="padding-left: 22px; background: transparent url({#THEME_URL#}/assets/img/rangos/{$value}) no-repeat 2px 0;" value="{$value}"{if="$value == $imagen"} selected="selected"{/if}>{$value}</option>
+				<option style="padding-left: 22px; background: transparent url({#THEME_URL#}/assets/img/rangos/{$value}) no-repeat 2px 0;" value="{$key}"{if="$key == $imagen"} selected="selected"{/if}>{$key}</option>
 				{/loop}
 			</select>
 			<span class="help-block">{if="$error_imagen"}{$error_imagen}{/if}</span>

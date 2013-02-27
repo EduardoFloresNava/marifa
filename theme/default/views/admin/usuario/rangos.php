@@ -40,7 +40,7 @@
 					</div>
 				</div>
 			</td>
-			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /> <span style="color: #{function="sprintf('%06s', dechex($value.color))"};">{$value.nombre}</span></td>
+			<td><img src="{#THEME_URL#}/assets/img/rangos/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS, $value.imagen, 'small')"}" /> <span style="color: #{function="sprintf('%06s', dechex($value.color))"};">{$value.nombre}</span></td>
 			<td>{$value.usuarios}</td>
 			<td>{$value.puntos}</td>
 			<td>{$value.puntos_dar}</td>

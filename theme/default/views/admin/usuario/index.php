@@ -26,7 +26,7 @@
 		{loop="$usuarios"}
 		<tr>
 			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
-			<td><img src="{#THEME_URL#}/assets/img/rangos/{$value.rango.imagen}" /> <strong style="color: #{function="sprintf('%06s', dechex($value.rango.color))"};">{$value.rango.nombre}</strong></td>
+			<td><img src="{#THEME_URL#}/assets/img/rangos/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS, $value.rango.imagen, 'small')"}" /> <strong style="color: #{function="sprintf('%06s', dechex($value.rango.color))"};">{$value.rango.nombre}</strong></td>
 			<td>{if="$value.lastactive == NULL"}<span class="label">NUNCA</span>{else}{$value.lastactive->fuzzy()}{/if}</td>
 			<td>
 				<span class="label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning show-tooltip" title="Restante: {$value.restante|secs_to_h}">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span>

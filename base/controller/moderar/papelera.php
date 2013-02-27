@@ -161,6 +161,12 @@ class Base_Controller_Moderar_Papelera extends Controller {
 			$model_suceso->crear($model_post->usuario_id, 'post_restaurar', FALSE, $post, Usuario::$usuario_id);
 		}
 
+		// Verifico actualización del rango.
+		$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+		// Verifico actualización medallas.
+		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 		// Informamos el resultado.
 		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Post restaurado correctamente.', FALSE));
 		Request::redirect('/moderar/papelera/posts');
@@ -332,6 +338,12 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		{
 			$model_suceso->crear($model_foto->usuario_id, 'foto_restaurar', FALSE, $foto, Usuario::$usuario_id);
 		}
+
+		// Verifico actualización del rango.
+		$model_foto->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+
+		// Actualizo medalla.
+		$model_foto->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_FOTOS);
 
 		// Informamos resultado.
 		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Foto restaurada correctamente.', FALSE));

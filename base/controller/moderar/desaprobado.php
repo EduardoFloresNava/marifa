@@ -201,6 +201,12 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 			$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $post, Usuario::$usuario_id, (int) $tipo);
 		}
 
+		// Verifico actualización del rango.
+		$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+		// Verifico actualización medallas.
+		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 		// Informamos el resultado.
 		add_flash_message(FLASH_SUCCESS, __('El estado se modificó correctamente.', FALSE));
 		Request::redirect('/moderar/desaprobado/posts');
@@ -452,6 +458,22 @@ class Base_Controller_Moderar_Desaprobado extends Controller {
 		else
 		{
 			$model_suceso->crear($model_comentario->usuario_id, ($tipo == 1) ? 'post_comentario_mostrar' : 'foto_comentario_mostrar', FALSE, $model_comentario->id, Usuario::$usuario_id);
+		}
+
+		// Verifico actualización del rango.
+		$model_comentario->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_COMENTARIOS);
+
+		if ($model_comentario instanceof Model_Post_Comentario)
+		{
+			// Verifico actualización de medallas.
+			$model_comentario->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_POSTS);
+			$model_comentario->post()->actualizar_medallas(Model_Medalla::CONDICION_POST_COMENTARIOS);
+		}
+		else
+		{
+			// Actualizo las medallas.
+			$model_comentario->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_COMENTARIOS_EN_FOTOS);
+			$model_comentario->foto()->actualizar_medallas(Model_Medalla::CONDICION_FOTO_COMENTARIOS);
 		}
 
 		// Informamos resultado.

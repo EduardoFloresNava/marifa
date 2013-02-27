@@ -8,7 +8,7 @@
 			{loop="$sticky"}
 			<div class="ultimo-post clearfix fijo">
 				<div class="categoria hidden-phone">
-					<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
+					<img src="{#THEME_URL#}/assets/img/categoria/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS, $value.categoria.imagen, 'small')"}" />
 				</div>
 				<div class="contenido">
 					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<i class="icon icon-bookmark show-tooltip" title="Fijo"></i> <a class="titulo" href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a>
@@ -24,7 +24,7 @@
 			{loop="$ultimos_posts"}
 			<div class="ultimo-post clearfix{if="$value.sponsored"} patrocinado{/if}">
 				<div class="categoria hidden-phone">
-					<img src="{#THEME_URL#}/assets/img/categoria/{$value.categoria.imagen}" />
+					<img src="{#THEME_URL#}/assets/img/categoria/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS, $value.categoria.imagen, 'small')"}" />
 				</div>
 				<div class="contenido">
 					{if="$value.privado"}<i class="icon icon-lock show-tooltip" title="Privado"></i> {/if}{if="$value.sponsored"}<i class="icon icon-certificate show-tooltip" title="Patrocinado"></i> {/if}<a class="titulo" href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a>

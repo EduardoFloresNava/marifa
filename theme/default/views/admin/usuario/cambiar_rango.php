@@ -9,6 +9,6 @@
 <h4 class="title">Seleccione el rango que desea asignar:</h4>
 <ul style="list-style: none;">
 	{loop="$rangos"}
-	{if="$value.id !== $usuario.rango"}<li><a style="color: #{function="sprintf('%06s', dechex($value.color))"};" href="{#SITE_URL#}/admin/usuario/cambiar_rango/{$usuario.id}/{$value.id}/"><img src="{#THEME_URL#}/assets/img/rangos/{$value.imagen}" /> {$value.nombre}</a></li>{/if}
+	{if="$value.id !== $usuario.rango"}<li><a style="color: #{function="sprintf('%06s', dechex($value.color))"};" href="{#SITE_URL#}/admin/usuario/cambiar_rango/{$usuario.id}/{$value.id}/"><img src="{#THEME_URL#}/assets/img/rangos/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS, $value.imagen, 'small')"}" /> {$value.nombre}</a></li>{/if}
 	{/loop}
 </ul>

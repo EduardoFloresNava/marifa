@@ -37,7 +37,7 @@ class Base_Controller_Admin_Home extends Controller {
 	 */
 	public function before()
 	{
-		// Verifico estar logueado.
+		// Verifico estar identificado.
 		if ( ! Usuario::is_login())
 		{
 			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
@@ -60,7 +60,7 @@ class Base_Controller_Admin_Home extends Controller {
 	 */
 	public static function permisos_acceso()
 	{
-		// Verifico si tiene algun permiso.
+		// Verifico si tiene algún permiso.
 		$permisos = array(
 			Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR,
 			Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO,
@@ -71,13 +71,13 @@ class Base_Controller_Admin_Home extends Controller {
 	}
 
 	/**
-	 * Listado de menus activos.
-	 * @param string $activo Clave del listado de menus activa en la petición.
+	 * Listado de menúes activos.
+	 * @param string $activo Clave del listado de menúes activa en la petición.
 	 * @return array
 	 */
 	public static function submenu($activo)
 	{
-		// Objeto para manejo del menu.
+		// Objeto para manejo del menú.
 		$menu = new Menu('admin_menu');
 
 		// Información general.
@@ -123,7 +123,7 @@ class Base_Controller_Admin_Home extends Controller {
 			$menu->element_set(__('Medallas', FALSE), '/admin/usuario/medallas/', 'medallas', 'usuarios');
 		}
 
-		// Envio respuesta.
+		// Envío respuesta.
 		$el = explode('.', $activo);
 		if (count($el) == 2)
 		{
@@ -149,7 +149,7 @@ class Base_Controller_Admin_Home extends Controller {
 			add_flash_message(FLASH_INFO, sprintf(__('<strong>¡Importante!</strong> Se recomienda utilizar MySQLi como driver por cuestiones de rendimiento y seguridad. Para editar estas configuraciones haga click <a href="%s/admin/configuracion/bd">aquí</a>.', FALSE), SITE_URL));
 		}
 
-		// Ultimos usuarios.
+		// Últimos usuarios.
 		$model_usuario = new Model_Usuario;
 		$usuarios = $model_usuario->listado(1, 5);
 		foreach ($usuarios as $k => $v)
@@ -212,7 +212,7 @@ class Base_Controller_Admin_Home extends Controller {
 
 		$vista->assign('contenido_total', Model_Post::s_cantidad() + Model_Foto::s_cantidad());
 
-		// Seteamos el menú.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -276,16 +276,16 @@ class Base_Controller_Admin_Home extends Controller {
 			}
 			unset($data);
 
-			// Envio los datos a la vista.
+			// Envía los datos a la vista.
 			$vista->assign('lineas', $pd);
 			$vista->assign('actual', $file);
 			unset($pd);
 		}
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
