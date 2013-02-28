@@ -1186,6 +1186,9 @@ class Base_Controller_Admin_Sistema extends Controller {
 	 */
 	public function action_traducciones($idioma)
 	{
+		// Cargo traducción activa.
+		$l_activo = arr_get(configuracion_obtener(CONFIG_PATH.DS.'marifa.php'), 'language', '');
+
 		// Cargo idioma.
 		if ( ! empty($idioma))
 		{
@@ -1212,6 +1215,9 @@ class Base_Controller_Admin_Sistema extends Controller {
 			// Asigno idioma a la vista.
 			$vista->assign('idioma', $idioma);
 
+			// Asigno activo.
+			$vista->assign('activo', $l_activo);
+
 			// Obtengo listado de traducciones.
 			$lang = configuracion_obtener(APP_BASE.DS.'traducciones'.DS.$idioma.'.php');
 
@@ -1225,6 +1231,9 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 			// Cargo listado de traducciones disponibles.
 			$traducciones = $this->listado_traducciones();
+
+			// Asigno activo.
+			$vista->assign('activo', $l_activo);
 
 			// Asigno a la vista.
 			$vista->assign('traducciones', $traducciones);
@@ -1242,6 +1251,89 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Activo una traducción.
+	 * @param  string $traduccion Traducción a activar.
+	 */
+	public function action_activar_traduccion($traduccion)
+	{
+		// Verificamos que sea válida.
+		if ( ! preg_match('/^[a-z]{3}$/', $traduccion))
+		{
+			// Informo y vuelvo.
+			add_flash_message(FLASH_ERROR, 'La traducción que deseas activar es incorrecta.');
+			Request::redirect('/admin/sistema/traducciones/');
+		}
+
+		// Obtengo listado de traducciones.
+		$traducciones = $this->listado_traducciones();
+
+		// Verifico existencia.
+		if ( ! in_array($traduccion, $traducciones))
+		{
+			// Informo y vuelvo.
+			add_flash_message(FLASH_ERROR, 'La traducción que deseas activar es incorrecta.');
+			Request::redirect('/admin/sistema/traducciones/');
+		}
+
+		// Cargo archivo de configuración.
+		$config = Configuracion::factory(CONFIG_PATH.DS.'marifa.php');
+
+		// Cargo traducción activa.
+		$l_activo = arr_get($config, 'language', '');
+
+		// Verifico que coincidan.
+		if ($traduccion !== $l_activo)
+		{
+			// Actualizo el valor.
+			$config['language'] = $traduccion;
+			$config->save();
+		}
+
+		// Informo y vuelvo.
+		add_flash_message(FLASH_SUCCESS, 'Se ha activado la traducción correctamente.');
+		Request::redirect('/admin/sistema/traducciones/');
+	}
+
+	/**
+	 * Desactivo la traducción actual. El resultado es utilizar las cadenas por defecto.
+	 * @param  string $traduccion Traducción a desactivar.
+	 */
+	public function action_desactivar_traduccion($traduccion)
+	{
+		// Verificamos que sea válida.
+		if ( ! preg_match('/^[a-z]{3}$/', $traduccion))
+		{
+			// Informo y vuelvo.
+			add_flash_message(FLASH_ERROR, 'La traducción que deseas desactivar es incorrecta.');
+			Request::redirect('/admin/sistema/traducciones/');
+		}
+
+		// Cargo archivo de configuración.
+		$config = Configuracion::factory(CONFIG_PATH.DS.'marifa.php');
+
+		// Cargo traducción activa.
+		$l_activo = arr_get($config, 'language', '');
+
+		// Verifico que coincidan.
+		if ($traduccion !== $l_activo)
+		{
+			// Informo y vuelvo.
+			add_flash_message(FLASH_ERROR, 'La traducción que deseas desactivar no se encuentra activa.');
+			Request::redirect('/admin/sistema/traducciones/');
+		}
+		else
+		{
+			// Actualizo.
+			$config['language'] = NULL;
+			$config->save();
+
+			// Informo y vuelvo.
+			add_flash_message(FLASH_SUCCESS, 'Se ha desactivado la traducción correctamente.');
+			Request::redirect('/admin/sistema/traducciones/');
+		}
 	}
 
 	protected function listado_traducciones()

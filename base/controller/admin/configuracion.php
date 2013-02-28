@@ -637,11 +637,8 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		}
 		else
 		{
-			// Cargo la configuración actual.
-			$configuracion = configuracion_obtener(CONFIG_PATH.DS.'email.php');
-
 			// Envío la configuración.
-			$vista->assign('configuracion', $configuracion);
+			$vista->assign('configuracion', Configuracion::factory(CONFIG_PATH.DS.'email.php')->as_array());
 
 			// Mi correo.
 			$vista->assign('email', $correo !== NULL ? urldecode($correo) : Usuario::usuario()->email);
@@ -739,7 +736,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				// Limpio el valor.
 				$largo_minimo = (int) $_POST['largo_minimo'];
 
-				// Seteo el nuevo valor a la vista.
+				// Asigno el nuevo valor a la vista.
 				$vista->assign('largo_minimo', $largo_minimo);
 
 				// Verifico el contenido.
@@ -763,7 +760,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				// Limpio el valor.
 				$cantidad_minima_ocurrencias = (int) $_POST['cantidad_minima_ocurrencias'];
 
-				// Seteo el nuevo valor a la vista.
+				// Asigno el nuevo valor a la vista.
 				$vista->assign('cantidad_minima_ocurrencias', $cantidad_minima_ocurrencias);
 
 				// Verifico el contenido.
@@ -822,7 +819,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					$error = FALSE;
 				}
 
-				// Seteo el nuevo valor a la vista.
+				// Asigno el nuevo valor a la vista.
 				$vista->assign('palabras_comunes', $keyword_list);
 
 				// Verifico el contenido.
@@ -841,7 +838,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -889,7 +886,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista->assign('drivers', $drivers);
 
 
-		// Seteo sin errores.
+		// Marco sin errores.
 		$vista->assign('error_driver', FALSE);
 		$vista->assign('error_host', FALSE);
 		$vista->assign('error_db_name', FALSE);
@@ -959,7 +956,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					if (is_writable(CONFIG_PATH.DS.'database.php'))
 					{
 						// Aplico la configuraciones.
-						file_put_contents(CONFIG_PATH.DS.'database.php', '<?php defined(\'APP_BASE\') || die(\'No direct access allowed.\');'.PHP_EOL.'return '.$this->value_to_php($cfg).';');
+						Configuracion::factory(CONFIG_PATH.DS.'database.php', $cfg)->save();
 						add_flash_message(FLASH_SUCCESS, __('<strong>¡Felicitaciones!</strong> Las configuraciones se han guardado correctamente.', FALSE));
 					}
 					else
@@ -994,7 +991,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 			}
 		}
 
-		// Seteamos el menú.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
 		// Cargamos plantilla administración.
@@ -1008,41 +1005,161 @@ class Base_Controller_Admin_Configuracion extends Controller {
 	}
 
 	/**
-	 * Obtenemos la representación PHP de una variable.
-	 * @param mixed $value Variable a representar.
-	 * @return string
+	 * Configuración de la cache del sistema.
 	 */
-	private function value_to_php($value)
+	public function action_cache()
 	{
-		if ($value === TRUE || $value === FALSE)
+		// Cargo la vista.
+		$vista = View::factory('admin/configuracion/cache');
+
+		// Cargo listado de drivers posibles.
+		$drivers = array('dummy');
+
+		if (Cache_Driver_File::is_supported())
 		{
-			return $value ? 'TRUE' : 'FALSE';
+			$drivers[] = 'file';
 		}
-		elseif (is_int($value) || is_float($value))
+
+		if (Cache_Driver_Apc::is_supported())
 		{
-			return "$value";
+			$drivers[] = 'apc';
 		}
-		elseif (is_string($value))
+
+		if (Cache_Driver_Memcached::is_supported())
 		{
-			return "'".str_replace("'", "\\'", $value)."'";
+			$drivers[] = 'memcached';
 		}
-		elseif (is_array($value))
+
+		// Cargo las configuraciones.
+		$o_config = Configuracion::factory(CONFIG_PATH.DS.'cache.php');
+
+		// Asigno valores por defecto.
+		$vista->assign('drivers', $drivers);
+		$vista->assign('driver', $o_config['type']);
+
+		if ($o_config['type'] == 'file')
 		{
-			$rst = array();
-			foreach ($value as $k => $v)
+			$vista->assign('path', arr_get($o_config, 'path', CACHE_PATH.DS.'file'.DS));
+		}
+		elseif ($o_config['type'] == 'memcached')
+		{
+			//TODO: Soporte para varios servidores.
+
+			$vista->assign('hostname', arr_get($o_config, 'hostname', '127.0.0.1'));
+			$vista->assign('port', arr_get($o_config, 'port', 11211));
+			$vista->assign('weight', arr_get($o_config, 'weight', 1));
+		}
+
+		$vista->assign('error_driver', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Obtengo datos enviados.
+			$driver = arr_get($_POST, 'driver', NULL);
+
+			// Marco sin errores.
+			$error = FALSE;
+
+			// Verifico tipo.
+			if ( ! in_array($driver, $drivers))
 			{
-				if (is_int($k))
+				$vista->assign('error_driver', 'El driver seleccionado no es correcto.');
+				$error = TRUE;
+			}
+
+			// Verifico parámetros extra.
+			if ( ! $error && ($driver == 'file' || $driver == 'memcached'))
+			{
+				if ($driver == 'file')
 				{
-					$rst[] = $this->value_to_php($v);
+					$path = trim(arr_get($_POST, 'path', ''));
+
+					if (empty($path))
+					{
+						$path = CACHE_PATH.DS.'file'.DS;
+					}
+
+					// Verifico existencia.
+					if ( ! file_exists($path) || ! is_dir($path) || ! Utils::is_really_writable($path))
+					{
+						$error = TRUE;
+						$vista->assign('error_path', 'El directorio no es correcto o no tiene permisos de escritura.');
+					}
 				}
 				else
+				if ($driver == 'memcached')
 				{
-					$rst[] = "'$k' => ".$this->value_to_php($v);
+					// Cargo datos.
+					$port = (int) arr_get($_POST, 'port', 11211);
+					$hostname = arr_get($_POST, 'hostname', '127.0.0.1');
+					$weight = (int) arr_get($_POST, 'weight', 1);
+
+					// Verifico valores.
+					if ($port < 1 || $port > 36665)
+					{
+						$error = TRUE;
+						$vista->assign('error_port', 'El puerto que ha introducido no es válido.');
+					}
+
+					// Verifico weight.
+					if ($weight < 0)
+					{
+						$error = TRUE;
+						$vista->assign('error_weight', 'Weight inválido');
+					}
+
+					// Verifico conexión.
+					if ( ! $error)
+					{
+						$ot = new Cache_Driver_Memcached($hostname, $port, $weight);
+						if ( ! $ot->test())
+						{
+							$error = TRUE;
+							$vista->assign('error', 'Los datos de acceso al servidor memcached son incorrectos. Verifique su valides y el estado del servidor.');
+						}
+					}
 				}
 			}
 
-			return 'array('.implode(', ', $rst).')';
+			// Actualizo parámetros.
+			if ( ! $error)
+			{
+				// Borro los actuales.
+				$o_config->clean();
+
+				// Asigno nuevos.
+				$o_config['type'] = $driver;
+				
+				if ($driver == 'file')
+				{
+					$o_config['path'] = $path;
+				}
+				elseif ($driver == 'memcached')
+				{
+					$o_config['port'] = $port;
+					$o_config['hostname'] = $hostname;
+					$o_config['weight'] = $weight;
+				}
+
+				// Guardo los valores.
+				$o_config->save();
+
+				// Informo resultado y vuelvo.
+				add_flash_message(FLASH_SUCCESS, 'Configuraciones de la cache actualizadas correctamente.');
+				Request::redirect('/admin/configuracion/cache/');
+			}
 		}
-		return 'NULL';
+
+		// Asigno el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion.cache'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
 	}
 }

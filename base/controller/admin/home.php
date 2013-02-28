@@ -102,6 +102,7 @@ class Base_Controller_Admin_Home extends Controller {
 			$menu->element_set(__('Modo Mantenimiento', FALSE), '/admin/configuracion/mantenimiento/', 'mantenimiento', 'configuracion');
 			$menu->element_set(__('Correo', FALSE), '/admin/configuracion/correo/', 'correo', 'configuracion');
 			$menu->element_set(__('Base de Datos', FALSE), '/admin/configuracion/bd/', 'bd', 'configuracion');
+			$menu->element_set(__('Cache', FALSE), '/admin/configuracion/cache/', 'cache', 'configuracion');
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))

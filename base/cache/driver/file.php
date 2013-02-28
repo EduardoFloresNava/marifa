@@ -168,49 +168,11 @@ class Base_Cache_Driver_File implements Cache_Driver {
 	}
 
 	/**
-	 * Verificamos si realmente se puede escribir en ese path.
-	 * @param string $file Directorio a verificar.
-	 * @return bool
-	 */
-	private function is_really_writable($file)
-	{
-		// If we're on a Unix server with safe_mode off we call is_writable
-		if (DIRECTORY_SEPARATOR == '/' && @ini_get("safe_mode") == FALSE)
-		{
-			return is_writable($file);
-		}
-
-		// For windows servers and safe_mode "on" installations we'll actually
-		// write a file then read it.  Bah...
-		if (is_dir($file))
-		{
-			$file = rtrim($file, '/').'/'.md5(rand(1,100));
-
-			if (($fp = @fopen($file, 'ab')) === FALSE)
-			{
-				return FALSE;
-			}
-
-			fclose($fp);
-			@chmod($file, DIR_WRITE_MODE);
-			@unlink($file);
-			return TRUE;
-		}
-		elseif (($fp = @fopen($file, 'ab')) === FALSE)
-		{
-			return FALSE;
-		}
-
-		fclose($fp);
-		return TRUE;
-	}
-
-	/**
 	 * Verificamos si el driver es soportado por el sistema.
 	 * @return bool
 	 */
-	public function is_supported()
+	public static function is_supported()
 	{
-		return $this->is_really_writable($this->_cache_path);
+		return Utils::is_really_writable(CACHE_PATH.DS.'file'.DS);
 	}
 }

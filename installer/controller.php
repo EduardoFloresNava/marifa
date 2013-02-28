@@ -195,17 +195,22 @@ class Installer_Controller {
 	 */
 	public function action_datos_entorno()
 	{
-		// Verifico existencia del archivo.
-		if (file_exists(CONFIG_PATH.DS.'marifa.php'))
+		// Cargo configuración.
+		$config = new Configuracion(CONFIG_PATH.DS.'marifa.php');
+
+		// Asigno valores por defecto.
+		if ( ! isset($config['cookie_secret']))
 		{
-			// Cargo valores por defecto.
-			$config = configuracion_obtener(CONFIG_PATH.DS.'marifa.php');
-		}
-		else
-		{
-			// Asigno valores generales.
 			$config['cookie_secret'] = Texto::random_string(20);
+		}
+
+		if ( ! isset($config['language']))
+		{
 			$config['language'] = 'esp';
+		}
+
+		if ( ! isset($config['default_timezone']))
+		{
 			$config['default_timezone'] = 'UTC';
 		}
 
@@ -216,7 +221,7 @@ class Installer_Controller {
 		$vista = View::factory('datos_entorno');
 
 		// Asigno valores por defecto.
-		$vista->assign('config', $config);
+		$vista->assign('config', $config->as_array());
 		$vista->assign('tz_list', $tz_list);
 
 		$vista->assign('error_cookie_secret', FALSE);
@@ -235,7 +240,7 @@ class Installer_Controller {
 			$config['cookie_secret'] = $cookie_secret;
 			$config['language'] = $language;
 			$config['default_timezone'] = arr_get($tz_list, $default_timezone, 'UTC');
-			$vista->assign('config', $config);
+			$vista->assign('config', $config->as_array());
 
 			// Marco sin error.
 			$error = FALSE;
@@ -262,7 +267,7 @@ class Installer_Controller {
 			if ( ! $error)
 			{
 				// Guardo.
-				file_put_contents(CONFIG_PATH.DS.'marifa.php', '<?php defined(\'APP_BASE\') || die(\'No direct access allowed.\');'.PHP_EOL.'return '.$this->value_to_php($config).';');
+				$config->save();
 				
 				// Marco el paso como terminado.
 				Installer_Step::get_instance()->terminado();
@@ -270,10 +275,6 @@ class Installer_Controller {
 				// Voy al siguiente.
 				Installer_Step::get_instance()->ir_al_paso();
 			}
-
-			// Guardo.
-
-			// Voy al siguiente paso.
 		}
 
 		// Asigno la vista a la plantilla base.
@@ -390,15 +391,12 @@ class Installer_Controller {
 					);
 				}
 
-				// Genero archivo de configuración.
-				$tmp = '<?php defined(\'APP_BASE\') || die(\'No direct access allowed.\');'.PHP_EOL.'return '.$this->value_to_php($config).';';
-
-				// Guardo la configuración.
-				file_put_contents(CONFIG_PATH.DS.'database.php', $tmp);
-
-				// Intento conectar.
-				if ($this->check_database())
+				// Verifico conexión.
+				if (Database::test($config))
 				{
+					// Genero archivo de configuración.
+					$o_cfg = Configuracion::factory(CONFIG_PATH.DS.'database.php', $config)->save();
+
 					// Marco el paso como terminado.
 					Installer_Step::get_instance()->terminado();
 
@@ -427,62 +425,19 @@ class Installer_Controller {
 	 * Verificamos si la conexión es correcta.
 	 * @return bool
 	 */
-	private function check_database()
+	private function check_database($config = NULL)
 	{
 		// Verifico archivo de configuración.
-		if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
+		if ($config === NULL && ! file_exists(CONFIG_PATH.DS.'database.php'))
 		{
 			return FALSE;
 		}
 
-		// Verifico los datos de conexión.
-		try {
-			Database::get_instance(TRUE);
-			return TRUE;
-		}
-		catch (Database_Exception $e)
-		{
-			return FALSE;
-		}
-	}
+		// Cargo datos de donde verificar.
+		$datos = $config === NULL ? configuracion_obtener(CONFIG_PATH.DS.'database.php') : $config;
 
-	/**
-	 * Obtenemos la representación PHP de una variable.
-	 * @param mixed $value Variable a representar.
-	 * @return string
-	 */
-	private function value_to_php($value)
-	{
-		if ($value === TRUE || $value === FALSE)
-		{
-			return $value ? 'TRUE' : 'FALSE';
-		}
-		elseif (is_int($value) || is_float($value))
-		{
-			return "$value";
-		}
-		elseif (is_string($value))
-		{
-			return "'".str_replace("'", "\\'", $value)."'";
-		}
-		elseif (is_array($value))
-		{
-			$rst = array();
-			foreach ($value as $k => $v)
-			{
-				if (is_int($k))
-				{
-					$rst[] = $this->value_to_php($v);
-				}
-				else
-				{
-					$rst[] = "'$k' => ".$this->value_to_php($v);
-				}
-			}
-
-			return 'array('.implode(', ', $rst).')';
-		}
-		return 'NULL';
+		// Intento la conexión.
+		return Database::test($datos);
 	}
 
 	/**
@@ -677,8 +632,7 @@ class Installer_Controller {
 			$error = FALSE;
 
 			// Verifico la clave de la base de datos.
-			$cfg = configuracion_obtener(CONFIG_PATH.DS.'database.php');
-			if ($bd_password !== $cfg['password'])
+			if ($bd_password !== Configuracion::factory(CONFIG_PATH.DS.'database.php')->password)
 			{
 				$error = TRUE;
 				$vista->assign('error_bd_password', 'La contraseña de la base de datos es incorrecta.');
@@ -824,10 +778,16 @@ class Installer_Controller {
 			$drivers['mysql'] = 'MySQL';
 		}
 
+		if (function_exists('mysqli_connect'))
+		{
+			$drivers['mysqli'] = 'MySQLi';
+		}
+
 		if (class_exists('pdo'))
 		{
 			$drivers['pdo'] = 'PDO';
 		}
+
 		$vista->assign('drivers', $drivers);
 
 		// Listado de importadores.
@@ -837,7 +797,7 @@ class Installer_Controller {
 		// Información por defecto.
 		$vista->assign('importador', 'phpost');
 		$vista->assign('error_importador', FALSE);
-		$vista->assign('driver', isset($drivers['mysql']) ? 'mysql' : 'pdo');
+		$vista->assign('driver', isset($drivers['mysqli']) ? 'mysqli' : (isset($drivers['pdo']) ? 'pdo' : 'mysql'));
 		$vista->assign('error_driver', FALSE);
 		$vista->assign('host', '');
 		$vista->assign('error_host', FALSE);
@@ -927,15 +887,12 @@ class Installer_Controller {
 						);
 					}
 
-					// Realizo la conexión.
-					try {
-						$db_tt = 'Database_Driver_'.ucfirst(strtolower($config['type']));
-						$db_instance = new $db_tt($config);
-					}
-					catch (Database_Exception $e)
+					$db_instance = Database::test($config, TRUE);
+
+					if ($db_instance === FALSE)
 					{
 						$error = TRUE;
-						add_flash_message(FLASH_ERROR, 'Los datos ingresados para la conección a la base de datos son incorrectos');
+						add_flash_message(FLASH_ERROR, 'Los datos ingresados para la conexión a la base de datos son incorrectos');
 					}
 				}
 

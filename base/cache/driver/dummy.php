@@ -78,7 +78,7 @@ class Base_Cache_Driver_Dummy implements Cache_Driver {
 	 * Verificamos si el driver es soportado por el sistema.
 	 * @return bool
 	 */
-	public function is_supported()
+	public static function is_supported()
 	{
 		return TRUE;
 	}
