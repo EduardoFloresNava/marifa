@@ -1054,6 +1054,13 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Bloqueo para actualizar.
 		Mantenimiento::lock(array(IP::get_ip_addr()));
 
+		// Acciones personalizadas de actualización.
+		if (file_exists($tmp_dir.DS.'install.php'))
+		{
+			// Cargo archivo de instalación.
+			include($tmp_dir.DS.'install.php');
+		}
+
 		// Actualizo BD.
 		if (file_exists($tmp_dir.DS.'database.php'))
 		{
