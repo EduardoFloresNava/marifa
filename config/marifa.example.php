@@ -21,6 +21,7 @@ return array(
 	/**
 	 * Zona horaria a utilizar por Marifa.
 	 * Puede ser sobrescrita luego pero es la utilizada de forma interna por el sistema.
+	 * Para el listado de zonas horarias: http://php.net/manual/es/timezones.php
 	 */
 	'default_timezone' => 'UTC',
 );

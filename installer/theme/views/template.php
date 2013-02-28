@@ -79,10 +79,6 @@
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="{#THEME_URL#}/assets/js/jquery.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-dropdown.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-tab.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-tooltip.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-button.js"></script>
 		<script src="{#THEME_URL#}/assets/js/base.js"></script>
         {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}
     </body>

@@ -48,11 +48,12 @@ class Installer_Controller {
 	protected $steps = array(
 		'index'          => array('titulo' => 'Inicio',          'posicion' => 1), // Portada.
 		'requerimientos' => array('titulo' => 'Requerimientos',  'posicion' => 2), // Requerimientos del entorno.
-		'bd'             => array('titulo' => 'BD',              'posicion' => 3), // Configuramos la conección a la base de datos.
-		'bd_install'     => array('titulo' => 'BD install',      'posicion' => 4), // Instalamos la Base de datos.
-		'importar'       => array('titulo' => 'Importar',        'posicion' => 5), // Importamos datos de otros lados.
-		'configuracion'  => array('titulo' => 'Configuraciones', 'posicion' => 6), // Configuramos el sistema.
-		'finalizacion'   => array('titulo' => 'Terminación',     'posicion' => 7) // Terminada la instalacion.
+		'datos_entorno'  => array('titulo' => 'Datos entorno',   'posicion' => 3), // Configuraciones esenciales del sistema referidas al entorno.
+		'bd'             => array('titulo' => 'BD',              'posicion' => 4), // Configuramos la conexión a la base de datos.
+		'bd_install'     => array('titulo' => 'BD install',      'posicion' => 5), // Instalamos la Base de datos.
+		'importar'       => array('titulo' => 'Importar',        'posicion' => 6), // Importamos datos de otros lados.
+		'configuracion'  => array('titulo' => 'Configuraciones', 'posicion' => 7), // Configuramos el sistema.
+		'finalizacion'   => array('titulo' => 'Terminación',     'posicion' => 8)  // Terminada la instalación.
 	);
 
 	/**
@@ -60,22 +61,22 @@ class Installer_Controller {
 	 */
 	public function before()
 	{
-		// Cargo manejador de pasos.
+		// Inicio la clase para manejar los pasos del instalador.
 		Installer_Step::get_instance()->setup($this->steps);
 
 		// Cargamos la plantilla base.
 		$this->template = View::factory('template');
 
-		// Contenido inicial vacio.
+		// Contenido inicial vacío.
 		$this->template->assign('contenido', '');
 	}
 
 	/**
-	 * Mostramos el template.
+	 * Mostramos la plantilla.
 	 */
 	public function after()
 	{
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('steps', Installer_Step::get_instance()->listado());
 
 		// Eventos flash.
@@ -87,7 +88,7 @@ class Installer_Controller {
 			}
 		}
 
-		// Muestro el template.
+		// Muestro la plantilla.
 		if (is_object($this->template) && ! Request::is_ajax())
 		{
 			$this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
@@ -97,16 +98,17 @@ class Installer_Controller {
 
 	/**
 	 * Portada del instalador.
+	 * Simplemente da la bienvenida al usuario.
 	 */
 	public function action_index()
 	{
 		// Cargo la vista.
 		$vista = View::factory('index');
 
-		// Seteo el paso como terminado.
+		// Marco el paso como terminado.
 		Installer_Step::get_instance()->terminado();
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
@@ -147,7 +149,7 @@ class Installer_Controller {
 			array('titulo' => '/config/database.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/config/database.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/config/database.php')),
 		);
 
-		// Seteo el listado de requerimientos.
+		// Asigno el listado de requerimientos.
 		$vista->assign('requerimientos', $reqs);
 
 		// Verifico si puedo seguir.
@@ -175,7 +177,7 @@ class Installer_Controller {
 			}
 		}
 
-		// Seteo el paso como terminado.
+		// Marco el paso como terminado.
 		if ($is_ok)
 		{
 			Installer_Step::get_instance()->terminado();
@@ -184,7 +186,97 @@ class Installer_Controller {
 		// Paso estado a la vista.
 		$vista->assign('can_continue', $is_ok);
 
-		// Seteo la vista.
+		// Asigno la vista.
+		$this->template->assign('contenido', $vista->parse());
+	}
+
+	/**
+	 * Configuraciones base del sistema relacionadas al entorno.
+	 */
+	public function action_datos_entorno()
+	{
+		// Verifico existencia del archivo.
+		if (file_exists(CONFIG_PATH.DS.'marifa.php'))
+		{
+			// Cargo valores por defecto.
+			$config = configuracion_obtener(CONFIG_PATH.DS.'marifa.php');
+		}
+		else
+		{
+			// Asigno valores generales.
+			$config['cookie_secret'] = Texto::random_string(20);
+			$config['language'] = 'esp';
+			$config['default_timezone'] = 'UTC';
+		}
+
+		// Cargo listado de zonas horarias.
+		$tz_list = timezone_identifiers_list();
+
+		// Cargo la vista.
+		$vista = View::factory('datos_entorno');
+
+		// Asigno valores por defecto.
+		$vista->assign('config', $config);
+		$vista->assign('tz_list', $tz_list);
+
+		$vista->assign('error_cookie_secret', FALSE);
+		$vista->assign('error_language', FALSE);
+		$vista->assign('error_default_timezone', FALSE);
+
+		// Proceso lo enviado.
+		if (Request::method() == 'POST')
+		{
+			// Cargo valores enviados.
+			$cookie_secret = arr_get($_POST, 'cookie_secret', NULL);
+			$language = arr_get($_POST, 'language', NULL);
+			$default_timezone = arr_get($_POST, 'default_timezone', NULL);
+
+			// Asigno actuales.
+			$config['cookie_secret'] = $cookie_secret;
+			$config['language'] = $language;
+			$config['default_timezone'] = arr_get($tz_list, $default_timezone, 'UTC');
+			$vista->assign('config', $config);
+
+			// Marco sin error.
+			$error = FALSE;
+
+			// Verifico valores.
+			if (empty($cookie_secret) || strlen($cookie_secret) < 5)
+			{
+				$error = TRUE;
+				$vista->assign('error_cookie_secret', 'La clave de las cookies debe tener al menos 5 caracteres. Se recomiendan 20.');
+			}
+
+			if ( ! preg_match('/^[a-z]{3}$/', $language))
+			{
+				$error = TRUE;
+				$vista->assign('error_language', 'El lenguaje es incorrecto. Debe usar un código de 3 letras minúsculas.');
+			}
+
+			if ( ! in_array($default_timezone, array_keys($tz_list)))
+			{
+				$erro = TRUE;
+				$vista->assign('error_default_timezone', 'La zona horaria no es válida.');
+			}
+
+			if ( ! $error)
+			{
+				// Guardo.
+				file_put_contents(CONFIG_PATH.DS.'marifa.php', '<?php defined(\'APP_BASE\') || die(\'No direct access allowed.\');'.PHP_EOL.'return '.$this->value_to_php($config).';');
+				
+				// Marco el paso como terminado.
+				Installer_Step::get_instance()->terminado();
+
+				// Voy al siguiente.
+				Installer_Step::get_instance()->ir_al_paso();
+			}
+
+			// Guardo.
+
+			// Voy al siguiente paso.
+		}
+
+		// Asigno la vista a la plantilla base.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
@@ -196,7 +288,7 @@ class Installer_Controller {
 		// Verifico estado de la base de datos.
 		if ($this->check_database())
 		{
-			// Seteo como terminado.
+			// Marco como terminado.
 			Installer_Step::get_instance()->terminado();
 
 			// Voy al siguiente.
@@ -298,7 +390,7 @@ class Installer_Controller {
 					);
 				}
 
-				// Genero template.
+				// Genero archivo de configuración.
 				$tmp = '<?php defined(\'APP_BASE\') || die(\'No direct access allowed.\');'.PHP_EOL.'return '.$this->value_to_php($config).';';
 
 				// Guardo la configuración.
@@ -307,7 +399,7 @@ class Installer_Controller {
 				// Intento conectar.
 				if ($this->check_database())
 				{
-					// Seteo el paso como terminado.
+					// Marco el paso como terminado.
 					Installer_Step::get_instance()->terminado();
 
 					// Voy al siguiente.
@@ -327,12 +419,12 @@ class Installer_Controller {
 			}
 		}
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
 	/**
-	 * Verificamos si la conección es correcta.
+	 * Verificamos si la conexión es correcta.
 	 * @return bool
 	 */
 	private function check_database()
@@ -343,7 +435,7 @@ class Installer_Controller {
 			return FALSE;
 		}
 
-		// Verifico los datos de conección.
+		// Verifico los datos de conexión.
 		try {
 			Database::get_instance(TRUE);
 			return TRUE;
@@ -436,7 +528,7 @@ class Installer_Controller {
 				// Agrego el título.
 				$lst[] = substr($u, 0, (-1) * (strlen(FILE_EXT) + 1));
 
-				// Listado de titulos.
+				// Listado de títulos.
 				$upd_aux_list = require(APP_BASE.DS.'installer'.DS.'update'.DS.$u);
 
 				foreach ($upd_aux_list as $k => $item)
@@ -523,7 +615,7 @@ class Installer_Controller {
 
 			if ( ! $error_global)
 			{
-				// Seteo el paso como terminado.
+				// Marco el paso como terminado.
 				Installer_Step::get_instance()->terminado();
 
 				$vista->assign('execute', TRUE);
@@ -533,7 +625,7 @@ class Installer_Controller {
 		// Paso listado resultado.
 		$vista->assign('consultas', $lst);
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
@@ -576,7 +668,7 @@ class Installer_Controller {
 			$nombre = preg_replace('/\s+/', ' ', $_POST['nombre']);
 			$descripcion = preg_replace('/\s+/', ' ', $_POST['descripcion']);
 
-			// Seteo nuevos valores a las vistas.
+			// Asigno nuevos valores a las vistas.
 			foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
 			{
 				$vista->assign($v, $$v);
@@ -689,15 +781,15 @@ class Installer_Controller {
 					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
 				}
 
-				// Seteo el paso como terminado.
+				// Marco el paso como terminado.
 				Installer_Step::get_instance()->terminado();
 
-				// Redirecciono al siguiente.
+				// Envío al siguiente paso.
 				Installer_Step::get_instance()->ir_al_paso();
 			}
 		}
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
@@ -709,10 +801,10 @@ class Installer_Controller {
 		// Cargo la vista.
 		$vista = View::factory('finalizacion');
 
-		// Seteo el paso como terminado.
+		// Marco el paso como terminado.
 		Installer_Step::get_instance()->terminado();
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
@@ -835,7 +927,7 @@ class Installer_Controller {
 						);
 					}
 
-					// Realizo la conección.
+					// Realizo la conexión.
 					try {
 						$db_tt = 'Database_Driver_'.ucfirst(strtolower($config['type']));
 						$db_instance = new $db_tt($config);
@@ -877,7 +969,7 @@ class Installer_Controller {
 			}
 		}
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 }
