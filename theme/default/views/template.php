@@ -18,6 +18,8 @@
         <!--[if lt IE 9]>
           <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
+        <link rel="alternate" href="{#SITE_URL#}/rss/posts/" title="{if="isset($brand)"}{$brand}{else}Marifa{/if} - Posts" type="application/rss+xml" />
+        {if="Utils::configuracion()->get('habilitar_fotos', 1) == 1 && Utils::configuracion()->get('privacidad_fotos', 1) == 1"}<link rel="alternate" href="{#SITE_URL#}/rss/fotos/" title="{if="isset($brand)"}{$brand}{else}Marifa{/if} - Fotos" type="application/rss+xml" />{/if}
 
         <!-- Le fav and touch icons -->
         <link rel="shortcut icon" href="{#THEME_URL#}/assets/ico/favicon.ico">
