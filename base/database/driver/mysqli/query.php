@@ -46,7 +46,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 	protected $position = 0;
 
 	/**
-	 * Contructor de la clase.
+	 * Constructor de la clase.
 	 *
 	 * @param mysqli_result $query
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
@@ -102,7 +102,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 				// Obtenemos el arreglo.
 				$resultado = mysqli_fetch_array($this->query, MYSQLI_NUM);
 
-				// Evitamos cast de consultas erroneas o vacias.
+				// Evitamos cast de consultas erróneas o vacías.
 				if ( ! is_array($resultado))
 				{
 					return $resultado;
@@ -126,7 +126,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 				// Obtenemos el objeto.
 				$object = mysqli_fetch_object($this->query);
 
-				// Evitamos cast de consultas erroneas o vacias.
+				// Evitamos cast de consultas erróneas o vacías.
 				if ( ! is_object($object))
 				{
 					return $object;
@@ -150,7 +150,7 @@ class Base_Database_Driver_Mysqli_Query extends Database_Query {
 				// Obtenemos el arreglo.
 				$resultado = mysqli_fetch_array($this->query, MYSQLI_ASSOC);
 
-				// Evitamos cast de consultas erroneas o vacias.
+				// Evitamos cast de consultas erróneas o vacías.
 				if ( ! is_array($resultado))
 				{
 					return $resultado;

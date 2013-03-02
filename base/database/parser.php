@@ -193,13 +193,13 @@ class Base_Database_Parser {
 	protected $query;
 
 	/**
-	 * Parametros sin nombre.
+	 * Parámetros sin nombre.
 	 * @var array
 	 */
 	protected $params;
 
 	/**
-	 * Arreglo asociativo con los parametros con nombre.
+	 * Arreglo asociativo con los parámetros con nombre.
 	 * @var array
 	 */
 	protected $named_params;
@@ -207,7 +207,7 @@ class Base_Database_Parser {
 	/**
 	 * Constructor de la clase.
 	 * @param string $query Consulta SQL a parsear.
-	 * @param mixed $params Arreglo de parametros sin nombre, es opcional.
+	 * @param mixed $params Arreglo de parámetros sin nombre, es opcional.
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
 	public function __construct($query, $params = NULL)
@@ -263,7 +263,7 @@ class Base_Database_Parser {
 	/**
 	 * Función que se encarga de determinar el tipo de datos para ver si debe
 	 * aplicar la prevención de inyecciones SQL, si debe usar comillas o si es
-	 * un literal ( funcion SQL ).
+	 * un literal ( función SQL ).
 	 * @param mixed $object Objeto a analizar.
 	 * @return string Cadena segura.
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
@@ -328,7 +328,7 @@ class Base_Database_Parser {
 	{
 		if ( ! is_array($params))
 		{
-			throw new InvalidArgumentException("El parametro debe ser un arreglo válido");
+			throw new InvalidArgumentException("El parámetro debe ser un arreglo válido");
 			return $q;
 		}
 
@@ -349,17 +349,17 @@ class Base_Database_Parser {
 	 */
 	protected function parse_vars($q, $params)
 	{
-		// Validamos que los parametros sea un arreglo.
+		// Validamos que los parámetros sea un arreglo.
 		if ( ! is_array($params))
 		{
-			throw new InvalidArgumentException("El parametro debe ser un arreglo válido");
+			throw new InvalidArgumentException("El parámetro debe ser un arreglo válido");
 			return $q;
 		}
-		// Validamos que tengamos igual numero de parametros que de los necesarios.
+		// Validamos que tengamos igual numero de parámetros que de los necesarios.
 		$aux = array(); // Garantiza compatibilidad en algunos casos.
 		if (count($params) != preg_match_all('/\?/', $q, $aux))
 		{
-			throw new InvalidArgumentException("No coinciden la cantidad de parametros necesarios con los provistos");
+			throw new InvalidArgumentException("No coinciden la cantidad de parámetros necesarios con los provistos");
 			return $q;
 		}
 
@@ -385,7 +385,7 @@ class Base_Database_Parser {
 	}
 
 	/**
-	 * Parsea la consulta SQL reemplazando todos los parametros.
+	 * Parsea la consulta SQL reemplazando todos los parámetros.
 	 * @return string Consulta SQL parseada.
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */

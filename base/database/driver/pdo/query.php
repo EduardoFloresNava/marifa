@@ -52,7 +52,7 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 	protected $cant = NULL;
 
 	/**
-	 * Contructor de la clase.
+	 * Constructor de la clase.
 	 *
 	 * @param PDOStatement $query
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
@@ -147,7 +147,7 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 				// Obtenemos el arreglo.
 				$resultado = $this->query->fetch($this->fetch_mode_pdo($type));
 
-				// Evitamos cast de consultas erroneas o vacias.
+				// Evitamos cast de consultas erróneas o vacías.
 				if ( ! is_array($resultado))
 				{
 					return $resultado;
@@ -171,7 +171,7 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 				// Obtenemos el objeto.
 				$object = $this->query->fetch($this->fetch_mode_pdo($type));
 
-				// Evitamos cast de consultas erroneas o vacias.
+				// Evitamos cast de consultas erróneas o vacías.
 				if ( ! is_object($object))
 				{
 					return $object;
@@ -195,7 +195,7 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 				// Obtenemos el arreglo.
 				$resultado = $this->query->fetch($this->fetch_mode_pdo($type));
 
-				// Evitamos cast de consultas erroneas o vacias.
+				// Evitamos cast de consultas erróneas o vacías.
 				if ( ! is_array($resultado))
 				{
 					return $resultado;
@@ -248,7 +248,7 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 	 */
 	public function current()
 	{
-		// Si no hay cast usamos forma corta para minimizar la perdidad de rendimiento.
+		// Si no hay cast usamos forma corta para minimizar la perdida de rendimiento.
 		if ($this->cast === NULL)
 		{
 			return $this->query->fetch($this->fetch_mode_pdo($this->fetch_type), PDO::FETCH_ORI_ABS, $this->position);

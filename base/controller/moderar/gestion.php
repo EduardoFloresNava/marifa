@@ -187,6 +187,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 		// Asigno consulta enviada.
 		$vista->assign('query', '');
+		$vista->assign('find', '');
 
 		if (Request::method() == 'POST')
 		{
@@ -203,6 +204,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 
 			// Asigno en la vista.
 			$vista->assign('query', $query);
+			$vista->assign('find', $tipo);
 
 			// Armo conjunto de búsqueda.
 			$palabras = $this->conjunto_busqueda($query);
@@ -229,6 +231,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 				{
 					$posts[$k] = $v->as_array();
 					$posts[$k]['usuario'] = $v->usuario()->as_array();
+					$posts[$k]['categoria'] = $v->categoria()->as_array();
 				}
 				$vista->assign('posts', $posts);
 				unset($posts);
@@ -243,6 +246,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 				{
 					$post_comentarios[$k] = $v->as_array();
 					$post_comentarios[$k]['post'] = $v->post()->as_array();
+					$post_comentarios[$k]['post']['categoria'] = $v->post()->categoria()->as_array();
 					$post_comentarios[$k]['usuario'] = $v->usuario()->as_array();
 				}
 				$vista->assign('post_comentarios', $post_comentarios);
@@ -258,6 +262,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 				{
 					$fotos[$k] = $v->as_array();
 					$fotos[$k]['usuario'] = $v->usuario()->as_array();
+					$fotos[$k]['categoria'] = $v->categoria()->as_array();
 				}
 				$vista->assign('fotos', $fotos);
 				unset($fotos);
@@ -273,6 +278,7 @@ class Base_Controller_Moderar_Gestion extends Controller {
 					$foto_comentarios[$k] = $v->as_array();
 					$foto_comentarios[$k]['usuario'] = $v->usuario()->as_array();
 					$foto_comentarios[$k]['foto'] = $v->foto()->as_array();
+					$foto_comentarios[$k]['foto']['categoria'] = $v->foto()->categoria()->as_array();
 				}
 				$vista->assign('foto_comentarios', $foto_comentarios);
 				unset($foto_comentarios);

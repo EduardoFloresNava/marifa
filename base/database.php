@@ -32,7 +32,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Database {
 
 	/**
-	 * Intancia del Driver que maneja la base de datos.
+	 * Instancia del Driver que maneja la base de datos.
 	 */
 	private static $instance;
 
@@ -72,7 +72,7 @@ class Base_Database {
 			// Comprobamos que exista un driver asignado.
 			if ( ! isset($config['type']))
 			{
-				throw new Database_Exception('Los parametros de la base de datos son incorrectos. Verifique el driver.');
+				throw new Database_Exception('Los parámetros de la base de datos son incorrectos. Verifique el driver.');
 			}
 
 			// Generamos el nombre de la clase Driver.

@@ -24,7 +24,7 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Interface base para los drivers de carga de imagenes.
+ * Interface base para los drivers de carga de imágenes.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.1

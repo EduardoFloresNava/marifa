@@ -111,7 +111,7 @@ class Base_Decoda extends Decoda_Decoda {
 	/**
 	 * Procesado rápido de BBCode
 	 * @param type $string
-	 * @param bool $preview Si es preview o no. En preview no se envian sucesos.
+	 * @param bool $preview Si es vista preliminar o no. En vista preliminar no se envían sucesos.
 	 * @return type
 	 */
 	public static function procesar($string, $preview = TRUE)

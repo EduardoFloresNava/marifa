@@ -41,7 +41,7 @@ class Base_Email {
 	}
 
 	/**
-	 * Obtengo un transporte para el envio de e-mails.
+	 * Obtengo un transporte para el envío de e-mails.
 	 * @return Swift_SmtpTransport
 	 */
 	public static function get_transport()
@@ -61,7 +61,7 @@ class Base_Email {
 		// Verifico exista transporte.
 		if ( ! isset($config['transport']))
 		{
-			throw new Exception('El tranporte no se encuentra diponible.');
+			throw new Exception('El transporte no se encuentra disponible.');
 		}
 
 		// Armo nombre de la clase del transporte.
@@ -70,13 +70,13 @@ class Base_Email {
 		// Verifico exista el transporte.
 		if ( ! class_exists($transport_name))
 		{
-			throw new Exception("El tranporte '$transport_name' no se encuentra diponible.");
+			throw new Exception("El transporte '$transport_name' no se encuentra disponible.");
 		}
 
 		// Cargo el transporte.
 		$transporte = new $transport_name;
 
-		// Seteo el resto de configuraciones.
+		// Asigno el resto de configuraciones.
 		if (isset($config['parametros']) && is_array($config['parametros']))
 		{
 			foreach ($config['parametros'] as $k => $v)

@@ -35,9 +35,9 @@ abstract class Base_Database_Driver {
 	/**
 	 * Constructor de la clase.
 	 *
-	 * Acá se debe presentar toda la lógica de conección a la base de datos
+	 * Acá se debe presentar toda la lógica de conexión a la base de datos
 	 * y dejar preparado en entorno para realizar consultas.
-	 * @param array $data Arreglo con los datos de conección a la base de datos.
+	 * @param array $data Arreglo con los datos de conexión a la base de datos.
 	 */
 
 	abstract public function __construct($data);
@@ -48,7 +48,7 @@ abstract class Base_Database_Driver {
 	 * Estás son las consultas que devuelven un objeto con
 	 * datos de la base de datos, como puede ser un SELECT.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return Database_Query Objeto resultado de la consulta.
 	 */
 	abstract public function query($query, $params = array());
@@ -56,7 +56,7 @@ abstract class Base_Database_Driver {
 	/**
 	 * Realiza una inserción en la base de datos.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|int False cuando se produce un error, un arreglo con
 	 * el id de la inserción y el número de filas afectadas si fue correcto.
 	 */
@@ -65,7 +65,7 @@ abstract class Base_Database_Driver {
 	/**
 	 * Borramos información de la base de datos.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|int False cuando se produce un error, el numero de filas
 	 * afectadas si fue correcto.
 	 */
@@ -74,7 +74,7 @@ abstract class Base_Database_Driver {
 	/**
 	 * Realiza una actualización en la base de datos.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|int False cuando se produce un error, el numero de filas
 	 * afectadas si fue correcto.
 	 */

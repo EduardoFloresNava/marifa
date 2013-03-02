@@ -24,7 +24,7 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Clase para el manejo de carga de imagenes por medio de distintas interfaces.
+ * Clase para el manejo de carga de imágenes por medio de distintas interfaces.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.1
@@ -40,12 +40,12 @@ class Base_Upload_Imagen {
 	private $config;
 
 	/**
-	 * Contructor de la clase.
-	 * Obtenemos las configuraciones de la carga de imagenes.
+	 * Constructor de la clase.
+	 * Obtenemos las configuraciones de la carga de imágenes.
 	 */
 	public function __construct()
 	{
-		// Cargamos la configuracion.
+		// Cargamos la configuración.
 		$this->config = configuracion_obtener(CONFIG_PATH.DS.'upload.'.FILE_EXT);
 	}
 
@@ -66,17 +66,17 @@ class Base_Upload_Imagen {
 			// Verificamos tamaño.
 			if (filesize($target) > $this->config['image_data']['max_size'])
 			{
-				throw new Exception('El tamaño de la imagen debe ser menor a '.$this->config['image_data']['max_size'].' bytes.');
+				throw new Exception(sprintf(__('El tamaño de la imagen debe ser menor a %s bytes.', FALSE), $this->config['image_data']['max_size']));
 			}
 
 			// Obtenemos datos de la imagen.
-			//TODO: verificar alternativas a GD. Verificar en la instalacion.
+			//TODO: verificar alternativas a GD. Verificar en la instalación.
 			$img_data = @getimagesize($target);
 			
 			// Verifico si los datos son correctos.
 			if ( ! is_array($img_data))
 			{
-				throw new Exception('La imagen no se encuentra disponible');
+				throw new Exception(__('La imagen no se encuentra disponible', FALSE));
 			}
 			
 			$w = $img_data[0];
@@ -86,25 +86,25 @@ class Base_Upload_Imagen {
 			// Verificamos el MIME de la imagen.
 			if ( ! in_array($mime, array_values($this->config['image_data']['extension'])))
 			{
-				throw new Exception('El tipo de imagen no está permitido');
+				throw new Exception(__('El tipo de imagen no está permitido', FALSE));
 			}
 
 			// Verificamos el tamaño de la imagen.
 			if ($w > $this->config['image_data']['resolucion_maxima'][0] || $h > $this->config['image_data']['resolucion_maxima'][1])
 			{
-				throw new Exception('La imagen es más grande que el permitido');
+				throw new Exception(__('La imagen es más grande que el permitido', FALSE));
 			}
 
 			// Verificamos el tamaño de la imagen.
 			if ($w < $this->config['image_data']['resolucion_minima'][0] || $h < $this->config['image_data']['resolucion_minima'][1])
 			{
-				throw new Exception('La imagen es más pequeña de lo que se permite');
+				throw new Exception(__('La imagen es más pequeña de lo que se permite', FALSE));
 			}
 
 			// Cargamos el driver encargado.
 			$driver_name = 'Upload_Imagen_Driver_'.ucfirst(strtolower($this->config['image']));
 
-			// Configuracion para el driver.
+			// Configuración para el driver.
 			$driver_config = isset($this->config['image_'.strtolower($this->config['image'])]) ? $this->config['image_'.strtolower($this->config['image'])] : NULL;
 
 			// Delegamos al driver.
@@ -147,7 +147,7 @@ class Base_Upload_Imagen {
 	 * Procesamos la carga de un archivo.
 	 * El comportamiento depende de las configuraciones de config/upload.php
 	 * @param string $clave Elemento donde sacar los datos (clave del arreglo $_FILES)
-	 * @return bool Si se realizó existosamente o no. Si es FALSE sin excepcion
+	 * @return bool Si se realizó exitosamente o no. Si es FALSE sin excepción
 	 * no existe la clave.
 	 * @throws Exception Error que se produjo al procesar los datos.
 	 */
@@ -182,7 +182,7 @@ class Base_Upload_Imagen {
 					$t_name = basename($file['name']);
 				}
 
-				// Path donde guardar.
+				// Ruta donde guardar.
 				$target = $this->config['file_type']['path'].$t_name;
 
 				// Movemos el archivo.
@@ -217,11 +217,11 @@ class Base_Upload_Imagen {
 				// Verificamos tamaño.
 				if ($file['size'] > $this->config['image_data']['max_size'])
 				{
-					throw new Exception('El tamaño de la imagen debe ser menor a '.$this->config['image_data']['max_size'].' bytes.');
+					throw new Exception(sprintf(__('El tamaño de la imagen debe ser menor a %s bytes.', FALSE), $this->config['image_data']['max_size']));
 				}
 
 				// Obtenemos datos de la imagen.
-				//TODO: verificar alternativas a GD. Verificar en la instalacion.
+				//TODO: verificar alternativas a GD. Verificar en la instalación.
 				$img_data = getimagesize($file['tmp_name']);
 				$w = $img_data[0];
 				$h = $img_data[1];
@@ -230,25 +230,25 @@ class Base_Upload_Imagen {
 				// Verificamos el MIME de la imagen.
 				if ( ! in_array($mime, array_values($this->config['image_data']['extension'])))
 				{
-					throw new Exception('El tipo de imagen no está permitido');
+					throw new Exception(__('El tipo de imagen no está permitido', FALSE));
 				}
 
 				// Verificamos el tamaño de la imagen.
 				if ($w > $this->config['image_data']['resolucion_maxima'][0] || $h > $this->config['image_data']['resolucion_maxima'][1])
 				{
-					throw new Exception('La imagen es más grande que el permitido');
+					throw new Exception(__('La imagen es más grande que el permitido', FALSE));
 				}
 
 				// Verificamos el tamaño de la imagen.
 				if ($w < $this->config['image_data']['resolucion_minima'][0] || $h < $this->config['image_data']['resolucion_minima'][1])
 				{
-					throw new Exception('La imagen es más pequeña de lo que se permite');
+					throw new Exception(__('La imagen es más pequeña de lo que se permite', FALSE));
 				}
 
 				// Cargamos el driver encargado.
 				$driver_name = 'Upload_Imagen_Driver_'.ucfirst(strtolower($this->config['image']));
 
-				// Configuracion para el driver.
+				// Configuración para el driver.
 				$driver_config = isset($this->config['image_'.strtolower($this->config['image'])]) ? $this->config['image_'.strtolower($this->config['image'])] : NULL;
 
 				// Delegamos al driver.
@@ -257,7 +257,7 @@ class Base_Upload_Imagen {
 			}
 			else
 			{
-				throw new Exception('Error cargando el archivo.', $file['error']);
+				throw new Exception(__('Error cargando el archivo.', FALSE), $file['error']);
 			}
 		}
 		else

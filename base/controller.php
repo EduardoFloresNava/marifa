@@ -70,8 +70,9 @@ class Base_Controller {
 
 		// Cargo nombre del sitio.
 		$model_config = new Model_Configuracion;
-		$this->template->assign('brand', $model_config->get('nombre', 'Marifa'));
-		$this->template->assign('brand_title', $model_config->get('nombre', 'Marifa'));
+		$this->template->assign('brand', $model_config->get('nombre', __('Marifa', FALSE)));
+		$this->template->assign('brand_title', $model_config->get('nombre', __('Marifa', FALSE)));
+		$this->template->assign('descripcion', $model_config->get('descripcion', __('Tu comunidad de forma simple', FALSE)));
 
 		// Acciones para menu offline.
 		if ( ! Usuario::is_login())
@@ -184,31 +185,35 @@ class Base_Controller {
 	 */
 	public function after()
 	{
-		// Eventos flash.
-		foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
+		// Verificamos que sea un objeto.
+		if (is_object($this->template))
 		{
-			if (isset($_SESSION[$k]))
+			// Eventos flash.
+			foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
 			{
-				$this->template->assign($k, get_flash($k));
+				if (isset($_SESSION[$k]))
+				{
+					$this->template->assign($k, get_flash($k));
+				}
 			}
-		}
 
-		// Proceso los elementos de la cabecera y el pie.
-		$header = '';
-		foreach ($this->header as $v)
-		{
-			$header .= (string) $v;
-		}
-		$this->template->assign('header', $header);
-		unset($v, $header);
+			// Proceso los elementos de la cabecera y el pie.
+			$header = '';
+			foreach ($this->header as $v)
+			{
+				$header .= (string) $v;
+			}
+			$this->template->assign('header', $header);
+			unset($v, $header);
 
-		$footer = '';
-		foreach ($this->footer as $v)
-		{
-			$footer .= (string) $v;
+			$footer = '';
+			foreach ($this->footer as $v)
+			{
+				$footer .= (string) $v;
+			}
+			$this->template->assign('footer', $footer);
+			unset($v, $footer);
 		}
-		$this->template->assign('footer', $footer);
-		unset($v, $footer);
 
 		// Compilo y muestro la plantilla.
 		if (is_object($this->template) && ! Request::is_ajax())

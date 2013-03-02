@@ -27,7 +27,7 @@ defined('APP_BASE') || die('No direct access allowed.');
  * Pueden ser LESS o CoffeeScript.
  *
  * Se encarga de compilar el código y mandarlo a una cache. En el caso del modo
- * de depuración no son cacheados, simplemente se envian al vuelo.
+ * de depuración no son cacheados, simplemente se envían al vuelo.
  *
  * IMPORTANTE: COFFEESCRIPT NO SE ENCUENTRA IMPLEMENTADO.
  * EL MOTIVO ES LA NECECIDAD DE IMPONER PHP 5.3 COMO REQUERIMIENTO.
@@ -76,7 +76,7 @@ class Base_Assets {
 			$path_parts['filename'] = substr($path_parts['basename'], 0, strlen($path_parts['extension']) + 1);
 		}
 
-		// Transformamos el path.
+		// Transformamos la ruta.
 		switch ($path_parts['extension'])
 		{
 			case 'css':
@@ -111,13 +111,13 @@ class Base_Assets {
 
 	/**
 	 * Compilamos un archivo.
-	 * @param type $file Archivo a procesar. Según la extension puede determinase
-	 * automáticamente a travez de la tabla de transformaciones el tipo.
+	 * @param type $file Archivo a procesar. Según la extensión puede determinase
+	 * automáticamente a través de la tabla de transformaciones el tipo.
 	 * @param bool|string $cache Si se debe guardar como cache. En caso de no estar
 	 * el tipo en la lista automática (LESS o CS) se debe colocar la URL donde
 	 * guardar.
 	 * @param string $tipo Tipo de compilación. LESS o CS. Si no se pasa como
-	 * argumento se toma a partir de la lista de filtos y extensiones.
+	 * argumento se toma a partir de la lista de filtros y extensiones.
 	 */
 	public static function compile($file, $cache = FALSE, $tipo = NULL)
 	{
@@ -138,7 +138,7 @@ class Base_Assets {
 	}
 
 	/**
-	 * Obtenemos el path donde se coloca la cache.
+	 * Obtenemos la ruta donde se coloca la cache.
 	 * @param string $file Archivo origen.
 	 * @param string $tipo Tipo de archivo.
 	 * @return string Path resultado.
@@ -154,14 +154,14 @@ class Base_Assets {
 			case self::ASSET_COFFEESCRIPT:
 				return $path_parts['dirname'].DS.substr($path_parts['basename'], 0, (-1)*strlen($path_parts['extension'])).'js';
 			default:
-				throw new Exception("No se puede manejar el tipo de compilacion de asset '$tipo'");
+				throw new Exception("No se puede manejar el tipo de compilación de asset '$tipo'");
 		}
 	}
 
 	/**
-	 * Enviamos la compilacion a la clase correspondiente.
+	 * Enviamos la compilación a la clase correspondiente.
 	 * @param string $file Archivo a compilar.
-	 * @param string $tipo Tipo de compilacion.
+	 * @param string $tipo Tipo de compilación.
 	 * @param string $target Donde se guarda la cache. NULL para al vuelo.
 	 * @throws Exception
 	 */
@@ -174,7 +174,7 @@ class Base_Assets {
 			case self::ASSET_COFFEESCRIPT:
 				return self::compile_coffeescript($file, $target);
 			default:
-				throw new Exception("No se puede manejar el tipo de compilacion de asset '$tipo'");
+				throw new Exception("No se puede manejar el tipo de compilación de asset '$tipo'");
 		}
 	}
 

@@ -9,12 +9,12 @@
 		<form method="POST" class="form-inline" action="">
 			<input type="text" name="query" id="query" value="{$query}" class="input-small" placeholder="Buscar..." title="Búsqueda de usuarios, posts, fotos, publicaciones y comentarios." />
 			<select id="find" name="find" class="input-small">
-				<option value="0">Todos</option>
-				<option value="1">Usuarios</option>
-				<option value="2">Post's</option>
-				<option value="3">Comentarios en post's</option>
-				<option value="4">Fotos</option>
-				<option value="5">Comentarios en fotos</option>
+				<option value="0"{if="$find == 0"} selected{/if}>Todos</option>
+				<option value="1"{if="$find == 1"} selected{/if}>Usuarios</option>
+				<option value="2"{if="$find == 2"} selected{/if}>Post's</option>
+				<option value="3"{if="$find == 3"} selected{/if}>Comentarios en post's</option>
+				<option value="4"{if="$find == 4"} selected{/if}>Fotos</option>
+				<option value="5"{if="$find == 5"} selected{/if}>Comentarios en fotos</option>
 			</select>
 			<button type="submit" class="btn btn-primary">Buscar</button>
 		</form>
@@ -37,14 +37,8 @@
 		{loop="$usuarios"}
 		<tr>
 			<td>{$value.id}</td>
-			<td>{$value.nick}</td>
+			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
 			<td>{$value.email}</td>
-		</tr>
-		{else}
-		<tr>
-			<td colspan="3" class="alert">
-				¡No hay usuarios que mostrar!
-			</td>
 		</tr>
 		{/loop}
 	</tbody>
@@ -66,14 +60,8 @@
 		{loop="$posts"}
 		<tr>
 			<td>{$value.id}</td>
-			<td>{$value.titulo}</td>
-			<td>{$value.usuario.nick}</td>
-		</tr>
-		{else}
-		<tr>
-			<td colspan="3" class="alert">
-				¡No hay posts que mostrar!
-			</td>
+			<td><a href="{#SITE_URL#}/post/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 		</tr>
 		{/loop}
 	</tbody>
@@ -94,15 +82,9 @@
 	<tbody>
 		{loop="$post_comentarios"}
 		<tr>
-			<td>{$value.id}</td>
-			<td>{$value.post.titulo}</td>
-			<td>{$value.usuario.nick}</td>
-		</tr>
-		{else}
-		<tr>
-			<td colspan="3" class="alert">
-				¡No hay comentarios que mostrar!
-			</td>
+			<td><a href="{#SITE_URL#}/post/{$value.post.categoria.seo}/{$value.post.id}/{$value.post.titulo|Texto::make_seo}.html#c-{$value.id}">{$value.id}</td>
+			<td><a href="{#SITE_URL#}/post/{$value.post.categoria.seo}/{$value.post.id}/{$value.post.titulo|Texto::make_seo}.html">{$value.post.titulo}</td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 		</tr>
 		{/loop}
 	</tbody>
@@ -124,14 +106,8 @@
 		{loop="$fotos"}
 		<tr>
 			<td>{$value.id}</td>
-			<td>{$value.titulo}</td>
-			<td>{$value.usuario.nick}</td>
-		</tr>
-		{else}
-		<tr>
-			<td colspan="3" class="alert">
-				¡No hay fotos que mostrar!
-			</td>
+			<td><a href="{#SITE_URL#}/foto/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{$value.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 		</tr>
 		{/loop}
 	</tbody>
@@ -152,15 +128,9 @@
 	<tbody>
 		{loop="$foto_comentarios"}
 		<tr>
-			<td>{$value.id}</td>
-			<td>{$value.foto.titulo}</td>
-			<td>{$value.usuario.nick}</td>
-		</tr>
-		{else}
-		<tr>
-			<td colspan="3" class="alert">
-				¡No hay comentarios que mostrar!
-			</td>
+			<td><a href="{#SITE_URL#}/foto/{$value.foto.categoria.seo}/{$value.foto.id}/{$value.foto.titulo|Texto::make_seo}.html#c-{$value.id}">{$value.id}</a></td>
+			<td><a href="{#SITE_URL#}/foto/{$value.foto.categoria.seo}/{$value.foto.id}/{$value.foto.titulo|Texto::make_seo}.html">{$value.foto.titulo}</a></td>
+			<td><a href="{#SITE_URL#}/@{$value.usuario.nick}">{$value.usuario.nick}</a></td>
 		</tr>
 		{/loop}
 	</tbody>

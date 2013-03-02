@@ -26,7 +26,7 @@ defined('APP_BASE') || die('No direct access allowed.');
  * Función para el manejo de errores.
  *
  * Se encarga de manejar los errores mostrando en el modo de desarrollo
- * información util y en el modo de producción una pantalla al usuario
+ * información útil y en el modo de producción una pantalla al usuario
  * de forma de
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
