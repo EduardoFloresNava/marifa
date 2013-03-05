@@ -53,7 +53,7 @@ function configuracion_obtener($file, $prepend_name = FALSE)
 	// Comprobamos si hay que agregar el nombre del archivo a las llamadas.
 	if ($prepend_name)
 	{
-		// Obtenemos el nombre de archivo, sin extension.
+		// Obtenemos el nombre de archivo, sin extensión.
 		$fi = pathinfo($file);
 
 		if ( ! isset($fi['filename']))
@@ -82,7 +82,7 @@ function configuracion_obtener($file, $prepend_name = FALSE)
  */
 function loader_load($class)
 {
-	// Tranformamos el nombre de la clase a un path equivalente.
+	// Transformamos el nombre de la clase a una ruta equivalente.
 	$class = strtolower(preg_replace('/\/+/', DS, preg_replace('/\_/', DS, $class)));
 
 	if (file_exists(APP_BASE.DS.'marifa'.DS.$class.'.'.FILE_EXT))
@@ -207,6 +207,50 @@ function get_readable_file_size($size, $format_string = '')
 	}
 
 	return sprintf($format_string, $size, $size_string);
+}
+
+/**
+ * Obtenemos la cantidad de bytes a partir de un tamaño legible.
+ * Modificadores soportados: bytes, b, kb, mb, gb, tb.
+ * @param  string $size Cadena que representa el tamaño a obtener.
+ * @return float cantidad de bytes.
+ */
+function get_bytes_from_readable_file_size($size)
+{
+	$arr = array();
+	$rst = preg_match('/^([0-9]+(\.[0-9]+)?)(\s+)?(bytes|B|kb|mb|gb|tb)?$/i', $size, $arr);
+
+	if ($rst)
+	{
+		$number = (float) $arr[0];
+		$modificador = strtolower(trim($arr[4]));
+
+		if ($modificador == 'kb')
+		{
+			return $number * 1024;
+		}
+		elseif ($modificador == 'mb')
+		{
+			return $number * 1024 * 1024;
+		}
+		elseif ($modificador == 'gb')
+		{
+			return $number * 1024 * 1024 * 1024;
+		}
+		elseif ($modificador == 'tb')
+		{
+			return $number * 1024 * 1024 * 1024 * 1024;
+		}
+		else
+		{
+			return $number;
+		}
+	}
+	else
+	{
+		// Intento transformarlo en número.
+		return (float) $size;
+	}
 }
 
 /**

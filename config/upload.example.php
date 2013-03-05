@@ -25,17 +25,17 @@ return array(
 	),
 
 	/**
-	 * Información general sobre carga de imagenes.
+	 * Información general sobre carga de imágenes.
 	 */
 	'image_data' => array(
 		/**
-		 * Resolucion mínima permitida.
+		 * Resolución mínima permitida.
 		 * array(ancho, alto)
 		 */
 		'resolucion_minima' => array(50, 50),
 
 		/**
-		 * Resolucion máxima permitida.
+		 * Resolución máxima permitida.
 		 * array(ancho, alto)
 		 */
 		'resolucion_maxima' => array(1000, 1000),
@@ -47,7 +47,7 @@ return array(
 
 		/**
 		 * MIME types permitidos.
-		 * El formato del arreglo es: extension => mime.
+		 * El formato del arreglo es: extensión => mime.
 		 * Solo se comprueba el MIME, pero la extensión se usa para la GUI.
 		 */
 		'extension' => array(
@@ -58,8 +58,8 @@ return array(
 	),
 
 	/**
-	 * Driver a utilizar para las imagenes.
-	 * disk: Guarda en un directorio las imagenes.
+	 * Driver a utilizar para las imágenes.
+	 * disk: Guarda en un directorio las imágenes.
 	 */
 	'image' => 'disk',
 
@@ -68,7 +68,7 @@ return array(
 	 */
 	'image_disk' => array(
 		/**
-		 * Directorio donde almacenar las imagenes.
+		 * Directorio donde almacenar las imágenes.
 		 */
 		'save_path' => CACHE_PATH.DS.'imagen'.DS,
 

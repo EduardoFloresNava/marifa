@@ -94,6 +94,7 @@ class Base_Controller_Admin_Home extends Controller {
 			$menu->element_set(__('Plugins', FALSE), '/admin/sistema/plugins/', 'plugins', 'sistema');
 			$menu->element_set(__('Optimizaciones', FALSE), '/admin/sistema/optimizar/', 'optimizar', 'sistema');
 			$menu->element_set(__('Traducciones', FALSE), '/admin/sistema/traducciones/', 'traducciones', 'sistema');
+			$menu->element_set(__('Carga de archivos', FALSE), '/admin/sistema/upload/', 'carga_de_archivos', 'sistema');
 
 			// Configuraciones.
 			$menu->group_set(__('Configuración', FALSE), 'configuracion');

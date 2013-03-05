@@ -1336,6 +1336,10 @@ class Base_Controller_Admin_Sistema extends Controller {
 		}
 	}
 
+	/**
+	 * Obtengo el listado de traducciones disponibles.
+	 * @return array
+	 */
 	protected function listado_traducciones()
 	{
 		// Obtengo listado de archivos.
@@ -1348,5 +1352,277 @@ class Base_Controller_Admin_Sistema extends Controller {
 		}
 
 		return $archivos;
+	}
+
+	/**
+	 * Configuración de la carga de archivos e imágenes al sistema.
+	 */
+	public function action_upload()
+	{
+		// Cargo la vista.
+		$vista = View::factory('/admin/sistema/upload');
+
+		// Marco sin errores.
+		$vista->assign('error_file_maxsize', FALSE);
+		$vista->assign('error_file_path', FALSE);
+		$vista->assign('error_file_usehash', FALSE);
+		$vista->assign('error_image_maxsize', FALSE);
+		$vista->assign('error_image_min_px', FALSE);
+		$vista->assign('error_image_max_px', FALSE);
+		$vista->assign('error_image_savemethod', FALSE);
+		$vista->assign('error_image_disk_savepath', FALSE);
+		$vista->assign('error_image_disk_saveurl', FALSE);
+		$vista->assign('error_image_disk_usehash', FALSE);
+		$vista->assign('error_image_imgur_apikey', FALSE);
+		$vista->assign('error_image_imgur_timeout', FALSE);
+
+		// Cargo configuraciones.
+		$o_config = new Configuracion(CONFIG_PATH.DS.'upload.php');
+
+		// Asigno valores actuales.
+		$vista->assign('file_maxsize', get_readable_file_size($o_config['file_type']['max_size']));
+		$vista->assign('file_path', $o_config['file_type']['path']);
+		$vista->assign('file_usehash', (bool) $o_config['file_type']['use_hash']);
+		$vista->assign('image_maxsize', get_readable_file_size($o_config['image_data']['max_size']));
+		$vista->assign('image_min_px', implode('x', $o_config['image_data']['resolucion_minima']));
+		$vista->assign('image_max_px', implode('x', $o_config['image_data']['resolucion_maxima']));
+		$vista->assign('image_savemethod', $o_config['image']);
+		$vista->assign('image_disk_savepath', $o_config['image_disk']['save_path']);
+		$vista->assign('image_disk_saveurl', $o_config['image_disk']['base_url']);
+		$vista->assign('image_disk_usehash', (bool) $o_config['image_disk']['use_hash']);
+		$vista->assign('image_imgur_apikey', $o_config['image_imgur']['api_key']);
+		$vista->assign('image_imgur_timeout', (int) $o_config['image_imgur']['timeout']);
+
+		// Listado de métodos de almacenamiento de imágenes.
+		$image_save_methods = array(
+			'disk'  => __('Disco', FALSE),
+			'imgur' => __('imgur', FALSE)
+		);
+
+		$vista->assign('image_save_methods', $image_save_methods);
+
+		// Verifico datos enviados.
+		if (Request::method() == 'POST')
+		{
+			// Obtengo los datos.
+			$file_maxsize = (int) get_bytes_from_readable_file_size(arr_get($_POST, 'file_maxsize', 0));
+			$file_path = arr_get($_POST, 'file_path', '');
+			$file_usehash = (bool) arr_get($_POST, 'file_usehash', FALSE);
+			$image_maxsize = (int) get_bytes_from_readable_file_size(arr_get($_POST, 'image_maxsize', 0));
+			$image_min_px = arr_get($_POST, 'image_min_px', '');
+			$image_max_px = arr_get($_POST, 'image_max_px', '');
+			$image_savemethod = arr_get($_POST, 'image_savemethod', '');
+			$image_disk_savepath = arr_get($_POST, 'image_disk_savepath', '');
+			$image_disk_saveurl = arr_get($_POST, 'image_disk_saveurl', '');
+			$image_disk_usehash = (bool) arr_get($_POST, 'image_disk_usehash', FALSE);
+			$image_imgur_apikey = arr_get($_POST, 'image_imgur_apikey', '');
+			$image_imgur_timeout = (int) arr_get($_POST, 'image_imgur_timeout', 0);
+
+			// Los reenvío a la vista.
+			$vista->assign('file_maxsize', get_readable_file_size($file_maxsize));
+			$vista->assign('file_path', $file_path);
+			$vista->assign('file_usehash', $file_usehash);
+			$vista->assign('image_maxsize', get_readable_file_size($image_maxsize));
+			$vista->assign('image_min_px', $image_min_px);
+			$vista->assign('image_max_px', $image_max_px);
+			$vista->assign('image_savemethod', $image_savemethod);
+			$vista->assign('image_disk_savepath', $image_disk_savepath);
+			$vista->assign('image_disk_saveurl', $image_disk_saveurl);
+			$vista->assign('image_disk_usehash', $image_disk_usehash);
+			$vista->assign('image_imgur_apikey', $image_imgur_apikey);
+			$vista->assign('image_imgur_timeout', $image_imgur_timeout);
+
+			// Marco sin errores.
+			$error = FALSE;
+
+			// Verifico el tamaño de carga de los archivos.
+			if ($file_maxsize <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_file_maxsize', __('El tamaño máximo de los archivos es incorrecto. Debe ser mayor a 1 byte.', FALSE));
+			}
+
+			// Verifico la ruta donde almacenar los archivos cargados.
+			if ( ! is_dir($file_path) || ! Utils::is_really_writable($file_path))
+			{
+				$error = TRUE;
+				$vista->assign('error_file_path', __('La ruta especificada no es correcta. Verifique que tenga permisos de escritura.', FALSE));
+			}
+
+			// Verifico el tamaño de carga de las imágenes.
+			if ($image_maxsize <= 0)
+			{
+				$error = TRUE;
+				$vista->assign('error_image_maxsize', __('El tamaño máximo de carga de las imágenes es incorrecto. Debe ser mayor a 1 byte.', FALSE));
+			}
+
+			// Verifico tamaño mínimo.
+			$image_min_res = array();
+			if ( ! preg_match('/^([0-9]+)x([0-9]+)$/i', $image_min_px, $image_min_res))
+			{
+				$error = TRUE;
+				$vista->assign('error_image_min_px', __('El formato del tamaño mínimo de las imágenes permitidas es incorrecto.', FALSE));	
+				unset($image_min_res);
+			}
+			else
+			{
+				// Obtengo los valores.
+				$min_w = (int) arr_get($image_min_res, 1, 0);
+				$min_h = (int) arr_get($image_min_res, 2, 0);
+
+				// Verifico.
+				if ($min_w <= 0 || $min_h <= 0)
+				{
+					$error = TRUE;
+					$vista->assign('error_image_min_px', __('El tamaño mínimo de la imagen debe ser debe ser de al menos 1x1 px.', FALSE));
+				}
+				else
+				{
+					$image_min_res = array($min_w, $min_h);
+				}
+				unset($min_w, $min_h);
+			}
+
+			// Verifico tamaño máximo.
+			$image_max_res = array();
+			if ( ! preg_match('/^([0-9]+)x([0-9]+)$/i', $image_max_px, $image_max_res))
+			{
+				$error = TRUE;
+				$vista->assign('error_image_max_px', __('El formato del tamaño máximo de las imágenes permitidas es incorrecto.', FALSE));	
+				unset($image_max_res);
+			}
+			else
+			{
+				// Obtengo los valores.
+				$max_w = (int) arr_get($image_max_res, 1, 0);
+				$max_h = (int) arr_get($image_max_res, 2, 0);
+
+				// Verifico.
+				if ($max_w <= 0 || $max_h <= 0 && ( ! isset($min_size) || ($min_size[0] > $max_w || $min_size[1] > $max_h)))
+				{
+					$error = TRUE;
+					$vista->assign('error_image_max_px', __('El tamaño máximo de la imagen debe ser debe ser de al menos 1x1 px y mayor que el tamaño mínimo.', FALSE));
+				}
+				else
+				{
+					$image_max_res = array($max_w, $max_h);
+				}
+				unset($max_w, $max_h);
+			}
+
+			// Verifico método de guardado.
+			if ( ! isset($image_save_methods[$image_savemethod]))
+			{
+				$error = TRUE;
+				$vista->assign('error_savemethod', __('El método de almacenamiento de imágenes elegido es incorrecto.', FALSE));
+			}
+
+			// Verifico valores de almacenamiento de imágenes en disco.
+			if ($image_save_methods == 'disk')
+			{
+				// Verifico la ruta donde se colocan las imágenes.
+				if ( ! file_exists($image_disk_savepath) || ! is_dir($image_disk_savepath) || ! Utils::is_really_writable($image_disk_savepath))
+				{
+					$error = TRUE;
+					$vista->assign('error_image_disk_savepath', __('El directorio donde almacenar las imágenes en disco es incorrecto. Verifique que exista y tenga permisos de escritura.', FALSE));
+				}
+
+				// Verifico URL para acceso a la imagen.
+				if (empty($image_disk_saveurl))
+				{
+					$error = TRUE;
+					$vista->assign('error_image_disk_saveurl', __('La URL base para acceder a las imágenes es incorrecta.', FALSE));
+				}
+			}
+
+			// Verifico valores de almacenamiento en imgur.
+			if ($image_save_methods == 'imgur')
+			{
+				// Verifico clave del API.
+				if (empty($image_imgur_apikey))
+				{
+					$error = TRUE;
+					$vista->assign('error_image_imgur_apikey', __('Debe introducir la clave para acceder al API de imgur.', FALSE));
+				}
+
+
+				// Verifico tiempo de espera.
+				if ($image_imgur_timeout <= 0 || $image_imgur_timeout > 60)
+				{
+					$error = TRUE;
+					$vista->assign('error_image_imgur_timeout', __('El tiempo de espera debe ser una cantidad de segundos comprendida entre 1 y 60.', FALSE));
+				}
+			}
+
+			// Actualizo contenido.
+			if ( ! $error)
+			{
+				// Configuración de la carga de binarios.
+				$file_type = $o_config['file_type'];
+
+				$file_type['max_size'] = $file_maxsize;
+				$file_type['path'] = $file_path;
+				$file_type['use_hash'] = $file_usehash;
+
+				$o_config['file_type'] = $file_type;
+				unset($file_type);
+
+				// Configuración de la carga de imágenes.
+				$image_data = $o_config['image_data'];
+
+				$image_data['max_size'] = $image_maxsize;
+				$image_data['resolucion_minima'] = $image_min_res;
+				$image_data['resolucion_maxima'] = $image_max_res;
+
+				$o_config['image_data'] = $image_data;
+				unset($image_data);
+
+				// Configuración del método de carga.
+				$o_config['image'] = $image_savemethod;
+				
+				if ($image_savemethod == 'disk')
+				{
+					// Configuración de la carga de imágenes en disco.
+					$image_disk = $o_config['image_disk'];
+
+					$image_disk['save_path'] = $image_disk_savepath;
+					$image_disk['base_url'] = $image_disk_saveurl;
+					$image_disk['use_hash'] = $image_disk_usehash;
+
+					$o_config['image_disk'] = $image_disk;
+					unset($image_disk);
+				}
+				
+				if ($image_savemethod == 'imgur')
+				{
+					// Configuración de la carga de imágenes en imgur.
+					$image_imgur = $o_config['image_imgur'];
+
+					$image_imgur['api_key'] = $image_imgur_apikey;
+					$image_imgur['timeout'] = $image_imgur_timeout;
+
+					$o_config['image_imgur'] = $image_imgur;
+					unset($image_imgur);
+				}
+
+				$o_config->save();
+
+				// Informo el resultado.
+				add_flash_message(FLASH_SUCCESS, __('Los datos se han actualizado correctamente.', FALSE));
+			}
+		}
+
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($portada);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.carga_de_archivos'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
 	}
 }
