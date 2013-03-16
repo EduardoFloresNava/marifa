@@ -17,6 +17,14 @@
 		</div>
 	</div>
 
+	<div class="control-group{if="$error_descripcion"} error{/if}">
+		<label class="control-label" for="descripcion">Descripcion</label>
+		<div class="controls">
+			<textarea name="descripcion" id="descripcion" class="span10" >{$descripcion}</textarea>
+			<span class="help-block">{if="$error_descripcion"}{$error_descripcion}{/if}</span>
+		</div>
+	</div>
+
 	<div class="control-group{if="$error_color"} error{/if}">
 		<label class="control-label" for="color">Color</label>
 		<div class="controls">

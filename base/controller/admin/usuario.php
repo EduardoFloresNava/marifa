@@ -1180,6 +1180,8 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Valores por defecto y errores.
 		$vista->assign('nombre', '');
 		$vista->assign('error_nombre', FALSE);
+		$vista->assign('descripcion', '');
+		$vista->assign('error_descripcion', FALSE);
 		$vista->assign('color', '');
 		$vista->assign('error_color', FALSE);
 		$vista->assign('imagen', '');
@@ -1206,6 +1208,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			// Obtenemos los campos.
 			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
+			$descripcion = isset($_POST['descripcion']) ? trim($_POST['descripcion']) : NULL;
 			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
 			$puntos = isset($_POST['puntos']) ? (int) $_POST['puntos'] : NULL;
@@ -1215,6 +1218,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			// Valores para cambios.
 			$vista->assign('nombre', $nombre);
+			$vista->assign('descripcion', $descripcion);
 			$vista->assign('color', $color);
 			$vista->assign('imagen', $imagen);
 			$vista->assign('puntos', $puntos);
@@ -1227,6 +1231,13 @@ class Base_Controller_Admin_Usuario extends Controller {
 			{
 				$error = TRUE;
 				$vista->assign('error_nombre', __('El nombre del rango deben ser entre 5 y 32 caracteres alphanuméricos.', FALSE));
+			}
+
+			// Verifico la descripción.
+			if (isset($descripcion{300}))
+			{
+				$error = TRUE;
+				$vista->assign('error_descripcion', __('La descripción no puede tener más de 300 caracteres.', FALSE));
 			}
 
 			// Verificamos el color.
@@ -1288,7 +1299,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 				// Creamos el rango.
 				$model_rango = new Model_Usuario_Rango;
-				$model_rango->nuevo_rango($nombre, $color, $imagen, $puntos, $tipo, $cantidad, $puntos_dar);
+				$model_rango->nuevo_rango($nombre, htmlentities($descripcion, ENT_QUOTES, 'UTF-8'), $color, $imagen, $puntos, $tipo, $cantidad, $puntos_dar);
 
 				//TODO: agregar suceso de administración.
 
@@ -1341,6 +1352,8 @@ class Base_Controller_Admin_Usuario extends Controller {
 		// Valores por defecto y errores.
 		$vista->assign('nombre', $model_rango->nombre);
 		$vista->assign('error_nombre', FALSE);
+		$vista->assign('descripcion', $model_rango->descripcion);
+		$vista->assign('error_descripcion', FALSE);
 		$vista->assign('color', strtoupper(sprintf('%06s', dechex($model_rango->color))));
 		$vista->assign('error_color', FALSE);
 		$vista->assign('imagen', $model_rango->imagen);
@@ -1362,6 +1375,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 
 			// Obtenemos los campos.
 			$nombre = isset($_POST['nombre']) ? preg_replace('/\s+/', ' ', trim($_POST['nombre'])) : NULL;
+			$descripcion = isset($_POST['descripcion']) ? trim($_POST['descripcion']) : NULL;
 			$color = isset($_POST['color']) ? $_POST['color'] : NULL;
 			$imagen = isset($_POST['imagen']) ? $_POST['imagen'] : NULL;
 			$puntos = isset($_POST['puntos']) ? (int) $_POST['puntos'] : NULL;
@@ -1383,6 +1397,13 @@ class Base_Controller_Admin_Usuario extends Controller {
 			{
 				$error = TRUE;
 				$vista->assign('error_nombre', __('El nombre del rango deben ser entre 5 y 32 caracteres alphanuméricos.', FALSE));
+			}
+
+			// Verifico la descripción.
+			if (isset($descripcion{300}))
+			{
+				$error = TRUE;
+				$vista->assign('error_descripcion', __('La descripción no puede tener más de 300 caracteres.', FALSE));
 			}
 
 			// Verificamos el color.
@@ -1482,6 +1503,12 @@ class Base_Controller_Admin_Usuario extends Controller {
 				if ($model_rango->cantidad != $cantidad)
 				{
 					$model_rango->actualizar_campo('cantidad', $cantidad);
+				}
+
+				// Actualizo descripción.
+				if ($model_rango->descripcion != $descripcion)
+				{
+					$model_rango->actualizar_campo('descripcion', $descripcion);
 				}
 
 				// Informamos suceso.

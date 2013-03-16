@@ -39,6 +39,7 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @property-read int $id ID del rango.
  * @property-read int $orden Orden que ocupa el rango.
  * @property-read string $nombre Nombre del rango.
+ * @property-read string $descripcion Descripción del rango.
  * @property-read int $color Color que representa al rango.
  * @property-read string $imagen Imagen del rango.
  * @property-read int $puntos Puntos que se otorgan por día.
@@ -268,6 +269,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 		'id' => Database_Query::FIELD_INT,
 		'orden' => Database_Query::FIELD_INT,
 		'nombre' => Database_Query::FIELD_STRING,
+		'descripcion' => Database_Query::FIELD_STRING,
 		'color' => Database_Query::FIELD_INT,
 		'imagen' => Database_Query::FIELD_STRING,
 		'puntos' => Database_Query::FIELD_INT,
@@ -453,6 +455,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	/**
 	 * Creamos un nuevo rango.
 	 * @param string $nombre Nombre del rango.
+	 * @param string $descripcion Descripción del rango.
 	 * @param int|string $color Color del rango.
 	 * @param string $imagen Imagen del rango.
 	 * @param int $puntos Cantidad de puntos por día.
@@ -463,7 +466,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	 * @return bool Resultado de la inserción.
 	 * @throws Exception Ya existe el rango.
 	 */
-	public function nuevo_rango($nombre, $color, $imagen, $puntos, $tipo = self::TIPO_ESPECIAL, $cantidad = 0, $puntos_dar = 10, $permisos = array())
+	public function nuevo_rango($nombre, $descripcion, $color, $imagen, $puntos, $tipo = self::TIPO_ESPECIAL, $cantidad = 0, $puntos_dar = 10, $permisos = array())
 	{
 		// Verificamos no exista un rango con ese nombre.
 		if ($this->db->query('SELECT COUNT(*) FROM usuario_rango WHERE nombre = ?', $nombre)->get_var(Database_Query::FIELD_INT) > 0)
@@ -480,7 +483,7 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 		}
 
 		// Insertamos el rango.
-		list($id, $cant) = $this->db->insert('INSERT INTO usuario_rango (nombre, color, imagen, orden, puntos, tipo, cantidad, puntos_dar) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', array($nombre, $color, $imagen, $maximo, $puntos, $tipo, $cantidad, $puntos_dar));
+		list($id, $cant) = $this->db->insert('INSERT INTO usuario_rango (nombre, descripcion, color, imagen, orden, puntos, tipo, cantidad, puntos_dar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', array($nombre, $descripcion, $color, $imagen, $maximo, $puntos, $tipo, $cantidad, $puntos_dar));
 
 		if ($cant > 0)
 		{
@@ -494,13 +497,8 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 				{
 					$this->agregar_permiso($permiso);
 				}
-
-				return TRUE; // Inserción correcta.
 			}
-			else
-			{
-				return TRUE; // Inserción correcta.
-			}
+			return TRUE; // Inserción correcta.
 		}
 		else
 		{

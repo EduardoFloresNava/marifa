@@ -66,4 +66,12 @@ $consultas[] = array(
 	)
 );
 
+// Descripción a los rangos.
+$consultas[] = array(
+	'Descripción de los rangos',
+	array(
+		array('ALTER', 'ALTER TABLE `usuario_rango` ADD `descripcion` VARCHAR(250) NULL DEFAULT \'\' AFTER nombre;', NULL, array('error_no' => 1060)),
+	)
+);
+
 return $consultas;

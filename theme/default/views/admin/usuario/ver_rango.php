@@ -13,6 +13,10 @@
 </div>
 <table class="table table-bordered">
 	<tr>
+		<th>Descripción</th>
+		<td>{$rango.descripcion}</td>
+	</tr>
+	<tr>
 		<th>Tipo</th>
 		<td>{if="$rango.tipo == 0"}Especial{elseif="$rango.tipo == 1"}Puntos{elseif="$rango.tipo == 2"}Posts{elseif="$rango.tipo == 3"}Fotos{else}Comentarios{/if}</td>
 	</tr>
