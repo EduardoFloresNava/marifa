@@ -49,4 +49,21 @@ $consultas[] = array(
 	)
 );
 
+// Censuras de palabras.
+$consultas[] = array(
+	'Censuras de palabras',
+	array(
+		array('ALTER', 'CREATE TABLE  `censurar_palabra` (
+				`id` int NOT NULL AUTO_INCREMENT,
+				`valor` varchar(250) NOT NULL,
+				`tipo` int,
+				`censura` varchar(250) NOT NULL,
+				`estado` int NOT NULL,
+				PRIMARY KEY (`id`),
+				UNIQUE KEY `clave` (`valor`, `tipo`)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
 return $consultas;

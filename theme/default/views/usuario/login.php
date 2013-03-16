@@ -1,6 +1,6 @@
 <div class="row-fluid">
 	<div class="span12">
-		<form class="form-horizontal" action="{#SITE_URL#}/usuario/login" method="POST">
+		<form class="form-horizontal" id="login" action="" method="POST">
 			<fieldset>
 				<legend>Inicio de Sesión</legend>
 
@@ -21,7 +21,7 @@
 				</div>
 
 				<div class="form-actions">
-					<button class="btn btn-primary">Ingresar</button>
+					<button class="btn btn-primary" type="submit">Ingresar</button>
 					o
 					<a href="{#SITE_URL#}/usuario/register/">¿Necesitas una cuenta?</a>
 					<a href="{#SITE_URL#}/usuario/recuperar/">¿Perdió su contraseña?</a>

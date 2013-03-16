@@ -1,4 +1,4 @@
-<form class="form-horizontal" action="/usuario/register" method="POST">
+<form class="form-horizontal" id="register" action="" method="POST">
     <fieldset>
         <legend>Nueva cuenta</legend>
 
@@ -42,9 +42,9 @@
         </div>
 
         <div class="form-actions">
-            <button class="btn btn-primary">Registrarse</button>
+            <button class="btn btn-primary" id="register-button">Registrarse</button>
             o
-            <a href="/usuario/login/">¿Iniciar sesión?</a>
+            <a href="{#SITE_URL#}/usuario/login/">¿Iniciar sesión?</a>
         </div>
     </fieldset>
 </form>

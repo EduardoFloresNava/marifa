@@ -1,5 +1,5 @@
 <div class="pull-right">
-    <a href="{#SITE_URL#}/login">Ingresar</a>
+    <a id="login-modal" href="{#SITE_URL#}/login">Ingresar</a>
     <span>o</span>
-    <a class="btn btn-success" href="{#SITE_URL#}/register"><i class="icon-white icon-user"></i> Registrarse</a>
+    <a id="register-modal" class="btn btn-success" href="{#SITE_URL#}/register"><i class="icon-white icon-user"></i> Registrarse</a>
 </div>

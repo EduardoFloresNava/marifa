@@ -5,7 +5,7 @@
 	<div class="span6">
 		<h1 class="title">{$usuario.nick}{if="isset($usuario.nombre)"} <small>{$usuario.nombre}</small>{/if}</h1>
 		{if="isset($mensaje_personal)"}<div class="mensaje-personal">{$mensaje_personal|nl2br}</div>{/if}
-		{if="Usuario::is_login() && $usuario.id !== Usuario::$usuario_id"}<a href="{#SITE_URL#}/@{$usuario.nick}/denunciar" class="btn btn-warning"><i class="icon-white icon-exclamation-sign"></i> Denunciar</a>
+		{if="Usuario::is_login() && $usuario.id !== Usuario::$usuario_id"}<a href="{#SITE_URL#}/@{$usuario.nick}/denunciar" id="perfil-denunciar-usuario" class="btn btn-warning"><i class="icon-white icon-exclamation-sign"></i> Denunciar</a>
 		{if="Usuario::is_login()"}{if="!$bloqueado"}<a href="{#SITE_URL#}/@{$usuario.nick}/bloquear" class="btn btn-danger"><i class="icon-white icon-ban-circle"></i> Bloquear</a>{else}<a href="{#SITE_URL#}/@{$usuario.nick}/desbloquear" class="btn btn-success"><i class="icon-white icon-ok-sign"></i> Desbloquear</a>{/if}
 		{if="$seguidor"}<a href="{#SITE_URL#}/@{$usuario.nick}/seguir/0" class="btn btn-primary"><i class="icon-white icon-minus"></i> Dejar de seguir</a>{else}<a href="{#SITE_URL#}/@{$usuario.nick}/seguir/1" class="btn btn-primary"><i class="icon-white icon-plus"></i> Seguir</a>{/if}{/if}{/if}
 	</div>

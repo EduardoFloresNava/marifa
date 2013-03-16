@@ -12,6 +12,7 @@
         <link href="{#THEME_URL#}/assets/css/bootstrap.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/bootstrap-responsive.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/base.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/style.css" rel="stylesheet">
         {if="DEBUG"}<link href="{#THEME_URL#}/assets/css/profiler.css" rel="stylesheet">{/if}
 
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -139,10 +140,12 @@
         <script src="{#THEME_URL#}/assets/js/bootstrap-collapse.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-carousel.js"></script>
 		<script src="{#THEME_URL#}/assets/js/bootstrap-typeahead.js"></script>
+		<script src="{#THEME_URL#}/assets/js/jquery.leanModal.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/bbcode.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.masonry.min.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.textext.min.js"></script>
+		<script src="{#THEME_URL#}/assets/js/login.js"></script>
 		<script src="{#THEME_URL#}/assets/js/base.js"></script>
         {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}
     </body>

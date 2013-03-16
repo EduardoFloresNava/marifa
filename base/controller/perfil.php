@@ -109,7 +109,7 @@ class Base_Controller_Perfil extends Controller {
 		{
 			$call = Request::current();
 			$activo = $call['action'];
-			$activo = $activo == 'muro' || $activo == 'publicacion' ? 'index' : $activo;
+			$activo = $activo == 'index' || $activo == 'publicacion' ? 'muro' : $activo;
 			unset($call);
 		}
 
@@ -781,29 +781,67 @@ class Base_Controller_Perfil extends Controller {
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder realizar denuncias.', FALSE));
-			Request::redirect('/usuario/login');
+			if (Request::is_ajax())
+			{
+				Request::http_response_code(303);
+				echo SITE_URL;
+				return;
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder realizar denuncias.', FALSE));
+				Request::redirect('/usuario/login');
+			}
 		}
 
 		// Verificamos no sea uno mismo.
 		if (Usuario::$usuario_id == $this->usuario->id)
 		{
-			add_flash_message(FLASH_ERROR, __('El usuario al cual quieres denunciar no se encuentra disponible.', FALSE));
-			Request::redirect("/@{$this->usuario->nick}");
+			if (Request::is_ajax())
+			{
+				echo json_encode(array(
+					'reponse' => 'ERROR',
+					'body' => __('El usuario al cual quieres denunciar no se encuentra disponible.', FALSE)
+				));
+				return;
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres denunciar no se encuentra disponible.', FALSE));
+				Request::redirect("/@{$this->usuario->nick}");
+			}
 		}
 
 		// Verifico el estado.
 		if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 		{
-			add_flash_message(FLASH_ERROR, __('El usuario al cual quieres denunciar no se encuentra disponible.', FALSE));
-			Request::redirect("/@{$this->usuario->nick}");
+			if (Request::is_ajax())
+			{
+				echo json_encode(array(
+					'reponse' => 'ERROR',
+					'body' => __('El usuario al cual quieres denunciar no se encuentra disponible.', FALSE)
+				));
+				return;
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres denunciar no se encuentra disponible.', FALSE));
+				Request::redirect("/@{$this->usuario->nick}");
+			}
 		}
 
 		// Asignamos el título.
 		$this->template->assign('title', __('Denunciar usuario', FALSE));
 
 		// Cargamos la vista.
-		$view = View::factory('perfil/denunciar');
+		if (Request::is_ajax())
+		{
+			$view = View::factory('perfil/denunciar_modal_ajax');
+		}
+		else
+		{
+			$view = View::factory('perfil/denunciar');
+		}
 
 		$view->assign('usuario', $this->usuario->nick);
 
@@ -815,21 +853,26 @@ class Base_Controller_Perfil extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
-			$motivo = isset($_POST['motivo']) ? (int) $_POST['motivo'] : NULL;
+			$motivo = isset($_POST['motivo']) ? (int) $_POST['motivo'] : 0;
 			$comentario = isset($_POST['comentario']) ? preg_replace('/\s+/', '', trim($_POST['comentario'])) : NULL;
 
 			// Valores para cambios.
 			$view->assign('motivo', $motivo);
 			$view->assign('comentario', $comentario);
 
+			// Marcas para los errores AJAX.
+			$error_motivo = FALSE;
+			$error_comentario = FALSE;
+
 			// Verifico el tipo.
 			if ( ! in_array($motivo, array(0, 1, 2, 3, 4, 5)))
 			{
 				$error = TRUE;
+				$error_motivo = __('No ha seleccionado un motivo válido.', FALSE);
 				$view->assign('error_motivo', __('No ha seleccionado un motivo válido.', FALSE));
 			}
 
@@ -839,17 +882,29 @@ class Base_Controller_Perfil extends Controller {
 				if ( ! isset($comentario{10}) || isset($comentario{400}))
 				{
 					$error = TRUE;
+					$error_contenido = __('La descripción de la denuncia debe tener entre 10 y 400 caracteres.', FALSE);
 					$view->assign('error_contenido', __('La descripción de la denuncia debe tener entre 10 y 400 caracteres.', FALSE));
 				}
 			}
 			else
 			{
-				if (isset($comentario{400}))
+				if (empty($comentario))
+				{
+					$comentario = NULL;
+				}
+				elseif ( ! isset($comentario{10}) || isset($comentario{400}))
 				{
 					$error = TRUE;
+					$error_contenido = __('La descripción de la denuncia debe tener entre 10 y 400 caracteres.', FALSE);
 					$view->assign('error_contenido', __('La descripción de la denuncia debe tener entre 10 y 400 caracteres.', FALSE));
 				}
-				$comentario = NULL;
+			}
+
+			// Verifico si hay errores y es AJAX para informar.
+			if ($error && Request::is_ajax())
+			{
+				echo json_encode(array('response' => 'ERROR', 'body' => array('error_motivo' => $error_motivo, 'error_comentario' => $error_comentario)));
+				return;
 			}
 
 			if ( ! $error)
@@ -869,18 +924,33 @@ class Base_Controller_Perfil extends Controller {
 					$model_suceso->crear($this->usuario->id, 'usuario_denuncia_crear', FALSE, $id);
 				}
 
-				// Informo el resultado.
-				add_flash_message(FLASH_SUCCESS, __('El usuario ha sido denunciado correctamente.', FALSE));
-				Request::redirect("/@{$this->usuario->nick}");
+				if (Request::is_ajax())
+				{
+					echo json_encode(array('response' => 'OK', 'body' => __('El usuario ha sido denunciado correctamente.', FALSE)));
+					return;
+				}
+				else
+				{
+					// Informo el resultado.
+					add_flash_message(FLASH_SUCCESS, __('El usuario ha sido denunciado correctamente.', FALSE));
+					Request::redirect("/@{$this->usuario->nick}");
+				}
 			}
 		}
 
-		// Asignamos la vista a la plantilla base.
-		$this->template->assign('contenido', $view->parse());
-		unset($view);
+		if (Request::is_ajax())
+		{
+			$view->show();
+		}
+		else
+		{
+			// Asignamos la vista a la plantilla base.
+			$this->template->assign('contenido', $view->parse());
+			unset($view);
 
-		// Seteamos el titulo.
-		$this->template->assign('title_raw', sprintf(__('Denunciar de %s en ', FALSE), $this->usuario->get('nick')));
+			// Asignamos el titulo.
+			$this->template->assign('title_raw', sprintf(__('Denunciar a %s en ', FALSE), $this->usuario->get('nick')));
+		}
 	}
 
 	/**

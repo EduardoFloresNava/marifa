@@ -222,4 +222,4 @@ PRODUCTION || Profiler_Profiler::get_instance()->log_memory('Framework memory');
 // Cargamos el despachador y damos el control al controlador correspondiente.
 Dispatcher::dispatch();
 
-PRODUCTION || Profiler_Profiler::get_instance()->display();
+PRODUCTION || Request::is_ajax() || Profiler_Profiler::get_instance()->display();

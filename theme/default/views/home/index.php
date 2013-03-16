@@ -1,3 +1,4 @@
+{include="home/topbar"}
 <div class="row">
 	<div class="{if="isset($ultimas_fotos)"}span7{else}span9{/if}">
 		<h3 class="title clearfix">Últimos posts<small class="pull-right leyenda">Leyenda: <span><i class="icon icon-bookmark"></i>Fijo - <i class="icon icon-certificate"></i>Patrocinado - <i class="icon icon-lock"></i>Privado</span></small></h3>

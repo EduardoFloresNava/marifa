@@ -68,7 +68,7 @@
 					{/if}
 					{if="$me != NULL && !$sigo_post"}<a href="{#SITE_URL#}/post/seguir_post/{$post.id}" class="btn show-tooltip" title="Seguir Post">Seguir Post</a>{/if}
 					{if="$me != NULL && !$es_favorito"}<a href="{#SITE_URL#}/post/favorito/{$post.id}" class="btn show-tooltip" title="Agregar a favoritos"><i class="icon icon-star"></i></a>{/if}
-					{if="$me != NULL && $me != $usuario.id && $post.estado == 0"}<a href="{#SITE_URL#}/post/denunciar/{$post.id}" class="btn btn-danger">Denunciar</a>{/if}
+					{if="$me != NULL && $me != $usuario.id && $post.estado == 0"}<a href="{#SITE_URL#}/post/denunciar/{$post.id}" id="post-denunciar" class="btn btn-danger">Denunciar</a>{/if}
 				</div>
 				<div class="pull-right btn-group">
 					<span class="btn show-tooltip" title="Seguidores"><i class="icon icon-user"></i> {$post.seguidores}</span>

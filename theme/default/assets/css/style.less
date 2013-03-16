@@ -1,0 +1,123 @@
+@import "prefixer.less";
+
+/* Inicio Listado de posts de la portada */
+
+.ultimo-post-list {
+    margin: 10px 0;
+    border: 1px solid #D1D1D1;
+    .border-radius (4px);
+
+    .ultimo-post {
+        padding: 0px;
+        position: relative;
+        height: 38px;
+
+        .categoria {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.05);
+            border-right: 1px solid rgba(0, 0, 0, 0.15);
+            padding: 10px;
+            float: left;
+        }
+
+        .contenido {
+            display: inline-block;
+            margin: 0 10px;
+            max-width: 100%;
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+
+            .titulo {
+                font-size: 16px;
+                line-height: 23px;
+            }
+
+            .info {
+                font-size: 11px;
+                line-height: 12px;
+            }
+        }
+
+        .fecha {
+            line-height: 38px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 0 10px 0 0;
+            padding-left: 5px;
+            background: #FFFFFF;
+        }
+    }
+
+    .ultimo-post ~ .ultimo-post {
+        border-top: 1px solid #D1D1D1;
+    }
+}
+
+/* Fin listado de posts de la portada */
+
+/* Inicio Listado de los últimos comentarios de la portada */
+
+.last-comment-list {
+    list-style-position: inside;
+    margin-left: 5px;
+
+    li {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+}
+
+/* Fin listado de los últimos comentario de la portada */
+
+/* Overlay */
+
+#modal-overlay {
+    position: fixed;
+    z-index: 2000;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.75);
+}
+
+#modal-loader img {
+    display: block;
+    background: #000;
+    position: fixed;
+    z-index: 2001;
+    top: 50%;
+    left: 50%;
+    padding: 10px;
+    .border-radius(10px);
+    margin-left: -22px;
+    margin-top: -22px;
+}
+
+/* Fin overlay */
+
+@media (min-width: 768px) and (max-width: 979px) {
+    .ultimo-post-list .ultimo-post .contenido {
+        max-width: 355px;
+    }
+}
+
+@media (min-width: 980px) and (max-width: 1199px) {
+    .ultimo-post-list .ultimo-post .contenido {
+        max-width: 480px;
+    }
+
+    .home-statistics div.span6 {
+        margin: 2px 0 2px 4px;
+    }
+}
+
+@media (min-width: 1200px) {
+     .ultimo-post-list .ultimo-post .contenido {
+        max-width: 610px;
+    }
+}

@@ -569,11 +569,20 @@ class Base_Controller_Post extends Controller {
 	 */
 	public function action_denunciar($post)
 	{
-		// Verificamos usuario logueado.
+		// Verificamos que el usuario este identificado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder denunciar posts.', FALSE));
-			Request::redirect('/usuario/login');
+			if (Request::is_ajax())
+			{
+				Request::http_response_code(303);
+				echo SITE_URL;
+				return;
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder denunciar posts.', FALSE));
+				Request::redirect('/usuario/login');
+			}
 		}
 
 		// Convertimos el post a ID.
@@ -585,22 +594,51 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que desea denunciar no se encuentra disponible.', FALSE));
-			Request::redirect('/');
+			if (Request::is_ajax())
+			{
+				echo json_encode(array(
+					'reponse' => 'ERROR',
+					'body' => __('El post que desea denunciar no se encuentra disponible.', FALSE)
+				));
+				return;
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que desea denunciar no se encuentra disponible.', FALSE));
+				Request::redirect('/');
+			}
 		}
 
 		// Verificamos que no sea autor.
 		if ($model_post->usuario_id == Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, __('El post que desea denunciar no se encuentra disponible.', FALSE));
-			Request::redirect($this->post_url($model_post));
+			if (Request::is_ajax())
+			{
+				echo json_encode(array(
+					'reponse' => 'ERROR',
+					'body' => __('El post que desea denunciar no se encuentra disponible.', FALSE)
+				));
+				return;
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que desea denunciar no se encuentra disponible.', FALSE));
+				Request::redirect($this->post_url($model_post));
+			}
 		}
 
 		// Asignamos el título.
 		$this->template->assign('title', __('Denunciar post', FALSE));
 
 		// Cargamos la vista.
-		$view = View::factory('post/denunciar');
+		if (Request::is_ajax())
+		{
+			$view = View::factory('post/denunciar_modal_ajax');
+		}
+		else
+		{
+			$view = View::factory('post/denunciar');
+		}
 
 		$p = $model_post->as_array();
 		$p['categoria'] = $model_post->categoria()->as_array();
@@ -615,22 +653,27 @@ class Base_Controller_Post extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
-			$motivo = isset($_POST['motivo']) ? (int) $_POST['motivo'] : NULL;
+			$motivo = isset($_POST['motivo']) ? (int) $_POST['motivo'] : 0;
 			$comentario = isset($_POST['comentario']) ? preg_replace('/\s+/', '', trim($_POST['comentario'])) : NULL;
 
 			// Valores para cambios.
 			$view->assign('motivo', $motivo);
 			$view->assign('comentario', $comentario);
 
+			// Marcas para los errores AJAX.
+			$error_motivo = FALSE;
+			$error_comentario = FALSE;
+
 			// Verifico el tipo.
 			if ( ! in_array($motivo, array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)))
 			{
 				$error = TRUE;
 				$view->assign('error_motivo', __('No ha seleccionado un motivo válido.', FALSE));
+				$error_motivo = __('No ha seleccionado un motivo válido.', FALSE);
 			}
 
 			// Verifico la razón si corresponde.
@@ -640,6 +683,7 @@ class Base_Controller_Post extends Controller {
 				{
 					$error = TRUE;
 					$view->assign('error_contenido', __('La descripción de la denuncia debe tener entre 10 y 400 caracteres.', FALSE));
+					$error_contenido = __('La descripción de la denuncia debe tener entre 10 y 400 caracteres.', FALSE);
 				}
 			}
 			else
@@ -648,8 +692,16 @@ class Base_Controller_Post extends Controller {
 				{
 					$error = TRUE;
 					$view->assign('error_contenido', __('La descripción de la denuncia debe tener entre 10 y 400 caracteres.', FALSE));
+					$error_contenido = __('La descripción de la denuncia debe tener entre 10 y 400 caracteres.', FALSE);
 				}
 				$comentario = NULL;
+			}
+
+			// Verifico si hay errores y es AJAX para informar.
+			if ($error && Request::is_ajax())
+			{
+				echo json_encode(array('response' => 'ERROR', 'body' => array('error_motivo' => $error_motivo, 'error_comentario' => $error_comentario)));
+				return;
 			}
 
 			if ( ! $error)
@@ -671,18 +723,33 @@ class Base_Controller_Post extends Controller {
 					$model_suceso->crear($model_post->usuario_id, 'post_denuncia_crear', FALSE, $id);
 				}
 
-				// Seteamos mensaje flash y volvemos.
-				add_flash_message(FLASH_SUCCESS, __('Denuncia enviada correctamente.', FALSE));
-				Request::redirect($this->post_url($model_post));
+				if (Request::is_ajax())
+				{
+					echo json_encode(array('response' => 'OK', 'body' => __('El post ha sido denunciado correctamente.', FALSE)));
+					return;
+				}
+				else
+				{
+					// Informo el resultado.
+					add_flash_message(FLASH_SUCCESS, __('El post ha sido denunciado correctamente.', FALSE));
+					Request::redirect($this->post_url($model_post));
+				}
 			}
 		}
 
-		// Menu.
-		$this->template->assign('master_bar', parent::base_menu('posts'));
-		$this->template->assign('top_bar', Controller_Home::submenu());
+		if (Request::is_ajax())
+		{
+			$view->show();
+		}
+		else
+		{
+			// Menú.
+			$this->template->assign('master_bar', parent::base_menu('posts'));
+			$this->template->assign('top_bar', Controller_Home::submenu());
 
-		// Asignamos la vista.
-		$this->template->assign('contenido', $view->parse());
+			// Asignamos la vista.
+			$this->template->assign('contenido', $view->parse());
+		}
 	}
 
 	/**

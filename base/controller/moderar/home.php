@@ -165,6 +165,11 @@ class Base_Controller_Moderar_Home extends Controller {
 		{
 			$menu->element_set(__('Usuarios', FALSE), '/moderar/gestion/usuarios/', 'usuarios', 'gestion', Model_Usuario_Suspension::cantidad());
 		}
+
+		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
+		{
+			$menu->element_set(__('Censuras', FALSE), '/moderar/gestion/censuras/', 'censuras', 'gestion');
+		}
 		$menu->element_set(__('Buscador contenido', FALSE), '/moderar/gestion/buscador/', 'buscador', 'gestion');
 
 		// Papelera.

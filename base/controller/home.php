@@ -97,7 +97,9 @@ class Base_Controller_Home extends Controller {
 
 		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
-		$this->template->assign('top_bar', self::submenu('inicio'));
+
+		// La barra es un elemento de la vista.
+		$portada->assign('top_bar', self::submenu('inicio'));
 
 		// Verifico categoría.
 		if ($categoria !== NULL)
@@ -127,6 +129,10 @@ class Base_Controller_Home extends Controller {
 
 		// Asigno id de la categoría.
 		$categoria_id = isset($model_categoria) ? $model_categoria->id : NULL;
+
+		// Asigno categorías y actual.
+		$portada->assign('categorias', Model::factory('categoria')->lista());
+		$portada->assign('categoria', isset($model_categoria) ? $model_categoria->seo : NULL);
 
 		// Cargamos datos de posts.
 		$model_post = new Model_Post;
