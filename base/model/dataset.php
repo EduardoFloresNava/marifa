@@ -174,6 +174,15 @@ class Base_Model_Dataset extends Model {
 	}
 
 	/**
+	 * Verifico si se encuentra cargado un elemento.
+	 * @return bool
+	 */
+	public function is_loaded()
+	{
+		return isset($this->data) && is_array($this->data);
+	}
+
+	/**
 	 * Actualizamos el valor de un campo.
 	 * No se permite que sea uno de la clave.
 	 * @param string $campo Campo a editar.
@@ -185,6 +194,12 @@ class Base_Model_Dataset extends Model {
 		if ( ! in_array($campo, $this->fields) || in_array($campo, array_keys($this->primary_key)))
 		{
 			throw new Database_Exception('El campo a actualizar no es válido.');
+		}
+
+		// Verifico el tipo de actualización.
+		if ( ! $this->is_loaded())
+		{
+			return $this->db->update('UPDATE '.$this->table.' SET '.$campo.' = ?', $valor);
 		}
 
 		// Verifico cambios.
@@ -218,12 +233,6 @@ class Base_Model_Dataset extends Model {
 			}
 		}
 
-		// Listado de claves.
-		$k_list = array();
-		foreach ($this->primary_key as $k => $v)
-		{
-			$k_list[] = "$k = ?";
-		}
 
 		// Listado de asignaciones.
 		$asg = array();
@@ -244,7 +253,22 @@ class Base_Model_Dataset extends Model {
 			return FALSE;
 		}
 
-		return $this->db->update('UPDATE '.$this->table.' SET '.implode(', ', $asg).' WHERE '.implode(' AND ', $k_list), array_merge($dt, array_values($this->primary_key)));
+		// Verifico que actualización usar.
+		if ($this->is_loaded())
+		{
+			// Listado de claves.
+			$k_list = array();
+			foreach ($this->primary_key as $k => $v)
+			{
+				$k_list[] = "$k = ?";
+			}
+
+			return $this->db->update('UPDATE '.$this->table.' SET '.implode(', ', $asg).' WHERE '.implode(' AND ', $k_list), array_merge($dt, array_values($this->primary_key)));
+		}
+		else
+		{
+			return $this->db->update('UPDATE '.$this->table.' SET '.implode(', ', $asg), $dt);
+		}
 	}
 
 	/**
@@ -256,7 +280,14 @@ class Base_Model_Dataset extends Model {
 	{
 		if ($primary_key === NULL)
 		{
-			$primary_key = $this->primary_key;
+			if ($this->is_loaded())
+			{
+				return TRUE;
+			}
+			else
+			{
+				$primary_key = $this->primary_key;
+			}
 		}
 
 		// Listado de claves.
