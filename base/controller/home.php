@@ -436,11 +436,13 @@ class Base_Controller_Home extends Controller {
 				else
 				{
 					// Asunto del mensaje.
-					$asunto_mensaje = 'CONTACTO: '.htmlentities(trim($asunto), ENT_QUOTES, 'UTF-8');
-					$mensaje = htmlentities(trim($mensaje), ENT_QUOTES, 'UTF-8');
+					$asunto_mensaje = sprintf(__('CONTACTO: %s', FALSE), htmlentities(trim($asunto), ENT_QUOTES, 'UTF-8'));
+					$mensaje = sprintf(__("%s envió: \n %s", FALSE), htmlentities(trim($nombre), ENT_QUOTES, 'UTF-8'), htmlentities(trim($mensaje), ENT_QUOTES, 'UTF-8'));
 
 					// Obtengo a quienes enviar.
 					$listado_usuarios = explode(PHP_EOL, trim(Utils::configuracion()->get('contacto_valor', '')));
+
+					$usuarios_enviar = array();
 
 					foreach ($listado_usuarios as $v)
 					{
@@ -457,9 +459,7 @@ class Base_Controller_Home extends Controller {
 							// Verifico existencia.
 							if ($model_rango->existe())
 							{
-								$model_mensaje = new Model_Mensaje;
-								$model_mensaje->enviar(NULL, $model_rango->listado_usuarios(), $asunto_mensaje, $mensaje);
-								unset($model_mensaje);
+								array_merge($usuarios_enviar, $model_rango->listado_usuarios());
 							}
 						}
 						else
@@ -473,12 +473,15 @@ class Base_Controller_Home extends Controller {
 							// Verifico existencia.
 							if ($model_usuario->existe())
 							{
-								$model_mensaje = new Model_Mensaje;
-								$model_mensaje->enviar(NULL, $model_usuario->id, $asunto_mensaje, $mensaje);
-								unset($model_mensaje);
+								$usuarios_enviar[] = $model_usuario->id;
 							}
 						}
 					}
+
+					// Envío los mensajes.
+					$model_mensaje = new Model_Mensaje;
+					$model_mensaje->enviar(NULL, array_unique($usuarios_enviar, SORT_NUMERIC), $asunto_mensaje, $mensaje);
+					unset($model_mensaje);
 				}
 
 				// Informo resultado.

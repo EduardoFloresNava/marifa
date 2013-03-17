@@ -72,7 +72,7 @@ class Base_Controller_Mensaje extends Controller {
 	public function action_index($pagina)
 	{
 		// Asignamos el título.
-		$this->template->assign('title', __('Mensajes - Bandeja de entrada'. FALSE));
+		$this->template->assign('title', __('Mensajes - Bandeja de entrada', FALSE));
 
 		// Cantidad de elementos por pagina.
 		$model_configuracion = new Model_Configuracion;
@@ -165,7 +165,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		$view->assign('enviados', $enviados);
-		unset($recibidos);
+		unset($enviados);
 
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
@@ -190,7 +190,7 @@ class Base_Controller_Mensaje extends Controller {
 			// Cargamos el mensaje padre.
 			$model_padre = new Model_Mensaje( (int) $mensaje_id);
 
-			if (is_array($model_padre->as_array()))
+			if ($model_padre->existe() && $model_padre->emisor_id !== NULL)
 			{
 				if ($model_padre->receptor_id == Usuario::$usuario_id)
 				{

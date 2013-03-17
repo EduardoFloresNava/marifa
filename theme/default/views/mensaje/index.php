@@ -22,7 +22,7 @@
 				{elseif="$value.estado == 3"}
 				<i class="icon icon-repeat" title="Reenviado"></i>
 				{/if}</td>
-			<td><a href="{#SITE_URL#}/@{$value.emisor.nick}">{$value.emisor.nick}</a></td>
+			<td>{if="$value.emisor === NULL"}<span class="label label-important">SISTEMA</span>{else}<a href="{#SITE_URL#}/@{$value.emisor.nick}">{$value.emisor.nick}</a>{/if}</td>
 			<td><a href="{#SITE_URL#}/mensaje/ver/{$value.id}">{$value.asunto}</a>{if="$value.padre_id !== NULL"}<a class="pull-right show-tooltip" title="Ver padre" href="/mensaje/enviado/{$value.padre_id}"><i class="icon icon-upload"></i></a>{/if}</td>
 			<td><span class="show-tooltip" title="{$value.fecha->format('d/m/Y H:i:s')}">{$value.fecha->fuzzy()}</span></td>
 			<td>

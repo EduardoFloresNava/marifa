@@ -656,6 +656,6 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 	 */
 	public function listado_usuarios()
 	{
-		return $this->db->query('SELECT id FROM usuario WHERE rango_id = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+		return $this->db->query('SELECT id FROM usuario WHERE rango = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
 	}
 }

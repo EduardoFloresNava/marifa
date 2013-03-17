@@ -90,4 +90,12 @@ $consultas[] = array(
 	)
 );
 
+// Mensajes del sistema.
+$consultas[] = array(
+	'Mensajes del sistema',
+	array(
+		array('ALTER', 'ALTER TABLE `mensaje` CHANGE `emisor_id` `emisor_id` INT( 11 ) NULL;', NULL, array('error_no' => 1060)),
+	)
+);
+
 return $consultas;
