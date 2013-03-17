@@ -74,4 +74,20 @@ $consultas[] = array(
 	)
 );
 
+// Censuras de palabras.
+$consultas[] = array(
+	'Formulario de contacto',
+	array(
+		array('ALTER', 'CREATE TABLE `contacto` (
+				`id` int NOT NULL AUTO_INCREMENT,
+				`nombre` varchar(100) NOT NULL,
+				`asunto` varchar(100) NOT NULL,
+				`contenido` varchar(300) NOT NULL,
+				`estado` int NOT NULL,
+				PRIMARY KEY (`id`)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
 return $consultas;

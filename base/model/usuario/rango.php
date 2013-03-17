@@ -649,4 +649,13 @@ class Base_Model_Usuario_Rango extends Model_Dataset {
 			}
 		}
 	}
+
+	/**
+	 * Obtenemos un listado de los ID's de los usuarios.
+	 * @return int
+	 */
+	public function listado_usuarios()
+	{
+		return $this->db->query('SELECT id FROM usuario WHERE rango_id = ?', $this->primary_key['id'])->get_pairs(Database_Query::FIELD_INT);
+	}
 }

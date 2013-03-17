@@ -90,10 +90,15 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista->assign('privacidad_fotos', (bool) $model_configuracion->get('privacidad_fotos', 1));
 		$vista->assign('error_privacidad_fotos', FALSE);
 		$vista->assign('success_privacidad_fotos', FALSE);
-
 		$vista->assign('elementos_pagina', (int) $model_configuracion->get('elementos_pagina', 20));
 		$vista->assign('error_elementos_pagina', FALSE);
 		$vista->assign('success_elementos_pagina', FALSE);
+		$vista->assign('contacto_tipo', (int) $model_configuracion->get('contacto_tipo', 1));
+		$vista->assign('error_contacto_tipo', FALSE);
+		$vista->assign('success_contacto_tipo', FALSE);
+		$vista->assign('contacto_valor', $model_configuracion->get('contacto_valor', ''));
+		$vista->assign('error_contacto_valor', FALSE);
+		$vista->assign('success_contacto_valor', FALSE);
 
 		// Cargo listado rangos.
 		$model_rangos = new Model_Usuario_Rango;
@@ -315,6 +320,101 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					}
 				}
 			}
+
+			// Verifico forma de contacto,
+			if (isset($_POST['contacto_tipo']))
+			{
+				// Limpio el valor.
+				$contacto_tipo = (int) $_POST['contacto_tipo'];
+
+				// Asigno el valor a la vista.
+				$vista->assign('contacto_tipo', $contacto_tipo);
+
+				// Verifico el valor.
+				if ($contacto_tipo < 0 || $contacto_tipo > 2)
+				{
+					$vista->assign('error_contacto_tipo', __('El tipo de contacto es inválido.', FALSE));
+				}
+				else
+				{
+					// Actualizo el valor.
+					$actual = $model_configuracion->get('contacto_tipo', NULL);
+					if ($actual === NULL || $contacto_tipo !== (int) $actual)
+					{
+						$model_configuracion->contacto_tipo = $contacto_tipo;
+						$vista->assign('success_contacto_tipo', __('El tipo de contacto se ha actualizado correctamente.', FALSE));
+					}
+				}
+			}
+
+			// Verifico forma de contacto,
+			if (isset($_POST['contacto_valor']))
+			{
+				// Limpio el valor.
+				$contacto_valor = $_POST['contacto_valor'];
+
+				// Asigno el valor a la vista.
+				$vista->assign('contacto_valor', $contacto_valor);
+
+				// Obtengo tipo.
+				$contacto_tipo = $model_configuracion->get('contacto_tipo', 0);
+
+				// Verifico el valor.
+				$error = FALSE;
+				if ($contacto_tipo == 0)
+				{
+					$contacto_valor = trim($contacto_valor);
+
+					if ( ! ((substr($contacto_valor, 0, 7) == 'mailto:' && preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', substr($contacto_valor, 7))) || preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/Di', $contacto_valor)))
+					{
+						$error = TRUE;
+						$vista->assign('error_contacto_valor', __('El valor de contacto debe ser una dirección de e-mail (precedida con mailto:) o una URL.', FALSE));
+					}
+				}
+				elseif ($contacto_tipo == 1)
+				{
+					$contacto_valor = '';
+				}
+				elseif ($contacto_tipo == 2)
+				{
+					// Separo en listado.
+					$listado_usuarios = explode(PHP_EOL, trim($contacto_valor));
+
+					foreach ($listado_usuarios as $k => $v)
+					{
+						$v = trim($v);
+
+						if ((isset($v{0}) && $v{0} == '@') && ! Model::factory('Usuario_Rango')->existe(array('nombre' => substr($v, 1)))) // Verifico si es un grupo.
+						{
+							$error = TRUE;
+							$vista->assign('error_contacto_valor', sprintf(__('El rango %s no es correcto o no existe.', FALSE), $v));
+							break;
+						}
+						elseif((isset($v{0}) && $v{0} != '@') && ! Model::factory('Usuario')->exists_nick($v)) // Lo tomo como un usuario.
+						{
+							$error = TRUE;
+							$vista->assign('error_contacto_valor', sprintf(__('El usuario %s no es correcto o no existe.', FALSE), $v));
+							break;
+						}
+
+						$listado_usuarios[$k] = $v;
+					}
+
+					// Reasigno parseado.
+					$contacto_valor = implode(PHP_EOL, $listado_usuarios);
+				}
+
+				if ( ! $error)
+				{
+					// Actualizo el valor.
+					$actual = $model_configuracion->get('contacto_valor', NULL);
+					if ($actual === NULL || $contacto_valor !== $actual)
+					{
+						$model_configuracion->contacto_valor = $contacto_valor;
+						$vista->assign('success_contacto_valor', __('El valor de contacto se ha actualizado correctamente.', FALSE));
+					}
+				}
+			}
 		}
 
 		// Seteamos el menú.
@@ -323,7 +423,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion.configuracion'));
 
 		// Asignamos la vista a la plantilla base.

@@ -74,6 +74,16 @@ class Base_Controller {
 		$this->template->assign('brand_title', $model_config->get('nombre', __('Marifa', FALSE)));
 		$this->template->assign('descripcion', $model_config->get('descripcion', __('Tu comunidad de forma simple', FALSE)));
 
+		// Cargo datos de contacto.
+		if ($model_config->get('contacto_tipo', 1) == 0)
+		{
+			$this->template->assign('contacto_url', trim($model_config->get('contacto_valor', '')));
+		}
+		else
+		{
+			$this->template->assign('contacto_url', SITE_URL.'/contacto');
+		}
+
 		// Acciones para menu offline.
 		if ( ! Usuario::is_login())
 		{

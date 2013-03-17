@@ -111,6 +111,31 @@
 		</div>
 	</fieldset>
 
+	<fieldset>
+		<legend>{@Contacto:@}</legend>
+
+		<div class="control-group{if="$error_contacto_tipo"} error{elseif="$success_contacto_tipo"} success{/if}">
+			<label class="control-label" for="contacto_tipo">{@Tipo de contacto:@}</label>
+			<div class="controls">
+				<select name="contacto_tipo" id="contacto_tipo">
+					<option value="0"{if="$contacto_tipo == 0"} selected="selected"{/if}>Link</option>
+					<option value="1"{if="$contacto_tipo == 1"} selected="selected"{/if}>Formulario</option>
+					<option value="2"{if="$contacto_tipo == 2"} selected="selected"{/if}>Mensaje</option>
+				</select>
+				<span class="help-inline">{if="$error_contacto_tipo"}{$error_contacto_tipo}{elseif="$success_contacto_tipo"}{$success_contacto_tipo}{else}{@Comportamiento del link de contacto del pie de página. Link define una URL (p. e. mailto:contacto@marifa.org), formulario un Formulario de contacto almacenado en la base de datos y Mensaje envia un mensaje a un usuario o grupo especificado.@}{/if}</span>
+			</div>
+		</div>
+
+		<div class="control-group{if="$error_contacto_valor"} error{elseif="$success_contacto_valor"} success{/if}">
+			<label class="control-label" for="contacto_valor">{@Valor contacto:@}</label>
+			<div class="controls">
+				<textarea name="contacto_valor" id="contacto_valor">{$contacto_valor}</textarea>
+				<span class="help-inline">{if="$error_contacto_valor"}{$error_contacto_valor}{elseif="$success_contacto_valor"}{$success_contacto_valor}{else}{@Si es link la URL a setear, en caso de mensaje una lista de usuarios y/o grupos a utilizar (los grupos deben comenzar con una @). Si es formulario no será tenido en cuenta.@}{/if}</span>
+			</div>
+		</div>
+
+	</fieldset>
+
 	<div class="form-actions">
 		<button type="submit" class="btn btn-large btn-primary">{@Actualizar@}</button>
 	</div>

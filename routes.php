@@ -44,6 +44,9 @@
  */
 
 return array(
+	// Contacto.
+	array('/contacto/?', array('controller' => 'home', 'action' => 'contacto')),
+
 	array('/login/?', array('controller' => 'usuario', 'action' => 'login')), // Atajo al login.
 	array('/logout/?', array('controller' => 'usuario', 'action' => 'logout')), // Atajo al logout.
 	array('/register/?', array('controller' => 'usuario', 'action' => 'register')), // Atajo al registro.

@@ -361,6 +361,140 @@ class Base_Controller_Home extends Controller {
 	}
 
 	/**
+	 * Fomulario de contacto.
+	 */
+	public function action_contacto()
+	{
+		// Verifico el tipo.
+		$tipo_contacto = Utils::configuracion()->get('contacto_tipo', 1);
+
+		if ($tipo_contacto == 0)
+		{
+			add_flash_message(FLASH_ERROR, __('No tiene permisos para acceder a esa sección.', FALSE));
+			Request::redirect('/');
+		}
+
+		// Menú principal.
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
+
+		// Asignamos la vista.
+		$view = View::factory('/home/contacto');
+
+		// Valores por defecto.
+		$view->assign('nombre', '');
+		$view->assign('error_nombre', FALSE);
+		$view->assign('asunto', '');
+		$view->assign('error_asunto', FALSE);
+		$view->assign('mensaje', '');
+		$view->assign('error_mensaje', FALSE);
+
+		// Verifico datos enviados.
+		if (Request::method() == 'POST')
+		{
+			// Marco sin errores.
+			$error = FALSE;
+
+			// Obtengo los campos.
+			$nombre = arr_get($_POST, 'nombre', '');
+			$asunto = arr_get($_POST, 'asunto', '');
+			$mensaje = arr_get($_POST, 'mensaje', '');
+
+			// Envío al formulario.
+			$view->assign('nombre', $nombre);
+			$view->assign('asunto', $asunto);
+			$view->assign('mensaje', $mensaje);
+
+			// Verifico nombre.
+			if ( ! isset($nombre{4}) || isset($nombre{100}))
+			{
+				$error = TRUE;
+				$view->assign('error_nombre', __('El nombre debe tener entre 4 y 100 caracteres.', FALSE));
+			}
+
+			// Verifico el asunto.
+			if ( ! isset($asunto{4}) || isset($asunto{100}))
+			{
+				$error = TRUE;
+				$view->assign('error_asunto', __('El asunto debe tener entre 4 y 100 caracteres.', FALSE));
+			}
+
+			// Verifico el mensaje.
+			if ( ! isset($mensaje{20}) || isset($mensaje{300}))
+			{
+				$error = TRUE;
+				$view->assign('error_mensaje', __('El mensaje debe tener entre 20 y 300 caracteres.', FALSE));
+			}
+
+			if ( ! $error)
+			{
+				// Verifico tipo de envío.
+				if ($tipo_contacto == 1)
+				{
+					$model_contacto = new Model_Contacto;
+					$model_contacto->nueva(htmlentities(trim($nombre), ENT_QUOTES, 'UTF-8'), htmlentities(trim($asunto), ENT_QUOTES, 'UTF-8'), htmlentities(trim($mensaje), ENT_QUOTES, 'UTF-8'));
+				}
+				else
+				{
+					// Asunto del mensaje.
+					$asunto_mensaje = 'CONTACTO: '.htmlentities(trim($asunto), ENT_QUOTES, 'UTF-8');
+					$mensaje = htmlentities(trim($mensaje), ENT_QUOTES, 'UTF-8');
+
+					// Obtengo a quienes enviar.
+					$listado_usuarios = explode(PHP_EOL, trim(Utils::configuracion()->get('contacto_valor', '')));
+
+					foreach ($listado_usuarios as $v)
+					{
+						$v = trim($v);
+
+						if ($v{0} == '@')
+						{
+							// Cargo el modelo.
+							$model_rango = new Model_Usuario_Rango;
+
+							// Cargo el rango.
+							$model_rango->load(array('nombre' => substr($v, 1)));
+
+							// Verifico existencia.
+							if ($model_rango->existe())
+							{
+								$model_mensaje = new Model_Mensaje;
+								$model_mensaje->enviar(NULL, $model_rango->listado_usuarios(), $asunto_mensaje, $mensaje);
+								unset($model_mensaje);
+							}
+						}
+						else
+						{
+							// Cargo el usuario.
+							$model_usuario = new Model_Usuario;
+
+							// Cargo el usuario.
+							$model_usuario->load_by_nick($v);
+
+							// Verifico existencia.
+							if ($model_usuario->existe())
+							{
+								$model_mensaje = new Model_Mensaje;
+								$model_mensaje->enviar(NULL, $model_usuario->id, $asunto_mensaje, $mensaje);
+								unset($model_mensaje);
+							}
+						}
+					}
+				}
+
+				// Informo resultado.
+				add_flash_message(FLASH_SUCCESS, __('El mensaje se ha enviado correctamente.', FALSE));
+				Request::redirect('/');
+			}
+		}
+
+		// Compilamos la vista.
+		$this->template->assign('contenido', $view->parse());
+
+		// Seteamos título.
+		$this->template->assign('title', __('Contacto', FALSE));
+	}
+
+	/**
 	 * Prueba descarga de un plugin.
 	 */
 	/**

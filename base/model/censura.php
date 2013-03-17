@@ -32,6 +32,7 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @property-read int $id ID de la censura.
  * @property-read string $valor Conjunto de caracteres a coincidir.
  * @property-read int $tipo Tipo de conjunto de caracteres a coincidir.
+ * @property-read string $censura Texto por el que reemplazar para censurar.
  * @property-read int $estado Estado de la censura.
  */
 class Base_Model_Censura extends Model_Dataset {
@@ -85,8 +86,8 @@ class Base_Model_Censura extends Model_Dataset {
 	const TIPO_REGEX = 2;
 
 	/**
-	 * Cargamos una categoria.
-	 * @param int $id Id de la categoria.
+	 * Cargamos una censura.
+	 * @param int $id Id de la censura.
 	 * @param array $data Arreglo con los datos de la censura.
 	 */
 	public function __construct($id = NULL, $data = NULL)

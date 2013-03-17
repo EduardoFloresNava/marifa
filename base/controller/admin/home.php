@@ -114,6 +114,7 @@ class Base_Controller_Admin_Home extends Controller {
 			$menu->element_set(__('Fotos', FALSE), '/admin/contenido/fotos/', 'fotos', 'contenido');
 			$menu->element_set(__('Categorías', FALSE), '/admin/contenido/categorias/', 'categorias', 'contenido');
 			$menu->element_set(__('Noticias', FALSE), '/admin/contenido/noticias/', 'noticias', 'contenido');
+			$menu->element_set(__('Contacto', FALSE), '/admin/contenido/contacto/', 'contacto', 'contenido', Model_Contacto::cantidad(Model_Contacto::ESTADO_NUEVO));
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_ADMINISTRAR))

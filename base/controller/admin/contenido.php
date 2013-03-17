@@ -87,7 +87,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.index'));
 
 		// Asignamos la vista a la plantilla base.
@@ -189,7 +189,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.posts'));
 
 		// Asignamos la vista a la plantilla base.
@@ -298,7 +298,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.post'));
 
 		// Asignamos la vista a la plantilla base.
@@ -809,7 +809,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.fotos'));
 
 		// Asignamos la vista a la plantilla base.
@@ -968,7 +968,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.categorias'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1051,7 +1051,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.categorias'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1190,7 +1190,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.categorias'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1245,7 +1245,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1309,7 +1309,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1455,11 +1455,168 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
+	/**
+	 * Obtenemos listado de mensaje de contacto.
+	 * @param int $pagina Número de página que mostrar.
+	 */
+	public function action_contacto($pagina)
+	{
+		// Formato de la página.
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = Utils::configuracion()->get('elementos_pagina', 20);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/contacto');
+
+		// Modelo de contacto.
+		$model_contacto = new Model_Contacto;
+
+		// Cargamos el listado de noticias.
+		$lst = $model_contacto->listado($pagina, $cantidad_por_pagina);
+
+		// Paginación.
+		$total = Model_Contacto::cantidad();
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/contacto/%s/'));
+
+		// Obtenemos datos de las noticias.
+		foreach ($lst as $k => $v)
+		{
+			$lst[$k] =  $v->as_array();
+		}
+
+		// Asignamos listado de contacto.
+		$vista->assign('contactos', $lst);
+		unset($lst);
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.contacto'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Cambiamos el estado de uno o varios mensajes de contacto.
+	 * @param int $estado Estado a asignar.
+	 * @param int $id ID del mensaje de contacto a modificar, NULL para todos.
+	 */
+	public function action_estado_contacto($estado, $id = NULL)
+	{
+		// Verifico estado.
+		$estado = (int) $estado;
+
+		if ($estado !== 0 && $estado !== 1)
+		{
+			add_flash_message(FLASH_ERROR, __('El estado que desea aseignar al mensaje de contacto es incorrecto.'));
+			Request::redirect('admin/contenido/contacto/');
+		}
+
+		// Verifico el mensaje de contacto.
+		if ($id !== NULL)
+		{
+			$model_contacto = new Model_Contacto( (int) $id);
+
+			if ( ! $model_contacto->existe())
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje de contacto al que desea cambiarle el estado es incorrecto.'));
+				Request::redirect('admin/contenido/contacto/');
+			}
+		}
+		else
+		{
+			$model_contacto = new Model_Contacto;
+		}
+
+		// Actualizo el estado.
+		$model_contacto->actualizar_campos(array('estado' => $estado));
+
+		// Informo y vuelvo.
+		add_flash_message(FLASH_SUCCESS, __('Se ha actualizado correctamente el estado del mensaje de contacto', FALSE));
+		Request::redirect('admin/contenido/contacto/');
+	}
+
+	/**
+	 * Veo detalles del mensaje de contacto.
+	 * @param int $id ID del mensaje de contacto a ver los detalles.
+	 */
+	public function action_ver_contacto($id)
+	{
+		// Cargo mensaje de contacto.
+		$model_contacto = new Model_Contacto( (int) $id);
+
+		// Verifico existencia.
+		if ( ! $model_contacto->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('El mensaje de contacto no se encuentra disponible.'));
+			Request::redirect('admin/contenido/contacto/');
+		}
+
+		// Lo marco como visto.
+		$model_contacto->actualizar_campo('estado', Model_Contacto::ESTADO_VISTO);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/ver_contacto');
+
+		// Asignamos datos del contacto.
+		$vista->assign('contacto', $model_contacto->as_array());
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.contacto'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Borro un mensaje de contacto.
+	 * @param int $id ID del mensaje de contacto a eliminar.
+	 */
+	public function action_eliminar_contacto($id)
+	{
+		// Verifico ID.
+		if ($id == NULL)
+		{
+			add_flash_message(FLASH_ERROR, __('El mensaje de contacto que desea borrar es incorrecto.'));
+			Request::redirect('admin/contenido/contacto/');
+		}
+
+		// Cargo mensaje de contacto.
+		$model_contacto = new Model_Contacto( (int) $id);
+
+		// Verifico existencia.
+		if ( ! $model_contacto->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('El mensaje de contacto que desea borrar es incorrecto.'));
+			Request::redirect('admin/contenido/contacto/');
+		}
+
+		// Borro.
+		$model_contacto->delete();
+
+		// Informo y vuelvo.
+		add_flash_message(FLASH_SUCCESS, __('Se ha borrado correctamente el mensaje de contacto', FALSE));
+		Request::redirect('admin/contenido/contacto/');
+	}
 }
