@@ -1002,8 +1002,11 @@ class Base_Controller_Cuenta extends Controller {
 					}
 					else
 					{
+						// Cargo usuarios bloqueados.
+						$nicks_bloqueados = unserialize(Utils::configuracion()->get_default('usuarios_bloqueados', 'a:0:{}'));
+
 						// Verifico que no exista el nick.
-						if ($model_usuario->exists_nick($nick))
+						if (in_array($nick, $nicks_bloqueados) || $model_usuario->exists_nick($nick))
 						{
 							$view->assign('error_nick', __('El nick no está disponible.', FALSE));
 						}
@@ -1094,14 +1097,14 @@ class Base_Controller_Cuenta extends Controller {
 		// Verifico el formato.
 		if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/D', $nick))
 		{
-			add_flash_message(FLASH_ERROR, __('El nick que desea liberar no es correcto.', FALSE));
+			add_flash_message(FLASH_ERROR, __('El nick que desea utilizar no es correcto.', FALSE));
 			Request::redirect('/cuenta/nick');
 		}
 
 		// Verifico si es del usuario.
 		if ( ! in_array($nick, Usuario::usuario()->nicks()))
 		{
-			add_flash_message(FLASH_ERROR, __('El nick que desea liberar no es correcto.', FALSE));
+			add_flash_message(FLASH_ERROR, __('El nick que desea utilizar no es correcto.', FALSE));
 			Request::redirect('/cuenta/nick');
 		}
 

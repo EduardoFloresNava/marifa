@@ -81,6 +81,9 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista->assign('rango_defecto', (int) $model_configuracion->get('rango_defecto', 3));
 		$vista->assign('error_rango_defecto', FALSE);
 		$vista->assign('success_rango_defecto', FALSE);
+		$vista->assign('usuarios_bloqueados', implode(PHP_EOL, unserialize($model_configuracion->get('usuarios_bloqueados', 'a:0:{}'))));
+		$vista->assign('error_usuarios_bloqueados', FALSE);
+		$vista->assign('success_usuarios_bloqueados', FALSE);
 		$vista->assign('habilitar_fotos', (bool) $model_configuracion->get('habilitar_fotos', 1));
 		$vista->assign('error_habilitar_fotos', FALSE);
 		$vista->assign('success_habilitar_fotos', FALSE);
@@ -213,6 +216,41 @@ class Base_Controller_Admin_Configuracion extends Controller {
 				else
 				{
 					$vista->assign('error_rango_defecto', __('El rango seleccionado no es correcto.', FALSE));
+				}
+			}
+
+			// Verifico los nick's que están bloqueados.
+			if (isset($_POST['usuarios_bloqueados']))
+			{
+				// Asigno el valor actual.
+				$vista->assign('usuarios_bloqueados', trim($_POST['usuarios_bloqueados']));
+
+				// Obtengo el valor.
+				$usuarios_bloqueados = explode(PHP_EOL, trim($_POST['usuarios_bloqueados']));
+
+				// Proceso los elementos.
+				$error_ub = FALSE;
+				foreach ($usuarios_bloqueados as $k => $u)
+				{
+					$u = trim($u);
+
+					if ( ! preg_match('/^[a-zA-Z0-9]{4,16}$/D', $u))
+					{
+						$error_ub = TRUE;
+						$vista->assign('error_usuarios_bloqueados', sprintf(__('El nick %s no es correcto.', FALSE), $u));
+						break;
+					}
+					$usuarios_bloqueados[$k] = $u;
+				}
+
+				if ( ! $error_ub)
+				{
+					$actual = $model_configuracion->get('usuarios_bloqueados', NULL);
+					if ($actual === NULL || $actual != $usuarios_bloqueados)
+					{
+						$model_configuracion->usuarios_bloqueados = serialize($usuarios_bloqueados);
+						$vista->assign('success_usuarios_bloqueados', __('Se ha actualizado el listado de nick\'s bloqueados.', FALSE));
+					}
 				}
 			}
 
@@ -1129,7 +1167,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 				// Asigno nuevos.
 				$o_config['type'] = $driver;
-				
+
 				if ($driver == 'file')
 				{
 					$o_config['path'] = $path;

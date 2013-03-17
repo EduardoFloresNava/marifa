@@ -227,7 +227,7 @@ class Base_Controller_Usuario extends Controller {
 							));
 							return;
 						}
-						
+
 						$view_usuario->assign('error', sprintf(__('%s ha bloqueado esta cuenta el %s debido a: <br /> %s', FALSE), $baneo->moderador()->nick, $baneo->fecha->format('d/m/Y H:i:s'), Decoda::procesar($baneo->razon)));
 				}
 
@@ -293,6 +293,9 @@ class Base_Controller_Usuario extends Controller {
 			}
 		}
 
+		// Cargamos modelo del usuario.
+		$model_usuario = new Model_Usuario;
+
 		// Asignamos el título.
 		$this->template->assign('title', __('Registro', FALSE));
 
@@ -348,6 +351,20 @@ class Base_Controller_Usuario extends Controller {
 					$view_usuario->assign('error_nombre', TRUE);
 					$error = TRUE;
 				}
+				else // Verifico existencia.
+				{
+					// Proceso nick.
+					$nick = trim(preg_replace('/\s+/', ' ', $_POST['nick']));
+
+					// Listado de nombres de usaurios no permitidos.
+					$nicks_bloqueados = unserialize($model_config->get_default('usuarios_bloqueados', 'a:0:{}'));
+
+					if (in_array($nick, $nicks_bloqueados))
+					{
+						$view_usuario->assign('error_nombre', __('Ya existe un usuario con ese nick.', FALSE));
+						$error = TRUE;
+					}
+				}
 
 				// Verificamos e-mail.
 				if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $_POST['email']))
@@ -387,9 +404,6 @@ class Base_Controller_Usuario extends Controller {
 				}
 				else
 				{
-					// Cargamos modelo del usuario.
-					$model_usuario = new Model_Usuario;
-
 					// Formateamos las entradas.
 					$nick = trim(preg_replace('/\s+/', ' ', $_POST['nick']));
 					$email = trim($_POST['email']);
@@ -536,7 +550,7 @@ class Base_Controller_Usuario extends Controller {
 
 		// Cargo y muestro la vista.
 		View::factory('usuario/register_modal_ajax')->show();
-		
+
 		// Evito salida de la plantilla base.
 		$this->template = NULL;
 	}
@@ -580,8 +594,11 @@ class Base_Controller_Usuario extends Controller {
 		// Verifico el formato.
 		if (preg_match('/^[a-zA-Z0-9]{4,16}$/D', $nick))
 		{
+			// Cargo usuarios bloqueados.
+			$nicks_bloqueados = unserialize(Utils::configuracion()->get_default('usuarios_bloqueados', 'a:0:{}'));
+
 			$model_usuario = new Model_Usuario();
-			if ($model_usuario->exists_nick($nick))
+			if (in_array($nick, $nicks_bloqueados) || $model_usuario->exists_nick($nick))
 			{
 				echo json_encode(array('response' => 'ERROR', 'body' => __('Ya existe una cuenta con ese nick.', FALSE)));
 			}
