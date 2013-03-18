@@ -1,11 +1,7 @@
-/**
- * Manejo de UI.
- */
+// Manejo de UI.
 !(function($) {
 
-	/**
-	 * Función para la carga de un formulario modal por AJAX mostrando un mensaje de carga.
-	 */
+    // Función para la carga de un formulario modal por AJAX mostrando un mensaje de carga.
 	function cargar_formulario_modal(url, callback, context)
 	{
 		// Aseguro cancelar otras cargas.
@@ -19,7 +15,7 @@
 		}
 
 		// Contexto.
-		if (context == undefined)
+		if (context === undefined)
 		{
 			context = this;
 		}
@@ -43,9 +39,7 @@
 		}));
 	}
 
-	/**
-	 * Formulario modal de inicio de sesión.
-	 */
+	//Formulario modal de inicio de sesión.
 	$('#login-modal').click(function (e) {
 		e.preventDefault();
 
@@ -71,9 +65,7 @@
 		$('#login-modal-form').modal();
 	});
 
-	/**
-	 * Inicio de sesión por AJAX.
-	 */
+	// Inicio de sesión por AJAX.
 	$('#login [type="submit"]').click(function(e) {
 		// Valor de los campos.
 		var nick = $('#login #nick').val(),
@@ -92,7 +84,7 @@
 		$.ajax({
 			url: window.site_url+'/usuario/login',
 			complete: function (jqXHR, textStatus) {
-				if (jqXHR['status'] == 303)
+				if (jqXHR['status'] === 303)
 				{
 					location.href = jqXHR['responseText'];
 				}
@@ -105,13 +97,13 @@
 				$('#login [type="submit"]').removeAttr('disabled');
 
 				// Verifico formato.
-				if (data == undefined || data['response'] == undefined || (data['body'] == undefined && data['redirect'] == undefined))
+				if (data === undefined || data['response'] === undefined || (data['body'] === undefined && data['redirect'] === undefined))
 				{
 					$('#login legend').before('<div class="alert">Se produjo un error al procesar la petición.</div>');
 				}
 
 				// Verifico la respuesta.
-				if (data['response'] == 'ERROR')
+				if (data['response'] === 'ERROR')
 				{
 					// Muestro el mensaje de error.
 					if (data['body']['error'])
@@ -128,7 +120,7 @@
 					{
 						$('#login #nick').closest('.control-group').removeClass('error');
 					}
-					
+
 					if (data['body']['error_password'])
 					{
 						$('#login #password').closest('.control-group').addClass('error');
@@ -138,7 +130,7 @@
 						$('#login #password').closest('.control-group').removeClass('error');
 					}
 				}
-				else if (data['response'] == 'OK' && data['redirect'] != undefined)
+				else if (data['response'] === 'OK' && data['redirect'] !== undefined)
 				{
 					location.href = data['redirect'];
 				}
@@ -158,9 +150,7 @@
 		e.preventDefault();
 	});
 
-	/**
-	 * Inicio de sesión del cuadro modal.
-	 */
+	// Inicio de sesión del cuadro modal.
 	function do_modal_login(e) {
 		// Valor de los campos.
 		var nick = $('#login-modal-form #login-modal-form-nick').val(),
@@ -179,7 +169,7 @@
 		$.ajax({
 			url: window.site_url+'/usuario/login',
 			complete: function (jqXHR, textStatus) {
-				if (jqXHR['status'] == 303)
+				if (jqXHR['status'] === 303)
 				{
 					location.href = jqXHR['responseText'];
 				}
@@ -192,13 +182,13 @@
 				$('#login-modal-form .modal-footer .btn[type="submit"]').removeAttr('disabled');
 
 				// Verifico formato.
-				if (data == undefined || data['response'] == undefined || (data['body'] == undefined && data['redirect'] == undefined))
+				if (data === undefined || data['response'] === undefined || (data['body'] === undefined && data['redirect'] === undefined))
 				{
 					$('#login-modal-form .modal-body').prepend('<div class="alert">Se produjo un error al procesar la petición.</div>');
 				}
 
 				// Verifico la respuesta.
-				if (data['response'] == 'ERROR')
+				if (data['response'] === 'ERROR')
 				{
 					// Muestro el mensaje de error.
 					if (data['body']['error'])
@@ -215,7 +205,7 @@
 					{
 						$('#login-modal-form #login-modal-form-nick').closest('.control-group').removeClass('error');
 					}
-					
+
 					if (data['body']['error_password'])
 					{
 						$('#login-modal-form #login-modal-form-password').closest('.control-group').addClass('error');
@@ -225,7 +215,7 @@
 						$('#login-modal-form #login-modal-form-password').closest('.control-group').removeClass('error');
 					}
 				}
-				else if (data['response'] == 'OK' && data['redirect'] != undefined)
+				else if (data['response'] === 'OK' && data['redirect'] !== undefined)
 				{
 					location.href = data['redirect'];
 				}
@@ -245,9 +235,7 @@
 		e.preventDefault();
 	};
 
-	/**
-	 * Formulario modal de inicio de sesión.
-	 */
+	// Formulario modal de inicio de sesión.
 	$('#register-modal').click(function (e) {
 		e.preventDefault();
 
@@ -294,17 +282,17 @@
 		registro.verificar_todo_modal();
 
 		// Verifico que todo sea correcto.
-		if ($('#register-modal-form .control-group.error').length == 0)
+		if ($('#register-modal-form .control-group.error').length === 0)
 		{
 			$.ajax({
 				url: window.site_url+'/usuario/register',
 				complete: function (jqXHR, textStatus) {
-					if (jqXHR['status'] == 303)
+					if (jqXHR['status'] === 303)
 					{
 						location.href = jqXHR['responseText'];
 					}
 
-					if (jqXHR['status'] == 409)
+					if (jqXHR['status'] === 409)
 					{
 						$('#register-modal-form .modal-body').prepend('<div class="alert">'+jqXHR['responseText']+'</div>');
 						$('#register-modal-form .modal-body form').fadeOut(function() { $(this).remove(); });
@@ -319,13 +307,13 @@
 					$('#register-modal-form .btn[type="submit"]').removeAttr('disabled');
 
 					// Verifico formato.
-					if (data == undefined || data['response'] == undefined || (data['body'] == undefined && data['redirect'] == undefined))
+					if (data === undefined || data['response'] === undefined || (data['body'] === undefined && data['redirect'] === undefined))
 					{
 						$('#register-modal-form .modal-body').prepend('<div class="alert">Se produjo un error al procesar la petición.</div>');
 					}
 
 					// Verifico la respuesta.
-					if (data['response'] == 'ERROR')
+					if (data['response'] === 'ERROR')
 					{
 						// Muestro el mensaje de error.
 						if (data['body']['error'])
@@ -351,7 +339,7 @@
 						{
 							$('#register-modal-form-email').closest('.control-group').removeClass('error');
 						}
-						
+
 						if (data['body']['error_password'])
 						{
 							$('#register-modal-form-password').closest('.control-group').addClass('error');
@@ -379,7 +367,7 @@
 							$('#register-modal-form-captcha').closest('.control-group').removeClass('error');
 						}
 					}
-					else if (data['response'] == 'OK')
+					else if (data['response'] === 'OK')
 					{
 						// Agrego el mensaje.
 						$('#register-modal-form .modal-body').prepend('<div class="alert alert-success">'+data['body']+'</div>');
@@ -415,13 +403,13 @@
 				nick_val = nick.val();
 
 			// Evito volver a validar lo mismo.
-			if (nick.data('validation-text') == nick_val)
+			if (nick.data('validation-text') === nick_val)
 			{
 				return;
 			}
 
 			// Verifico y termino validación ajax.
-			if (nick.data('validation-ajax') != undefined)
+			if (nick.data('validation-ajax') !== undefined)
 			{
 				// Borro icono de carga.
 				$('#register .register-ajax-nick').remove();
@@ -449,14 +437,14 @@
 						$('#register .register-ajax-nick').remove();
 
 						// Verifico formato.
-						if (data == undefined || data['response'] == undefined || (data['body'] == undefined && data['redirect'] == undefined))
+						if (data === undefined || data['response'] === undefined || (data['body'] === undefined && data['redirect'] === undefined))
 						{
 							$('#register legend').before('<div class="alert">Se produjo un error al procesar la petición.</div>');
 						}
 						else
 						{
 							// Verifico la respuesta.
-							if (data['response'] == 'OK')
+							if (data['response'] === 'OK')
 							{
 								$('#register #nick').closest('.control-group').removeClass('error').addClass('success');
 
@@ -468,13 +456,13 @@
 							}
 							else
 							{
-								if (data['body'] != '')
+								if (data['body'] !== '')
 								{
 									$('#register #nick').closest('.controls').find('.help-inline').text(data['body']);
 								}
 								$('#register #nick').closest('.control-group').removeClass('success').addClass('error');
 							}
-						}						
+						}
 
 						nick.removeData('validation-ajax');
 					},
@@ -497,13 +485,13 @@
 				nick_val = nick.val();
 
 			// Evito volver a validar lo mismo.
-			if (nick.data('validation-text') == nick_val)
+			if (nick.data('validation-text') === nick_val)
 			{
 				return;
 			}
 
 			// Verifico y termino validación ajax.
-			if (nick.data('validation-ajax') != undefined)
+			if (nick.data('validation-ajax') !== undefined)
 			{
 				// Borro icono de carga.
 				$('#register-modal-form .register-ajax-nick').remove();
@@ -532,14 +520,14 @@
 						$('#register-modal-form .register-ajax-nick').remove();
 
 						// Verifico formato.
-						if (data == undefined || data['response'] == undefined || (data['body'] == undefined && data['redirect'] == undefined))
+						if (data === undefined || data['response'] === undefined || (data['body'] === undefined && data['redirect'] === undefined))
 						{
 							$('#register-modal-form .modal-body').prepend('<div class="alert">Se produjo un error al procesar la petición.</div>');
 						}
 						else
 						{
 							// Verifico la respuesta.
-							if (data['response'] == 'OK')
+							if (data['response'] === 'OK')
 							{
 								// Marco como correcto.
 								$('#register-modal-form-nick').closest('.control-group').removeClass('error').addClass('success');
@@ -549,7 +537,7 @@
 							}
 							else
 							{
-								if (data['body'] != '')
+								if (data['body'] !== '')
 								{
 									if ($('#register-modal-form-nick').parent().find('.help-block').length <= 0)
 									{
@@ -562,7 +550,7 @@
 								}
 								$('#register-modal-form-nick').closest('.control-group').removeClass('success').addClass('error');
 							}
-						}						
+						}
 
 						nick.removeData('validation-ajax');
 					},
@@ -585,13 +573,13 @@
 				email_val = email.val();
 
 			// Evito volver a validar lo mismo.
-			if (email.data('validation-text') == email_val)
+			if (email.data('validation-text') === email_val)
 			{
 				return;
 			}
 
 			// Verifico y termino validación ajax.
-			if (email.data('validation-ajax') != undefined)
+			if (email.data('validation-ajax') !== undefined)
 			{
 				// Borro icono de carga.
 				$('#register .register-ajax-email').remove();
@@ -619,14 +607,14 @@
 						$('#register .register-ajax-email').remove();
 
 						// Verifico formato.
-						if (data == undefined || data['response'] == undefined || (data['body'] == undefined && data['redirect'] == undefined))
+						if (data === undefined || data['response'] === undefined || (data['body'] === undefined && data['redirect'] === undefined))
 						{
 							$('#register legend').before('<div class="alert">Se produjo un error al procesar la petición.</div>');
 						}
 						else
 						{
 							// Verifico la respuesta.
-							if (data['response'] == 'OK')
+							if (data['response'] === 'OK')
 							{
 								$('#register #email').closest('.control-group').removeClass('error').addClass('success');
 
@@ -638,13 +626,13 @@
 							}
 							else
 							{
-								if (data['body'] != '')
+								if (data['body'] !== '')
 								{
 									$('#register #email').closest('.controls').find('.help-inline').text(data['body']);
 								}
 								$('#register #email').closest('.control-group').removeClass('success').addClass('error');
 							}
-						}						
+						}
 
 						email.removeData('validation-ajax');
 					},
@@ -667,13 +655,13 @@
 				email_val = email.val();
 
 			// Evito volver a validar lo mismo.
-			if (email.data('validation-text') == email_val)
+			if (email.data('validation-text') === email_val)
 			{
 				return;
 			}
 
 			// Verifico y termino validación ajax.
-			if (email.data('validation-ajax') != undefined)
+			if (email.data('validation-ajax') !== undefined)
 			{
 				// Borro icono de carga.
 				$('#register-modal-form .register-ajax-email').remove();
@@ -701,14 +689,14 @@
 						$('#register-modal-form .register-ajax-email').remove();
 
 						// Verifico formato.
-						if (data == undefined || data['response'] == undefined || (data['body'] == undefined && data['redirect'] == undefined))
+						if (data === undefined || data['response'] === undefined || (data['body'] === undefined && data['redirect'] === undefined))
 						{
 							$('#register-modal-form .modal-body').before('<div class="alert">Se produjo un error al procesar la petición.</div>');
 						}
 						else
 						{
 							// Verifico la respuesta.
-							if (data['response'] == 'OK')
+							if (data['response'] === 'OK')
 							{
 								// Marco como correcto.
 								$('#register-modal-form-email').closest('.control-group').removeClass('error').addClass('success');
@@ -718,7 +706,7 @@
 							}
 							else
 							{
-								if (data['body'] != '')
+								if (data['body'] !== '')
 								{
 									if ($('#register-modal-form-email').parent().find('.help-block').length <= 0)
 									{
@@ -731,7 +719,7 @@
 								}
 								$('#register-modal-form-email').closest('.control-group').removeClass('success').addClass('error');
 							}
-						}						
+						}
 
 						email.removeData('validation-ajax');
 					},
@@ -763,7 +751,7 @@
 				return false;
 			}
 		},
-		// Verificar 
+		// Verificar
 		verificar_password_modal: function () {
 			var password = $('#register-modal-form-password').val();
 
@@ -785,7 +773,7 @@
 				c_password = $('#register #c_password').val();
 
 			// Marco o quito la marca de incorrecto.
-			if (c_password != '' && password == c_password)
+			if (c_password !== '' && password === c_password)
 			{
 				$('#c_password').closest('.control-group').removeClass('error').addClass('success');
 				return true;
@@ -802,7 +790,7 @@
 				c_password = $('#register-modal-form-c_password').val();
 
 			// Marco o quito la marca de incorrecto.
-			if (c_password != '' && password == c_password)
+			if (c_password !== '' && password === c_password)
 			{
 				$('#register-modal-form-c_password').closest('.control-group').removeClass('error').addClass('success');
 				return true;
@@ -855,17 +843,17 @@
 		registro.verificar_todo();
 
 		// Verifico que todo sea correcto.
-		if ($('#register .control-group.error').length == 0)
+		if ($('#register .control-group.error').length === 0)
 		{
 			$.ajax({
 				url: window.site_url+'/usuario/register',
 				complete: function (jqXHR, textStatus) {
-					if (jqXHR['status'] == 303)
+					if (jqXHR['status'] === 303)
 					{
 						location.href = jqXHR['responseText'];
 					}
 
-					if (jqXHR['status'] == 409)
+					if (jqXHR['status'] === 409)
 					{
 						$('#register').before('<div class="alert">'+jqXHR['responseText']+'</div>');
 						$('#register').fadeOut(function() { $(this).remove(); });
@@ -879,13 +867,13 @@
 					$('#register #register-button').removeAttr('disabled');
 
 					// Verifico formato.
-					if (data == undefined || data['response'] == undefined || (data['body'] == undefined && data['redirect'] == undefined))
+					if (data === undefined || data['response'] === undefined || (data['body'] === undefined && data['redirect'] === undefined))
 					{
 						$('#register legend').before('<div class="alert">Se produjo un error al procesar la petición.</div>');
 					}
 
 					// Verifico la respuesta.
-					if (data['response'] == 'ERROR')
+					if (data['response'] === 'ERROR')
 					{
 						// Muestro el mensaje de error.
 						if (data['body']['error'])
@@ -911,7 +899,7 @@
 						{
 							$('#register #email').closest('.control-group').removeClass('error');
 						}
-						
+
 						if (data['body']['error_password'])
 						{
 							$('#register #password').closest('.control-group').addClass('error');
@@ -939,7 +927,7 @@
 							$('#register #captcha').closest('.control-group').removeClass('error');
 						}
 					}
-					else if (data['response'] == 'OK')
+					else if (data['response'] === 'OK')
 					{
 						// Agrego el mensaje.
 						$('#register').before('<div class="alert alert-success">'+data['body']+'</div>');
@@ -974,14 +962,14 @@
 				e.preventDefault();
 
 				// Cargo ID.
-				var modal_id = $(this).attr('data-modal-id') == undefined ? '' : '-'+$(this).attr('data-modal-id');
+				var modal_id = $(this).attr('data-modal-id') === undefined ? '' : '-'+$(this).attr('data-modal-id');
 
 				// Verifico si tengo que cargar el formulario.
 				if ($('#denunciar-usuario-modal-form'+modal_id).length <= 0)
 				{
 					cargar_formulario_modal.call(this, $(this).attr('href'), function () {
 						// Cargo ID.
-						var modal_id = $(this).attr('data-modal-id') == undefined ? '' : '-'+$(this).attr('data-modal-id');
+						var modal_id = $(this).attr('data-modal-id') === undefined ? '' : '-'+$(this).attr('data-modal-id');
 
 						// Muestro el formulario.
 						$('#denunciar-usuario-modal-form'+modal_id).modal();
@@ -1006,14 +994,14 @@
 				e.preventDefault();
 
 				// Cargo ID.
-				var modal_id = $(this).attr('data-modal-id') == undefined ? '' : '-'+$(this).attr('data-modal-id');
+				var modal_id = $(this).attr('data-modal-id') === undefined ? '' : '-'+$(this).attr('data-modal-id');
 
 				// Verifico si tengo que cargar el formulario.
 				if ($('#denunciar-post-modal-form'+modal_id).length <= 0)
 				{
 					cargar_formulario_modal.call(this, $(this).attr('href'), function () {
 						// Cargo ID.
-						var modal_id = $(this).attr('data-modal-id') == undefined ? '' : '-'+$(this).attr('data-modal-id');
+						var modal_id = $(this).attr('data-modal-id') === undefined ? '' : '-'+$(this).attr('data-modal-id');
 
 						// Muestro el formulario.
 						$('#denunciar-post-modal-form'+modal_id).modal();
@@ -1038,14 +1026,14 @@
 				e.preventDefault();
 
 				// Cargo ID.
-				var modal_id = $(this).attr('data-modal-id') == undefined ? '' : '-'+$(this).attr('data-modal-id');
+				var modal_id = $(this).attr('data-modal-id') === undefined ? '' : '-'+$(this).attr('data-modal-id');
 
 				// Verifico si tengo que cargar el formulario.
 				if ($('#denunciar-foto-modal-form'+modal_id).length <= 0)
 				{
 					cargar_formulario_modal.call(this, $(this).attr('href'), function () {
 						// Cargo ID.
-						var modal_id = $(this).attr('data-modal-id') == undefined ? '' : '-'+$(this).attr('data-modal-id');
+						var modal_id = $(this).attr('data-modal-id') === undefined ? '' : '-'+$(this).attr('data-modal-id');
 
 						// Muestro el formulario.
 						$('#denunciar-foto-modal-form'+modal_id).modal();
@@ -1085,7 +1073,7 @@
 			var comentario = elemento,
 			    comentario_val = comentario.val();
 
-			if (comentario_val == '' || (comentario_val.length > 5 && comentario_val.length < 400))
+			if (comentario_val === '' || (comentario_val.length > 5 && comentario_val.length < 400))
 			{
 				comentario.closest('.control-group').removeClass('error').addClass('success');
 			}
@@ -1117,18 +1105,18 @@
 			denuncia.verificar_todo($(modal).find('[name="comentario"]'), $(modal).find('[name="motivo"]'), e.data.valores);
 
 			// Verifico que todo sea correcto.
-			if ($(modal).find('.control-group.error').length == 0)
+			if ($(modal).find('.control-group.error').length === 0)
 			{
 				$.ajax({
 					url: $(modal).find('form').attr('action'),
 					context: $(modal),
 					complete: function (jqXHR, textStatus) {
-						if (jqXHR['status'] == 303)
+						if (jqXHR['status'] === 303)
 						{
 							location.href = jqXHR['responseText'];
 						}
 
-						if (jqXHR['status'] == 409)
+						if (jqXHR['status'] === 409)
 						{
 							$(this).find('.modal-body').prepend('<div class="alert">'+jqXHR['responseText']+'</div>');
 							$(this).find('.modal-body form').fadeOut(function() { $(this).remove(); });
@@ -1143,13 +1131,13 @@
 						$(this).find('.btn[type="submit"]').removeAttr('disabled');
 
 						// Verifico formato.
-						if (data == undefined || data['response'] == undefined || (data['body'] == undefined && data['redirect'] == undefined))
+						if (data === undefined || data['response'] === undefined || (data['body'] === undefined && data['redirect'] === undefined))
 						{
 							$(this).find('.modal-body').prepend('<div class="alert">Se produjo un error al procesar la petición.</div>');
 						}
 
 						// Verifico la respuesta.
-						if (data['response'] == 'ERROR')
+						if (data['response'] === 'ERROR')
 						{
 							// Muestro el mensaje de error.
 							if (data['body']['error'])
@@ -1198,7 +1186,7 @@
 								$(this).find('[name="comentario"]').closest('.control-group').removeClass('error');
 							}
 						}
-						else if (data['response'] == 'OK')
+						else if (data['response'] === 'OK')
 						{
 							// Agrego el mensaje.
 							$(this).find('.modal-body').prepend('<div class="alert alert-success">'+data['body']+'</div>');
