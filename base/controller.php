@@ -98,6 +98,31 @@ class Base_Controller {
 
 		// Seteo si es mantenimiento.
 		$this->template->assign('is_locked', Mantenimiento::is_locked() || Mantenimiento::is_locked(FALSE));
+
+		// Cargo menú de páginas estáticas.
+		$this->load_paginas_menu();
+	}
+
+	/**
+	 * Cargo páginas estáticas a los menues.
+	 */
+	protected function load_paginas_menu()
+	{
+		// Obtengo las del pie.
+		$elementos_pie = Model::factory('Pagina')->menu_pie();
+
+		// Creo el menu.
+		$menu = new Menu('paginas_pie');
+
+		// Agrego elementos.
+		foreach ($elementos_pie as $k => $v)
+		{
+			$menu->element_set($v, '/paginas/'.$k.'-'.Texto::make_seo($v).'.html', 'pagina_'.$k);
+		}
+
+		// Asigno el menu.
+		$this->template->assign('menu_pie_pagina', $menu->as_array(NULL));
+		unset($elementos_pie, $menu);
 	}
 
 	/**
@@ -268,6 +293,15 @@ class Base_Controller {
 		if (Controller_Admin_Home::permisos_acceso())
 		{
 			$menu->element_set(__('Administración', FALSE), '/admin/', 'admin');
+		}
+
+		// Obtengo las del pie.
+		$elementos_pie = Model::factory('Pagina')->menu_superior();
+
+		// Agrego elementos.
+		foreach ($elementos_pie as $k => $v)
+		{
+			$menu->element_set($v, '/paginas/'.$k.'-'.Texto::make_seo($v).'.html', 'pagina_'.$k);
 		}
 
 		return $menu->as_array($selected == NULL ? 'posts' : $selected);

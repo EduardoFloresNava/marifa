@@ -63,5 +63,8 @@ return array(
 	array('/foto/:categoria/:id/:nombre\.:pagina\.html', array('controller' => 'foto', 'action' => 'ver'), array('params_map' => array('id', 'pagina'))), // URL a una foto con pagina de comentarios.
 	array('/foto/:categoria/:id/:nombre\.html', array('controller' => 'foto', 'action' => 'ver'), array('params_map' => array('id'))), // URL a una foto.
 
+	// Rutas para las páginas estáticas.
+	array('/paginas/:id\-:nombre\.html', array('controller' => 'pages', 'action' => 'ver'), array('params_map' => array('id'), 'filters' => array('id' => '(\d+)'))),
+
 	array('/\@:usuario/?:action?/?:pagina?/?:pagina_2?', array('controller' => 'perfil', 'action' => 'index')), // Atajo al perfil del usuario.
 );

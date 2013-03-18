@@ -98,4 +98,22 @@ $consultas[] = array(
 	)
 );
 
+// Censuras de palabras.
+$consultas[] = array(
+	'Páginas estáticas',
+	array(
+		array('ALTER', 'CREATE TABLE `pagina` (
+				`id` int NOT NULL AUTO_INCREMENT,
+				`titulo` varchar(100) NOT NULL,
+				`contenido` mediumtext NOT NULL,
+				`menu` int NOT NULL,
+				`estado` int NOT NULL,
+				`creacion` datetime NOT NULL,
+				`modificacion` datetime NULL,
+				PRIMARY KEY (`id`)
+			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+		)
+	)
+);
+
 return $consultas;

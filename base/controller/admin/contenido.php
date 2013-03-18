@@ -1619,4 +1619,321 @@ class Base_Controller_Admin_Contenido extends Controller {
 		add_flash_message(FLASH_SUCCESS, __('Se ha borrado correctamente el mensaje de contacto', FALSE));
 		Request::redirect('admin/contenido/contacto/');
 	}
+
+	/**
+	 * Listado de páginas.
+	 * @param int $pagina Número de página a mostrar.
+	 */
+	public function action_paginas($pagina)
+	{
+		// Formato de la página.
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = Utils::configuracion()->get('elementos_pagina', 20);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/paginas');
+
+		// Modelo de páginas.
+		$model_pagina = new Model_Pagina;
+
+		// Cargamos el listado de noticias.
+		$lst = $model_pagina->listado($pagina, $cantidad_por_pagina);
+
+		// Paginación.
+		$total = Model_Pagina::cantidad();
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/paginas/%s/'));
+
+		// Obtenemos datos de las noticias.
+		foreach ($lst as $k => $v)
+		{
+			$lst[$k] =  $v->as_array();
+		}
+
+		// Asignamos listado de páginas.
+		$vista->assign('paginas', $lst);
+		unset($lst);
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.paginas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Creamos una nueva página.
+	 */
+	public function action_nueva_pagina()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/nueva_pagina');
+
+		// Asigno datos por defecto.
+		$vista->assign('titulo', '');
+		$vista->assign('error_titulo', FALSE);
+		$vista->assign('menu', '');
+		$vista->assign('error_menu', FALSE);
+		$vista->assign('estado', '');
+		$vista->assign('error_estado', FALSE);
+		$vista->assign('contenido', '');
+		$vista->assign('error_contenido', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Marco sin errores.
+			$error = FALSE;
+
+			// Cargo los valores.
+			$titulo = trim(arr_get($_POST, 'titulo', ''));
+			$menu = (int) arr_get($_POST, 'menu', '');
+			$estado = (int) arr_get($_POST, 'estado', '');
+			$contenido = trim(arr_get($_POST, 'contenido', ''));
+
+			// Reenvio valores.
+			$vista->assign('titulo', $titulo);
+			$vista->assign('menu', $menu);
+			$vista->assign('estado', $estado);
+			$vista->assign('contenido', $contenido);
+
+			// Verifico los valores.
+			if ($menu < 0 || $menu > 2)
+			{
+				$error = TRUE;
+				$vista->assign('error_menu', __('El menu en donde colocar la página seleccionado es incorrecto.', FALSE));
+			}
+
+			if ($estado !== 0 && $estado !== 1)
+			{
+				$error = TRUE;
+				$vista->assign('error_estado', __('El estado de la página seleccionado es incorrecto.', FALSE));
+			}
+
+			if ( ! isset($titulo{5}) || isset($titulo{100}))
+			{
+				$error = TRUE;
+				$vista->assign('error_titulo', __('El título debe tener entre 5 y 100 caracteres.', FALSE));
+			}
+
+			if ( ! isset($contenido{5}) || isset($contenido{16777216}))
+			{
+				$error = TRUE;
+				$vista->assign('error_contenido', __('El contenido debe tener entre 5 y 16777216 caracteres.', FALSE));
+			}
+
+			if ( ! $error)
+			{
+				// Cargo el modelo.
+				$model_pagina = new Model_Pagina;
+
+				// Creo la página.
+				$model_pagina->nueva($titulo, $contenido, $menu, $estado);
+
+				// Informo y vuelvo.
+				add_flash_message(FLASH_SUCCESS, __('La página se ha creado correctamente.', FALSE));
+				Request::redirect('admin/contenido/paginas');
+			}
+		}
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.paginas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Editamos una nueva página.
+	 * @param int $id Id de la página aeditar.
+	 */
+	public function action_editar_pagina($id)
+	{
+		// Cargo la página.
+		$model_pagina = new Model_Pagina( (int) $id);
+		$model_pagina->load();
+
+		// Verifico existencia.
+		if ( ! $model_pagina->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('La página que deseas editar no se encuentra disponible.', FALSE));
+			Request::redirect('/admin/contenido/paginas');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/editar_pagina');
+
+		// Asigno datos por defecto.
+		$vista->assign('titulo', $model_pagina->titulo);
+		$vista->assign('error_titulo', FALSE);
+		$vista->assign('menu', $model_pagina->menu);
+		$vista->assign('error_menu', FALSE);
+		$vista->assign('estado', $model_pagina->estado);
+		$vista->assign('error_estado', FALSE);
+		$vista->assign('contenido', $model_pagina->contenido);
+		$vista->assign('error_contenido', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Marco sin errores.
+			$error = FALSE;
+
+			// Cargo los valores.
+			$titulo = trim(arr_get($_POST, 'titulo', ''));
+			$menu = (int) arr_get($_POST, 'menu', '');
+			$estado = (int) arr_get($_POST, 'estado', '');
+			$contenido = trim(arr_get($_POST, 'contenido', ''));
+
+			// Reenvio valores.
+			$vista->assign('titulo', $titulo);
+			$vista->assign('menu', $menu);
+			$vista->assign('estado', $estado);
+			$vista->assign('contenido', $contenido);
+
+			// Verifico los valores.
+			if ($menu < 0 || $menu > 2)
+			{
+				$error = TRUE;
+				$vista->assign('error_menu', __('El menu en donde colocar la página seleccionado es incorrecto.', FALSE));
+			}
+
+			if ($estado !== 0 && $estado !== 1)
+			{
+				$error = TRUE;
+				$vista->assign('error_estado', __('El estado de la página seleccionado es incorrecto.', FALSE));
+			}
+
+			if ( ! isset($titulo{5}) || isset($titulo{100}))
+			{
+				$error = TRUE;
+				$vista->assign('error_titulo', __('El título debe tener entre 5 y 100 caracteres.', FALSE));
+			}
+
+			if ( ! isset($contenido{5}) || isset($contenido{16777216}))
+			{
+				$error = TRUE;
+				$vista->assign('error_contenido', __('El contenido debe tener entre 5 y 16777216 caracteres.', FALSE));
+			}
+
+			if ( ! $error)
+			{
+				// Datos a actualizar.
+				$campos_actualizar = array();
+
+				if ($model_pagina->titulo !== $titulo)
+				{
+					$campos_actualizar['titulo'] = $titulo;
+				}
+
+				if ($model_pagina->menu !== $menu)
+				{
+					$campos_actualizar['menu'] = $menu;
+				}
+
+				if ($model_pagina->estado !== $estado)
+				{
+					$campos_actualizar['estado'] = $estado;
+				}
+
+				if ($model_pagina->contenido !== $contenido)
+				{
+					$campos_actualizar['contenido'] = $contenido;
+				}
+
+				// Verifico si es necesario actualizar.
+				if (count($campos_actualizar) > 0)
+				{
+					// Actualizo fecha modificación.
+					$campos_actualizar['modificacion'] = date(BD_DATETIME);
+
+					// Actualizo los campos.
+					$model_pagina->actualizar_campos($campos_actualizar);
+				}
+
+				// Informo.
+				add_flash_message(FLASH_SUCCESS, __('La página se ha actualizado correctamente.', FALSE));
+			}
+		}
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.paginas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Cambiamos el estado de una página.
+	 * @param int $pagina ID de la página a cambiar el estado.
+	 * @param int $estado Estado a asignar a la página.
+	 */
+	public function action_estado_pagina($pagina, $estado)
+	{
+		// Verifico estado.
+		if ($estado != 0 && $estado != 1)
+		{
+			add_flash_message(FLASH_ERROR, __('La página a la que deseas cambiarle el estado no se encuentra disponible.', FALSE));
+			Request::redirect('/admin/contenido/paginas');
+		}
+
+		// Cargo la página.
+		$model_pagina = new Model_Pagina( (int) $pagina);
+
+		// Verifico existencia.
+		if ( ! $model_pagina->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('La página a la que deseas cambiarle el estado no se encuentra disponible.', FALSE));
+			Request::redirect('/admin/contenido/paginas');
+		}
+
+		// Actualizo el estado.
+		$model_pagina->actualizar_campo('estado', (int) $estado);
+
+		// Informo y vuelvo.
+		add_flash_message(FLASH_SUCCESS, __('Se ha cambiado correctamente el estado a la página.', FALSE));
+		Request::redirect('/admin/contenido/paginas');
+	}
+
+	/**
+	 * Eliminamos una página.
+	 * @param int $pagina ID de la página a eliminar.
+	 */
+	public function action_borrar_pagina($pagina)
+	{
+		// Cargo la página.
+		$model_pagina = new Model_Pagina( (int) $pagina);
+
+		// Verifico existencia.
+		if ( ! $model_pagina->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('La página a la que deseas eliminar no se encuentra disponible.', FALSE));
+			Request::redirect('/admin/contenido/paginas');
+		}
+
+		// Actualizo el estado.
+		$model_pagina->delete();
+
+		// Informo y vuelvo.
+		add_flash_message(FLASH_SUCCESS, __('Se ha eliminar correctamente la página.', FALSE));
+		Request::redirect('/admin/contenido/paginas');
+	}
 }

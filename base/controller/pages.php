@@ -33,6 +33,47 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Pages extends Controller {
 
 	/**
+	 * Visualizamos una página.
+	 * @param int $id ID de la página a visualizar.
+	 */
+	public function action_ver($id)
+	{
+		// Cargo la página.
+		$model_pagina = new Model_Pagina( (int) $id);
+		$model_pagina->load();
+
+		// Verifico existencia.
+		if ( ! $model_pagina->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('La página a la que intentas acceder no es válida.', FALSE));
+			Request::redirect('/');
+		}
+
+		// Verifico si es visible.
+		if ($model_pagina->estado !== Model_Pagina::ESTADO_VISIBLE)
+		{
+			if ( ! Usuario::is_login() || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
+			{
+				add_flash_message(FLASH_ERROR, __('La página a la que intentas acceder no es válida.', FALSE));
+				Request::redirect('/');
+			}
+			else
+			{
+				add_flash_message(FLASH_INFO, __('La página no es accesible por otros usuarios, solo por administradores con permisos para editarla.', FALSE));
+			}
+		}
+
+		// Menú principal.
+		$this->template->assign('master_bar', parent::base_menu('pagina_'.$model_pagina->id));
+
+		// Compilamos la vista.
+		$this->template->assign('contenido', $model_pagina->contenido);
+
+		// Seteamos título.
+		$this->template->assign('title', $model_pagina->titulo);
+	}
+
+	/**
 	 * Protocolo.
 	 */
 	public function action_protocolo()
