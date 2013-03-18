@@ -91,12 +91,18 @@ class Base_Model_Dataset extends Model {
 	 * @param array $primary_key Arreglo asociativo con los campos que componen
 	 * la clave primaria.
 	 */
-	public function load($primary_key)
+	public function load($primary_key = NULL)
 	{
 		if ($this->data === NULL)
 		{
 			// Armamos el listado de campos.
 			$f_list = implode(', ', array_keys($this->fields));
+
+			// Uso clave primaria interna.
+			if ($primary_key === NULL)
+			{
+				$primary_key = $this->primary_key;
+			}
 
 			// Listado de claves.
 			$k_list = array();
@@ -179,7 +185,22 @@ class Base_Model_Dataset extends Model {
 	 */
 	public function is_loaded()
 	{
-		return isset($this->data) && is_array($this->data);
+		// Verifico data.
+		if (isset($this->data) && is_array($this->data))
+		{
+			return TRUE;
+		}
+
+		// Verifico clave primaria.
+		foreach ($this->primary_key as $v)
+		{
+			if ($v !== NULL)
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
 	}
 
 	/**
