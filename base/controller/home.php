@@ -142,8 +142,7 @@ class Base_Controller_Home extends Controller {
 		$portada->assign('cantidad_comentarios_posts', $model_post->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
@@ -296,7 +295,7 @@ class Base_Controller_Home extends Controller {
 
 		// Titulo del sitio.
 		$this->template->assign('brand_title', '');
-		$this->template->assign('title_raw', $model_configuracion->nombre.' - '.$model_configuracion->descripcion);
+		$this->template->assign('title_raw', Model_Configuracion::get_instance()->nombre.' - '.Model_Configuracion::get_instance()->descripcion);
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());
@@ -316,8 +315,7 @@ class Base_Controller_Home extends Controller {
 		$this->template->assign('top_bar', self::submenu('usuarios'));
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;

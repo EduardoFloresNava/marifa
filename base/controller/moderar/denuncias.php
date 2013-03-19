@@ -74,8 +74,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		}
 
 		// Cantidad de elementos por página.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('moderar/denuncias/posts');
@@ -122,7 +121,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.posts'));
 
 		// Asigno el título.
@@ -176,7 +175,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.posts'));
 
 		// Asigno el título.
@@ -394,7 +393,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.fotos'));
 
 		// Asigno el título.
@@ -448,7 +447,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.fotos'));
 
 		// Asigno el título.
@@ -665,7 +664,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
 
 		// Asigno el título.
@@ -715,7 +714,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
 
 		// Asigno el título.
@@ -906,7 +905,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
 
 		// Asigno el título.
@@ -1048,7 +1047,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
 
 		// Asigno el título.

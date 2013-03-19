@@ -92,7 +92,7 @@ class Shell_Controller_Contenido extends Shell_Controller {
 					$cantidad = 20;
 
 					// Cargo rango por defecto.
-					$model_config = new Model_Configuracion;
+					$model_config = Model_Configuracion::get_instance();
 					$model_rango = new Model_Usuario_Rango( (int) $model_config->get('rango_defecto', 1));
 					$rango = $model_rango->id;
 					$rango_string = $model_rango->nombre;
@@ -118,7 +118,7 @@ class Shell_Controller_Contenido extends Shell_Controller {
 					}
 
 					// Cargo rango por defecto.
-					$model_config = new Model_Configuracion;
+					$model_config = Model_Configuracion::get_instance();
 					$rango_defecto = (int) $model_config->get('rango_defecto', 1);
 					unset($model_config);
 

@@ -89,8 +89,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		}
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/usuario/index');
@@ -321,7 +320,8 @@ class Base_Controller_Admin_Usuario extends Controller {
 		}
 
 		// Configuraciones del sitio.
-		$model_config = new Model_Configuracion;
+		$model_config = Model_Configuracion::get_instance();
+		$model_config->load_list(array('nombre', 'activacion_usuario'));
 
 		// Verifico tipo de activación del usuario.
 		$t_act = (int) $model_config->get('activacion_usuario', 1);
@@ -1029,8 +1029,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		unset($lst);
 
 		// Rango por defecto para nuevos usuario, evitamos que se borre.
-		$model_config = new Model_Configuracion;
-		$vista->assign('rango_defecto', (int) $model_config->get('rango_defecto', 1));
+		$vista->assign('rango_defecto', (int) Model_Configuracion::get_instance()->get('rango_defecto', 1));
 
 		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
@@ -1070,8 +1069,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$pagina = ($pagina > 0) ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/usuario/usuarios_rango');
@@ -1621,8 +1619,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		}
 
 		// Rango por defecto para nuevos usuario, evitamos que se borre.
-		$model_config = new Model_Configuracion;
-		$vista->assign('rango_defecto', (int) $model_config->get('rango_defecto', 1));
+		$vista->assign('rango_defecto', (int) Model_Configuracion::get_instance()->get('rango_defecto', 1));
 
 		// Asignamos datos del rango.
 		$vista->assign('rango', $model_rango->as_array());
@@ -1680,8 +1677,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			}
 
 			// Verifico no sea por defecto.
-			$model_config = new Model_Configuracion;
-			if ($id == (int) $model_config->get('rango_defecto', 1))
+			if ($id == (int) Model_Configuracion::get_instance()->get('rango_defecto', 1))
 			{
 				add_flash_message(FLASH_ERROR, __('No se puede eliminar al rango por defecto para los nuevos usuarios.', FALSE));
 				Request::redirect('/admin/usuario/rangos');
@@ -1784,9 +1780,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$vista = View::factory('admin/usuario/medallas');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
-		unset($model_configuracion);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Modelo de medallas.
 		$model_medallas = new Model_Medalla;
@@ -2113,8 +2107,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 		$pagina = ($pagina > 0) ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('/admin/usuario/usuarios_medalla');

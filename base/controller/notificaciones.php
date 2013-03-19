@@ -62,8 +62,7 @@ class Base_Controller_Notificaciones extends Controller {
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos notificaciones.
 		$sucesos = Suceso_Barra::obtener_listado_completo(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
@@ -218,8 +217,7 @@ class Base_Controller_Notificaciones extends Controller {
 		$view = View::factory('notificaciones/sin_desplegar');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos notificaciones.
 		$sucesos = Suceso_Barra::obtener_listado_sin_desplegar(Usuario::$usuario_id, 1, $cantidad_por_pagina);

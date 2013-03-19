@@ -127,8 +127,7 @@ class Base_Controller_Buscador extends Controller {
 		if ( ! empty($query))
 		{
 			// Cantidad de elementos por pagina.
-			$model_configuracion = new Model_Configuracion;
-			$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+			$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 			// Formato de la página.
 			$pagina = ( (int) $pagina > 0) ? ( (int) $pagina) : 1;
@@ -214,8 +213,7 @@ class Base_Controller_Buscador extends Controller {
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Realizamos la búsqueda.
 		list($listado, $cantidad) = $model_post->buscar_relacionados($pagina, $cantidad_por_pagina);
@@ -285,8 +283,7 @@ class Base_Controller_Buscador extends Controller {
 		$vista = View::factory('buscador/pin');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;

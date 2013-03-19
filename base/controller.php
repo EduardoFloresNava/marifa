@@ -61,7 +61,7 @@ class Base_Controller {
 		$this->template = View::factory('template');
 
 		// Cargo las noticias.
-		$noticia = Model_Noticia::get_active();
+		$noticia = Model::factory('Noticia')->get_active();
 		if ($noticia !== NULL)
 		{
 			$this->template->assign('noticia', Decoda::procesar($noticia->contenido));
@@ -69,7 +69,8 @@ class Base_Controller {
 		unset($noticia);
 
 		// Cargo nombre del sitio.
-		$model_config = new Model_Configuracion;
+		$model_config = Utils::configuracion();
+		$model_config->load_list(array('nombre', 'descripcion', 'contacto_tipo', 'contacto_valor', 'habilitar_fotos', 'privacidad_fotos'));
 		$this->template->assign('brand', $model_config->get('nombre', __('Marifa', FALSE)));
 		$this->template->assign('brand_title', $model_config->get('nombre', __('Marifa', FALSE)));
 		$this->template->assign('descripcion', $model_config->get('descripcion', __('Tu comunidad de forma simple', FALSE)));

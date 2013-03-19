@@ -64,6 +64,12 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	protected $db;
 
 	/**
+	 * Si se utiliza UTF-8 o no.
+	 * @var bool
+	 */
+	protected $utf8 = FALSE;
+
+	/**
 	 * Constructor de la clase.
 	 *
 	 * @param array $data Arreglo con la información necesaria para conectar.
@@ -82,8 +88,22 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 
 		if ($data['utf8'])
 		{
+			$this->utf8 = TRUE;
 			mysql_set_charset('utf8');
 		}
+		else
+		{
+			$this->utf8 = FALSE;
+		}
+	}
+
+	/**
+	 * Obtengo si se debe usar o no UTF-8.
+	 * @return bool
+	 */
+	public function is_utf8()
+	{
+		return $this->utf8;
 	}
 
 	/**

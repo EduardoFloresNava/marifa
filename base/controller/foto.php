@@ -153,8 +153,7 @@ class Base_Controller_Foto extends Controller {
 		unset($menu);
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
@@ -281,8 +280,7 @@ class Base_Controller_Foto extends Controller {
 		$view = View::factory('foto/index');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
@@ -435,8 +433,7 @@ class Base_Controller_Foto extends Controller {
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargo comentarios.
 		$cmts = $model_foto->comentarios($pagina, $cantidad_por_pagina);
@@ -1140,11 +1137,16 @@ class Base_Controller_Foto extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los datos y seteamos valores.
-			foreach (array('titulo', 'url', 'descripcion', 'categoria', 'captcha') as $k)
-			{
-				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
-				$view->assign($k, $$k);
-			}
+			$titulo = arr_get($_POST, 'titulo', '');
+			$view->assign('titulo', $titulo);
+			$url = arr_get($_POST, 'url', '');
+			$view->assign('url', $url);
+			$descripcion = arr_get($_POST, 'descripcion', '');
+			$view->assign('descripcion', $descripcion);
+			$categoria = arr_get($_POST, 'categoria', '');
+			$view->assign('categoria', $categoria);
+			$captcha = arr_get($_POST, 'captcha', '');
+			$view->assign('captcha', $captcha);
 
 			// Obtenemos los checkbox.
 			$visitantes = isset($_POST['visitantes']) ? ($_POST['visitantes'] == 1) : FALSE;
@@ -1169,7 +1171,7 @@ class Base_Controller_Foto extends Controller {
 				$view->assign('error_descripcion', __('La descripción debe tener entre 20 y 600 caracteres.', FALSE));
 				$error = TRUE;
 			}
-			unset($contenido_clean);
+			unset($descripcion_clean);
 
 			// Verificamos la URL.
 			if ( ! preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/Di', $url))
@@ -1497,7 +1499,7 @@ class Base_Controller_Foto extends Controller {
 					// Informo el resultado.
 					add_flash_message(FLASH_SUCCESS, __('La foto ha sido denunciado correctamente.', FALSE));
 					Request::redirect($this->foto_url($model_foto));
-				}				
+				}
 			}
 		}
 
@@ -1584,11 +1586,12 @@ class Base_Controller_Foto extends Controller {
 			$error = FALSE;
 
 			// Obtenemos los datos y seteamos valores.
-			foreach (array('titulo', 'descripcion', 'categoria') as $k)
-			{
-				$$k = isset($_POST[$k]) ? $_POST[$k] : '';
-				$view->assign($k, $$k);
-			}
+			$titulo = arr_get($_POST, 'titulo', '');
+			$view->assign('titulo', $titulo);
+			$descripcion = arr_get($_POST, 'descripcion', '');
+			$view->assign('descripcion', $descripcion);
+			$categoria = arr_get($_POST, 'categoria', '');
+			$view->assign('categoria', $categoria);
 
 			// Obtenemos los checkbox.
 			$visitantes = isset($_POST['visitantes']) ? ($_POST['visitantes'] == 1) : FALSE;
@@ -1613,7 +1616,7 @@ class Base_Controller_Foto extends Controller {
 				$view->assign('error_descripcion', __('La descripción debe tener entre 20 y 600 caracteres.', FALSE));
 				$error = TRUE;
 			}
-			unset($contenido_clean);
+			unset($descripcion_clean);
 
 			// Verificamos la categoría.
 			$model_categoria = new Model_Categoria;

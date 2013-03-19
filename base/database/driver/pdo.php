@@ -65,6 +65,15 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	}
 
 	/**
+	 * Obtengo si se debe usar o no UTF-8.
+	 * @return bool
+	 */
+	public function is_utf8()
+	{
+		return $this->utf8;
+	}
+
+	/**
 	 * Destructor de la clase, nos aseguramos de desconectar la base de datos.
 	 */
 	public function __destruct()

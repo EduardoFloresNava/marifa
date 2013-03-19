@@ -30,7 +30,89 @@ defined('APP_BASE') || die('No direct access allowed.');
  * @package    Marifa\Base
  * @subpackage Model
  */
-class Base_Model_Configuracion extends Model {
+class Base_Model_Configuracion {
+
+	/**
+	 * Instancia del Driver que maneja la base de datos.
+	 */
+	private static $instance;
+
+	/**
+	 * Instancia de la base de datos.
+	 * @var Database_Driver
+	 */
+	protected $db;
+
+	/**
+	 * Listado de configuraciones guardadas.
+	 * @var array
+	 */
+	protected $data = array();
+
+	/**
+	 * Por el patrón singleton se evita tener instancias de esta clase.
+	 */
+	private function __construct()
+	{
+		// Cargo la base de datos.
+		$this->db = Database::get_instance();
+	}
+
+	/**
+	 * No se permite clonar esta clase.
+	 */
+	public function __clone()
+	{
+	}
+
+	/**
+	 * No se permite deserealizar esta clase.
+	 */
+	public function __wakeup()
+	{
+	}
+
+	/**
+	 * Obtenemos el driver de la base de datos.
+	 * El driver es el que nos permite interactuar con la base de datos.
+	 * @return Model_Configuracion Driver de la base de datos.
+	 */
+	public static function get_instance()
+	{
+		if ( ! isset(self::$instance))
+		{
+			$class = __CLASS__;
+			self::$instance = new $class;
+		}
+		return self::$instance;
+	}
+
+	/**
+	 * Cargamos un listado de valores.
+	 * @param array $valores Listado de valores a cargar.
+	 */
+	public function load_list($valores)
+	{
+		// Listado a cargar.
+		$lista_cargar = array_diff($valores, array_keys($this->data));
+
+		// Armo consulta.
+		$c = count($lista_cargar);
+		$str = '';
+		for ($i = 0; $i < $c; $i++)
+		{
+			$str .= '?, ';
+		}
+
+		// Cargo los valores.
+		$rst = $this->db->query('SELECT clave, valor, defecto FROM configuracion WHERE clave IN ('.substr($str, 0, -2).')', $lista_cargar)
+				->set_fetch_type(Database_Query::FETCH_ASSOC);
+
+		foreach ($rst as $v)
+		{
+			$this->data[$v['clave']] = array($v['valor'], $v['defecto']);
+		}
+	}
 
 	/**
 	 * Seteamos el valor por defecto de una configuracion.
@@ -40,6 +122,11 @@ class Base_Model_Configuracion extends Model {
 	 */
 	public function set_default($name, $value)
 	{
+		if (isset($this->data[$name]))
+		{
+			$this->data[$name][1] = $value;
+		}
+
 		if (isset($this->$name))
 		{
 			$this->db->update('UPDATE configuracion SET default = ? WHERE clave = ?', array($value, $name));
@@ -57,6 +144,11 @@ class Base_Model_Configuracion extends Model {
 	 */
 	public function restore_default($name)
 	{
+		if (isset($this->data[$name]))
+		{
+			$this->data[$name][0] = $this->data[$name][1];
+		}
+
 		if (isset($this->$name))
 		{
 			$this->db->update('UPDATE configuracion SET valor = defecto WHERE clave = ?', $name);
@@ -74,6 +166,11 @@ class Base_Model_Configuracion extends Model {
 	 */
 	public function get_default($name)
 	{
+		if (isset($this->data[$name]))
+		{
+			return $this->data[$name][1];
+		}
+
 		if (isset($this->$name))
 		{
 			return $this->db->query('SELECT default FROM configuracion WHERE clave = ?', $name)->get_var();
@@ -91,6 +188,12 @@ class Base_Model_Configuracion extends Model {
 	 */
 	public function __get($name)
 	{
+
+		if (isset($this->data[$name]))
+		{
+			return $this->data[$name][0];
+		}
+
 		// Obtengo la clave.
 		$rst = $this->db->query('SELECT valor FROM configuracion WHERE clave = ?', $name);
 
@@ -137,6 +240,8 @@ class Base_Model_Configuracion extends Model {
 		{
 			$this->db->insert('INSERT INTO configuracion (clave, valor, defecto) VALUES (?, ?, ?)', array($name, $value, $value));
 		}
+
+		$this->data[$name] = array($value, $value);
 	}
 
 	/**
@@ -146,7 +251,7 @@ class Base_Model_Configuracion extends Model {
 	 */
 	public function __isset($name)
 	{
-		return $this->db->query('SELECT clave FROM configuracion WHERE clave = ? LIMIT 1', $name)->num_rows() > 0;
+		return isset($this->data[$name]) || $this->db->query('SELECT clave FROM configuracion WHERE clave = ? LIMIT 1', $name)->num_rows() > 0;
 	}
 
 	/**
@@ -155,6 +260,10 @@ class Base_Model_Configuracion extends Model {
 	 */
 	public function __unset($name)
 	{
+		if (isset($this->data[$name]))
+		{
+			unset($this->data[$name]);
+		}
 		$this->db->delete('DELETE FROM configuracion WHERE clave = ?', $name);
 	}
 

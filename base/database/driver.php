@@ -33,6 +33,12 @@ defined('APP_BASE') || die('No direct access allowed.');
 abstract class Base_Database_Driver {
 
 	/**
+	 * Obtengo si se debe usar o no UTF-8.
+	 * @return bool
+	 */
+	abstract public function is_utf8();
+
+	/**
 	 * Constructor de la clase.
 	 *
 	 * Acá se debe presentar toda la lógica de conexión a la base de datos

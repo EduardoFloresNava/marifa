@@ -272,11 +272,11 @@ class Base_Controller_Usuario extends Controller {
 			}
 		}
 
-		// Configuraciones del sitio.
-		$model_config = new Model_Configuracion;
+		// Cargo configuraciones.
+		Model_Configuracion::get_instance()->load_list(array('registro', 'usuarios_bloqueados', 'rango_defecto', 'activacion_usuario'));
 
 		// Verifico si está abierto el registro.
-		if ( ! (bool) $model_config->get('registro', TRUE))
+		if ( ! (bool) Model_Configuracion::get_instance()->get('registro', TRUE))
 		{
 			if (Request::is_ajax())
 			{
@@ -357,7 +357,7 @@ class Base_Controller_Usuario extends Controller {
 					$nick = trim(preg_replace('/\s+/', ' ', $_POST['nick']));
 
 					// Listado de nombres de usaurios no permitidos.
-					$nicks_bloqueados = unserialize($model_config->get_default('usuarios_bloqueados', 'a:0:{}'));
+					$nicks_bloqueados = unserialize(Model_Configuracion::get_instance()->get_default('usuarios_bloqueados', 'a:0:{}'));
 
 					if (in_array($nick, $nicks_bloqueados))
 					{
@@ -411,7 +411,7 @@ class Base_Controller_Usuario extends Controller {
 
 					// Realizamos el registro.
 					try {
-						$id = $model_usuario->register($nick, $email, $password, (int) $model_config->get('rango_defecto', 1));
+						$id = $model_usuario->register($nick, $email, $password, (int) Model_Configuracion::get_instance()->get('rango_defecto', 1));
 					}
 					catch (Exception $e)
 					{
@@ -423,7 +423,7 @@ class Base_Controller_Usuario extends Controller {
 					if ($id)
 					{
 						// Verifico tipo de activación del usuario.
-						$t_act = (int) $model_config->get('activacion_usuario', 1);
+						$t_act = (int) Model_Configuracion::get_instance()->get('activacion_usuario', 1);
 
 						if ($t_act == 1)
 						{
@@ -432,7 +432,7 @@ class Base_Controller_Usuario extends Controller {
 							$token = $model_activar->crear($id, $email, Model_Usuario_Recuperacion::TIPO_ACTIVACION);
 
 							// Configuraciones del sitio.
-							$model_config = new Model_Configuracion;
+							$model_config = Model_Configuracion::get_instance();
 
 							// Creo el mensaje de correo.
 							$message = Email::get_message();
@@ -676,7 +676,7 @@ class Base_Controller_Usuario extends Controller {
 		}
 
 		// Configuraciones del sitio.
-		$model_config = new Model_Configuracion;
+		$model_config = Model_Configuracion::get_instance();
 
 		// Verifico el tipo de activación.
 		if ( (int) $model_config->get('activacion_usuario', 1) !== 1)
@@ -749,7 +749,7 @@ class Base_Controller_Usuario extends Controller {
 				$token = $model_recuperacion->crear($model_usuario->id, $email, Model_Usuario_Recuperacion::TIPO_ACTIVACION);
 
 				// Configuraciones del sitio.
-				$model_config = new Model_Configuracion;
+				$model_config = Model_Configuracion::get_instance();
 
 				// Creo el mensaje de correo.
 				$message = Email::get_message();
@@ -842,7 +842,7 @@ class Base_Controller_Usuario extends Controller {
 				$token = $model_recuperacion->crear($model_usuario->id, $model_usuario->email, Model_Usuario_Recuperacion::TIPO_RECUPERACION);
 
 				// Configuraciones del sitio.
-				$model_config = new Model_Configuracion;
+				$model_config = Model_Configuracion::get_instance();
 
 				// Creo el mensaje de correo.
 				$message = Email::get_message();
@@ -919,7 +919,7 @@ class Base_Controller_Usuario extends Controller {
 			// Verificamos contraseña.
 			if ( ! preg_match('/^[a-zA-Z0-9\-_@\*\+\/#$%]{6,20}$/D', $password))
 			{
-				$view_usuario->assign('error_password', TRUE);
+				$view->assign('error_password', TRUE);
 				$error = TRUE;
 			}
 			else
@@ -927,7 +927,7 @@ class Base_Controller_Usuario extends Controller {
 				// Verificamos que concuerden.
 				if ($password != $cpassword)
 				{
-					$view_usuario->assign('error_cpassword', TRUE);
+					$view->assign('error_cpassword', TRUE);
 					$error = TRUE;
 				}
 			}

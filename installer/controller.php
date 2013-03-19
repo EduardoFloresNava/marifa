@@ -268,7 +268,7 @@ class Installer_Controller {
 			{
 				// Guardo.
 				$config->save();
-				
+
 				// Marco el paso como terminado.
 				Installer_Step::get_instance()->terminado();
 
@@ -593,7 +593,7 @@ class Installer_Controller {
 		$vista = View::factory('configuracion');
 
 		// Cargamos las configuraciones.
-		$model_configuracion = new Model_Configuracion;
+		$model_configuracion = Model_Configuracion::get_instance();
 
 		// Datos por defecto.
 		$vista->assign('nombre', $model_configuracion->get('nombre', ''));

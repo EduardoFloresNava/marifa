@@ -73,8 +73,7 @@ class Base_Controller_Favoritos extends Controller {
 		$vista = View::factory('favoritos/posts');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
@@ -128,8 +127,7 @@ class Base_Controller_Favoritos extends Controller {
 		$vista = View::factory('favoritos/fotos');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;

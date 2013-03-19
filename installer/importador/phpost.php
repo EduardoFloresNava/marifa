@@ -98,7 +98,7 @@ class Installer_Importador_Phpost extends Installer_Importador {
 		$data = $this->importador_db->query('SELECT titulo, slogan, c_reg_active, c_reg_activate, c_reg_rango FROM w_configuracion LIMIT 1')->get_record(Database_Query::FETCH_OBJ);
 
 		// Modelo de configuraciones.
-		$model_config = new Model_Configuracion;
+		$model_config = Model_Configuracion::get_instance();
 
 		// Importo nombre del sitio.
 		$model_config->nombre = $data->titulo;

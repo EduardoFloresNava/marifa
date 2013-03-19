@@ -336,8 +336,7 @@ class Base_Controller_Perfil extends Controller {
 		$this->cargar_usuario($usuario);
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
@@ -394,8 +393,7 @@ class Base_Controller_Perfil extends Controller {
 		$this->cargar_usuario($usuario);
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina_sigo = ( (int) $pagina_sigo) > 0 ? ( (int) $pagina_sigo) : 1;
@@ -417,9 +415,9 @@ class Base_Controller_Perfil extends Controller {
 		}
 
 		// Paginación.
-		$paginador = new Paginator($this->usuario->cantidad_seguidores(), $cantidad_por_pagina);
-		$information_view->assign('paginacion_seguidores', $paginador->get_view($pagina_sigo, "/@$usuario/seguidores/%d/$pagina_siguen"));
-		unset($paginador);
+		$paginador_seguidores = new Paginator($this->usuario->cantidad_seguidores(), $cantidad_por_pagina);
+		$information_view->assign('paginacion_seguidores', $paginador_seguidores->get_view($pagina_sigo, "/@$usuario/seguidores/%d/$pagina_siguen"));
+		unset($paginador_seguidores);
 
 		// Transformamos a arreglo.
 		foreach ($seguidores as $k => $v)
@@ -709,8 +707,7 @@ class Base_Controller_Perfil extends Controller {
 		$information_view->assign('usuario', $this->usuario->as_array());
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;

@@ -220,13 +220,7 @@ class Base_Utils {
 	 */
 	public static function configuracion()
 	{
-		static $instance = NULL;
-
-		if ($instance === NULL)
-		{
-			$instance = new Model_Configuracion;
-		}
-		return $instance;
+		return Model_Configuracion::get_instance();
 	}
 
 	/**

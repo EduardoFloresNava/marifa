@@ -254,8 +254,7 @@ class Base_Controller_Post extends Controller {
 			$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 			// Cantidad de elementos por pagina.
-			$model_configuracion = new Model_Configuracion;
-			$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+			$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 			// Cargo comentarios.
 			$cmts = $model_post->comentarios(Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VER_DESAPROBADO) ? NULL : Model_Post_Comentario::ESTADO_VISIBLE, $pagina, $cantidad_por_pagina);
@@ -448,7 +447,8 @@ class Base_Controller_Post extends Controller {
 			if ( ! $error)
 			{
 				// Configuraciones sobre etiquetas.
-				$model_config = new Model_Configuracion;
+				$model_config = Model_Configuracion::get_instance();
+				$model_config->load_list(array('keyword_lago_minimo', 'keyword_palabras_comunes'));
 				$keyword_len = (int) $model_config->get('keyword_largo_minimo', 3);
 				$keyword_bloqueadas = unserialize($model_config->get('keyword_palabras_comunes', 'a:0:{}'));
 
@@ -768,7 +768,7 @@ class Base_Controller_Post extends Controller {
 		// Verificamos el método de envío.
 		if (Request::method() != 'POST')
 		{
-			Request::redirect($this->post_url($model_post));
+			Request::redirect($this->post_url($post));
 		}
 
 		// Convertimos el post a ID.
@@ -2141,7 +2141,8 @@ class Base_Controller_Post extends Controller {
 			if ( ! $error)
 			{
 				// Configuraciones sobre etiquetas.
-				$model_config = new Model_Configuracion;
+				$model_config = Model_Configuracion::get_instance();
+				$model_config->load_list(array('keyword_largo_minimo', 'keyword_palabras_comunes'));
 				$keyword_len = (int) $model_config->get('keyword_largo_minimo', 3);
 				$keyword_bloqueadas = unserialize($model_config->get('keyword_palabras_comunes', 'a:0:{}'));
 

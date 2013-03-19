@@ -90,7 +90,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.informacion'));
 
 		// Asignamos la vista a la plantilla base.
@@ -158,7 +158,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.plugins'));
 
 		// Asignamos la vista a la plantilla base.
@@ -455,7 +455,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($image_min_res);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.plugins'));
 
 		// Asignamos la vista a la plantilla base.
@@ -503,7 +503,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($image_min_res);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.temas'));
 
 		// Asignamos la vista a la plantilla base.
@@ -807,7 +807,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($image_min_res);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.temas'));
 
 		// Asignamos la vista a la plantilla base.
@@ -886,7 +886,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($image_min_res);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.optimizar'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1079,8 +1079,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		unlink($file);
 
 		// Actualizo versión del sistema.
-		$m_config = new Model_Configuracion;
-		$m_config->version = substr($version, 1);
+		Model_Configuracion::get_instance()->version = substr($version, 1);
 
 		// Limpio cache.
 		Cache::get_instance()->clean();
@@ -1246,7 +1245,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($image_min_res);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.traducciones'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1461,7 +1460,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			if ( ! preg_match('/^([0-9]+)x([0-9]+)$/i', $image_min_px, $image_min_res))
 			{
 				$error = TRUE;
-				$vista->assign('error_image_min_px', __('El formato del tamaño mínimo de las imágenes permitidas es incorrecto.', FALSE));	
+				$vista->assign('error_image_min_px', __('El formato del tamaño mínimo de las imágenes permitidas es incorrecto.', FALSE));
 				unset($image_min_res);
 			}
 			else
@@ -1488,7 +1487,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			if ( ! preg_match('/^([0-9]+)x([0-9]+)$/i', $image_max_px, $image_max_res))
 			{
 				$error = TRUE;
-				$vista->assign('error_image_max_px', __('El formato del tamaño máximo de las imágenes permitidas es incorrecto.', FALSE));	
+				$vista->assign('error_image_max_px', __('El formato del tamaño máximo de las imágenes permitidas es incorrecto.', FALSE));
 				unset($image_max_res);
 			}
 			else
@@ -1579,7 +1578,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 				// Configuración del método de carga.
 				$o_config['image'] = $image_savemethod;
-				
+
 				if ($image_savemethod == 'disk')
 				{
 					// Configuración de la carga de imágenes en disco.
@@ -1592,7 +1591,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 					$o_config['image_disk'] = $image_disk;
 					unset($image_disk);
 				}
-				
+
 				if ($image_savemethod == 'imgur')
 				{
 					// Configuración de la carga de imágenes en imgur.
@@ -1619,7 +1618,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.carga_de_archivos'));
 
 		// Asignamos la vista a la plantilla base.

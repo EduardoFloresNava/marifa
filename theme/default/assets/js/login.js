@@ -58,6 +58,9 @@
 
 				// Doy foco.
 				$('#login-modal-form-nick').focus();
+
+                // Evento de submit.
+                $('#login-modal-form').keypress(function (e) { if (e.which === 13) { $('#login-modal-form .modal-footer .btn[type="submit"]').click(); } });
 			});
 		}
 
@@ -260,6 +263,9 @@
 
 				// Doy foco.
 				$('#register-modal-form-nick').focus();
+
+                // Evento de submit.
+                $('#register-modal-form').keypress(function (e) { if (e.which === 13) { $('#register-modal-form .modal-footer .btn[type="submit"]').click(); } });
 			});
 		}
 

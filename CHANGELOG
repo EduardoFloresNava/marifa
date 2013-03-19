@@ -13,6 +13,13 @@ Marifa 0.3 []
  - FEATURE: Clase para manejo de iconos (medallas, rangos y categorías) para facilitar y dar más flexibilidad.
  - FEATURE: Agregadas secciones para configurar cache, carga de archivos, base de datos y configuraciones base desde el panel de administración.
  - FEATURE: Sistema de censuras de palabras.
+ - FEATURE: Los rangos ahora tienen una descripción.
+ - FEATURE: Prosibilidad de bloquear nombres de usuarios.
+ - FEATURE: Formulario de contacto con varias configuraciones.
+ - FEATURE: Implementados mensajes del sistema en la mensajería.
+ - FEATURE: Implementado sistema de páginas estáticas para mostrar contenido.
+ - FEATURE: Mejora de funcionamiento del modelo dataset.
+ - FEATURE: Mejora de plantillas en modo mantenimiento.
  - FIX: Ya no es necesaria la cache para el sistema de actualizaciones, se guardan en la BD.
  - FIX: Arregladas las URL's de los captcha's.
  - FIX: Problema de edición de categorías y mejora del SEO de las mismas.

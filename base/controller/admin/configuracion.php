@@ -62,8 +62,10 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista = View::factory('admin/configuracion/index');
 
 		// Cargamos las configuraciones.
-		//TODO: Implementar sistema más flexible de carga y edición.
-		$model_configuracion = new Model_Configuracion;
+		$model_configuracion = Model_Configuracion::get_instance();
+
+		// Cargo elementos en una consulta.
+		$model_configuracion->load_list(array('nombre', 'descripcion', 'registro', 'activacion_usuario', 'rango_defecto', 'usuarios_bloqueados', 'habilitar_fotos', 'privacidad_fotos', 'elementos_pagina', 'contacto_tipo', 'contacto_valor'));
 
 		// Cargamos los datos iniciales.
 		$vista->assign('nombre', $model_configuracion->get('nombre', 'Marifa'));
@@ -439,7 +441,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista = View::factory('admin/configuracion/mantenimiento');
 
 		// Cargo listado de IP's que pueden acceder en modo mantenimiento.
-		$model_configuracion = new Model_Configuracion;
+		$model_configuracion = Model_Configuracion::get_instance();
 		$ips_matenimiento = unserialize($model_configuracion->get('ip_mantenimiento', 'a:0:{}'));
 
 		// Datos del hard-lock.
@@ -655,7 +657,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion.mantenimiento'));
 
 		// Asignamos la vista a la plantilla base.
@@ -788,7 +790,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion.correo'));
 
 		// Asignamos la vista a la plantilla base.
@@ -822,7 +824,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		}
 
 		// Cargo el modelo de configuraciones.
-		$model_config = new Model_Configuracion;
+		$model_config = Model_Configuracion::get_instance();
 
 		// Creo el mensaje de correo.
 		$message = Email::get_message();
@@ -853,7 +855,8 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista = View::factory('admin/configuracion/seo');
 
 		// Cargamos las configuraciones.
-		$model_configuracion = new Model_Configuracion;
+		$model_configuracion = Model_Configuracion::get_instance();
+		$model_configuracion->load_list(array('keyword_largo_minimo', 'keyword_ocurrencias_minima', 'keyword_palabras_comunes'));
 
 		// Cargamos los datos iniciales.
 		$vista->assign('largo_minimo', (int) $model_configuracion->get('keyword_largo_minimo', 3));
@@ -982,7 +985,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion.seo'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1135,7 +1138,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion.bd'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1294,7 +1297,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('configuracion.cache'));
 
 		// Asignamos la vista a la plantilla base.
