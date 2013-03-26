@@ -186,11 +186,11 @@ class Base_Controller_Home extends Controller {
 		$paginador = new Paginator($model_post->cantidad(Model_Post::ESTADO_ACTIVO, $categoria_id, FALSE), $cantidad_por_pagina);
 		if ($categoria !== NULL)
 		{
-			$portada->assign('paginacion', $paginador->get_view($pagina, '/post/categoria/'.$categoria.'/%d'));
+			$portada->assign('paginacion', $paginador->get_view($pagina, SITE_URL.'/post/categoria/'.$categoria.'/%d'));
 		}
 		else
 		{
-			$portada->assign('paginacion', $paginador->get_view($pagina, '/post/%d/'));
+			$portada->assign('paginacion', $paginador->get_view($pagina, SITE_URL.'/post/%d/'));
 		}
 		unset($paginador);
 
@@ -302,6 +302,124 @@ class Base_Controller_Home extends Controller {
 	}
 
 	/**
+	 * Mostramos el listado de últimos posts. ES UNA PETICION AJAX.
+	 * @param int $pagina Número de página para lo últimos posts.
+	 * @param string $categoria Categoría de los posts. Si no se especifica se toman todas.
+	 */
+	public function action_ultimos_posts($categoria, $pagina)
+	{
+		// Cargamos la portada.
+		$portada = View::factory('home/ultimos_posts_ajax');
+
+		// Verifico categoría.
+		if ($categoria !== NULL && $categoria !== 'todas')
+		{
+			// Verifico formato.
+			if ( ! preg_match('/[a-z0-9_]+/i', $categoria))
+			{
+				add_flash_message(FLASH_ERROR, __('La categoría no es correcta.', FALSE));
+				Request::redirect('/post/'.$pagina);
+			}
+
+			// Cargo la categoría.
+			$model_categoria = new Model_Categoria;
+
+			// Verifico sea válida.
+			if ( ! $model_categoria->existe_seo($categoria))
+			{
+				add_flash_message(FLASH_ERROR, __('La categoría no es correcta.', FALSE));
+				Request::redirect('/post/'.$pagina);
+			}
+			else
+			{
+				// Cargo la categoría.
+				$model_categoria->load_by_seo($categoria);
+			}
+		}
+
+		// Asigno id de la categoría.
+		$categoria_id = isset($model_categoria) ? $model_categoria->id : NULL;
+
+		// Cargamos datos de posts.
+		$model_post = new Model_Post;
+
+		// Cantidad posts y comentarios en posts.
+		$portada->assign('cantidad_posts', $model_post->cantidad(Model_Post::ESTADO_ACTIVO));
+
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
+
+		// Formato de la página.
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
+		if ($pagina == 1)
+		{
+			// Cargo fijos.
+			$post_sticky = $model_post->sticky(TRUE, $categoria_id);
+
+			// Extendemos la información de los posts.
+			foreach ($post_sticky as $k => $v)
+			{
+				$a = $v->as_array();
+				$a['usuario'] = $v->usuario()->as_array();
+				$a['puntos'] = $v->puntos();
+				$a['comentarios'] = $v->cantidad_comentarios(Model_Post_Comentario::ESTADO_VISIBLE);
+				$a['categoria'] = $v->categoria()->as_array();
+
+				$post_sticky[$k] = $a;
+			}
+
+			// Asigno y limpio.
+			$portada->assign('sticky', $post_sticky);
+			unset($post_sticky);
+		}
+		else
+		{
+			$portada->assign('sticky', array());
+		}
+
+		// Últimos posts
+		$post_list = $model_post->obtener_ultimos($pagina, $cantidad_por_pagina, $categoria_id);
+
+		// Verifico valides de la pagina.
+		if (count($post_list) == 0 && $pagina != 1)
+		{
+			Request::http_response_code(404);
+			die();
+		}
+
+		// Paginación.
+		$paginador = new Paginator($model_post->cantidad(Model_Post::ESTADO_ACTIVO, $categoria_id, FALSE), $cantidad_por_pagina);
+		if ($categoria !== NULL)
+		{
+			$portada->assign('paginacion', $paginador->get_view($pagina, SITE_URL.'/post/categoria/'.$categoria.'/%d'));
+		}
+		else
+		{
+			$portada->assign('paginacion', $paginador->get_view($pagina, SITE_URL.'/post/%d/'));
+		}
+		unset($paginador);
+
+		// Extendemos la información de los posts.
+		foreach ($post_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['usuario'] = $v->usuario()->as_array();
+			$a['puntos'] = $v->puntos();
+			$a['comentarios'] = $v->cantidad_comentarios(Model_Post_Comentario::ESTADO_VISIBLE);
+			$a['categoria'] = $v->categoria()->as_array();
+
+			$post_list[$k] = $a;
+		}
+
+		$portada->assign('ultimos_posts', $post_list);
+		unset($post_list);
+
+		// Muestro salida.
+		$portada->show();
+	}
+
+	/**
 	 * Listado de usuarios del sitio.
 	 * @param int $pagina Número de página a mostrar.
 	 */
@@ -345,7 +463,7 @@ class Base_Controller_Home extends Controller {
 
 		// Paginación.
 		$paginador = new Paginator($model_usuario->cantidad(), $cantidad_por_pagina);
-		$portada->assign('paginacion', $paginador->get_view($pagina, '/home/usuarios/%d/'));
+		$portada->assign('paginacion', $paginador->get_view($pagina, SITE_URL.'/home/usuarios/%d/'));
 		unset($paginador);
 
 		$portada->assign('usuarios', $listado);

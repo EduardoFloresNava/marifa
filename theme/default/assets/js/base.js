@@ -564,15 +564,4 @@ $('a[data-dismiss="alert"]').click(function (e) {
             location.href = window.site_url+'/foto/';
         }
     });
-
-    $('#post-menu-categoria').change(function () {
-        if ($(this).val() != '')
-        {
-            location.href = window.site_url+'/post/categoria/'+$(this).val();
-        }
-        else
-        {
-            location.href = window.site_url+'/post/';
-        }
-    });
 } (jQuery));
