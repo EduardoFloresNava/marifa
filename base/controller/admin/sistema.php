@@ -81,8 +81,156 @@ class Base_Controller_Admin_Sistema extends Controller {
 			$vista->assign('sistema', FALSE);
 			$vista->assign('sistema_last_check', NULL);
 		}
+		unset($actualizaciones_sistema, $actualizaciones_last_check);
 
-		// TODO: Resumen de temas, plugins y widget's (todas las actualizaciones).
+		// Obtengo noticias.
+		$noticias_sistema = unserialize(Utils::configuracion()->get('noticias_sistema_api', 'a:0:{}'));
+		$noticias_last_check = Utils::configuracion()->get('noticias_sistema_api_last_check', NULL);
+
+		// Verifico si hay noticias.
+		if (is_array($noticias_sistema))
+		{
+			// Proceso las noticias del sistema.
+			$vista->assign('noticias', $noticias_sistema);
+			$vista->assign('noticias_last_check', Fechahora::createFromTimestamp($noticias_last_check));
+		}
+		else
+		{
+			$vista->assign('noticias', FALSE);
+			$vista->assign('noticias_last_check', NULL);
+		}
+		unset($noticias_sistema, $noticias_last_check);
+
+		// Obtengo token y su estado.
+		$vista->assign('token_api', Utils::configuracion()->get('api_token', NULL));
+		$vista->assign('token_status', Utils::configuracion()->get('api_token_status', NULL));
+
+		// Seteamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.informacion'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Realizamos el registro del sitio en el servidor para poder usar el API.
+	 */
+	public function action_registrar_sitio_api()
+	{
+		// Cargo objeto del API.
+		$api = new Api;
+
+		// Verifico si tengo token.
+		if ($api->get_token() !== NULL)
+		{
+			try {
+				// Verifico estado.
+				Utils::configuracion()->api_token_status = $api->verificar_token();
+			}
+			catch (Api_Exception $e)
+			{
+				if ($e->getCode() === 331)
+				{
+					add_flash_message(FLASH_ERROR, __('Su token ha expirado.', FALSE));
+					unset(Utils::configuracion()->api_token);
+					unset(Utils::configuracion()->api_token_status);
+					Request::redirect('/admin/sistema');
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, sprintf(__('ERROR VERIFICANDO EL TOKEN: %s', FALSE), $e->getMessage()));
+				}
+			}
+		}
+		else
+		{
+			// Pido un token.
+			try {
+				$api->registar_sitio();
+				add_flash_message(FLASH_SUCCESS, __('Se ha realiza el registro del sitio correctamente.', FALSE));
+			}
+			catch (Exception $e)
+			{
+				Log::warning(sprintf(__('Error registrando sitio: #%s: %s', FALSE), $e->getCode(), $e->getMessage()));
+				add_flash_message(FLASH_ERROR, sprintf(__('Error registrando sitio: #%s: %s', FALSE), $e->getCode(), $e->getMessage()));
+			}
+		}
+
+		Request::redirect('/admin/sistema/');
+	}
+
+	public function action_obtener_nuevas_noticias()
+	{
+		// Cargo objeto del API.
+		$api = new Api;
+
+		// Verifico si tengo token.
+		if ($api->get_token() === NULL)
+		{
+			// No tengo token.
+			add_flash_message(FLASH_ERROR, __('No puede obtener las noticias desde el API sin un token válido.', FALSE));
+		}
+
+		// Trato de obtener las noticias.
+		try {
+			Utils::configuracion()->noticias_sistema_api = serialize($api->noticia()->noticias(10));
+			Utils::configuracion()->noticias_sistema_api_last_check = time();
+			add_flash_message(FLASH_SUCCESS, __('Noticias obtenidas correctamente', FALSE));
+		}
+		catch (Api_Exception $e)
+		{
+			add_flash_message(FLASH_ERROR, sprintf(__('Error obteniendo noticias: %s', FALSE), $e->getMessage()));
+		}
+		Request::redirect('/admin/sistema');
+	}
+
+	/**
+	 * Visualizamos una noticia.
+	 * @param int $id ID de la noticia a ver.
+	 */
+	public function action_ver_noticia($id)
+	{
+		$api = new Api;
+
+		// Verifico el token.
+		if ($api->get_token() === NULL)
+		{
+			add_flash_message(FLASH_ERROR, __('No está configurado el acceso al API.', FALSE));
+			Request::redirect('/admin/sistema/');
+		}
+
+		// Busco la noticia.
+		try {
+			$noticia = (array) $api->noticia()->detalle($id);
+		}
+		catch (Api_Exception $e)
+		{
+			if ($e->getCode() == 332)
+			{
+				add_flash_message(FLASH_ERROR, __('La noticia que quiere ver no es válida.', FALSE));
+				Request::redirect('/admin/sistema/');
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, sprintf(__('ERROR #%s: %s', FALSE), $e->getCode(), $e->getMessage()));
+				Request::redirect('/admin/sistema/');
+			}
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/sistema/ver_noticia');
+
+		// Transformo fecha en objeto.
+		$noticia['fecha'] = new Fechahora($noticia['fecha']);
+
+		// Seteo datos de la noticia.
+		$vista->assign('noticia', $noticia);
 
 		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
@@ -145,7 +293,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$pm->regenerar_lista();
 		$plugins = $pm->load();
 
-		foreach ($plugins as $k => $v)
+		foreach (array_keys($plugins) as $k)
 		{
 			$plugins[$k] = (array) $pm->get($k)->info();
 		}
@@ -398,7 +546,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 								if (class_exists('Install'))
 								{
 									// Cargamos el instalador.
-									$install = new Install($tmp_dir, $update);
+									$install = new Install($tmp_dir);
 								}
 							}
 
@@ -455,7 +603,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($image_min_res);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.plugins'));
 
 		// Asignamos la vista a la plantilla base.
@@ -503,7 +651,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($image_min_res);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.temas'));
 
 		// Asignamos la vista a la plantilla base.
@@ -807,7 +955,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($image_min_res);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.temas'));
 
 		// Asignamos la vista a la plantilla base.
@@ -886,7 +1034,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($image_min_res);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.optimizar'));
 
 		// Asignamos la vista a la plantilla base.
@@ -898,50 +1046,47 @@ class Base_Controller_Admin_Sistema extends Controller {
 	 */
 	public function action_verificar_actualizaciones()
 	{
-		try {
-			// Realizo petición.
-			$response = $this->do_update_request('http://network.marifa.org/api/update/updates/v'.VERSION);
+		$api = new Api;
 
-			// Verifico sea arreglo.
-			if (is_array($response))
-			{
-				// Proceso los elementos.
-				$rst = array();
-				foreach ($response as $v)
-				{
-					$rst[$v->to] = get_object_vars($v->url);
-				}
-
-				// Guardo en cache.
-				Utils::configuracion()->update_sistema_actualizaciones = serialize($rst);
-				Utils::configuracion()->update_sistema_last_check = time();
-
-				// Vuelvo.
-				Request::redirect('/admin/sistema/');
-			}
-			else
-			{
-				// Envío a un log.
-				Log::info('Error obteniendo actualizaciones: respuesta inesperada del servidor.');
-
-				// Informo.
-				add_flash_message(FLASH_ERROR, __('Error obteniendo actualizaciones:  respuesta inesperada del servidor.', FALSE));
-
-				// Vuelvo a la portada.
-				Request::redirect('/admin/sistema/');
-			}
-		}
-		catch (HttpResponseException $e)
+		// Verifico el token.
+		if ($api->get_token() === NULL)
 		{
-			// Envío a un log.
-			Log::info('Error obteniendo actualizaciones: '.$e->getMessage());
-
-			// Informo.
-			add_flash_message(FLASH_ERROR, sprintf(__('Error obteniendo actualizaciones: %s', FALSE), $e->getMessage()));
-
-			// Vuelvo a la portada.
+			add_flash_message(FLASH_ERROR, __('No está configurado el acceso al API.', FALSE));
 			Request::redirect('/admin/sistema/');
 		}
+
+		// Busco las actualizaciones.
+		try {
+			$versiones = (array) $api->actualizacion()->versiones('v'.VERSION);
+		}
+		catch (Api_Exception $e)
+		{
+			add_flash_message(FLASH_ERROR, __('ERROR #'.$e->getCode().': '.$e->getMessage(), FALSE));
+			Request::redirect('/admin/sistema/');
+		}
+
+		// Proceso el listado.
+		$rst = array();
+
+		foreach ($versiones as $version)
+		{
+			$aux = array('de' => $version->de, 'a' => $version->a, 'fecha' => strtotime($version->fecha), 'prioridad' => $version->prioridad, 'compresiones' => array());
+
+			foreach ($version->compresiones as $c)
+			{
+				$aux['compresiones'][$c->tipo] = array('md5' => $c->md5, 'size' => $c->size);
+			}
+
+			$rst[$version->a] = $aux;
+		}
+
+		// Guardo en cache.
+		Utils::configuracion()->update_sistema_actualizaciones = serialize($rst);
+		Utils::configuracion()->update_sistema_last_check = time();
+
+		// Vuelvo.
+		add_flash_message(FLASH_SUCCESS, __('Se ha obtenido la lista de actualizaciones correctamente', FALSE));
+		Request::redirect('/admin/sistema/');
 	}
 
 	/**
@@ -1003,6 +1148,14 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Verifico existencia archivo.
 		if (count(glob(CACHE_PATH.DS.'updates'.DS.$version.'.{'.implode(',', array_map('Update_Utils::compresion2extension', Update_Compresion::get_list())).'}', GLOB_BRACE)) <= 0)
 		{
+			$api = new Api;
+
+			if ($api->get_token() === NULL)
+			{
+				add_flash_message(FLASH_ERROR, __('No está configurado el acceso al API.', FALSE));
+				Request::redirect('/admin/sistema/');
+			}
+
 			// Busco URL's de la versión.
 			$upd_list = arr_get(unserialize(Utils::configuracion()->get('update_sistema_actualizaciones', 'a:0:{}')), $version, NULL);
 
@@ -1014,22 +1167,47 @@ class Base_Controller_Admin_Sistema extends Controller {
 			}
 
 			// Obtengo compresiones disponibles.
-			$remotas = array_map('Update_Utils::extension2compresion', array_keys($upd_list));
+			$remotas = array_map('Update_Utils::extension2compresion', array_keys($upd_list['compresiones']));
 			$locales = Update_Compresion::get_list();
 
 			// Obtengo la compresión disponible.
 			$posibles = array_intersect($remotas, $locales);
-			$descargar = $upd_list[Update_Utils::compresion2extension($posibles[0])];
+
+			$descargar = Update_Utils::compresion2extension($posibles[0]);
 			unset($remotas, $locales);
 
 			// Obtengo el nombre del archivo temporal.
 			$tmp_file = sys_get_temp_dir().DS.uniqid();
 
 			// Trato de descargar.
-			Utils::download_file($descargar, $tmp_file);
+			try {
+				$api->actualizacion()->download('v'.VERSION, $version, $descargar, $tmp_file);
+			}
+			catch (Exception $e)
+			{
+				@unlink($tmp_file);
+				add_flash_message(FLASH_ERROR, sprintf(__('Error en la descarga: [%s] %s', FALSE), $e->getCode(), $e->getMessage()));
+				Request::redirect('/admin/sistema/');
+			}
+
+			// Verifico tamaño.
+			if (filesize($tmp_file) !== $upd_list['compresiones'][$descargar]['size'])
+			{
+				@unlink($tmp_file);
+				add_flash_message(FLASH_ERROR, __('Error en la descarga: No coincide el tamaño con el esperado. Reintente y si el error persiste contacte al soporte.', FALSE));
+				Request::redirect('/admin/sistema/');
+			}
+
+			// Verifico MD5.
+			if (md5_file($tmp_file) !== $upd_list['compresiones'][$descargar]['md5'])
+			{
+				@unlink($tmp_file);
+				add_flash_message(FLASH_ERROR, __('Error en la descarga: No coincide la suma de verificación. Reintente y si el error persiste contacte al soporte.', FALSE));
+				Request::redirect('/admin/sistema/');
+			}
 
 			// Guardo el archivo.
-			copy($tmp_file, CACHE_PATH.DS.'updates'.DS.$version.'.'.Update_Utils::compresion2extension($posibles[0]));
+			copy($tmp_file, CACHE_PATH.DS.'updates'.DS.$version.'.'.$descargar);
 			unlink($tmp_file);
 
 			// Informamos resultado.
@@ -1123,27 +1301,27 @@ class Base_Controller_Admin_Sistema extends Controller {
 					switch ($query[0])
 					{
 						case 'INSERT':
-							list(, $c) = $db->insert($query[1], isset($query[2]) ? $query[2] : NULL);
+							list(, $c) = Database::get_instance()->insert($query[1], isset($query[2]) ? $query[2] : NULL);
 							if ($c <= 0)
 							{
 								throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
 							}
 							break;
 						case 'DELETE':
-							if ($db->delete($query[1], isset($query[2]) ? $query[2] : NULL) === FALSE)
+							if (Database::get_instance()->delete($query[1], isset($query[2]) ? $query[2] : NULL) === FALSE)
 							{
 								throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
 							}
 							break;
 						case 'UPDATE':
 						case 'ALTER':
-							if ($db->update($query[1], isset($query[2]) ? $query[2] : NULL) === FALSE)
+							if (Database::get_instance()->update($query[1], isset($query[2]) ? $query[2] : NULL) === FALSE)
 							{
 								throw new Exception("El resultado de la consulta: '{$query[1]}' es incorrecto.");
 							}
 							break;
 						case 'QUERY':
-							if ($db->query($query[1], isset($query[2]) ? $query[2] : NULL) === FALSE)
+							if (Database::get_instance()->query($query[1], isset($query[2]) ? $query[2] : NULL) === FALSE)
 							{
 								throw new Exception("El resultado de la consulta: {$query[1]}' es incorrecto.");
 							}
@@ -1245,7 +1423,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($image_min_res);
+		unset($vista);
 		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('sistema.traducciones'));
 
 		// Asignamos la vista a la plantilla base.
@@ -1262,7 +1440,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		if ( ! preg_match('/^[a-z]{3}$/', $traduccion))
 		{
 			// Informo y vuelvo.
-			add_flash_message(FLASH_ERROR, 'La traducción que deseas activar es incorrecta.');
+			add_flash_message(FLASH_ERROR, __('La traducción que deseas activar es incorrecta.', FALSE));
 			Request::redirect('/admin/sistema/traducciones/');
 		}
 
@@ -1273,7 +1451,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		if ( ! in_array($traduccion, $traducciones))
 		{
 			// Informo y vuelvo.
-			add_flash_message(FLASH_ERROR, 'La traducción que deseas activar es incorrecta.');
+			add_flash_message(FLASH_ERROR, __('La traducción que deseas activar es incorrecta.', FALSE));
 			Request::redirect('/admin/sistema/traducciones/');
 		}
 
@@ -1292,7 +1470,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		}
 
 		// Informo y vuelvo.
-		add_flash_message(FLASH_SUCCESS, 'Se ha activado la traducción correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Se ha activado la traducción correctamente.', FALSE));
 		Request::redirect('/admin/sistema/traducciones/');
 	}
 
@@ -1306,7 +1484,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		if ( ! preg_match('/^[a-z]{3}$/', $traduccion))
 		{
 			// Informo y vuelvo.
-			add_flash_message(FLASH_ERROR, 'La traducción que deseas desactivar es incorrecta.');
+			add_flash_message(FLASH_ERROR, __('La traducción que deseas desactivar es incorrecta.', FALSE));
 			Request::redirect('/admin/sistema/traducciones/');
 		}
 
@@ -1320,7 +1498,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		if ($traduccion !== $l_activo)
 		{
 			// Informo y vuelvo.
-			add_flash_message(FLASH_ERROR, 'La traducción que deseas desactivar no se encuentra activa.');
+			add_flash_message(FLASH_ERROR, __('La traducción que deseas desactivar no se encuentra activa.', FALSE));
 			Request::redirect('/admin/sistema/traducciones/');
 		}
 		else
@@ -1330,7 +1508,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			$config->save();
 
 			// Informo y vuelvo.
-			add_flash_message(FLASH_SUCCESS, 'Se ha desactivado la traducción correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('Se ha desactivado la traducción correctamente.', FALSE));
 			Request::redirect('/admin/sistema/traducciones/');
 		}
 	}
