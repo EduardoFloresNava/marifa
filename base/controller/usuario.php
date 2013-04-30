@@ -227,7 +227,7 @@ class Base_Controller_Usuario extends Controller {
 							));
 							return;
 						}
-
+						
 						$view_usuario->assign('error', sprintf(__('%s ha bloqueado esta cuenta el %s debido a: <br /> %s', FALSE), $baneo->moderador()->nick, $baneo->fecha->format('d/m/Y H:i:s'), Decoda::procesar($baneo->razon)));
 				}
 
