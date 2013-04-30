@@ -51,7 +51,7 @@
 				$('#login-modal-form').modal();
 
 				// Tooltips.
-				$('#login-modal-form [title]').tooltip();
+				$('#login-modal-form [title]').tooltip({trigger: 'focus'});
 
 				// Agrego evento.
 				$('#login-modal-form .modal-footer .btn[type="submit"]').click(do_modal_login);
@@ -250,7 +250,7 @@
 				$('#register-modal-form').modal();
 
 				// Tooltips.
-				$('#register-modal-form [title]').tooltip();
+				$('#register-modal-form [title]').tooltip({trigger: 'focus'});
 
 				// Eventos de verificación.
 				$('#register-modal-form-nick').focusout(function(e) { registro.verificar_nick_modal(); });
