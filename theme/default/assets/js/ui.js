@@ -1227,4 +1227,99 @@
 
 	// Iniciamos las denuncias.
 	denuncia.iniciar();
+
 } (jQuery));
+
+// Carga de posts de la portada.
+var portada = (function ($) {
+    var externo = {};
+
+    // Cargamos por AJAX los posts que se especifiquen.
+    function cargar_posts(categoria, pagina) {
+        console.log(categoria, pagina);
+        if (categoria !== undefined)
+        {
+            if (pagina !== undefined)
+            {
+                url = window.site_url+'/home/ultimos_posts/'+categoria+'/'+pagina;
+            }
+            else
+            {
+                url = window.site_url+'/home/ultimos_posts/'+categoria;
+            }
+        }
+        else
+        {
+            if (pagina !== undefined)
+            {
+                url = window.site_url+'/home/ultimos_posts//'+pagina;
+            }
+            else
+            {
+                url = window.site_url+'/home/ultimos_posts/';
+            }
+        }
+
+        marcar_cargando();
+
+        $.ajax({
+            url: url,
+            success: function (data) {
+                insertar_posts(data);
+            },
+            dataType: 'html',
+            type: 'GET'
+        });
+    }
+
+    // Mostramos que se encuentra en carga la lista de posts.
+    function marcar_cargando() {
+        $('.ultimo-post-list').html('<div class="element-loader"></div>');
+        $('.ultimo-post-list + .pagination').remove();
+    }
+
+    // Insertamos los posts donde corresponde.
+    function insertar_posts(posts) {
+        $('.ultimo-post-list').parent().html(posts);
+        $('.ultimo-post-list + .pagination a').click(cargar_paginacion);
+    }
+
+    // Evento de carga para paginación.
+    function cargar_paginacion(e)
+    {
+        // Evito evento por defecto (cargar la página).
+        e.preventDefault();
+
+        // Obtengo número de página.
+        var pagina = $(this).attr('href').replace(/\/+$/, '');
+        pagina = pagina.substr(pagina.lastIndexOf('/') + 1);
+        if ($('#post-menu-categoria').val() !== '')
+        {
+            cargar_posts($('#post-menu-categoria').val(), pagina);
+        }
+        else
+        {
+            cargar_posts('todas', pagina);
+        }
+    }
+
+    externo.iniciar = function () {
+        // Carga de con cambio de categoria.
+        $('#post-menu-categoria').change(function(e) {
+            if ($(this).val() !== '')
+            {
+                cargar_posts($(this).val());
+            }
+            else
+            {
+                cargar_posts();
+            }
+        });
+
+        // Cambio con barra de navegación.
+        $('.ultimo-post-list + .pagination a').click(cargar_paginacion);
+    };
+
+    return externo;
+} (jQuery));
+portada.iniciar();
