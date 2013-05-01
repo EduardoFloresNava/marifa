@@ -67,94 +67,62 @@ class Base_Controller_Pages extends Controller {
 		$this->template->assign('master_bar', parent::base_menu('pagina_'.$model_pagina->id));
 
 		// Compilamos la vista.
-		$this->template->assign('contenido', $model_pagina->contenido);
+		$this->template->assign('contenido', $this->procesar_propiedades_cuerpo($model_pagina->contenido));
 
 		// Seteamos título.
-		$this->template->assign('title', $model_pagina->titulo);
+		$this->template->assign('title', $this->procesar_propiedades_titulo($model_pagina->titulo));
 	}
 
 	/**
-	 * Protocolo.
+	 * Procesamos el cuerpo en busca de propiedades a modificar para el contenido de la página
+	 * Podemos reemplazar variables predefinidas.
+	 * @param string $contenido
 	 */
-	public function action_protocolo()
+	protected function procesar_propiedades_cuerpo($contenido)
 	{
-		// Menú principal.
-		$this->template->assign('master_bar', parent::base_menu('inicio'));
+		// Armo listado de variables a reemplazar.
+		$variables = array(
+			'{{MARIFA_NOMBRE}}' => Utils::configuracion()->get('nombre', __('Marifa', FALSE)),
+			'{{MARIFA_DESCRIPCION}}' => Utils::configuracion()->get('descripcion', __('Tu comunidad de forma simple', FALSE)),
+			'{{HOSTNAME}}' => parse_url(SITE_URL, PHP_URL_HOST),
+			'{{SITE_URL}}' => SITE_URL,
+			'{{THEME_URL}}' => THEME_URL
+		);
 
-		// Asignamos la vista.
-		$view = View::factory('/pages/protocolo');
+		// Emito evento para modificar variables del reemplazo.
+		Event::trigger('Paginas.propiedades.cuerpo.variables', $variables);
 
-		// Nombre del sitio.
-		$model_config = new Model_Configuracion;
-		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
+		// Reemplazo contenido estático.
+		$contenido = str_replace(array_keys($variables), array_values($variables), $contenido);
 
-		// Compilamos la vista.
-		$this->template->assign('contenido', $view->parse());
+		// Emito evento para reemplazo personalizados.
+		Event::trigger('Paginas.propiedades.cuerpo.custom', $contenido);
 
-		// Seteamos título.
-		$this->template->assign('title', __('Protocolo', FALSE));
+		return $contenido;
 	}
 
 	/**
-	 * Términos y condiciones.
+	 * Procesamos el cuerpo en busca de propiedades a modificar para el título de la página
+	 * Podemos reemplazar variables predefinidas.
+	 * @param string $contenido
 	 */
-	public function action_tyc()
+	protected function procesar_propiedades_titulo($contenido)
 	{
-		// Menu principal.
-		$this->template->assign('master_bar', parent::base_menu('inicio'));
+		// Armo listado de variables a reemplazar.
+		$variables = array(
+			'{{MARIFA_NOMBRE}}' => Utils::configuracion()->get('nombre', __('Marifa', FALSE)),
+			'{{MARIFA_DESCRIPCION}}' => Utils::configuracion()->get('descripcion', __('Tu comunidad de forma simple', FALSE))
+		);
 
-		// Asignamos la vista.
-		$view = View::factory('/pages/tyc');
+		// Emito evento para modificar variables del reemplazo.
+		Event::trigger('Paginas.propiedades.titulo.variables', $variables);
 
-		// Nombre del sitio.
-		$model_config = new Model_Configuracion;
-		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
+		// Reemplazo contenido estático.
+		$contenido = str_replace(array_keys($variables), array_values($variables), $contenido);
 
-		$this->template->assign('contenido', $view->parse());
+		// Emito evento para reemplazo personalizados.
+		Event::trigger('Paginas.propiedades.titulo.custom', $contenido);
 
-		// Seteamos título.
-		$this->template->assign('title', __('Términos y condiciones', FALSE));
-	}
-
-	/**
-	 * Privacidad de datos.
-	 */
-	public function action_privacidad()
-	{
-		// Menú principal.
-		$this->template->assign('master_bar', parent::base_menu('inicio'));
-
-		// Asignamos la vista.
-		$view = View::factory('/pages/privacidad');
-
-		// Nombre del sitio.
-		$model_config = new Model_Configuracion;
-		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
-
-		$this->template->assign('contenido', $view->parse());
-
-		// Seteamos título.
-		$this->template->assign('title', __('Privacidad de datos', FALSE));
-	}
-
-	/**
-	 * DMCA
-	 */
-	public function action_dmca()
-	{
-		// Menú principal.
-		$this->template->assign('master_bar', parent::base_menu('inicio'));
-
-		// Asignamos la vista.
-		$view = View::factory('/pages/dmca');
-
-		// Nombre del sitio.
-		$model_config = new Model_Configuracion;
-		$view->assign('nombre', $model_config->get('nombre', 'Marifa'));
-
-		$this->template->assign('contenido', $view->parse());
-
-		// Seteamos título.
-		$this->template->assign('title', __('Report Abuse - DMCA', FALSE));
+		return $contenido;
 	}
 }
