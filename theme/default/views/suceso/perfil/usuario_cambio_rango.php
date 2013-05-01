@@ -9,7 +9,7 @@
 			{if="$suceso.usuario.id !== $actual.id"}
 			<a href="{#SITE_URL#}/@{$suceso.moderador.nick}">{$suceso.moderador.nick}</a>
 			{else}
-			<a href="{#SITE_URL#}/@{$suceso.usuario.nick}">{$suceso.seguidor.nick}</a>
+			<a href="{#SITE_URL#}/@{$suceso.usuario.nick}">{$suceso.usuario.nick}</a>
 			{/if}
 			<span class="fecha"><i class="icon icon-time"></i> {function="$fecha->fuzzy()"}</span>
 		</div>

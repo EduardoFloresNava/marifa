@@ -31,6 +31,7 @@ Marifa 0.3 []
  - FIX: Mejorado el cálculo de cantidad de caracteres en captchas.
  - FIX: Solucionado problema de plurales de fechas incrementales (fuzzy time).
  - FIX: Archivo de vistas faltante en tema por defecto.
+ - FIX: Error en visualización de perfil de un usuario con suceso usuario_cambio_rango
 
 Marifa 0.2.1 [10/02/2013]
  - FIX: Problema en suceso 'shout_compartir'.
