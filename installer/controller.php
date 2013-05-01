@@ -500,6 +500,24 @@ class Installer_Controller {
 			// Cargo la base de datos.
 			$db = Database::get_instance();
 
+			// Ejecuto actualizaciones personalizadas.
+			$aux = scandir(APP_BASE.DS.'installer'.DS.'update_raw'.DS);
+			foreach ($aux as $u)
+			{
+				// Verifico sea un archivo válido.
+				if (substr($u, (-1) * strlen(FILE_EXT)) !== FILE_EXT)
+				{
+					continue;
+				}
+
+				// Verifico si debe ser importada.
+				if (version_compare($version_actual, substr($u, 0, (-1) * (strlen(FILE_EXT) + 1))) < 0)
+				{
+					// Ejecuto.
+					require(APP_BASE.DS.'installer'.DS.'update_raw'.DS.$u);
+				}
+			}
+
 			// Error global. Permite saber si todo fue correcto para continuar.
 			$error_global = FALSE;
 

@@ -61,7 +61,7 @@ $consultas[] = array(
 				`estado` int NOT NULL,
 				PRIMARY KEY (`id`),
 				UNIQUE KEY `clave` (`valor`, `tipo`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -85,7 +85,7 @@ $consultas[] = array(
 				`contenido` varchar(300) NOT NULL,
 				`estado` int NOT NULL,
 				PRIMARY KEY (`id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;', NULL, array('error_no' => 1050)
 		)
 	)
 );
@@ -111,8 +111,99 @@ $consultas[] = array(
 				`creacion` datetime NOT NULL,
 				`modificacion` datetime NULL,
 				PRIMARY KEY (`id`)
-			) ENGINE = MYISAM ;', NULL, array('error_no' => 1050)
+			) ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ;', NULL, array('error_no' => 1050)
 		)
+	)
+);
+
+// Uniformamos charset.
+$consultas[] = array(
+	'Cambio charset',
+	array(
+		array('ALTER', 'ALTER TABLE `categoria` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `categoria` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `configuracion` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `configuracion` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `foto` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `foto` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `foto_comentario` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `foto_comentario` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `foto_denuncia` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `foto_denuncia` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `foto_favorito` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `foto_favorito` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `foto_voto` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `foto_voto` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `mensaje` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `mensaje` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `noticia` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `noticia` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_comentario` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_comentario` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_comentario_voto` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_comentario_voto` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_compartido` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_compartido` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_denuncia` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_denuncia` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_favorito` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_favorito` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_moderado` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_moderado` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_punto` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_punto` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_seguidor` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_seguidor` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_tag` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `post_tag` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `session` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `session` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `suceso` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `suceso` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_aviso` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_aviso` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_baneo` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_baneo` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_bloqueo` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_bloqueo` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_denuncia` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_denuncia` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_nick` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_nick` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_perfil` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_perfil` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_rango` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_rango` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_rango_permiso` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_rango_permiso` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_recuperacion` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_recuperacion` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_seguidor` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_seguidor` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_suspension` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_suspension` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_visita` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_visita` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `medalla` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `medalla` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_medalla` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `usuario_medalla` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout_comentario` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout_comentario` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout_favorito` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout_favorito` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout_tag` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout_tag` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout_usuario` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout_usuario` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout_voto` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;'),
+		array('ALTER', 'ALTER TABLE `shout_voto` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;')
 	)
 );
 
