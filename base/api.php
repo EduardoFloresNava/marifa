@@ -35,7 +35,7 @@ class Base_Api {
 	 * URL del servidor del API.
 	 * @var string
 	 */
-	protected static $server = 'http://0.0.0.0:8080/';
+	protected static $server = 'http://network.marifa.org/api/v1/';
 
 	/**
 	 * Token de acceso al API.
