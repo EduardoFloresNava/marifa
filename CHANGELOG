@@ -25,13 +25,15 @@ Marifa 0.3 []
  - FEATURE: Boletines de noticias para enviar noticias a los usuarios por correo electrónico.
  - FEATURE: Si no se encuentra la vista en un tema personalizado (distinto a default) se carga desde default.
  - FEATURE: Mejora a la interface de los posts.
+ - FEATURE: Agregada la opción de borrar log's vacios.
  - FIX: Ya no es necesaria la cache para el sistema de actualizaciones, se guardan en la BD.
  - FIX: Arregladas las URL's de los captcha's.
  - FIX: Problema de edición de categorías y mejora del SEO de las mismas.
  - FIX: Mejorado el cálculo de cantidad de caracteres en captchas.
  - FIX: Solucionado problema de plurales de fechas incrementales (fuzzy time).
  - FIX: Archivo de vistas faltante en tema por defecto.
- - FIX: Error en visualización de perfil de un usuario con suceso usuario_cambio_rango
+ - FIX: Error en visualización de perfil de un usuario con suceso usuario_cambio_rango.
+ - FIX: Mejorada la descripción SEO de los post's.
 
 Marifa 0.2.1 [10/02/2013]
  - FIX: Problema en suceso 'shout_compartir'.

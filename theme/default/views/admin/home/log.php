@@ -2,8 +2,9 @@
     <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
     <li class="active">Logs</li>
 </ul>
-<div class="header">
-	<h2>Visualizador de Log's</h2>
+<div class="header clearfix">
+	<h2 class="pull-left">Visualizador de Log's</h2>
+	<a href="{#SITE_URL#}/admin/home/borrar_logs_vacios" class="btn btn-warning pull-right" title="Eliminar todos los logs que se encuentran vacios.">Borrar vacios</a>
 </div>
 <div class="btn-group" style="margin-bottom: 10px;">
 	{loop="$file_list"}{if="!isset($actual) || $value != $actual"}

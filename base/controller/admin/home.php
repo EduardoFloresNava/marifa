@@ -328,4 +328,36 @@ class Base_Controller_Admin_Home extends Controller {
 			Request::redirect('/admin/home/logs/');
 		}
 	}
+
+	/**
+	 * Borramos los logs que estén vacios.
+	 */
+	public function action_borrar_logs_vacios()
+	{
+		// Listado de archivos.
+		$file_list = glob(APP_BASE.DS.'log'.DS.'*.{log,log.gz}', GLOB_BRACE);
+		$file_list = array_map(create_function('$str', 'return substr($str, strlen(APP_BASE.DS.\'log\'.DS));'), $file_list);
+
+		// Borro y cuento la cantidad.
+		$c = 0;
+		foreach ($file_list as $f)
+		{
+			if (filesize(APP_BASE.DS.'log'.DS.$f) === 0)
+			{
+				$c++;
+				@unlink(APP_BASE.DS.'log'.DS.$f);
+			}
+		}
+
+		// Informamos y volvemos.
+		if ($c > 0)
+		{
+			add_flash_message(FLASH_SUCCESS, sprintf(__('Se han borrado %s logs vacios del sistema.', FALSE), $c));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('No hay logs vacios para borrar.', FALSE));
+		}
+		Request::redirect('/admin/home/logs/');
+	}
 }
