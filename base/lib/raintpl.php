@@ -757,7 +757,7 @@ class Base_Lib_RainTPL {
 	function translate_replace($html, $tag_left_delimiter, $tag_right_delimiter, $php_left_delimiter = NULL, $php_right_delimiter = NULL, $loop_level = NULL, $echo = NULL)
 	{
 		// const
-		return preg_replace_callback('/(\{\@)([^(\@\})]+)(\@\})/', create_function('$m', "return '{$php_left_delimiter}__(\''.preg_replace('/\'/', '\\\\\'', ".'$m[2]'.").'\'){$php_right_delimiter}';"), $html);
+		return preg_replace_callback('/(\{\@)(.*?)(\@\})/', create_function('$m', "return '{$php_left_delimiter}__(\''.preg_replace('/\'/', '\\\\\'', ".'$m[2]'.").'\', TRUE){$php_right_delimiter}';"), $html);
 	}
 
 	/**

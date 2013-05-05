@@ -34,6 +34,7 @@ Marifa 0.3 []
  - FIX: Archivo de vistas faltante en tema por defecto.
  - FIX: Error en visualización de perfil de un usuario con suceso usuario_cambio_rango.
  - FIX: Mejorada la descripción SEO de los post's.
+ - FIX: Problema de procesamiento de traducciones (si tiene @ no se procesaba).
 
 Marifa 0.2.1 [10/02/2013]
  - FIX: Problema en suceso 'shout_compartir'.
