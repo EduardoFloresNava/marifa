@@ -21,7 +21,7 @@
 		<tr>
 			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
 			<td>{$value.email}</td>
-			<td>{$value.lastactive->fuzzy()}</td>
+			<td>{if="is_object($value.lastactive)"}{$value.lastactive->fuzzy()}{else}{@Nunca@}{/if}</td>
 			<td><span class="label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span></td>
 		</tr>
 		{else}
