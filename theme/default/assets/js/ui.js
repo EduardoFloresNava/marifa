@@ -511,7 +511,6 @@
 
 			if (/^[a-zA-Z0-9]{4,16}$/.test(nick_val))
 			{
-				console.log(nick);
 				nick.after(' <img class="register-ajax-nick" src="'+window.theme_url+'/assets/img/ajax.gif" />');
 
 				// Asigno que valido.
@@ -1236,7 +1235,6 @@ var portada = (function ($) {
 
     // Cargamos por AJAX los posts que se especifiquen.
     function cargar_posts(categoria, pagina) {
-        console.log(categoria, pagina);
         if (categoria !== undefined)
         {
             if (pagina !== undefined)

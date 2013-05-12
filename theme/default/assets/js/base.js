@@ -125,9 +125,6 @@
             $.ajax({
                 url: window.site_url+'notificaciones/sin_desplegar',
                 dataType: 'json',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(textStatus);
-                },
                 success: function (data, textStatus, jqXHR) {
                     // Cargo los elementos.
                     $.each(data, function(index, value) {
@@ -176,9 +173,6 @@
                     type: 'POST',
                     data: {sucesos: sucesos},
                     dataType: 'json',
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(textStatus);
-                    },
                     success: function (data, textStatus, jqXHR) {
                         // Marco elementos como desplegados.
                         $.each(data, function(index, value) {
@@ -538,7 +532,6 @@ $('a[data-dismiss="alert"]').click(function (e) {
             type: 'POST',
             data: {contenido: $('#contenido').val()},
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log(textStatus);
                 $(this).removeAttr('disabled');
             },
             context: $(this),

@@ -129,7 +129,7 @@ class Base_Model_Configuracion {
 
 		if (isset($this->$name))
 		{
-			$this->db->update('UPDATE configuracion SET default = ? WHERE clave = ?', array($value, $name));
+			$this->db->update('UPDATE configuracion SET defecto = ? WHERE clave = ?', array($value, $name));
 		}
 		else
 		{
@@ -173,7 +173,7 @@ class Base_Model_Configuracion {
 
 		if (isset($this->$name))
 		{
-			return $this->db->query('SELECT default FROM configuracion WHERE clave = ?', $name)->get_var();
+			return $this->db->query('SELECT defecto FROM configuracion WHERE clave = ?', $name)->get_var();
 		}
 		else
 		{
@@ -200,7 +200,7 @@ class Base_Model_Configuracion {
 		// Verifico la cantidad.
 		if ($rst->num_rows() <= 0)
 		{
-			throw new UnexpectedValueException('No existe la clave.');
+			throw new UnexpectedValueException('No existe la clave \''.$name.'\'');
 		}
 		else
 		{
