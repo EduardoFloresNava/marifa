@@ -140,7 +140,6 @@
         <script src="{#THEME_URL#}/assets/js/bootstrap-collapse.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-carousel.js"></script>
 		<script src="{#THEME_URL#}/assets/js/bootstrap-typeahead.js"></script>
-		<script src="{#THEME_URL#}/assets/js/jquery.leanModal.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/bbcode.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.masonry.min.js"></script>
