@@ -35,6 +35,7 @@ Marifa 0.3 []
  - FIX: Error en visualización de perfil de un usuario con suceso usuario_cambio_rango.
  - FIX: Mejorada la descripción SEO de los post's.
  - FIX: Problema de procesamiento de traducciones (si tiene @ no se procesaba).
+ - FIX: Listado de usuarios para un rango o medalla cuando hay usuarios que no han iniciado sesión nunca.
 
 Marifa 0.2.1 [10/02/2013]
  - FIX: Problema en suceso 'shout_compartir'.
