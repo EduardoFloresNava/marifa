@@ -98,7 +98,7 @@ class Base_Controller_Admin_Home extends Controller {
 
 			// Configuraciones.
 			$menu->group_set(__('Configuración', FALSE), 'configuracion');
-			$menu->element_set(__('Configuración', FALSE), '/admin/configuracion/', 'configuracion', 'configuracion');
+			$menu->element_set(__('General', FALSE), '/admin/configuracion/', 'configuracion', 'configuracion');
 			$menu->element_set(__('SEO', FALSE), '/admin/configuracion/seo/', 'seo', 'configuracion');
 			$menu->element_set(__('Modo Mantenimiento', FALSE), '/admin/configuracion/mantenimiento/', 'mantenimiento', 'configuracion');
 			$menu->element_set(__('Correo', FALSE), '/admin/configuracion/correo/', 'correo', 'configuracion');
@@ -109,7 +109,7 @@ class Base_Controller_Admin_Home extends Controller {
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
 		{
 			$menu->group_set(__('Contenido', FALSE), 'contenido');
-			$menu->element_set(__('Informe contenido', FALSE), '/admin/contenido/', 'index', 'contenido');
+			$menu->element_set(__('Resumen', FALSE), '/admin/contenido/', 'index', 'contenido');
 			$menu->element_set(__('Posts', FALSE), '/admin/contenido/posts/', 'posts', 'contenido');
 			$menu->element_set(__('Fotos', FALSE), '/admin/contenido/fotos/', 'fotos', 'contenido');
 			$menu->element_set(__('Categorías', FALSE), '/admin/contenido/categorias/', 'categorias', 'contenido');
