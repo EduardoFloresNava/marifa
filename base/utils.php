@@ -261,4 +261,27 @@ class Base_Utils {
 		return TRUE;
 	}
 
+	/**
+	 * Comprimo un archivo con GZIP.
+	 * @param string $src Ruta del archivo a comprimir.
+	 * @param string $dst Ruta donde colocar el archivo comprimido.
+	 */
+	public static function compress_gzip($src, $dst)
+	{
+		// Abro archivo de lectura.
+		$fp = fopen($src, 'r');
+
+		// Abro archivo de escritura.
+		$zp = gzopen($dst, 'w9');
+
+		// Leo y escribo archivo.
+		while ( ! feof($fp))
+		{
+			gzwrite($zp, fread($fp, 512));
+		}
+
+		// Cierro archivos.
+		fclose($fp);
+		gzclose($zp);
+	}
 }

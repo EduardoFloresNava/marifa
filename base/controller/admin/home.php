@@ -300,6 +300,24 @@ class Base_Controller_Admin_Home extends Controller {
 	}
 
 	/**
+	 * Comprimo los log's antiguos.
+	 * Solo funciona si hay gzip disponible.
+	 */
+	public function action_comprimir_logs()
+	{
+		// Verifico si tengo gzip.
+		if ( ! function_exists('gzcompress'))
+		{
+			add_flash_message(FLASH_ERROR, __('No se encuentra disponible el soporte para GZIP. Para poder comprimir log\'s es necesario.', FALSE));
+			Request::redirect('/admin/home/logs');
+		}
+
+		Log::compress_old();
+		add_flash_message(FLASH_ERROR, __('No se encuentra disponible el soporte para GZIP. Para poder comprimir log\'s es necesario.', FALSE));
+		Request::redirect('/admin/home/logs');
+	}
+
+	/**
 	 * Eliminamos un log.
 	 * @param string $file Nombre del archivo de log's a eliminar.
 	 */
