@@ -56,6 +56,11 @@ class Base_Controller_Mantenimiento extends Controller {
 			Request::redirect('/');
 		}
 
+		// Indico que es temporal.
+		header('HTTP/1.1 503 Service Temporarily Unavailable');
+		header('Status: 503 Service Temporarily Unavailable');
+		header('Retry-After: 3600');
+
 		// Obtengo vista a mostrar.
 		if (Usuario::is_login())
 		{

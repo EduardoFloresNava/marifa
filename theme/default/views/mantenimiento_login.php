@@ -75,6 +75,9 @@
                     <div class="alert"><a class="close" data-dismiss="alert">×</a><i class="icon icon-remove-sign"></i> {$flash_error}</div>
                 {/if}
             {/if}
+			<div class="alert alert-info">
+				<strong>¡IMPORTANTE!</strong> El sitio se encuentra en mantenimiento, solo usuarios autorizados pueden acceder al sitio.
+			</div>
 
 			<div class="row">
 				<div class="span12">
