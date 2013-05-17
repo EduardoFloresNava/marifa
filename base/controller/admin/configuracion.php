@@ -770,18 +770,185 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		// Cargamos la vista.
 		$vista = View::factory('admin/configuracion/correo');
 
-		// Verifico si está configurado.
-		if ( ! file_exists(CONFIG_PATH.DS.'email.php'))
-		{
-			$vista->assign('configuracion', NULL);
-		}
-		else
-		{
-			// Envío la configuración.
-			$vista->assign('configuracion', Configuracion::factory(CONFIG_PATH.DS.'email.php')->as_array());
+		// Cargo configuración.
+		$o_config = Configuracion::factory(CONFIG_PATH.DS.'email.php');
 
-			// Mi correo.
-			$vista->assign('email', $correo !== NULL ? urldecode($correo) : Usuario::usuario()->email);
+		// E-Mail del usuario para correo de prueba.
+		$vista->assign('email', $correo !== NULL ? urldecode($correo) : Usuario::usuario()->email);
+
+		// Información por defecto.
+		$vista->assign('from_name', $o_config->get('from.usuario', Utils::configuracion()->get('nombre')));
+		$vista->assign('error_from_name', FALSE);
+		$vista->assign('from_email', $o_config->get('from.email'));
+		$vista->assign('error_from_email', FALSE);
+		$vista->assign('transport', $o_config->get('transport', 'mail'));
+		$vista->assign('error_transport', FALSE);
+		$vista->assign('transports', array('mail' => 'Mail', 'smtp' => 'SMTP', 'sendmail' => 'SendMail'));
+
+		$vista->assign('queue_use', (bool) $o_config->get('queue.use_queue', FALSE));
+		$vista->assign('error_queue_use', FALSE);
+		$vista->assign('queue_limit', (int) $o_config->get('queue.limit', 0));
+		$vista->assign('error_queue_limit', FALSE);
+		$vista->assign('queue_limit_hour', (int) $o_config->get('queue.limit_hour', 0));
+		$vista->assign('error_queue_limit_hour', FALSE);
+		$vista->assign('queue_limit_day', (int) $o_config->get('queue.limit_day', 0));
+		$vista->assign('error_queue_limit_day', FALSE);
+
+		$vista->assign('sendmail_command', $o_config->get('parametros.command', '/usr/sbin/sendmail'));
+		$vista->assign('error_sendmail_command', FALSE);
+
+		$vista->assign('smtp_host', $o_config->get('parametros.host', 'localhost'));
+		$vista->assign('error_smtp_host', FALSE);
+		$vista->assign('smtp_port', (int) $o_config->get('parametros.port', 25));
+		$vista->assign('error_smtp_port', FALSE);
+		$vista->assign('smtp_encryption', $o_config->get('parametros.encryption', ''));
+		$vista->assign('error_smtp_encryption', FALSE);
+		$vista->assign('smtp_username', $o_config->get('parametros.username', ''));
+		$vista->assign('error_smtp_username', FALSE);
+		$vista->assign('smtp_password', $o_config->get('parametros.password', ''));
+		$vista->assign('error_smtp_password', FALSE);
+
+		if (Request::method() === 'POST')
+		{
+			// Cargo los datos
+			$from_name = isset($_POST['from_name']) ? trim($_POST['from_name']) : NULL;
+			$from_email = isset($_POST['from_email']) ? $_POST['from_email'] : NULL;
+			$transport = isset($_POST['transport']) ? $_POST['transport'] : NULL;
+
+			$vista->assign('from_name', $from_name);
+			$vista->assign('from_email', $from_email);
+			$vista->assign('transport', $transport);
+
+			$queue_use = isset($_POST['queue_use']) ? (bool) $_POST['queue_use'] : FALSE;
+			$queue_limit = isset($_POST['queue_limit']) ? (int) $_POST['queue_limit'] : 0;
+			$queue_limit_hour = isset($_POST['queue_limit_hour']) ? (int) $_POST['queue_limit_hour'] : 0;
+			$queue_limit_day = isset($_POST['queue_limit_day']) ? (int) $_POST['queue_limit_day'] : 0;
+
+			$vista->assign('queue_use', $queue_use);
+			$vista->assign('queue_limit', $queue_limit);
+			$vista->assign('queue_limit_hour', $queue_limit_hour);
+			$vista->assign('queue_limit_day', $queue_limit_day);
+
+			if ($transport === 'sendmail')
+			{
+				$sendmail_command = isset($_POST['sendmail_command']) ? trim($_POST['sendmail_command']) : NULL;
+				$vista->assign('sendmail_command', $sendmail_command);
+			}
+			elseif ($transport === 'smtp')
+			{
+				$smtp_host = isset($_POST['smtp_host']) ? $_POST['smtp_host'] : NULL;
+				$smtp_port = isset($_POST['smtp_port']) ? $_POST['smtp_port'] : NULL;
+				$smtp_encryption = isset($_POST['smtp_encryption']) ? $_POST['smtp_encryption'] : NULL;
+				$smtp_username = isset($_POST['smtp_username']) ? $_POST['smtp_username'] : NULL;
+				$smtp_password = isset($_POST['smtp_password']) ? $_POST['smtp_password'] : NULL;
+
+				$vista->assign('smtp_host', $smtp_host);
+				$vista->assign('smtp_port', $smtp_port);
+				$vista->assign('smtp_encryption', $smtp_encryption);
+				$vista->assign('smtp_username', $smtp_username);
+				$vista->assign('smtp_password', $smtp_password);
+			}
+
+			// Verifico los datos.
+			$errors = FALSE;
+
+			if (empty($from_name))
+			{
+				$errors = TRUE;
+				$vista->assign('error_from_name', __('Debe ingresar un nombre.', FALSE));
+			}
+
+			if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $from_email))
+			{
+				$errors = TRUE;
+				$vista->assign('error_from_email', __('El correo es inválido.', FALSE));
+			}
+
+			if ($transport !== 'mail' && $transport !== 'sendmail' && $transport !== 'smtp')
+			{
+				$errors = TRUE;
+				$vista->assign('error_transport', __('El transporte es inválido.', FALSE));
+			}
+
+			if ($transport === 'sendmail' && empty($sendmail_command))
+			{
+				$errors = TRUE;
+				$vista->assign('error_sendmail_command', __('Debe introducir el comando para ejecutar sendmail.', FALSE));
+			}
+			elseif ($transport === 'smtp')
+			{
+				if (empty($smtp_host))
+				{
+					$errors = TRUE;
+					$vista->assign('error_smtp_host', __('Debe introducir un host.', FALSE));
+				}
+
+				if ($smtp_port < 1 || $smtp_port > 36665)
+				{
+					$errors = TRUE;
+					$vista->assign('error_smtp_post', __('Número de puerto incorrecto.', FALSE));
+				}
+
+				if ($smtp_encryption !== '' && $smtp_encryption !== 'tls' && $smtp_encryption !== 'ssl')
+				{
+					$errors = TRUE;
+					$vista->assign('error_smtp_encryption', __('Encriptación inválida.', FALSE));
+				}
+			}
+
+			// Verificaciones de la cola.
+			if ($queue_use === TRUE)
+			{
+				if ($queue_limit < 0)
+				{
+					$errors = TRUE;
+					$vista->assing('error_queue_limit', __('La cantidad de correos a procesar por ejecución de la cola es incorrecta.', FALSE));
+				}
+
+				if ($queue_limit_hour < 0)
+				{
+					$errors = TRUE;
+					$vista->assing('error_queue_limit_hour', __('La cantidad de correos a procesar por hora.', FALSE));
+				}
+
+				if ($queue_limit_day < 0)
+				{
+					$errors = TRUE;
+					$vista->assing('error_queue_limit_day', __('La cantidad de correos a procesar por día.', FALSE));
+				}
+			}
+
+			// Actualizo configuraciones.
+			if ( ! $errors)
+			{
+				$o_config->set('from.usuario', $from_name);
+				$o_config->set('from.email', $from_email);
+				$o_config->set('transport', $transport);
+				$o_config->set('queue.use_queue', $queue_use);
+
+				if ($queue_use)
+				{
+					$o_config->set('queue.limit', $queue_limit == 0 ? NULL : $queue_limit);
+					$o_config->set('queue.limit_hour', $queue_limit_hour == 0 ? NULL : $queue_limit_hour);
+					$o_config->set('queue.limit_day', $queue_limit_day == 0 ? NULL : $queue_limit_day);
+				}
+
+				if ($transport === 'sendmail')
+				{
+					$o_config->set('parametros.command', $sendmail_command);
+				}
+				elseif ($transport === 'smtp')
+				{
+					$o_config->set('parametros.host', $smtp_host);
+					$o_config->set('parametros.port', $smtp_port);
+					$o_config->set('parametros.encryption', $smtp_encryption);
+					$o_config->set('parametros.username', $smtp_username);
+					$o_config->set('parametros.password', $smtp_password);
+				}
+
+				$o_config->save();
+				add_flash_message(FLASH_SUCCESS, __('Configuración actualizada correctamente. Para verificar si es válida, envie un correo de prueba.', FALSE));
+			}
 		}
 
 		// Seteamos el menú.

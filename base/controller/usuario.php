@@ -227,7 +227,7 @@ class Base_Controller_Usuario extends Controller {
 							));
 							return;
 						}
-						
+
 						$view_usuario->assign('error', sprintf(__('%s ha bloqueado esta cuenta el %s debido a: <br /> %s', FALSE), $baneo->moderador()->nick, $baneo->fecha->format('d/m/Y H:i:s'), Decoda::procesar($baneo->razon)));
 				}
 
@@ -447,8 +447,7 @@ class Base_Controller_Usuario extends Controller {
 							unset($message_view);
 
 							// Envío el email.
-							$mailer = Email::get_mailer();
-							$mailer->send($message);
+							Email::send_queue_online($message);
 						}
 						elseif ($t_act == 2)
 						{
@@ -764,8 +763,7 @@ class Base_Controller_Usuario extends Controller {
 				unset($message_view);
 
 				// Envío el email.
-				$mailer = Email::get_mailer();
-				$mailer->send($message);
+				Email::send_queue_online($message);
 
 				// Registro completo.
 				add_flash_message(FLASH_SUCCESS, __('Se ha enviado un correo a tu cuenta de con los pasos de la activación de la cuenta. Recuerda que el enlace caduca en 24hs.', FALSE));
@@ -857,8 +855,7 @@ class Base_Controller_Usuario extends Controller {
 				unset($message_view);
 
 				// Envio el email.
-				$mailer = Email::get_mailer();
-				$mailer->send($message);
+				Email::send_queue_online($message);
 
 				// Registro completo.
 				add_flash_message(FLASH_SUCCESS, __('Se ha enviado un correo a tu cuenta de con los pasos para restaurar tu clave de acceso. Recuerda que el enlace caduca en 24hs.'), FALSE);

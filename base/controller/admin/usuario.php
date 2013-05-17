@@ -340,8 +340,7 @@ class Base_Controller_Admin_Usuario extends Controller {
 			unset($message_view);
 
 			// Envío el email.
-			$mailer = Email::get_mailer();
-			$mailer->send($message);
+			Email::send_queue_online($message);
 		}
 
 		// Actualizo es estado.

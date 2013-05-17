@@ -189,6 +189,85 @@ class Base_Configuracion implements ArrayAccess {
 	}
 
 	/**
+	 * Obtenemos un elemento. Si $key posee '.' es como acceder a un subelemento del arreglo.
+	 * Es decir, "foo.bar" es como ['foo']['bar']
+	 * @param mixed $key Clave a buscar. El uso de '.' indica acceso a un subelemento del arreglo.
+	 * @param mixed $default Valor a devolver si no existe.
+	 * @return mixed
+	 */
+	public function get($key, $default = NULL)
+	{
+		// Verifico existencia del elemento.
+		if (isset($this->datos[$key]))
+		{
+			return $this->datos[$key];
+		}
+
+		// Verifico presencia de '.'.
+		$keys = explode('.', $key);
+
+		if (count($keys) > 1)
+		{
+			$aux = $this->datos;
+			foreach ($keys as $v)
+			{
+				if (isset($aux[$v]))
+				{
+					$aux = $aux[$v];
+				}
+				else
+				{
+					return $default;
+				}
+			}
+			return $aux;
+		}
+		else
+		{
+			return $default;
+		}
+	}
+
+	/**
+	 * Seteamos el valor de un elemento. Soporta la utilización de '.' para subelementos.
+	 * Si el elemento no existe (los padres) se crea un arreglo.
+	 * @param mixed $key Clave a asignar el valor. El uso de '.' indica acceso a un subelemento del arreglo.
+	 * @param mixed $value Valor a asignar al elemento.
+	 */
+	public function set($key, $value)
+	{
+		// Verifico existencia del elemento.
+		if (isset($this->datos[$key]))
+		{
+			$this->datos[$key] = $value;
+		}
+		else
+		{
+			// Verifico presencia de '.'.
+			$keys = explode('.', $key);
+
+			if (count($keys) > 1)
+			{
+				$aux = &$this->datos;
+				foreach ($keys as $v)
+				{
+					if ( ! isset($aux[$v]))
+					{
+						$aux[$v] = array();
+
+					}
+					$aux = &$aux[$v];
+				}
+				$aux = $value;
+			}
+			else
+			{
+				$this->datos[$key] = $value;
+			}
+		}
+	}
+
+	/**
 	 * Verifico existencia de una propiedad de configuración.
 	 * @param mixed $offset Clave de la propiedad de configuración a verificar.
 	 * @return bool
