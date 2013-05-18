@@ -128,7 +128,7 @@ Log::setup(APP_BASE.DS.'log', '%d-%m-%Y.log', PRODUCTION ? Log::INFO : Log::DEBU
 define('THEME', Theme::actual());
 
 // Iniciamos el manejo de errores.
-Error::get_instance()->start(DEBUG, TRUE);
+//Error::get_instance()->start(DEBUG, TRUE);
 
 // Definimos el directorio temporal. Puede definir uno manualmente.
 define('TMP_PATH', Update_Utils::sys_get_temp_dir().DS);

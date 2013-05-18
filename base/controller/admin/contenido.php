@@ -1314,6 +1314,109 @@ class Base_Controller_Admin_Contenido extends Controller {
 	}
 
 	/**
+	 * Nuevo boletin de noticias por correo.
+	 */
+	public function action_nuevo_boletin()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/nuevo_boletin');
+
+		$model_rango = new Model_Usuario_Rango;
+
+		// Valores por defecto y errores.
+		$vista->assign('titulo', '');
+		$vista->assign('error_titulo', FALSE);
+		$vista->assign('contenido', '');
+		$vista->assign('error_contenido', FALSE);
+		$vista->assign('grupos', array());
+		$vista->assign('error_grupos', FALSE);
+		$vista->assign('grupos_disponibles', $model_rango->to_list());
+
+		if (Request::method() == 'POST')
+		{
+			// Obtengo datos.
+			$titulo = isset($_POST['titulo']) ? trim($_POST['titulo']) : '';
+			$contenido = isset($_POST['contenido']) ? trim($_POST['contenido']) : '';
+			$grupos = isset($_POST['grupos']) ? $_POST['grupos'] : '';
+
+			// Reenvio valores.
+			$vista->assign('titulo', $titulo);
+			$vista->assign('contenido', $contenido);
+			$vista->assign('grupos', $grupos);
+
+			// Valido datos.
+			$errors = FALSE;
+
+			if ( ! isset($titulo{5}) || isset($titulo{50}))
+			{
+				$errors = TRUE;
+				$vista->assign('error_titulo', __('El título del boletín debe tener entre 5 y 50 caracteres.', FALSE));
+			}
+
+			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
+			if ( ! isset($contenido_clean{10}) || isset($contenido_clean{500}))
+			{
+				$errors = TRUE;
+				$vista->assign('error_contenido', __('El contenido debe tener entre 10 y 500 caracteres.', FALSE));
+			}
+			unset($contenido_clean);
+
+			if ( ! is_array($grupos) || count($grupos) < 1)
+			{
+				$errors = TRUE;
+				$vista->assign('error_grupos', ___('Debe seleccionar al menos a un grupo de usuarios.', FALSE));
+			}
+			else
+			{
+				// Convierto ID's en números.
+				$ids = array();
+				foreach ($grupos as $v)
+				{
+					$ids[] = (int) $v;
+				}
+
+				// Cantidad de correos.
+				$c_users = Database::get_instance()->query('SELECT COUNT(*) FROM usuario WHERE rango IN (?)', array($ids))->get_var(Database_Query::FIELD_INT);
+				if ($c_users <= 0)
+				{
+					$errors = TRUE;
+					$vista->assign('error_grupos', __('Los grupos seleccionados no poseen usuarios.', FALSE));
+				}
+			}
+
+			if ( ! $errors)
+			{
+				// Genero BBCode.
+				$contenido = Decoda::procesar($contenido);
+
+				// Creo el mensaje de correo.
+				$message = Email::get_message();
+				$message->setSubject($titulo);
+				$message->setBody($contenido, 'text/html', 'UTF-8');
+				$message->setBcc(Database::get_instance()->query('SELECT email, nick FROM usuario WHERE rango IN (?)', array($ids))->get_pairs(Database_Query::FIELD_STRING, Database_Query::FIELD_STRING));
+
+				// Envío el email.
+				Email::send_queue_online($message);
+
+				add_flash_message(FLASH_SUCCESS, sprintf(__('El boletín de noticias se ha enviado correctamente a %s usuarios.', FALSE), $c_users));
+				Request::redirect('/admin/contenido/noticias');
+			}
+		}
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
 	 * Vista preliminar de una noticia.
 	 */
 	public function action_preview()

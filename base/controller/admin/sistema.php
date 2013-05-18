@@ -1675,7 +1675,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 				$max_h = (int) arr_get($image_max_res, 2, 0);
 
 				// Verifico.
-				if ($max_w <= 0 || $max_h <= 0 && ( ! isset($min_size) || ($min_size[0] > $max_w || $min_size[1] > $max_h)))
+				if ($max_w <= 0 || $max_h <= 0 && ( ! isset($image_min_res) || ($image_min_res[0] > $max_w || $image_min_res[1] > $max_h)))
 				{
 					$error = TRUE;
 					$vista->assign('error_image_max_px', __('El tamaño máximo de la imagen debe ser debe ser de al menos 1x1 px y mayor que el tamaño mínimo.', FALSE));
@@ -1716,7 +1716,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 			if ($image_save_methods == 'imgur')
 			{
 				// Verifico clave del API.
-				if (empty($image_imgur_apikey))
+				if ( ! preg_match('/[0-9a-z]{32}/', $image_imgur_apikey))
 				{
 					$error = TRUE;
 					$vista->assign('error_image_imgur_apikey', __('Debe introducir la clave para acceder al API de imgur.', FALSE));

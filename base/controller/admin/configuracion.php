@@ -933,6 +933,8 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					$o_config->set('queue.limit_day', $queue_limit_day == 0 ? NULL : $queue_limit_day);
 				}
 
+				$o_config->set('parametros', array());
+
 				if ($transport === 'sendmail')
 				{
 					$o_config->set('parametros.command', $sendmail_command);

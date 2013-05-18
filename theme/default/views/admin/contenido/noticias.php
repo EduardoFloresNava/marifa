@@ -6,6 +6,7 @@
 <div class="clearfix header">
 	<h2 class="pull-left">Noticias</h2>
 	<div class="btn-group pull-right">
+		<a href="{#SITE_URL#}/admin/contenido/nuevo_boletin/" class="btn btn-success"><i class="icon-white icon-plus"></i> Nuevo boletin</a>
 		<a href="{#SITE_URL#}/admin/contenido/nueva_noticia/" class="btn btn-success"><i class="icon-white icon-plus"></i> Nueva</a>
 		<a href="{#SITE_URL#}/admin/contenido/limpiar_noticias/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar todas</a>
 		<a href="{#SITE_URL#}/admin/contenido/ocultar_noticias/" class="btn btn-warning"><i class="icon-white icon-eye-close"></i> Desactivar todas</a>
