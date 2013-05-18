@@ -167,7 +167,23 @@ class Base_Dispatcher {
 			$routes = include(APP_BASE.DS.'routes.'.FILE_EXT);
 			foreach ($routes as $route)
 			{
-				call_user_func_array(array($router, 'map'), $route);
+				switch (count($route))
+				{
+					case 0:
+						call_user_func(array($router, 'map'));
+						break;
+					case 1:
+						call_user_func(array($router, 'map'), $route[0]);
+						break;
+					case 2:
+						call_user_func(array($router, 'map'), $route[0], $route[1]);
+						break;
+					case 3:
+						call_user_func(array($router, 'map'), $route[0], $route[1], $route[2]);
+						break;
+					default:
+						call_user_func_array(array($router, 'map'), $route);
+				}
 			}
 		}
 
@@ -185,7 +201,23 @@ class Base_Dispatcher {
 					$routes = include(APP_BASE.DS.PLUGINS_PATH.DS.$pl[0].DS.'routes.'.FILE_EXT);
 					foreach ($routes as $route)
 					{
-						call_user_func_array(array($router, 'map'), $route);
+						switch (count($route))
+						{
+							case 0:
+								call_user_func(array($router, 'map'));
+								break;
+							case 1:
+								call_user_func(array($router, 'map'), $route[0]);
+								break;
+							case 2:
+								call_user_func(array($router, 'map'), $route[0], $route[1]);
+								break;
+							case 3:
+								call_user_func(array($router, 'map'), $route[0], $route[1], $route[2]);
+								break;
+							default:
+								call_user_func_array(array($router, 'map'), $route);
+						}
 					}
 				}
 			}
@@ -197,7 +229,23 @@ class Base_Dispatcher {
 					$routes = include($v);
 					foreach ($routes as $route)
 					{
-						call_user_func_array(array($router, 'map'), $route);
+						switch (count($route))
+						{
+							case 0:
+								call_user_func(array($router, 'map'));
+								break;
+							case 1:
+								call_user_func(array($router, 'map'), $route[0]);
+								break;
+							case 2:
+								call_user_func(array($router, 'map'), $route[0], $route[1]);
+								break;
+							case 3:
+								call_user_func(array($router, 'map'), $route[0], $route[1], $route[2]);
+								break;
+							default:
+								call_user_func_array(array($router, 'map'), $route);
+						}
 					}
 				}
 			}
