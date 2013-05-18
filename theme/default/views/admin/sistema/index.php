@@ -1,35 +1,16 @@
-<div class="header clearfix">
-	<h2 class="pull-left">{@Resumen del sistema@}:</h2>
-	<div class="pull-right">
-		{if="$token_api !== NULL"}<a href="{#SITE_URL#}/admin/sistema/verificar_actualizaciones" class="btn btn-success" title="{if="$sistema_last_check !== NULL"}{@Ultima verificación@}: {function="$sistema_last_check->fuzzy()"}{else}{@No se han verificado las actualizaciones@}{/if}"><i class="icon-white icon-globe"></i> {@Buscar actualizaciones@}</a>{/if}
-	</div>
-</div>
+<h2 class="title">{@Resumen del sistema@}:</h2>
+<div class="alert alert-warning">Esta es un característica que se encuentra en una fase prematura de desarrollo. El proceso de actualización por medio de esta herramienta puede generar un daño en el sistema. Antes de usarlo realice un backup del sistema.</div>
 {if="isset($token_api) && $token_api !== NULL"}
 <div class="alert alert-info">
-	<h4>¡Sitio registrado en el servidor de actualizaciones!</h4>
-	<p>Token: <code>{$token_api}</code></p>
-	{if="$token_status"}
-	<p>Estado: ACTIVO<a href="{#SITE_URL#}/admin/sistema/registrar_sitio_api" class="btn btn-primary btn-mini" title="Actualizar"><i class="icon-white icon-refresh"></i></a></p>
-	{else}
-	<p>Estado: {if="$token_status.0 == 3"}INACTIVO ({$token_status.1}){elseif="$token_status.0 == 4"}BLOQUEADO ({$token_status.1}){else}DESCONOCIDO{/if}<a href="{#SITE_URL#}/admin/sistema/registrar_sitio_api" class="btn btn-primary btn-mini" title="Actualizar"><i class="icon-white icon-refresh"></i></a></p>
-	{/if}
+	<p><strong>¡Tu sitio se encuentra registrado en el servidor de actualizaciones!</strong></p>
+	<p>Tu token de acceso es <code>{$token_api}</code> el cual se encuentra {if="$token_status === TRUE"}<span class="label label-success">ACTIVO</span>{else}{if="$token_status.0 == 3"}<span class="label label-warning">INACTIVO</span> por <code>{$token_status.1}</code>{elseif="$token_status.0 == 4"}<span class="label label-important">BLOQUEADO</span> por <code>{$token_status.1}</code>{else}<span class="label">DESCONOCIDO</label>{/if}{/if} <a href="{#SITE_URL#}/admin/sistema/registrar_sitio_api" class="btn btn-primary btn-mini" title="Actualizar"><i class="icon-white icon-refresh"></i></a></p>
 </div>
-<!--<div class="row-fluid statistics">
-	<div class="span6">
-		<h3 class="title">{@Plugins@}<small>-</small></h3>
-		<div class="alert alert-info">{@¡No hay actualizaciones!@}</div>
-	</div>
-	<div class="span6">
-		<h3 class="title">{@Temas@}<small>-</small></h3>
-		<div class="alert alert-info">{@¡No hay actualizaciones!@}</div>
-	</div>
-</div>-->
 <div class="row-fluid statistics">
 	<div class="span6">
-		<h3 class="title">{@Noticias@}<a href="{#SITE_URL#}/admin/sistema/obtener_nuevas_noticias" class="btn btn-primary btn-mini pull-right" title="{if="$noticias_last_check !== NULL"}{@Ultima verificación@}: {function="$noticias_last_check->fuzzy()"}{else}{@No se han verificado las noticias@}{/if}"><i class="icon-white icon-refresh"></i></a></h3>
-		{if="isset($api_noticias) && count($api_noticias) > 0"}
+		<h3 class="title small-btn">{@Noticias@}{if="$token_api !== NULL && $token_status === TRUE"}<a href="{#SITE_URL#}/admin/sistema/obtener_nuevas_noticias" class="btn btn-primary btn-mini pull-right" title="{if="$noticias_last_check !== NULL"}{@Ultima verificación@}: {function="$noticias_last_check->fuzzy()"}{else}{@No se han verificado las noticias@}{/if}"><i class="icon-white icon-refresh"></i></a>{/if}</h3>
+		{if="isset($noticias) && count($noticias) > 0"}
 		<ul>
-			{loop="$api_noticias"}
+			{loop="$noticias"}
 			<li>
 				{if="isset($value.prioridad) && $value.prioridad !== NULL"}<span class="label {if="$value.prioridad == 0 || $value.prioridad == 1"}label-info{elseif="$value.prioridad == 2 || $value.prioridad == 3"}label-inverse{elseif="$value.prioridad == 4"}label-warning{else}label-important{/if}">{if="$value.prioridad == 0"}{@IRRELEVANTE@}{elseif="$value.prioridad == 1"}{@INFORMATIVO@}{elseif="$value.prioridad == 2"}{@NORMAL@}{elseif="$value.prioridad == 3"}{@RELEVANTE@}{elseif="$value.prioridad == 4"}{@IMPORTANTE@}{else}{@CRITICA@}{/if}</span>{/if}
 				{if="isset($value.version) && $value.version !== NULL"}<span class="label label-info label">{$value.version}</span>{/if}
@@ -43,7 +24,7 @@
 		{/if}
 	</div>
 	<div class="span6">
-		<h3 class="title">{@Sistema@}<small title="{@Versión actual@}">v{#VERSION#}</small></h3>
+		<h3 class="title small-btn">{@Sistema@}{if="$token_api !== NULL && $token_status === TRUE"}<a href="{#SITE_URL#}/admin/sistema/verificar_actualizaciones" class="btn btn-primary btn-mini pull-right" title="{if="$sistema_last_check !== NULL"}{@Ultima verificación@}: {function="$sistema_last_check->fuzzy()"}{else}{@No se han verificado las actualizaciones@}{/if}"><i class="icon-white icon-refresh"></i></a>{/if}<small title="{@Versión actual@}">v{#VERSION#}</small></h3>
 		{if="is_array($sistema) && count($sistema) > 0"}
 		<ul>
 			{loop="$sistema"}

@@ -63,7 +63,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$vista = View::factory('admin/sistema/index');
 
 		// Obtengo actualizaciones.
-		$actualizaciones_sistema = unserialize(Utils::configuracion()->get('update_sistema_actualizaciones', 'a:0:{}'));
+		$actualizaciones_sistema = unserialize(base64_decode(Utils::configuracion()->get('update_sistema_actualizaciones', 'a:0:{}')));
 		$actualizaciones_last_check = Utils::configuracion()->get('update_sistema_last_check', NULL);
 
 		// Verifico si hay actualizaciones.
@@ -84,7 +84,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		unset($actualizaciones_sistema, $actualizaciones_last_check);
 
 		// Obtengo noticias.
-		$noticias_sistema = unserialize(Utils::configuracion()->get('noticias_sistema_api', 'a:0:{}'));
+		$noticias_sistema = unserialize(base64_decode(Utils::configuracion()->get('noticias_sistema_api', 'YTowOnt9')));
 		$noticias_last_check = Utils::configuracion()->get('noticias_sistema_api_last_check', NULL);
 
 		// Verifico si hay noticias.
@@ -103,7 +103,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 		// Obtengo token y su estado.
 		$vista->assign('token_api', Utils::configuracion()->get('api_token', NULL));
-		$vista->assign('token_status', Utils::configuracion()->get('api_token_status', NULL));
+		$vista->assign('token_status', unserialize(base64_decode(Utils::configuracion()->get('api_token_status', 'Tjs='))));
 
 		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
@@ -131,7 +131,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		{
 			try {
 				// Verifico estado.
-				Utils::configuracion()->api_token_status = $api->verificar_token();
+				Utils::configuracion()->api_token_status = base64_encode(serialize($api->verificar_token()));
 			}
 			catch (Api_Exception $e)
 			{
@@ -179,7 +179,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 
 		// Trato de obtener las noticias.
 		try {
-			Utils::configuracion()->noticias_sistema_api = serialize($api->noticia()->noticias(10));
+			Utils::configuracion()->noticias_sistema_api = base64_encode(serialize($api->noticia()->noticias(10)));
 			Utils::configuracion()->noticias_sistema_api_last_check = time();
 			add_flash_message(FLASH_SUCCESS, __('Noticias obtenidas correctamente', FALSE));
 		}
@@ -1081,7 +1081,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		}
 
 		// Guardo en cache.
-		Utils::configuracion()->update_sistema_actualizaciones = serialize($rst);
+		Utils::configuracion()->update_sistema_actualizaciones = base64_encode(serialize($rst));
 		Utils::configuracion()->update_sistema_last_check = time();
 
 		// Vuelvo.
