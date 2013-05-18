@@ -346,6 +346,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('El post se a eliminado correctamente.', FALSE));
 					Request::redirect('/admin/contenido/posts');
@@ -368,6 +374,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 					{
 						$model_suceso->crear($model_post->usuario_id, 'post_ocultar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
 					}
+
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
 
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
@@ -392,6 +404,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
@@ -414,6 +432,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 					{
 						$model_suceso->crear($model_post->usuario_id, 'post_papelera', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
+
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
 
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
@@ -445,6 +469,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 					{
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
+
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
 
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
@@ -511,6 +541,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
@@ -533,6 +569,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 					{
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
+
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
 
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
@@ -594,6 +636,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
@@ -654,6 +702,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
@@ -713,6 +767,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 					{
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
+
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
 
 					// Informo el resultado
 					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
@@ -851,6 +911,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 		{
 			$model_suceso->crear($model_foto->usuario_id, 'foto_ocultar', FALSE, $model_foto->id, Usuario::$usuario_id, 0);
 		}
+
+		// Verifico actualización del rango.
+		$model_foto->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+
+		// Actualizo medalla.
+		$model_foto->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_FOTOS);
 
 		// Informamos.
 		add_flash_message(FLASH_SUCCESS, __('Foto ocultada correctamente.', FALSE));
