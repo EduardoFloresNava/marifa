@@ -1,0 +1,3 @@
+[submodule "utils/phpcs-psr"]
+	path = utils/phpcs-psr
+	url = git://github.com/klaussilveira/phpcs-psr.git
