@@ -149,6 +149,9 @@ if ( ! file_exists(APP_BASE.DS.PLUGINS_PATH.DS.'plugin.php'))
 // Cargamos la lista de eventos.
 Event::load_from_plugins();
 
+// Informo de la ejecución del cronjob.
+Utils::configuracion()->cronjob_last_execution = time();
+
 // Procesamos la cola de E-Mail's.
 $mail = new Email_Queue;
 $mail->procesar();

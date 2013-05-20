@@ -166,26 +166,6 @@ class Base_Controller_Admin_Home extends Controller {
 		$vista->assign('usuarios_total', $model_usuario->cantidad());
 		unset($usuarios, $model_usuario);
 
-		// Obtenemos versiones de Marifa.
-		// TODO: Hacer asincronico.
-		$rst = Cache::get_instance()->get('last_version');
-		if ( ! is_array($rst))
-		{
-			$rst = @json_decode(Utils::remote_call('https://api.github.com/repos/Marifa/marifa/tags'));
-			Cache::get_instance()->save('last_version', $rst, 60);
-		}
-
-		// Ordenamos y obtenemos la última y si podemos actualizar.
-		if (is_array($rst) && isset($rst[0]))
-		{
-			// Ordeno las versiones.
-			usort($rst, create_function('$a, $b', 'return version_compare(substr($b->name, 1), substr($a->name, 1));'));
-
-			$vista->assign('version', $rst[0]->name);
-			$vista->assign('version_new', version_compare(substr($rst[0]->name, 1), VERSION) > 0);
-			$vista->assign('download', array('zip' => $rst[0]->zipball_url, 'tar' => $rst[0]->tarball_url));
-		}
-
 		// Obtenemos contenido.
 		$rst = Database::get_instance()->query('SELECT * FROM ((SELECT "foto" as type, id, creacion AS fecha FROM foto ORDER BY fecha DESC LIMIT 5) UNION (SELECT "post" as type, id, fecha FROM post ORDER BY fecha DESC LIMIT 5)) as A ORDER BY fecha DESC LIMIT 5')->get_records();
 
@@ -216,6 +196,13 @@ class Base_Controller_Admin_Home extends Controller {
 
 		$vista->assign('contenido_total', Model_Post::s_cantidad() + Model_Foto::s_cantidad());
 
+		// Obtenemos estado de ejecución de CronJob.
+		$vista->assign('cronjob_lastexecution', Utils::configuracion()->get('cronjob_last_execution', NULL));
+
+		// Estado de la cola de correos.
+		$vista->assign('email_queue_use', Configuracion::factory(CONFIG_PATH.DS.'email.php')->get('queue.use_queue', FALSE));
+		$vista->assign('email_queue_pending', $this->email_queue_count());
+
 		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
@@ -227,6 +214,15 @@ class Base_Controller_Admin_Home extends Controller {
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Cantidad de trabajos pendientes en la cola de ejecución.
+	 * @return int
+	 */
+	protected function email_queue_count()
+	{
+		return count(glob(CACHE_PATH.DS.'email'.DS.'email_*'));
 	}
 
 	/**
@@ -267,7 +263,7 @@ class Base_Controller_Admin_Home extends Controller {
 			foreach ($data as $v)
 			{
 				// Obtengo los datos.
-				preg_match('/\[(.*)\] \[(.*)\] (.*)/', $v, $aux);
+				preg_match('/\[(.*?)\] \[(.*?)\] (.*)/', $v, $aux);
 
 				// Verifico sea correcto.
 				if (count($aux) != 4)
