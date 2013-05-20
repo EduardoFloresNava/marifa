@@ -10,6 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link href="{#THEME_URL#}/assets/css/bootstrap.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/font-awesome.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/bootstrap-responsive.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/base.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/style.css" rel="stylesheet">

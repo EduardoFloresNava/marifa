@@ -2,8 +2,8 @@
 	<div class="btn-group">
 		<a href="#" title="Negrita" class="btn-bold btn btn-small"><i class="icon-bold"></i></a>
 		<a href="#" title="Cursiva" class="btn-italic btn btn-small"><i class="icon-italic"></i></a>
-		<a href="#" title="Subrayado" class="btn-underline btn btn-small"><u><b>U</b></u><!--<i class="icon-underline"></i>--></a>
-		<a href="#" title="Tachado" class="btn-strike btn btn-small"><s><b>S</b></s><!--<i class="icon-strike"></i>--></a>
+		<a href="#" title="Subrayado" class="btn-underline btn btn-small"><i class="icon-underline"></i></a>
+		<a href="#" title="Tachado" class="btn-strike btn btn-small"><i class="icon-strikethrough"></i></a>
 	</div>
 	<div class="btn-group hidden-phone">
 		<a href="#" class="btn btn-small btn-align-left" title="Alinear a la izquierda"><i class="icon-align-left"></i></a>

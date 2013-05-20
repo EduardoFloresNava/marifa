@@ -1321,3 +1321,82 @@ var portada = (function ($) {
     return externo;
 } (jQuery));
 portada.iniciar();
+
+var one_click = (function ($) {
+    var externo = {};
+
+    function add_flash_message(type, message)
+    {
+
+    }
+
+    function click_one_click()
+    {
+        // Boton del que se realizan acciones.
+        var btn = $(this),
+            url = btn.is('[data-one-click-url]') ? btn.attr('data-one-click-url') : btn.attr('href');
+
+        // Deshabilito el boton.
+        btn.attr('disabled', 'disabled');
+
+        if (btn.attr('data-one-click-spinner'))
+        {
+            var item = btn.find('.icon, .icon-white'),
+                icls = item.attr('class');
+
+            console.log(item, icls);
+
+            item.attr('data-one-click-class', icls);
+            item.attr('class', icls.split(' ').map(function (value) { if (value.substr(0, 5) !== 'icon-' || value === 'icon-white') { return value; } else { return null; } }).join(' ') + ' icon-refresh icon-spin');
+        }
+
+        // Obtengo URL.
+        $.ajax({
+            context: btn,
+            error: function (jqXHR, textStatus, errorThrown) {
+                $(this).removeAttr('disabled');
+                if (btn.attr('data-one-click-spinner'))
+                {
+                    var item = btn.find('.icon, .icon-white');
+                    item.attr('class', item.attr('data-one-click-class'));
+                    item.removeAttr('data-one-click-class');
+                }
+                add_flash_message('error', 'No se ha podido realizar la petición.');
+                //location.href = $(this).attr('href);
+            },
+            success: function (data) {
+                if (data['response'] === 'ok')
+                {
+                    $(this).off('click', click_one_click);
+                    if (data['content']['html'] !== undefined)
+                    {
+                        $(data['content']['html']).on('click', click_one_click).insertBefore($(this));
+                    }
+                    $(this).remove();
+                    add_flash_message('ok', data['content']['message']);
+                }
+                else
+                {
+                    $(this).removeAttr('disabled');
+                    var item = btn.find('.icon, .icon-white');
+                    item.attr('class', item.attr('data-one-click-class'));
+                    item.removeAttr('data-one-click-class');
+                    add_flash_message('error', data['content']);
+                }
+            },
+            type: 'GET',
+            url: url
+        });
+        //e.preventDefault();
+        return false;
+    }
+
+    // Agregamos eventos del elemento.
+    externo.bind = function(elemento) {
+        $(elemento).on('click', click_one_click);
+    };
+
+    return externo;
+} (jQuery));
+
+one_click.bind($('.one-click-ajax'));

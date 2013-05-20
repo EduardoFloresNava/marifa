@@ -862,7 +862,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder agregar posts a favoritos.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder agregar posts a favoritos.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder agregar posts a favoritos.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -875,28 +883,60 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que desea agregar a favoritos no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que desea agregar a favoritos no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que desea agregar a favoritos no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
 		// Verificamos el autor.
 		if ($model_post->usuario_id === Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, __('El post que desea agregar a favoritos no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que desea agregar a favoritos no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que desea agregar a favoritos no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico el estado.
 		if ($model_post->estado !== Model_Post::ESTADO_ACTIVO)
 		{
-			add_flash_message(FLASH_ERROR, __('El post que desea agregar a favoritos no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que desea agregar a favoritos no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que desea agregar a favoritos no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico no tenerlo como favorito.
 		if ($model_post->es_favorito(Usuario::$usuario_id))
 		{
-			add_flash_message(FLASH_ERROR, __('El post ya forma parte de tus favoritos.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post ya forma parte de tus favoritos.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post ya forma parte de tus favoritos.', FALSE));
+			}
 			Request::redirect($this->post_url($model_post));
 		}
 
@@ -918,7 +958,15 @@ class Base_Controller_Post extends Controller {
 			$model_suceso->crear($model_post->usuario_id, 'post_favorito', FALSE, $post, Usuario::$usuario_id);
 		}
 
-		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> El post fue agregado a favoritos correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('message' => __('El post fue agregado a favoritos correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El post fue agregado a favoritos correctamente.', FALSE));
+		}
 		Request::redirect($this->post_url($model_post));
 	}
 
@@ -932,7 +980,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder votar comentario en posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder votar comentario en posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder votar comentario en posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -947,14 +1003,30 @@ class Base_Controller_Post extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('El comentario que deseas votar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El comentario que deseas votar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El comentario que deseas votar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_VOTAR))
 		{
-			add_flash_message(FLASH_ERROR, __('El comentario que deseas votar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El comentario que deseas votar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El comentario que deseas votar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
@@ -964,7 +1036,15 @@ class Base_Controller_Post extends Controller {
 		// Verifico estado del post.
 		if ($model_post->estado !== Model_Post::ESTADO_ACTIVO)
 		{
-			add_flash_message(FLASH_ERROR, __('El comentario que deseas votar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El comentario que deseas votar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El comentario que deseas votar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_post));
 		}
 		unset($model_post);
@@ -972,14 +1052,30 @@ class Base_Controller_Post extends Controller {
 		// Verifico autor del post.
 		if ($model_comentario->usuario_id == Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, __('El comentario que deseas votar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El comentario que deseas votar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El comentario que deseas votar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
 		// Verifico si ya votó.
 		if ($model_comentario->ya_voto(Usuario::$usuario_id))
 		{
-			add_flash_message(FLASH_ERROR, __('El comentario que deseas votar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El comentario que deseas votar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El comentario que deseas votar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
@@ -998,7 +1094,16 @@ class Base_Controller_Post extends Controller {
 			$model_suceso->crear($model_comentario->usuario_id, 'post_comentario_voto', FALSE, $comentario, Usuario::$usuario_id, (int) $voto);
 		}
 
-		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> El comentario se ha votado correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('message' => __('El comentario se ha votado correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El comentario se ha votado correctamente.', FALSE));
+		}
+
 		Request::redirect($this->post_url($model_comentario->post_id));
 	}
 
@@ -1012,7 +1117,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ocultar/mostrar comentarios en posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder ocultar/mostrar comentarios en posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ocultar/mostrar comentarios en posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -1024,7 +1137,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('El comentario que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El comentario que deseas ocultar/mostrar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El comentario que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
@@ -1034,19 +1155,43 @@ class Base_Controller_Post extends Controller {
 		// Verifico el estado.
 		if (($tipo && $model_comentario->estado !== 1) || ( ! $tipo && $model_comentario->estado !== 0))
 		{
-			add_flash_message(FLASH_ERROR, __('El comentario que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El comentario que deseas ocultar/mostrar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El comentario que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
 		// Verifico los permisos.
 		if ($model_comentario->estado == 0 && Usuario::$usuario_id !== $model_comentario->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
 		{
-			add_flash_message(FLASH_ERROR, __('No tienes los permisos para ocultar/mostrar comentarios.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('No tienes los permisos para ocultar/mostrar comentarios.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('No tienes los permisos para ocultar/mostrar comentarios.', FALSE));
+			}
 			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 		elseif ($model_comentario->estado == 1 && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_OCULTAR))
 		{
-			add_flash_message(FLASH_ERROR, __('No tienes los permisos para ocultar/mostrar comentarios.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('No tienes los permisos para ocultar/mostrar comentarios.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('No tienes los permisos para ocultar/mostrar comentarios.', FALSE));
+			}
 			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
@@ -1075,8 +1220,20 @@ class Base_Controller_Post extends Controller {
 			}
 		}
 
+		if (Request::is_ajax())
+		{
+			$view = View::factory('post/ajax_comentario_mostrar');
+			$view->assign('id', $model_comentario->id);
+			$view->assign('mostrar', $tipo);
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('El comentario se ha ocultado/mostrado correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El comentario se ha ocultado/mostrado correctamente.', FALSE));
+		}
+
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> El comentario se ha ocultado/mostrado correctamente.', FALSE));
 		Request::redirect($this->post_url($model_comentario->post_id));
 	}
 
@@ -1089,14 +1246,30 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder borrar comentarios en posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder borrar comentarios en posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder borrar comentarios en posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_COMENTARIO_ELIMINAR))
 		{
-			add_flash_message(FLASH_ERROR, __('No tienes los permisos para borrar comentarios.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('No tienes los permisos para borrar comentarios.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('No tienes los permisos para borrar comentarios.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
@@ -1108,14 +1281,30 @@ class Base_Controller_Post extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_comentario->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('El comentario que deseas borrar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El comentario que deseas borrar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El comentario que deseas borrar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
 		// Verifico el estado.
 		if ($model_comentario->estado === 2)
 		{
-			add_flash_message(FLASH_ERROR, __('El comentario que deseas borrar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El comentario que deseas borrar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El comentario que deseas borrar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_comentario->post_id));
 		}
 
@@ -1142,7 +1331,15 @@ class Base_Controller_Post extends Controller {
 			}
 		}
 
-		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> El comentario se ha borrado correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('message' => __('El comentario se ha borrado correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El comentario se ha borrado correctamente.', FALSE));
+		}
 		Request::redirect($this->post_url($model_comentario->post_id));
 	}
 
@@ -1272,11 +1469,27 @@ class Base_Controller_Post extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder seguir usuarios.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder seguir usuarios.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder seguir usuarios.', FALSE));
+				}
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE));
+				}
 			}
 			Request::redirect('/usuario/login');
 		}
@@ -1290,11 +1503,27 @@ class Base_Controller_Post extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				}
 			}
 			Request::redirect($this->post_url($post));
 		}
@@ -1304,11 +1533,27 @@ class Base_Controller_Post extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				}
 			}
 			Request::redirect($this->post_url($post));
 		}
@@ -1319,14 +1564,30 @@ class Base_Controller_Post extends Controller {
 			// Verifico el estado.
 			if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 				Request::redirect($this->post_url($post));
 			}
 
 			// Verifico no sea seguidor.
 			if ($model_usuario->es_seguidor(Usuario::$usuario_id))
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 				Request::redirect($this->post_url($post));
 			}
 
@@ -1342,7 +1603,15 @@ class Base_Controller_Post extends Controller {
 			// Verifico sea seguidor.
 			if ( ! $model_usuario->es_seguidor(Usuario::$usuario_id))
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				}
 				Request::redirect($this->post_url($post));
 			}
 
@@ -1366,11 +1635,35 @@ class Base_Controller_Post extends Controller {
 		// Informo resultado.
 		if ($seguir)
 		{
-			add_flash_message(FLASH_SUCCESS, __('Comenzaste a seguir al usuario correctamente.', FALSE));
+			if (Request::is_ajax())
+			{
+				$view = View::factory('post/ajax_seguir_usuario');
+				$view->assign('post_id', (int) $post);
+				$view->assign('usuario_id', $model_usuario->id);
+				$view->assign('sigue', TRUE);
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Comenzaste a seguir al usuario correctamente.', FALSE)))));
+			}
+			else
+			{
+				add_flash_message(FLASH_SUCCESS, __('Comenzaste a seguir al usuario correctamente.', FALSE));
+			}
 		}
 		else
 		{
-			add_flash_message(FLASH_SUCCESS, __('Dejaste de seguir al usuario correctamente.', FALSE));
+			if (Request::is_ajax())
+			{
+				$view = View::factory('post/ajax_seguir_usuario');
+				$view->assign('post_id', (int) $post);
+				$view->assign('usuario_id', $model_usuario->id);
+				$view->assign('sigue', FALSE);
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Dejaste de seguir al usuario correctamente.', FALSE)))));
+			}
+			else
+			{
+				add_flash_message(FLASH_SUCCESS, __('Dejaste de seguir al usuario correctamente.', FALSE));
+			}
 		}
 		Request::redirect($this->post_url($post));
 	}
@@ -1384,7 +1677,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario tenga sesión iniciada.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder seguir posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder seguir posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder seguir posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -1397,21 +1698,46 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que quieres seguir no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que quieres seguir no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que quieres seguir no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
 		// Verifico el autor.
 		if ($model_post->usuario_id === Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, __('El post que quieres seguir no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que quieres seguir no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que quieres seguir no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico si ya lo sigue.
 		if ($model_post->es_seguidor(Usuario::$usuario_id))
 		{
-			add_flash_message(FLASH_ERROR, __('Ya eres seguidor de ese post.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Ya eres seguidor de ese post.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Ya eres seguidor de ese post.', FALSE));
+			}
+			add_flash_message(FLASH_ERROR, __('.', FALSE));
 			Request::redirect($this->post_url($model_post));
 		}
 
@@ -1432,7 +1758,15 @@ class Base_Controller_Post extends Controller {
 			$model_suceso->crear($model_post->usuario_id, 'post_seguir', FALSE, $post, Usuario::$usuario_id);
 		}
 
-		add_flash_message(FLASH_SUCCESS, __('Te has convertido en seguidor del post correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('message' => __('Te has convertido en seguidor del post correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Te has convertido en seguidor del post correctamente.', FALSE));
+		}
 		Request::redirect($this->post_url($model_post));
 	}
 
@@ -1524,14 +1858,30 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder patrocinar posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder patrocinar posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder patrocinar posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico el permiso.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER))
 		{
-			add_flash_message(FLASH_ERROR, __('No tienes los permisos necesarios para patrocinar posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('No tienes los permisos necesarios para patrocinar posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('No tienes los permisos necesarios para patrocinar posts.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
@@ -1544,7 +1894,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que deseas patrocinar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que deseas patrocinar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que deseas patrocinar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
@@ -1554,7 +1912,15 @@ class Base_Controller_Post extends Controller {
 		// Verifico el estado actual.
 		if ($model_post->sponsored === $tipo)
 		{
-			add_flash_message(FLASH_ERROR, __('El post que quieres patrocinar ya se encuentra patrocinado.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que quieres patrocinar ya se encuentra patrocinado.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que quieres patrocinar ya se encuentra patrocinado.', FALSE));
+			}
 			Request::redirect($this->post_url($model_post));
 		}
 
@@ -1574,7 +1940,18 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Acción realizada correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			$view = View::factory('post/ajax_patrocinar_post');
+			$view->assign('post_id', $model_post->id);
+			$view->assign('post_sponsored', $tipo);
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('<b>!Felicitaciones!</b> Acción realizada correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Acción realizada correctamente.', FALSE));
+		}
 		Request::redirect($this->post_url($model_post));
 	}
 
