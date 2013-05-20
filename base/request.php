@@ -158,7 +158,7 @@ class Base_Request {
 	 */
 	public static function method()
 	{
-		return strtoupper($_SERVER['REQUEST_METHOD']);
+		return strtoupper(isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET');
 	}
 
 	/**
