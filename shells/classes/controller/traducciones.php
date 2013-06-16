@@ -76,6 +76,9 @@ class Shell_Controller_Traducciones extends Shell_Controller {
 		// Proceso listado de entradas.
 		$traducciones = self::obtener_traducciones();
 
+		// Borro duplicados.
+		$traducciones = array_unique($traducciones, SORT_STRING);
+
 		// Genero el archivo de traducciones.
 		$fp = fopen(APP_BASE.DS.'traducciones'.DS.$idioma.'.php', 'w+');
 
