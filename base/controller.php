@@ -139,7 +139,7 @@ class Base_Controller {
 		$vista->assign('usuario', Usuario::usuario()->as_array());
 
 		// Sucesos.
-		$lst = Suceso_Barra::obtener_listado(Usuario::$usuario_id, 1, 20);
+		$lst = Suceso_Barra::obtener_listado(Usuario::$usuario_id, 1, 10);
 
 		$eventos = array();
 		foreach ($lst as $v)

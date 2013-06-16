@@ -8,9 +8,9 @@
 		{if="$me !== NULL && $me !== $usuario.id"}
 		<div class="row-fluid follow">
 			{if="!$sigue_usuario"}
-			<a href="{#SITE_URL#}/foto/seguir_usuario/{$foto.id}/{$usuario.id}/1" class="btn span12" style="min-height: 0;"><i class="icon icon-plus"></i> Seguir usuario</a>
+			<a href="{#SITE_URL#}/foto/seguir_usuario/{$foto.id}/{$usuario.id}/1" class="btn span12 one-click-ajax" data-one-click-spinner="true"><i class="icon icon-plus"></i> Seguir usuario</a>
 			{else}
-			<a href="{#SITE_URL#}/foto/seguir_usuario/{$foto.id}/{$usuario.id}/0" class="btn span12" style="min-height: 0;"><i class="icon icon-minus"></i> Dejar de seguir</a>
+			<a href="{#SITE_URL#}/foto/seguir_usuario/{$foto.id}/{$usuario.id}/0" class="btn span12 one-click-ajax" data-one-click-spinner="true"><i class="icon icon-minus"></i> Dejar de seguir</a>
 			{/if}
 		</div>
 		{/if}
@@ -34,31 +34,31 @@
 		<div class="btn-toolbar">
 			{if="$foto.estado == 0 && ($permiso_ocultar || $permiso_papelera || $permiso_borrar || $permiso_editar)"}
 			<div class="btn-group">
-				{if="$permiso_editar"}<a href="{#SITE_URL#}/foto/editar/{$foto.id}/" class="btn btn-primary show-tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
-				{if="$permiso_ocultar"}<a href="{#SITE_URL#}/foto/ocultar_foto/{$foto.id}/" class="btn btn-inverse show-tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
-				{if="$permiso_papelera"}<a href="{#SITE_URL#}/foto/borrar_foto/{$foto.id}/1" class="btn btn-warning show-tooltip" title="Enviar a la papelera"><i class="icon-white icon-trash"></i></a>{/if}
-				{if="$permiso_borrar"}<a href="{#SITE_URL#}/foto/borrar_foto/{$foto.id}/" class="btn btn-danger show-tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
+				{if="$permiso_editar"}<a href="{#SITE_URL#}/foto/editar/{$foto.id}/" class="btn btn-primary" title="{@Editar foto@}"><i class="icon-white icon-pencil"></i></a>{/if}
+				{if="$permiso_ocultar"}<a href="{#SITE_URL#}/foto/ocultar_foto/{$foto.id}/" class="btn btn-inverse one-click-ajax" data-one-click-spinner="true" title="{@Ocultar foto@}"><i class="icon-white icon-eye-close"></i></a>{/if}
+				{if="$permiso_papelera"}<a href="{#SITE_URL#}/foto/borrar_foto/{$foto.id}/1" class="btn btn-warning" title="{@Enviar a la papelera@}"><i class="icon-white icon-trash"></i></a>{/if}
+				{if="$permiso_borrar"}<a href="{#SITE_URL#}/foto/borrar_foto/{$foto.id}/" class="btn btn-danger" title="{@Borrar foto@}"><i class="icon-white icon-remove"></i></a>{/if}
 			</div>
 			{elseif="$foto.estado == 1 && ($permiso_ocultar || $permiso_borrar || $permiso_editar)"}
 			<div class="btn-group">
-				{if="$permiso_editar"}<a href="{#SITE_URL#}/foto/editar/{$foto.id}/" class="btn btn-primary show-tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
-				{if="$permiso_ocultar"}<a href="{#SITE_URL#}/foto/ocultar_foto/{$foto.id}/" class="btn btn-success show-tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{/if}
-				{if="$permiso_borrar"}<a href="{#SITE_URL#}/foto/borrar_foto/{$foto.id}/" class="btn btn-danger show-tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
+				{if="$permiso_editar"}<a href="{#SITE_URL#}/foto/editar/{$foto.id}/" class="btn btn-primary" title="{@Editar foto@}"><i class="icon-white icon-pencil"></i></a>{/if}
+				{if="$permiso_ocultar"}<a href="{#SITE_URL#}/foto/ocultar_foto/{$foto.id}/" class="btn btn-success one-click-ajax" data-one-click-spinner="true" title="{@Ocultar foto@}"><i class="icon-white icon-eye-open"></i></a>{/if}
+				{if="$permiso_borrar"}<a href="{#SITE_URL#}/foto/borrar_foto/{$foto.id}/" class="btn btn-danger" title="{@Borrar foto@}"><i class="icon-white icon-remove"></i></a>{/if}
 			</div>
 			{elseif="$foto.estado == 2 && ($permiso_papelera || $permiso_borrar || $permiso_editar)"}
 			<div class="btn-group">
-				{if="$permiso_editar"}<a href="{#SITE_URL#}/foto/editar/{$foto.id}/" class="btn btn-primary show-tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
-				{if="$permiso_papelera"}<a href="{#SITE_URL#}/foto/restaurar_foto/{$foto.id}/" class="btn btn-success show-tooltip" title="Restaurar"><i class="icon-white icon-refresh"></i></a>{/if}
-				{if="$permiso_borrar"}<a href="{#SITE_URL#}/foto/borrar_foto/{$foto.id}/" class="btn btn-danger show-tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
+				{if="$permiso_editar"}<a href="{#SITE_URL#}/foto/editar/{$foto.id}/" class="btn btn-primary" title="{@Editar foto@}"><i class="icon-white icon-pencil"></i></a>{/if}
+				{if="$permiso_papelera"}<a href="{#SITE_URL#}/foto/restaurar_foto/{$foto.id}/" class="btn btn-success" title="{@Restaurar foto@}"><i class="icon-white icon-refresh"></i></a>{/if}
+				{if="$permiso_borrar"}<a href="{#SITE_URL#}/foto/borrar_foto/{$foto.id}/" class="btn btn-danger" title="{@Borrar foto@}"><i class="icon-white icon-remove"></i></a>{/if}
 			</div>
 			{/if}
-			<div class="btn-group">
-				{if="!$ya_vote"}<a href="{#SITE_URL#}/foto/votar/{$foto.id}/1" class="btn btn-success"><i class="icon-white icon-thumbs-up"></i></a>{/if}
+			<div class="btn-group" id="cantidad-votos-foto">
+				{if="!$ya_vote"}<a href="{#SITE_URL#}/foto/votar/{$foto.id}/1/1" class="btn btn-success one-click-ajax" data-one-click-spinner="true" data-one-click-container="#cantidad-votos-foto" data-one-click-items="#cantidad-votos-foto .btn"><i class="icon-white icon-thumbs-up"></i></a>{/if}
 				<span class="btn{if="$foto.votos != 0"} {if="$foto.votos < 0"}btn-danger{else}btn-success{/if}{/if}">{@Votos@}: {$foto.votos}</span>
-				{if="!$ya_vote"}<a href="{#SITE_URL#}/foto/votar/{$foto.id}/-1" class="btn btn-danger"><i class="icon-white icon-thumbs-down"></i></a>{/if}
+				{if="!$ya_vote"}<a href="{#SITE_URL#}/foto/votar/{$foto.id}/-1/1" class="btn btn-danger one-click-ajax" data-one-click-spinner="true" data-one-click-container="#cantidad-votos-foto" data-one-click-items="#cantidad-votos-foto .btn"><i class="icon-white icon-thumbs-down"></i></a>{/if}
 			</div>
-			<div class="btn-group">
-				{if="!$es_favorito"}<a href="{#SITE_URL#}/foto/favorito/{$foto.id}" class="btn btn-success"><i class="icon-white icon-star"></i> {@Agregar a favoritos@}</a>{/if}
+			<div class="btn-group" id="cantidad-favoritos-foto">
+				{if="!$es_favorito"}<a href="{#SITE_URL#}/foto/favorito/{$foto.id}/1" class="btn btn-success one-click-ajax" data-one-click-spinner="true" data-one-click-container="#cantidad-favoritos-foto" data-one-click-items="#cantidad-favoritos-foto .btn"><i class="icon-white icon-star"></i> {@Agregar a favoritos@}</a>{/if}
 				<span class="btn">{@Favoritos@}: {$foto.favoritos}</span>
 			</div>
 			{if="$foto.visitas !== NULL"}<div class="btn-group">
@@ -67,7 +67,7 @@
 			</div>{/if}
 			{if="$me != NULL && $foto.usuario_id != $me"}
 			<div class="btn-group pull-right">
-				<a href="{#SITE_URL#}/foto/denunciar/{$foto.id}" class="btn btn-danger" id="denunciar-foto">{@Denunciar@}</a>
+				<a href="{#SITE_URL#}/foto/denunciar/{$foto.id}" class="btn btn-danger" id="denunciar-foto" data-modal-id="{$foto.id}">{@Denunciar@}</a>
 			</div>
 			{/if}
 		</div>

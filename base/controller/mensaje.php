@@ -453,21 +453,47 @@ class Base_Controller_Mensaje extends Controller {
 
 		if ( ! is_array($model_mensaje->as_array()))
 		{
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El mensaje que desea marcar como nuevo es incorrecto.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje que desea marcar como nuevo es incorrecto.', FALSE));
+			}
 			Request::redirect('/mensaje/');
 		}
 
 		// Verificamos sea el receptor.
 		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El mensaje que desea marcar como nuevo es incorrecto.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje que desea marcar como nuevo es incorrecto.', FALSE));
+			}
 			Request::redirect('/mensaje/');
 		}
 
 		// Marcamos como no leído.
-		if ($model_mensaje->estado == Model_Mensaje::ESTADO_LEIDO)
-		{
-			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_NUEVO);
-		}
+		$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_NUEVO);
 
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			$view = View::factory('mensaje/ajax_index');
+			$view->assign('value', array_merge($model_mensaje->as_array(), array('emisor' => $model_mensaje->emisor()->as_array())));
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Mensaje marcado como nuevo correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Mensaje marcado como nuevo correctamente.', FALSE));
+		}
 		Request::redirect('/mensaje/');
 	}
 
@@ -485,12 +511,30 @@ class Base_Controller_Mensaje extends Controller {
 
 		if ( ! is_array($model_mensaje->as_array()))
 		{
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El mensaje que desea marcar como leido es incorrecto.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje que desea marcar como leido es incorrecto.', FALSE));
+			}
 			Request::redirect('/mensaje/');
 		}
 
 		// Verificamos sea el receptor.
 		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El mensaje que desea marcar como leido es incorrecto.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje que desea marcar como leido es incorrecto.', FALSE));
+			}
 			Request::redirect('/mensaje/');
 		}
 
@@ -500,6 +544,17 @@ class Base_Controller_Mensaje extends Controller {
 			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_LEIDO);
 		}
 
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			$view = View::factory('mensaje/ajax_index');
+			$view->assign('value', array_merge($model_mensaje->as_array(), array('emisor' => $model_mensaje->emisor()->as_array())));
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Mensaje marcado como leido correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Mensaje marcado como leido correctamente.', FALSE));
+		}
 		Request::redirect('/mensaje/');
 	}
 
@@ -607,30 +662,32 @@ class Base_Controller_Mensaje extends Controller {
 		// Verificamos exista el mensaje.
 		$model_mensaje = new Model_Mensaje($mensaje);
 
-		if ( ! is_array($model_mensaje->as_array()))
+		if ( ! is_array($model_mensaje->as_array()) || Usuario::$usuario_id != $model_mensaje->receptor_id || $model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
 		{
-			add_flash_message(FLASH_ERROR, __('El mensaje a eliminar no existe.', FALSE));
-			Request::redirect('/mensaje/');
-		}
-
-		// Verificamos sea el receptor.
-		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
-		{
-			add_flash_message(FLASH_ERROR, __('El mensaje a eliminar no existe.', FALSE));
-			Request::redirect('/mensaje/');
-		}
-
-		// Verifico el estado.
-		if ($model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
-		{
-			add_flash_message(FLASH_ERROR, __('El mensaje a eliminar no existe.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El mensaje a eliminar no existe.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje a eliminar no existe.', FALSE));
+			}
 			Request::redirect('/mensaje/');
 		}
 
 		// Marcamos como eliminado.
 		$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_ELIMINADO);
 
-		add_flash_message(FLASH_SUCCESS, __('Mensaje eliminado correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('message' => __('Mensaje eliminado correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Mensaje eliminado correctamente.', FALSE));
+		}
 		Request::redirect('/mensaje/');
 	}
 

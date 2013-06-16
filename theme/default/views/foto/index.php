@@ -16,10 +16,14 @@
 					<p class="toolbar">
 						<span class="btn-toolbar">
 							<span class="btn-group"><a class="btn btn-primary" href="{#SITE_URL#}/foto/{$value.categoria.seo}/{$value.id}/{$value.titulo|Texto::make_seo}.html">{@Ver@}</a></span>
-							{if="!$value.favorito"}<span class="btn-group"><a class="btn btn-info show-tooltip" href="{#SITE_URL#}/foto/favorito/{$value.id}" title="{@Agregar a favoritos@}"><i class="icon-white icon-star"></i></a></span>{/if}
-							{if="!$value.voto"}<span class="btn-group"><a class="btn btn-success show-tooltip" href="{#SITE_URL#}/foto/votar/{$value.id}/1" title="{@Votar positivamente@}"><i class="icon-white icon-thumbs-up"></i></a>
-							<a class="btn btn-danger show-tooltip" href="{#SITE_URL#}/foto/votar/{$value.id}/-1" title="{@Votar negativamente@}"><i class="icon-white icon-thumbs-down"></i></a></span>{/if}
-							{if="$value.denunciar"}<span class="btn-group"><a class="btn btn-warning show-tooltip denunciar-foto" href="{#SITE_URL#}/foto/denunciar/{$value.id}/" data-modal-id="{$value.id}" title="{@Denunciar@}"><i class="icon-white icon-exclamation-sign"></i></a></span>{/if}
+							{if="!$value.favorito"}<span class="btn-group"><a class="btn btn-info one-click-ajax" data-one-click-spinner="true" href="{#SITE_URL#}/foto/favorito/{$value.id}" title="{@Agregar a favoritos@}"><i class="icon-white icon-star"></i></a></span>{/if}
+							{if="!$value.voto"}
+							<span class="btn-group votar-foto-{$value.id}">
+								<a class="btn btn-success one-click-ajax" data-one-click-spinner="true" data-one-click-items=".votar-foto-{$value.id} .btn" data-one-click-container=".votar-foto-{$value.id}" href="{#SITE_URL#}/foto/votar/{$value.id}/1" title="{@Votar positivamente@}"><i class="icon-white icon-thumbs-up"></i></a>
+								<a class="btn btn-danger one-click-ajax" data-one-click-spinner="true" data-one-click-items=".votar-foto-{$value.id} .btn" data-one-click-container=".votar-foto-{$value.id}" href="{#SITE_URL#}/foto/votar/{$value.id}/-1" title="{@Votar negativamente@}"><i class="icon-white icon-thumbs-down"></i></a>
+							</span>
+							{/if}
+							{if="$value.denunciar"}<span class="btn-group"><a class="btn btn-warning denunciar-foto" href="{#SITE_URL#}/foto/denunciar/{$value.id}/" data-modal-id="{$value.id}" title="{@Denunciar@}"><i class="icon-white icon-exclamation-sign"></i></a></span>{/if}
 						</span>
 					</p>
 					<p class="sumario clearfix">

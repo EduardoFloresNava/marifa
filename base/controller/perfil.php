@@ -967,11 +967,27 @@ class Base_Controller_Perfil extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder seguir usuarios.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder seguir usuarios.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder seguir usuarios.', FALSE));
+				}
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE));
+				}
 			}
 			Request::redirect('/usuario/login');
 		}
@@ -981,11 +997,27 @@ class Base_Controller_Perfil extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				}
 			}
 			Request::redirect("/@{$this->usuario->nick}");
 		}
@@ -996,14 +1028,30 @@ class Base_Controller_Perfil extends Controller {
 			// Verifico el estado.
 			if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 				Request::redirect("/@{$this->usuario->nick}");
 			}
 
 			// Verifico no sea seguidor.
 			if ($this->usuario->es_seguidor(Usuario::$usuario_id))
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 				Request::redirect("/@{$this->usuario->nick}");
 			}
 
@@ -1019,7 +1067,15 @@ class Base_Controller_Perfil extends Controller {
 			// Verifico sea seguidor.
 			if ( ! $this->usuario->es_seguidor(Usuario::$usuario_id))
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				}
 				Request::redirect("/@{$this->usuario->nick}");
 			}
 
@@ -1043,11 +1099,33 @@ class Base_Controller_Perfil extends Controller {
 		// Informo resultado.
 		if ($seguir)
 		{
-			add_flash_message(FLASH_SUCCESS, __('Comenzaste a seguir al usuario correctamente.', FALSE));
+			if (Request::is_ajax())
+			{
+				$view = View::factory('perfil/ajax_seguir_usuario');
+				$view->assign('usuario_nick', $this->usuario->nick);
+				$view->assign('seguidor', TRUE);
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Comenzaste a seguir al usuario correctamente.', FALSE)))));
+			}
+			else
+			{
+				add_flash_message(FLASH_SUCCESS, __('Comenzaste a seguir al usuario correctamente.', FALSE));
+			}
 		}
 		else
 		{
-			add_flash_message(FLASH_SUCCESS, __('Dejaste de seguir al usuario correctamente.', FALSE));
+			if (Request::is_ajax())
+			{
+				$view = View::factory('perfil/ajax_seguir_usuario');
+				$view->assign('usuario_nick', $this->usuario->nick);
+				$view->assign('seguidor', FALSE);
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Dejaste de seguir al usuario correctamente.', FALSE)))));
+			}
+			else
+			{
+				add_flash_message(FLASH_SUCCESS, __('Dejaste de seguir al usuario correctamente.', FALSE));
+			}
 		}
 		Request::redirect("/@{$this->usuario->nick}");
 	}
@@ -1064,28 +1142,60 @@ class Base_Controller_Perfil extends Controller {
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder bloquear usuarios.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder bloquear usuarios.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder bloquear usuarios.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
 		// Verificamos no sea uno mismo.
 		if (Usuario::$usuario_id == $this->usuario->id)
 		{
-			add_flash_message(FLASH_ERROR, __('El usuario al cual quieres bloquear no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres bloquear no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres bloquear no se encuentra disponible.', FALSE));
+			}
 			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Verifico el estado.
 		if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 		{
-			add_flash_message(FLASH_ERROR, __('El usuario al cual quieres bloquear no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres bloquear no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres bloquear no se encuentra disponible.', FALSE));
+			}
 			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Verifico no esté bloqueado.
 		if (Usuario::usuario()->esta_bloqueado($this->usuario->id))
 		{
-			add_flash_message(FLASH_ERROR, __('El usuario al cual quieres bloquear no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres bloquear no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres bloquear no se encuentra disponible.', FALSE));
+			}
 			Request::redirect("/@{$this->usuario->nick}");
 		}
 
@@ -1105,7 +1215,18 @@ class Base_Controller_Perfil extends Controller {
 		}
 
 		// Informo resultado.
-		add_flash_message(FLASH_SUCCESS, __('El usuario se ha bloqueado correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			$view = View::factory('perfil/ajax_bloquear_desbloquear_usuario');
+			$view->assign('usuario_nick', $this->usuario->nick);
+			$view->assign('bloqueado', TRUE);
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('El usuario se ha bloqueado correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El usuario se ha bloqueado correctamente.', FALSE));
+		}
 		Request::redirect("/@{$this->usuario->nick}");
 	}
 
@@ -1121,28 +1242,60 @@ class Base_Controller_Perfil extends Controller {
 		// Verifico estar logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder desbloquear usuarios.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder desbloquear usuarios.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder desbloquear usuarios.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
 		// Verificamos no sea uno mismo.
 		if (Usuario::$usuario_id == $this->usuario->id)
 		{
-			add_flash_message(FLASH_ERROR, __('El usuario al cual quieres desbloquear no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres desbloquear no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres desbloquear no se encuentra disponible.', FALSE));
+			}
 			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Verifico el estado.
 		if ($this->usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 		{
-			add_flash_message(FLASH_ERROR, __('El usuario al cual quieres desbloquear no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres desbloquear no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres desbloquear no se encuentra disponible.', FALSE));
+			}
 			Request::redirect("/@{$this->usuario->nick}");
 		}
 
 		// Verifico esté bloqueado.
 		if ( ! Usuario::usuario()->esta_bloqueado($this->usuario->id))
 		{
-			add_flash_message(FLASH_ERROR, __('El usuario al cual quieres desbloquear no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres desbloquear no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres desbloquear no se encuentra disponible.', FALSE));
+			}
 			Request::redirect("/@{$this->usuario->nick}");
 		}
 
@@ -1162,7 +1315,18 @@ class Base_Controller_Perfil extends Controller {
 		}
 
 		// Informo resultado.
-		add_flash_message(FLASH_SUCCESS, __('El usuario se ha desbloqueado correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			$view = View::factory('perfil/ajax_bloquear_desbloquear_usuario');
+			$view->assign('usuario_nick', $this->usuario->nick);
+			$view->assign('bloqueado', FALSE);
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('El usuario se ha desbloqueado correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El usuario se ha desbloqueado correctamente.', FALSE));
+		}
 		Request::redirect("/@{$this->usuario->nick}");
 	}
 

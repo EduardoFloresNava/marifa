@@ -1,15 +1,15 @@
 <div class="btn-toolbar header-toolbar">
     <div class="btn-group pull-right">
-        <button class="btn dropdown-toggle" data-toggle="dropdown"><img height="16" width="16" src="{function="Utils::get_gravatar($usuario.email, 32, 32)"}" /> {$usuario.nick} <span class="caret"></span></button>
+        <button class="btn dropdown-toggle" data-toggle="dropdown"><img height="16" width="16" src="{function="Utils::get_gravatar($usuario.email, 16, 16)"}" /> {$usuario.nick} <span class="caret"></span></button>
         <ul class="dropdown-menu">
-			<li><a href="{#SITE_URL#}/favoritos/"><i class="icon icon-heart"></i> Favoritos</a></li>
-			<li><a href="{#SITE_URL#}/borradores/"><i class="icon icon-file"></i> Borradores</a></li>
-			<li><a href="{#SITE_URL#}/mensaje/"><i class="icon icon-envelope"></i> Mensajes</a></li>
+			<li><a href="{#SITE_URL#}/favoritos/"><i class="icon icon-heart"></i> {@Favoritos@}</a></li>
+			<li><a href="{#SITE_URL#}/borradores/"><i class="icon icon-file"></i> {@Borradores@}</a></li>
+			<li><a href="{#SITE_URL#}/mensaje/"><i class="icon icon-envelope"></i> {@Mensajes@}</a></li>
 			<li class="divider"></li>
-			<li><a href="{#SITE_URL#}/notificaciones/"><i class="icon icon-bullhorn"></i> Notificaciones</a></li>
-			<li><a href="{#SITE_URL#}/cuenta/"><i class="icon icon-user"></i> Cuenta</a></li>
+			<li><a href="{#SITE_URL#}/notificaciones/"><i class="icon icon-bullhorn"></i> {@Notificaciones@}</a></li>
+			<li><a href="{#SITE_URL#}/cuenta/"><i class="icon icon-user"></i> {@Cuenta@}</a></li>
             <li class="divider"></li>
-            <li><a href="{#SITE_URL#}/logout"><i class="icon icon-off"></i> Salir</a></li>
+            <li><a href="{#SITE_URL#}/logout"><i class="icon icon-off"></i> {@Salir@}</a></li>
         </ul>
     </div>
     <div class="btn-group pull-right">
@@ -22,11 +22,11 @@
 				{/loop}
 			</ul>
 			{else}
-			<div class="alert alert-info">!No tienes sucesos nuevos!</div>
+			<div class="alert alert-info">{@¡No tienes sucesos nuevos!@}</div>
 			{/if}
 			<div class="actions">
-				<a href="{#SITE_URL#}/notificaciones/">Ver todos</a>
-				<a href="{#SITE_URL#}/notificaciones/vistas/">Marcar como vistas</a>
+				<a href="{#SITE_URL#}/notificaciones/">{@Ver todos@}</a>
+				<a href="{#SITE_URL#}/notificaciones/vistas/">{@Marcar como vistas@}</a>
 			</div>
         </div>
     </div>
@@ -50,10 +50,10 @@
 				{/loop}
 			</ul>
 			{else}
-			<div class="alert alert-info">!No tienes mensajes esperando!</div>
+			<div class="alert alert-info">{@¡No tienes mensajes esperando!@}</div>
 			{/if}
 			<div class="actions">
-				<a href="{#SITE_URL#}/mensaje/">Bandeja de entrada</a>
+				<a href="{#SITE_URL#}/mensaje/">{@Bandeja de entrada@}</a>
 			</div>
         </div>
     </div>

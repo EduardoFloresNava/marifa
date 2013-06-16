@@ -1,0 +1,1 @@
+<div class="btn-group"><span class="btn{if="$votos != 0"} {if="$votos < 0"}btn-danger{else}btn-success{/if}{/if}">{@Votos@}: {$votos}</span></div>

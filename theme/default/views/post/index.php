@@ -34,49 +34,18 @@
 		<div class="row-fluid">
 			<div class="span12">
 				<div class="pull-left btn-group">
-					{if="$modificar_especiales"}
-						{if="$post.sticky"}<a href="{#SITE_URL#}/post/fijar_post/{$post.id}/-1" class="btn btn-info">Desfijar</a>{else}<a href="/post/fijar_post/{$post.id}/1" class="btn btn-info">Fijar</a>{/if}
-						{if="$post.sponsored"}<a href="{#SITE_URL#}/post/patrocinar_post/{$post.id}/-1" class="btn btn-info" title="Quitar patrocinio"><i class="icon icon-bookmark-empty"></i></a>{else}<a href="/post/patrocinar_post/{$post.id}/1" class="btn btn-info" title="Patrocinar"><i class="icon icon-bookmark-empty"></i></a>{/if}
-					{/if}
 					{if="$modificar_editar"}<a href="{#SITE_URL#}/post/editar/{$post.id}" class="btn btn-success" title="Editar"><i class="icon-white icon-pencil"></i></a>{/if}
-					{if="$post.estado == 0"}
-						{if="$modificar_ocultar"}<a href="{#SITE_URL#}/post/ocultar_post/{$post.id}/-1" class="btn btn-inverse" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
-						{if="$modificar_aprobar"}<a href="{#SITE_URL#}/post/aprobar_post/{$post.id}/-1" class="btn btn-warning" title="Rechazar"><i class="icon-white icon-hand-down"></i></a>{/if}
-						{if="$modificar_borrar"}<a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="btn btn-danger" title="Borrar"><i class="icon-white icon-remove"></i></a>
-						<a href="{#SITE_URL#}/post/borrar_post/{$post.id}/-1" class="btn btn-danger" title="Enviar a la papelera"><i class="icon-white icon-trash"></i></a>{/if}
-					{/if}
-					{if="$post.estado == 1"}
-						{if="$me == $usuario.id"}<a href="{#SITE_URL#}/post/publicar_post/{$post.id}/" class="btn btn-success" title="Publicar"><i class="icon-white icon-ok"></i></a>{/if}
-						{if="$modificar_borrar"}<a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="btn btn-danger" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
-					{/if}
-					{if="$post.estado == 3"}
-						{if="$modificar_aprobar"}<a href="{#SITE_URL#}/post/aprobar_post/{$post.id}/1" class="btn btn-success" title="Aprobar"><i class="icon-white icon-hand-up"></i></a>
-						<a href="{#SITE_URL#}/post/aprobar_post/{$post.id}/-1" class="btn btn-warning"><i class="icon-white icon-hand-down" title="Rechazar"></i> </a>{/if}
-						{if="$modificar_borrar"}<a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="btn btn-danger" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
-					{/if}
-					{if="$post.estado == 4"}
-						{if="$modificar_ocultar"}<a href="{#SITE_URL#}/post/ocultar_post/{$post.id}/1" class="btn btn-success" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{/if}
-						{if="$modificar_borrar"}<a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="btn btn-danger" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
-					{/if}
-					{if="$post.estado == 5"}
-						{if="$modificar_aprobar"}<a href="{#SITE_URL#}/post/aprobar_post/{$post.id}/1" class="btn btn-success" title="Aprobar"><i class="icon-white icon-hand-up"></i></a>{/if}
-						{if="$modificar_borrar"}<a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="btn btn-danger" title="Borrar"><i class="icon-white icon-remove"></i></a>{/if}
-					{/if}
-					{if="$post.estado == 6"}
-						{if="$modificar_borrar"}<a href="{#SITE_URL#}/post/restaurar_post/{$post.id}/" class="btn btn-success" title="Restaurar"><i class="icon-white icon-refresh"></i></a>
-						<a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="btn btn-danger" title="Borrar"></i><i class="icon-white icon-remove"></i></a>{/if}
-					{/if}
 					{if="$me != NULL && !$sigo_post"}<a href="{#SITE_URL#}/post/seguir_post/{$post.id}" class="btn one-click-ajax" title="Seguir Post">Seguir Post</a>{/if}
 					{if="$me != NULL && !$es_favorito"}<a href="{#SITE_URL#}/post/favorito/{$post.id}" class="btn" title="Agregar a favoritos"><i class="icon icon-star"></i></a>{/if}
 					{if="$me != NULL && $me != $usuario.id && $post.estado == 0"}<a href="{#SITE_URL#}/post/denunciar/{$post.id}" id="post-denunciar" class="btn btn-danger">Denunciar</a>{/if}
-					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon icon-cog"></i></a>
-					<ul class="dropdown-menu">
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#" title="Moderar"><i class="icon icon-cog"></i></a>
+					<ul class="dropdown-menu" id="post-options-menu">
 						{if="$modificar_especiales"}
 						<li>
 							{if="$post.sticky"}
-							<a href="{#SITE_URL#}/post/fijar_post/{$post.id}/-1">Desfijar</a>
+							<a href="{#SITE_URL#}/post/fijar_post/{$post.id}/-1" class="one-click-ajax" data-one-click-spinner="true">Desfijar</a>
 							{else}
-							<a href="{#SITE_URL#}/post/fijar_post/{$post.id}/1">Fijar</a>
+							<a href="{#SITE_URL#}/post/fijar_post/{$post.id}/1" class="one-click-ajax" data-one-click-spinner="true">Fijar</a>
 							{/if}
 						</li>
 						<li>
@@ -87,6 +56,57 @@
 							{/if}
 						</li>
 						{/if}
+						{if="$post.estado == 0"}
+							{if="$modificar_ocultar"}
+							<li><a href="{#SITE_URL#}/post/ocultar_post/{$post.id}/-1" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-eye-close"></i> Ocultar</a></li>
+							{/if}
+							{if="$modificar_aprobar"}
+							<li><a href="{#SITE_URL#}/post/aprobar_post/{$post.id}/-1" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-hand-down"></i> Rechazar</a></li>
+							{/if}
+							{if="$modificar_borrar"}
+							<li><a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-remove"></i> Borrar</a></li>
+							<li><a href="{#SITE_URL#}/post/borrar_post/{$post.id}/-1" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-trash"></i> Enviar a la papelera</a></li>
+							{/if}
+						{/if}
+						{if="$post.estado == 1"}
+							{if="$me == $usuario.id"}
+							<li><a href="{#SITE_URL#}/post/publicar_post/{$post.id}/" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-ok"></i> Publicar</a></li>
+							{/if}
+							{if="$modificar_borrar"}
+							<li><a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-remove"></i> Borrar</a></li>
+							{/if}
+						{/if}
+						{if="$post.estado == 3"}
+							{if="$modificar_aprobar"}
+							<li><a href="{#SITE_URL#}/post/aprobar_post/{$post.id}/1" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-hand-up"></i> Aprobar</a></li>
+							<li><a href="{#SITE_URL#}/post/aprobar_post/{$post.id}/-1" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-hand-down"></i> Rechazar</a></li>
+							{/if}
+							{if="$modificar_borrar"}
+							<li><a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-remove"></i> Borrar</a></li>
+							{/if}
+						{/if}
+						{if="$post.estado == 4"}
+							{if="$modificar_ocultar"}
+							<li><a href="{#SITE_URL#}/post/ocultar_post/{$post.id}/1" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-eye-open"></i> Mostrar</a></li>
+							{/if}
+							{if="$modificar_borrar"}
+							<li><a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-remove"></i> Borrar</a></li>
+							{/if}
+						{/if}
+						{if="$post.estado == 5"}
+							{if="$modificar_aprobar"}
+							<li><a href="{#SITE_URL#}/post/aprobar_post/{$post.id}/1" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-hand-up"></i> Aprobar</a></li>
+							{/if}
+							{if="$modificar_borrar"}
+							<li><a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon icon-remove"></i> Borrar</a></li>
+							{/if}
+						{/if}
+						{if="$post.estado == 6"}
+							{if="$modificar_borrar"}
+							<li><a href="{#SITE_URL#}/post/restaurar_post/{$post.id}/" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"><i class="icon-white icon-refresh"></i> Restaurar</a></li>
+							<li><a href="{#SITE_URL#}/post/borrar_post/{$post.id}/" class="adm-btn one-click-ajax" data-one-click-spinner="true" data-one-click-container="#post-options-menu"></i><i class="icon-white icon-remove"></i> Borrar</a></li>
+							{/if}
+						{/if}
 					</ul>
 				</div>
 				<div class="pull-right btn-group">
@@ -96,10 +116,10 @@
 					<span class="btn" title="Favoritos"><i class="icon icon-star"></i> {$post.favoritos}</span>
 				</div>
 				{if="$me != NULL && is_array($puntuacion)"}
-				<div class="pull-right btn-group">
+				<div class="pull-right btn-group" id="post-puntuar-container">
 					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Puntuar <span class="caret"></span></a>
 					<ul class="dropdown-menu">
-						{loop="$puntuacion"}<li><a href="{#SITE_URL#}/post/puntuar/{$post.id}/{$value}">+{$value}</a></li>{/loop}
+						{loop="$puntuacion"}<li><a href="{#SITE_URL#}/post/puntuar/{$post.id}/{$value}" class="one-click-ajax" data-one-click-container="#post-puntuar-container">+{$value}</a></li>{/loop}
 					</ul>
 				</div>
 				{/if}

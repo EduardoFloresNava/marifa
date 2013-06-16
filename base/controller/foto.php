@@ -488,11 +488,27 @@ class Base_Controller_Foto extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder seguir usuarios.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder seguir usuarios.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder seguir usuarios.', FALSE));
+				}
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder dejar de seguir usuarios.', FALSE));
+				}
 			}
 			Request::redirect('/usuario/login');
 		}
@@ -506,11 +522,27 @@ class Base_Controller_Foto extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				}
 			}
 			Request::redirect($this->foto_url($foto));
 		}
@@ -520,11 +552,27 @@ class Base_Controller_Foto extends Controller {
 		{
 			if ($seguir)
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				}
 			}
 			Request::redirect($this->foto_url($foto));
 		}
@@ -535,14 +583,30 @@ class Base_Controller_Foto extends Controller {
 			// Verifico el estado.
 			if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 				Request::redirect($this->foto_url($foto));
 			}
 
 			// Verifico no sea seguidor.
 			if ($model_usuario->es_seguidor(Usuario::$usuario_id))
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder ver esta sección.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres seguir no se encuentra disponible.', FALSE));
+				}
 				Request::redirect($this->foto_url($foto));
 			}
 
@@ -558,7 +622,15 @@ class Base_Controller_Foto extends Controller {
 			// Verifico sea seguidor.
 			if ( ! $model_usuario->es_seguidor(Usuario::$usuario_id))
 			{
-				add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El usuario al cual quieres dejar de seguir no se encuentra disponible.', FALSE));
+				}
 				Request::redirect($this->foto_url($foto));
 			}
 
@@ -579,14 +651,34 @@ class Base_Controller_Foto extends Controller {
 			$model_suceso->crear($model_usuario->id, $tipo, TRUE, $model_usuario->id, Usuario::$usuario_id);
 		}
 
-		// Informo resultado.
-		if ($seguir)
+		// Informo el resultado.
+		if (Request::is_ajax())
 		{
-			add_flash_message(FLASH_SUCCESS, __('Comenzaste a seguir al usuario correctamente.', FALSE));
+			header('Content-Type: application/json');
+			$view = View::factory('foto/ajax_seguir_usuario');
+			$view->assign('foto_id', (int) $foto);
+			$view->assign('usuario_id', $model_usuario->id);
+			$view->assign('sigue_usuario', $seguir);
+
+			if ($seguir)
+			{
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Comenzaste a seguir al usuario correctamente.', FALSE)))));
+			}
+			else
+			{
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Dejaste de seguir al usuario correctamente.', FALSE)))));
+			}
 		}
 		else
 		{
-			add_flash_message(FLASH_SUCCESS, __('Dejaste de seguir al usuario correctamente.', FALSE));
+			if ($seguir)
+			{
+				add_flash_message(FLASH_SUCCESS, __('Comenzaste a seguir al usuario correctamente.', FALSE));
+			}
+			else
+			{
+				add_flash_message(FLASH_SUCCESS, __('Dejaste de seguir al usuario correctamente.', FALSE));
+			}
 		}
 		Request::redirect($this->foto_url($foto));
 	}
@@ -595,8 +687,9 @@ class Base_Controller_Foto extends Controller {
 	 * Votamos una foto.
 	 * @param int $foto ID de la foto.
 	 * @param int $voto 1 para positivo, -1 para negativo.
+	 * @param bool $cantidad Si debe devolver la cantidad en caso de que sea AJAX.
 	 */
-	public function action_votar($foto, $voto)
+	public function action_votar($foto, $voto, $cantidad)
 	{
 		$foto = (int) $foto;
 		// Obtenemos el voto.
@@ -604,14 +697,30 @@ class Base_Controller_Foto extends Controller {
 
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ver esta sección.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder ver esta sección.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ver esta sección.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
 		// Verificamos los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VOTAR))
 		{
-			add_flash_message(FLASH_ERROR, __('No tienes los permisos suficientes para votar fotos.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('No tienes los permisos suficientes para votar fotos.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('No tienes los permisos suficientes para votar fotos.', FALSE));
+			}
 			Request::redirect('/foto/');
 		}
 
@@ -621,28 +730,60 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos existencia.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('La foto que deseas votar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto que deseas votar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto que deseas votar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el estado de la foto.
 		if ($model_foto->estado !== Model_Foto::ESTADO_ACTIVA)
 		{
-			add_flash_message(FLASH_ERROR, __('La foto que deseas votar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto que deseas votar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto que deseas votar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Verificamos el autor.
 		if ($model_foto->usuario_id === Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, __('La foto que deseas votar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto que deseas votar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto que deseas votar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Verificamos si puede votar.
 		if ($model_foto->ya_voto(Usuario::$usuario_id))
 		{
-			add_flash_message(FLASH_ERROR, __('La foto que deseas votar ya la has votado.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto que deseas votar ya la has votado.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto que deseas votar ya la has votado.', FALSE));
+			}
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -673,15 +814,33 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, __('El voto fue guardado correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			if ($cantidad == 1)
+			{
+				$view = View::factory('foto/ajax_cantidad_votos');
+				$view->assign('votos', $model_foto->votos());
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('El voto fue guardado correctamente.', FALSE)))));
+			}
+			else
+			{
+				die(json_encode(array('response' => 'ok', 'content' => array('message' => __('El voto fue guardado correctamente.', FALSE)))));
+			}
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El voto fue guardado correctamente.', FALSE));
+		}
 		Request::redirect($this->foto_url($model_foto));
 	}
 
 	/**
 	 * Agregamos la foto como favorita.
 	 * @param int $foto ID de la foto.
+	 * @param bool $cantidad Si debe devolver la cantidad en caso de que sea AJAX.
 	 */
-	public function action_favorito($foto)
+	public function action_favorito($foto, $cantidad)
 	{
 		// Convertimos el post a ID.
 		$foto = (int) $foto;
@@ -689,7 +848,15 @@ class Base_Controller_Foto extends Controller {
 		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder agregar la foto a tus favoritos.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder agregar la foto a tus favoritos.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder agregar la foto a tus favoritos.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -699,28 +866,60 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el estado de la foto.
 		if ($model_foto->estado != Model_Foto::ESTADO_ACTIVA)
 		{
-			add_flash_message(FLASH_ERROR, __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Verifica autor.
 		if ($model_foto->usuario_id === Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto que quiere poner como favorito no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->foto_url($model_foto));
 		}
 
 		// Verificamos que no sea favorito.
 		if ($model_foto->es_favorito(Usuario::$usuario_id))
 		{
-			add_flash_message(FLASH_ERROR, __('La foto ya está en tus favoritos.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto ya está en tus favoritos.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto ya está en tus favoritos.', FALSE));
+			}
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -743,7 +942,24 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, __('Foto agregada a favoritos correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			if ($cantidad == 1)
+			{
+				$view = View::factory('foto/ajax_cantidad_favoritos');
+				$view->assign('favoritos', $model_foto->favoritos());
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Foto agregada a favoritos correctamente.', FALSE)))));
+			}
+			else
+			{
+				die(json_encode(array('response' => 'ok', 'content' => array('message' => __('Foto agregada a favoritos correctamente.', FALSE)))));
+			}
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Foto agregada a favoritos correctamente.', FALSE));
+		}
 		Request::redirect($this->foto_url($model_foto));
 	}
 
@@ -1683,7 +1899,15 @@ class Base_Controller_Foto extends Controller {
 	{
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ocultar/mostrar fotos.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder ocultar/mostrar fotos.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ocultar/mostrar fotos.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -1695,14 +1919,30 @@ class Base_Controller_Foto extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/foto/');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_OCULTAR) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DESAPROBADO) && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -1720,7 +1960,15 @@ class Base_Controller_Foto extends Controller {
 		}
 		else
 		{
-			add_flash_message(FLASH_ERROR, __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('La foto que deseas ocultar/mostrar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->foto_url($model_foto));
 		}
 
@@ -1740,7 +1988,18 @@ class Base_Controller_Foto extends Controller {
 		}
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Acción realizada correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			$view = View::factory('foto/ajax_mostrar_ocultar_foto');
+			$view->assign('foto_id', $model_foto->id);
+			$view->assign('ocultar', $model_foto->estado === Model_Foto::ESTADO_OCULTA);
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Acción realizada correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Acción realizada correctamente.', FALSE));
+		}
 		Request::redirect($this->foto_url($model_foto));
 	}
 

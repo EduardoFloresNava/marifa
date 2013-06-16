@@ -6,8 +6,8 @@
 		<h1 class="title">{$usuario.nick}{if="isset($usuario.nombre)"} <small>{$usuario.nombre}</small>{/if}</h1>
 		{if="isset($mensaje_personal)"}<div class="mensaje-personal">{$mensaje_personal|nl2br}</div>{/if}
 		{if="Usuario::is_login() && $usuario.id !== Usuario::$usuario_id"}<a href="{#SITE_URL#}/@{$usuario.nick}/denunciar" id="perfil-denunciar-usuario" class="btn btn-warning"><i class="icon-white icon-exclamation-sign"></i> Denunciar</a>
-		{if="Usuario::is_login()"}{if="!$bloqueado"}<a href="{#SITE_URL#}/@{$usuario.nick}/bloquear" class="btn btn-danger"><i class="icon-white icon-ban-circle"></i> Bloquear</a>{else}<a href="{#SITE_URL#}/@{$usuario.nick}/desbloquear" class="btn btn-success"><i class="icon-white icon-ok-sign"></i> Desbloquear</a>{/if}
-		{if="$seguidor"}<a href="{#SITE_URL#}/@{$usuario.nick}/seguir/0" class="btn btn-primary"><i class="icon-white icon-minus"></i> Dejar de seguir</a>{else}<a href="{#SITE_URL#}/@{$usuario.nick}/seguir/1" class="btn btn-primary"><i class="icon-white icon-plus"></i> Seguir</a>{/if}{/if}{/if}
+		{if="Usuario::is_login()"}{if="!$bloqueado"}<a href="{#SITE_URL#}/@{$usuario.nick}/bloquear" class="btn btn-danger one-click-ajax" data-one-click-spinner="true"><i class="icon-white icon-ban-circle"></i> Bloquear</a>{else}<a href="{#SITE_URL#}/@{$usuario.nick}/desbloquear" class="btn btn-success one-click-ajax" data-one-click-spinner="true"><i class="icon-white icon-ok-sign"></i> Desbloquear</a>{/if}
+		{if="$seguidor"}<a href="{#SITE_URL#}/@{$usuario.nick}/seguir/0" class="btn btn-primary one-click-ajax" data-one-click-spinner="true"><i class="icon-white icon-minus"></i> Dejar de seguir</a>{else}<a href="{#SITE_URL#}/@{$usuario.nick}/seguir/1" class="btn btn-primary one-click-ajax" data-one-click-spinner="true"><i class="icon-white icon-plus"></i> Seguir</a>{/if}{/if}{/if}
 	</div>
 	<div class="span4 profile-statistics">
 		<div class="row-fluid">
@@ -45,12 +45,14 @@
 		<ul class="small-user-list clearfix">
 			{loop="$medallas"}
 			<li>
-				<a href="{#SITE_URL#}/@{$usuario.nick}/medallas" class="show-tooltip" title="{$value.medalla.nombre}"><img src="{#THEME_URL#}/assets/img/medallas/{$value.medalla.imagen}" alt="{$value.medalla.nombre}" /></a>
+				<a href="{#SITE_URL#}/@{$usuario.nick}/medallas" class="show-tooltip" title="{$value.medalla.nombre}">
+					<img src="{#THEME_URL#}/assets/img/medallas/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS, $value.medalla.imagen, 'small')"}" alt="{$value.medalla.nombre}" />
+				</a>
 			</li>
 			{/loop}
 		</ul>
 		{else}
-		<div class="alert alert-info">!{$usuario.nick} aún no tiene ninguna medalla!</div>
+		<div class="alert alert-info">¡{$usuario.nick} aún no tiene ninguna medalla!</div>
 		{/if}
 		<h3 class="title">Seguidores{if="$usuario.seguidores > 0"}<small>{$usuario.seguidores}</small>{/if}</h3>
 		{if="count($seguidores) > 0"}
@@ -64,7 +66,7 @@
 			{/loop}
 		</ul>
 		{else}
-		<div class="alert alert-info">!Aún no hay usuarios siguiendo a {$usuario.nick}!</div>
+		<div class="alert alert-info">¡Aún no hay usuarios siguiendo a {$usuario.nick}!</div>
 		{/if}
 		<h3 class="title">Siguiendo{if="$usuario.sigue > 0"}<small>{$usuario.sigue}</small>{/if}</h3>
 		{if="count($sigue) > 0"}
@@ -78,7 +80,7 @@
 			{/loop}
 		</ul>
 		{else}
-		<div class="alert alert-info">!{$usuario.nick} aún no sigue a ningún usuario!</div>
+		<div class="alert alert-info">¡{$usuario.nick} aún no sigue a ningún usuario!</div>
 		{/if}
 	</div>
 </div>

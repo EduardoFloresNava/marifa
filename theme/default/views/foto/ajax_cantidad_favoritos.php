@@ -1,0 +1,1 @@
+<div class="btn-group"><span class="btn">{@Favoritos@}: {$favoritos}</span></div>

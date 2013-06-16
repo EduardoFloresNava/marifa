@@ -12,6 +12,7 @@
         <link href="{#THEME_URL#}/assets/css/bootstrap.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/font-awesome.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/bootstrap-responsive.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/bootstrap-notify.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/base.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/style.css" rel="stylesheet">
         {if="DEBUG"}<link href="{#THEME_URL#}/assets/css/profiler.css" rel="stylesheet">{/if}
@@ -76,6 +77,7 @@
 					<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><i class="icon icon-bullhorn"></i> {$noticia}</div>
 				{/if}
 			{/if}
+			{if="isset($is_locked) && $is_locked"}<div class="alert alert-info"><b>¡Importante!</b> El sitio se encuentra en modo mantenimiento, no todos los usuarios pueden acceder a el sitio.<a class="close" data-dismiss="alert">×</a></div>{/if}
 			{if="isset($top_bar)"}
 			<ul class="nav nav-tabs">
 				{loop="top_bar"}
@@ -85,7 +87,7 @@
 				{/loop}
 			</ul>
 			{/if}
-			{if="isset($is_locked) && $is_locked"}<div class="alert alert-info"><b>¡Importante!</b> El sitio se encuentra en modo mantenimiento, no todos los usuarios pueden acceder a el sitio.<a class="close" data-dismiss="alert">×</a></div>{/if}
+			<div class="notifications center"></div>
 			{if="isset($flash_success)"}
 				{if="is_array($flash_success)"}
 				<div class="alert alert-success alert-container">
@@ -145,6 +147,7 @@
 		<script src="{#THEME_URL#}/assets/js/bbcode.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.masonry.min.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.textext.min.js"></script>
+		<script src="{#THEME_URL#}/assets/js/bootstrap-notify.js"></script>
 		<script src="{#THEME_URL#}/assets/js/base.js"></script>
 		<script src="{#THEME_URL#}/assets/js/ui.js"></script>
         {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}

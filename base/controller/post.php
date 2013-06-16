@@ -64,6 +64,34 @@ class Base_Controller_Post extends Controller {
 	}
 
 	/**
+	 * Obtenemos la vista ajax para configuraciones de un post.
+	 * @param Model_Post $model_post
+	 * @return View
+	 */
+	protected function ajax_admin_configuration($model_post, $estado = NULL)
+	{
+		// Cargo la vista.
+		$view = View::factory('post/ajax_configuracion_post');
+
+		// Datos genericos.
+		$view->assign('id', $model_post->id);
+		$view->assign('me', Usuario::$usuario_id);
+		$view->assign('usuario_id', $model_post->usuario_id);
+		$view->assign('sticky', $model_post->sticky);
+		$view->assign('sponsored', $model_post->sponsored);
+		$view->assign('estado', $estado === NULL ? $model_post->estado : $estado);
+
+		// Permisos.
+		$view->assign('modificar_especiales', Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER));
+		$view->assign('modificar_ocultar', Usuario::$usuario_id === $model_post->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_OCULTAR));
+		$view->assign('modificar_aprobar', Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO) || Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS));
+		$view->assign('modificar_editar', Usuario::$usuario_id === $model_post->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_EDITAR));
+		$view->assign('modificar_borrar', Usuario::$usuario_id === $model_post->usuario_id || Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR));
+
+		return $view;
+	}
+
+	/**
 	 * Información de un post.
 	 * @param int $post ID del post a visualizar.
 	 * @param int $pagina Número de página de los comentarios.
@@ -218,7 +246,7 @@ class Base_Controller_Post extends Controller {
 			{
 				$view->assign('es_favorito', $model_post->es_favorito(Usuario::$usuario_id));
 				$view->assign('sigo_post', $model_post->es_seguidor(Usuario::$usuario_id));
-				if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_PUNTUAR) || $model_post->dio_puntos(Usuario::$usuario_id))
+				if ($model_post->estado !== Model_Post::ESTADO_ACTIVO || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_PUNTUAR) || $model_post->dio_puntos(Usuario::$usuario_id))
 				{
 					$view->assign('puntuacion', FALSE);
 				}
@@ -1780,14 +1808,30 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder fijar posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder fijar posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder fijar posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico el permiso.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_FIJAR_PROMOVER))
 		{
-			add_flash_message(FLASH_ERROR, __('No tienes permisos para fijar un post.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('No tienes permisos para fijar un post.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('No tienes permisos para fijar un post.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
@@ -1800,6 +1844,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder agregar posts a favoritos.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder agregar posts a favoritos.', FALSE));
+			}
 			add_flash_message(FLASH_ERROR, __('El post que deseas fijar no se encuentra disponible.', FALSE));
 			Request::redirect('/');
 		}
@@ -1812,10 +1865,28 @@ class Base_Controller_Post extends Controller {
 		{
 			if ($tipo)
 			{
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder agregar posts a favoritos.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder agregar posts a favoritos.', FALSE));
+				}
 				add_flash_message(FLASH_ERROR, __('El post que quieres fijar ya se encuentra fijo a la portada.', FALSE));
 			}
 			else
 			{
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder agregar posts a favoritos.', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder agregar posts a favoritos.', FALSE));
+				}
 				add_flash_message(FLASH_ERROR, __('El post no se encuentra fijo a la portada.', FALSE));
 			}
 			Request::redirect($this->post_url($model_post));
@@ -1836,14 +1907,38 @@ class Base_Controller_Post extends Controller {
 			$model_suceso->crear($model_post->usuario_id, 'post_fijar', FALSE, $post, Usuario::$usuario_id, (int) $tipo);
 		}
 
+		if (Request::is_ajax())
+		{
+			$view = View::factory('post/ajax_fijar_desfijar_post');
+			$view->assign('sticky', $tipo);
+			$view->assign('id', $model_post->id);
+		}
+
 		// Informo el resultado.
 		if ($tipo)
 		{
-			add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> El post se ha fijado a la portada correctamente.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('El post se ha fijado a la portada correctamente.', FALSE)))));
+			}
+			else
+			{
+				add_flash_message(FLASH_SUCCESS, __('El post se ha fijado a la portada correctamente.', FALSE));
+			}
 		}
 		else
 		{
-			add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> El post se ha quitado de los posts fijos en la portada correctamente.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('El post se ha quitado de los posts fijos en la portada correctamente.', FALSE)))));
+			}
+			else
+			{
+				add_flash_message(FLASH_SUCCESS, __('El post se ha quitado de los posts fijos en la portada correctamente.', FALSE));
+			}
 		}
 		Request::redirect($this->post_url($model_post));
 	}
@@ -1965,7 +2060,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ocultar/mostrar posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder ocultar/mostrar posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ocultar/mostrar posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -1978,14 +2081,30 @@ class Base_Controller_Post extends Controller {
 		// Verifico el usuario y sus permisos.
 		if ($model_post->usuario_id !== Usuario::$usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_OCULTAR))
 		{
-			add_flash_message(FLASH_ERROR, __('No tienes permiso para ocultar/mostrar posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('No tienes permiso para ocultar/mostrar posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('No tienes permiso para ocultar/mostrar posts.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
 		// Verificamos exista el post.
 		if ( ! is_array($model_post->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que quieres ocultar/mostrar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que quieres ocultar/mostrar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que quieres ocultar/mostrar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
@@ -1995,7 +2114,15 @@ class Base_Controller_Post extends Controller {
 		// Verifico el estado actual.
 		if (($tipo && $model_post->estado !== Model_Post::ESTADO_OCULTO) || ( ! $tipo && $model_post->estado !== Model_Post::ESTADO_ACTIVO))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que quieres ocultar/mostrar no se encuentra disponible', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que quieres ocultar/mostrar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que quieres ocultar/mostrar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_post));
 		}
 
@@ -2021,7 +2148,16 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Informo resultado
-		add_flash_message(FLASH_SUCCESS, __('El post se ocultó/mostró correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			$view = $this->ajax_admin_configuration($model_post, $tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_OCULTO);
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('El post se ocultó/mostró correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El post se ocultó/mostró correctamente.', FALSE));
+		}
 		Request::redirect($this->post_url($model_post));
 	}
 
@@ -2035,14 +2171,30 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder aprobar/rechazar posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder aprobar/rechazar posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder aprobar/rechazar posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico el permiso.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DESAPROBADO))
 		{
-			add_flash_message(FLASH_ERROR, __('No tienes permisos para aprobar/rechazar posts', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('No tienes permisos para aprobar/rechazar posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('No tienes permisos para aprobar/rechazar posts.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
@@ -2055,7 +2207,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que deseas aprobar/rechazar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que deseas aprobar/rechazar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que deseas aprobar/rechazar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
@@ -2065,12 +2225,28 @@ class Base_Controller_Post extends Controller {
 		// Verifico el estado actual.
 		if ($tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_RECHAZADO))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que deseas aprobar/rechazar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder agregar posts a favoritos.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que deseas aprobar/rechazar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_post));
 		}
 		elseif ( ! $tipo && ! ($model_post->estado === Model_Post::ESTADO_PENDIENTE || $model_post->estado === Model_Post::ESTADO_ACTIVO))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que deseas aprobar/rechazar no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que deseas aprobar/rechazar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que deseas aprobar/rechazar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect($this->post_url($model_post));
 		}
 
@@ -2096,7 +2272,16 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Informo resultado.
-		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> El estado se modificó correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			$view = $this->ajax_admin_configuration($model_post, $tipo ? Model_Post::ESTADO_ACTIVO : Model_Post::ESTADO_RECHAZADO);
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view, 'message' => __('El estado se modificó correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El estado se modificó correctamente.', FALSE));
+		}
 		Request::redirect($this->post_url($model_post));
 	}
 
@@ -2110,7 +2295,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sessión para poder borrar/enviar a la papelera posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sessión para poder borrar/enviar a la papelera posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sessión para poder borrar/enviar a la papelera posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -2121,17 +2314,18 @@ class Base_Controller_Post extends Controller {
 		$model_post = new Model_Post($post);
 
 		// Verificamos exista.
-		if ( ! is_array($model_post->as_array()))
+		if ( ! is_array($model_post->as_array()) || (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR)))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que quieres borrar/enviar a la papelera no se encuentra disponible.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que quieres borrar/enviar a la papelera no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que quieres borrar/enviar a la papelera no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
-		}
-
-		// Verifico el usuario y sus permisos.
-		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR))
-		{
-			add_flash_message(FLASH_ERROR, __('No tienes los permisos suficientes para borrar/enviar a la papelera al post.', FALSE));
-			Request::redirect($this->post_url($model_post));
 		}
 
 		// Verifico requisitos según permisos y usuario.
@@ -2143,8 +2337,16 @@ class Base_Controller_Post extends Controller {
 			}
 			elseif ($model_post->estado !== Model_Post::ESTADO_PAPELERA && $model_post !== Model_Post::ESTADO_OCULTO)
 			{
-				add_flash_message(FLASH_ERROR, __('El post que quieres borrar/enviar a la papelera no se encuentra disponible.', FALSE));
-				Request::redirect($this->post_url($model-post));
+				if (Request::is_ajax())
+				{
+					header('Content-Type: application/json');
+					die(json_encode(array('response' => 'error', 'content' => __('El post que quieres borrar/enviar a la papelera no se encuentra disponible..', FALSE))));
+				}
+				else
+				{
+					add_flash_message(FLASH_ERROR, __('El post que quieres borrar/enviar a la papelera no se encuentra disponible..', FALSE));
+				}
+				Request::redirect($this->post_url($model_post));
 			}
 			else
 			{
@@ -2172,7 +2374,24 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Informamos resultado.
-		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Acción realizada correctamente.', FALSE));
+		if (Request::is_ajax())
+		{
+			$view = $this->ajax_admin_configuration($model_post, $tipo ? Model_Post::ESTADO_BORRADO : Model_Post::ESTADO_PAPELERA);
+			if ($tipo)
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view, 'message' => __('Acción realizada correctamente.', FALSE)))));
+			}
+			else
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'ok', 'content' => array('html' => $view, 'message' => __('Acción realizada correctamente.', FALSE)))));
+			}
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Acción realizada correctamente.', FALSE));
+		}
 		Request::redirect($this->post_url($model_post));
 	}
 
@@ -2185,7 +2404,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder restaurar posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder restaurar posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder restaurar posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -2196,30 +2423,22 @@ class Base_Controller_Post extends Controller {
 		$model_post = new Model_Post($post);
 
 		// Verificamos exista.
-		if ( ! is_array($model_post->as_array()))
+		if ( ! is_array($model_post->as_array()) || (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA)) || $model_post->estado !== Model_Post::ESTADO_PAPELERA)
 		{
-			add_flash_message(FLASH_ERROR, __('<b>!Error!</b> Post incorrecto.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que deseas restaurar no está disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que deseas restaurar no está disponible.', FALSE));
+			}
 			Request::redirect('/');
-		}
-
-		// Verifico el usuario.
-		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
-		{
-			add_flash_message(FLASH_ERROR, __('<b>!Error!</b> Permisos incorrectos.', FALSE));
-			Request::redirect($this->post_url($model_post));
-		}
-
-		// Verifico el estado.
-		if ($model_post->estado !== Model_Post::ESTADO_PAPELERA)
-		{
-			add_flash_message(FLASH_ERROR, __('<b>!Error!</b> Permisos incorrectos.', FALSE));
-			Request::redirect($this->post_url($model_post));
 		}
 
 		// Actualizo el estado.
 		$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
-
-		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Acción realizada correctamente.', FALSE));
 
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
@@ -2231,6 +2450,17 @@ class Base_Controller_Post extends Controller {
 		else
 		{
 			$model_suceso->crear($model_post->usuario_id, 'post_restaurar', FALSE, Usuario::$usuario_id, $post);
+		}
+
+		if (Request::is_ajax())
+		{
+			$view = $this->ajax_admin_configuration($model_post, Model_Post::ESTADO_ACTIVO);
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view, 'message' => __('El post se ha restaurado correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El post se ha restaurado correctamente.', FALSE));
 		}
 		Request::redirect($this->post_url($model_post));
 	}
@@ -2244,7 +2474,15 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder publicar posts.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder publicar posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder publicar posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
@@ -2255,24 +2493,18 @@ class Base_Controller_Post extends Controller {
 		$model_post = new Model_Post($post);
 
 		// Verificamos exista.
-		if ( ! is_array($model_post->as_array()))
+		if ( ! is_array($model_post->as_array()) || Usuario::$usuario_id !== $model_post->usuario_id || $model_post->estado !== Model_Post::ESTADO_BORRADOR)
 		{
-			add_flash_message(FLASH_ERROR, __('<b>!Error!</b> Post incorrecto.', FALSE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que deseas publicar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que deseas publicar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
-		}
-
-		// Verifico el usuario.
-		if (Usuario::$usuario_id !== $model_post->usuario_id)
-		{
-			add_flash_message(FLASH_ERROR, __('<b>!Error!</b> Permisos incorrectos.', FALSE));
-			Request::redirect($this->post_url($model_post));
-		}
-
-		// Verifico el estado.
-		if ($model_post->estado !== Model_Post::ESTADO_BORRADOR)
-		{
-			add_flash_message(FLASH_ERROR, __('<b>!Error!</b> Permisos incorrectos.', FALSE));
-			Request::redirect($this->post_url($model_post));
 		}
 
 		// Actualizo el estado.
@@ -2293,12 +2525,21 @@ class Base_Controller_Post extends Controller {
 		// Verifico actualización medallas.
 		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
 
-		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Acción realizada correctamente.', FALSE));
-
 		// Enviamos el suceso.
 		$model_suceso = new Model_Suceso;
 		$model_suceso->crear(Usuario::$usuario_id, 'post_publicado', FALSE, Usuario::$usuario_id, $post);
 
+
+		if (Request::is_ajax())
+		{
+			$view = $this->ajax_admin_configuration($model_post, Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_REVISAR_CONTENIDO) ? Model_Post::ESTADO_PENDIENTE : Model_Post::ESTADO_ACTIVO);
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view, 'message' => __('El post se ha publicado correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('El post se ha publicado correctamente.', FALSE));
+		}
 		Request::redirect($this->post_url($model_post));
 	}
 
@@ -2313,14 +2554,30 @@ class Base_Controller_Post extends Controller {
 		// Verificamos usuario logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder puntuar posts.', FLASE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('Debes iniciar sesión para poder puntuar posts.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder puntuar posts.', FALSE));
+			}
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_PUNTUAR))
 		{
-			add_flash_message(FLASH_ERROR, __('No tienes permisos para puntuar posts.', FLASE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que deseas puntuar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que deseas puntuar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
@@ -2331,9 +2588,17 @@ class Base_Controller_Post extends Controller {
 		$cantidad = (int) $cantidad;
 
 		// Cantidad de puntos a dar como máximo.
-		if ($cantidad < 1 || $cantidad > Usuario::usuario()->rango()->puntos_dar)
+		if ($cantidad < 1 || $cantidad > Usuario::usuario()->rango()->puntos_dar || Usuario::usuario()->puntos < $cantidad)
 		{
-			add_flash_message(FLASH_ERROR, __('La petición que has realizado es inválida.', FLASE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que deseas puntuar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que deseas puntuar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
 		}
 
@@ -2341,38 +2606,18 @@ class Base_Controller_Post extends Controller {
 		$model_post = new Model_Post($post);
 
 		// Verificamos exista.
-		if ( ! is_array($model_post->as_array()))
+		if ( ! is_array($model_post->as_array()) || $model_post->estado !== Model_Post::ESTADO_ACTIVO || $model_post->usuario_id === Usuario::$usuario_id || $model_post->dio_puntos(Usuario::$usuario_id))
 		{
-			add_flash_message(FLASH_ERROR, __('El post que desea puntuar no se encuentra disponible.', FLASE));
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El post que deseas puntuar no se encuentra disponible.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El post que deseas puntuar no se encuentra disponible.', FALSE));
+			}
 			Request::redirect('/');
-		}
-
-		// Verifico el estado del post.
-		if ($model_post->estado !== Model_Post::ESTADO_ACTIVO)
-		{
-			add_flash_message(FLASH_ERROR, __('El post que desea puntuar no se encuentra disponible.', FLASE));
-			Request::redirect($this->post_url($model_post));
-		}
-
-		// Verifico el autor.
-		if ($model_post->usuario_id === Usuario::$usuario_id)
-		{
-			add_flash_message(FLASH_ERROR, __('El post que desea puntuar no se encuentra disponible.', FLASE));
-			Request::redirect($this->post_url($model_post));
-		}
-
-		// Verificamos si ya dio puntos.
-		if ($model_post->dio_puntos(Usuario::$usuario_id))
-		{
-			add_flash_message(FLASH_ERROR, __('El post que desea puntuar ya ha sido puntuado por usted.', FLASE));
-			Request::redirect($this->post_url($model_post));
-		}
-
-		// Verificamos la cantidad de puntos.
-		if (Usuario::usuario()->puntos < $cantidad)
-		{
-			add_flash_message(FLASH_ERROR, __('El post que desea puntuar ya ha sido puntuado por usted.', FLASE));
-			Request::redirect($this->post_url($model_post));
 		}
 
 		// Damos los puntos.
@@ -2398,7 +2643,15 @@ class Base_Controller_Post extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, __('Has puntuado el post de manera correcta.', FLASE));
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('message' => __('Has puntuado el post correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Has puntuado el post correctamente.', FALSE));
+		}
 		Request::redirect($this->post_url($model_post));
 	}
 
