@@ -148,7 +148,7 @@ if (file_exists(APP_BASE.DS.'traducciones'.DS.$default_config['language'].'.php'
 }
 else
 {
-	$GLOBALS['lang'] = array();
+	$GLOBALS['lang'] = NULL;
 }
 
 // Iniciamos las cookies.

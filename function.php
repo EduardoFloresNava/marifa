@@ -157,7 +157,10 @@ function __($str, $echo = TRUE)
 {
 	global $lang;
 
-	$str = arr_get($lang, $str, $str);
+	if ($lang !== NULL)
+	{
+		$str = arr_get($lang, $str, $str);
+	}
 
 	if ($echo)
 	{
