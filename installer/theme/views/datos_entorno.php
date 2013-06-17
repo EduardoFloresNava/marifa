@@ -6,7 +6,7 @@
 		<div class="controls">
 			<input type="text" name="cookie_secret" id="cookie_secret" class="input-xxlarge" value="{$config.cookie_secret}" />
 			<a href="#" id="make_random_cookie_secret" class="btn btn-success"><i class="icon-white icon-random"></i></a>
-			<span class="help-inline">{if="$error_cookie_secret"}{$error_cookie_secret}{/if}</span>
+			<span class="help-inline">{if="$error_cookie_secret"}{$error_cookie_secret}{else}Clave única para encriptar las cookies, puede dejar la generada automáticamente.{/if}</span>
 		</div>
 	</div>
 
@@ -14,7 +14,7 @@
 		<label class="control-label" for="language">Idioma del sistema</label>
 		<div class="controls">
 			<input type="text" name="language" id="language" class="input-xxlarge" value="{$config.language}" />
-			<span class="help-inline">{if="$error_language"}{$error_language}{/if}</span>
+			<span class="help-inline">{if="$error_language"}{$error_language}{else}Idioma del sistema, puede ser configurado luego desde el panel de administración.{/if}</span>
 		</div>
 	</div>
 
@@ -26,7 +26,7 @@
 				<option value="{$key}"{if="$value == $config.default_timezone"} selected{/if}>{$value}</option>
 			{/loop}
 			</select>
-			<span class="help-inline">{if="$error_default_timezone"}{$error_default_timezone}{/if}</span>
+			<span class="help-inline">{if="$error_default_timezone"}{$error_default_timezone}{else}Zona horaria utilizada por el servidor, en caso de una actualización se recomienda no modificarla.{/if}</span>
 		</div>
 	</div>
 
