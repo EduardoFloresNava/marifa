@@ -101,6 +101,11 @@ class Base_Controller_Admin_Configuracion extends Controller {
 		$vista->assign('contacto_valor', $model_configuracion->get('contacto_valor', ''));
 		$vista->assign('error_contacto_valor', FALSE);
 		$vista->assign('success_contacto_valor', FALSE);
+		$vista->assign('timezone', date_default_timezone_get());
+		$vista->assign('error_timezone', FALSE);
+		$vista->assign('success_timezone', FALSE);
+
+		$vista->assign('timezones', timezone_identifiers_list());
 
 		// Cargo listado rangos.
 		$model_rangos = new Model_Usuario_Rango;
@@ -252,7 +257,7 @@ class Base_Controller_Admin_Configuracion extends Controller {
 
 				if ( ! $error_ub)
 				{
-					$actual = $model_configuracion->get('usuarios_bloqueados', NULL);
+					$actual = unserialize($model_configuracion->get('usuarios_bloqueados', serialize(NULL)));
 					if ($actual === NULL || $actual != $usuarios_bloqueados)
 					{
 						$model_configuracion->usuarios_bloqueados = serialize($usuarios_bloqueados);
@@ -414,6 +419,35 @@ class Base_Controller_Admin_Configuracion extends Controller {
 					{
 						$model_configuracion->contacto_valor = $contacto_valor;
 						$vista->assign('success_contacto_valor', __('El valor de contacto se ha actualizado correctamente.', FALSE));
+					}
+				}
+			}
+
+			// Zona horaria.
+			if (isset($_POST['timezone']))
+			{
+				// Limpio el valor.
+				$timezone = $_POST['timezone'];
+
+				// Seteo el nuevo valor a la vista.
+				$vista->assign('timezone', $timezone);
+
+				// Verifico el valor.
+				if ( ! in_array($timezone, timezone_identifiers_list()))
+				{
+					$vista->assign('error_timezone', __('La zona horaria es incorrecta.', FALSE));
+				}
+				else
+				{
+					if ($timezone !== date_default_timezone_get())
+					{
+						// Actualizo el valor.
+						$cfg = Configuracion::factory(CONFIG_PATH.DS.'marifa.php');
+
+						$cfg['default_timezone'] = $timezone;
+						$cfg->save();
+
+						$vista->assign('sucess_timezone', __('La zona horaria se ha actualizado correctamente.', FALSE));
 					}
 				}
 			}

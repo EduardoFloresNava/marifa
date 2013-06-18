@@ -214,71 +214,13 @@ class Installer_Controller {
 			$config['default_timezone'] = 'UTC';
 		}
 
-		// Cargo listado de zonas horarias.
-		$tz_list = timezone_identifiers_list();
+		$config->save();
 
-		// Cargo la vista.
-		$vista = View::factory('datos_entorno');
+		// Marco el paso como terminado.
+		Installer_Step::get_instance()->terminado();
 
-		// Asigno valores por defecto.
-		$vista->assign('config', $config->as_array());
-		$vista->assign('tz_list', $tz_list);
-
-		$vista->assign('error_cookie_secret', FALSE);
-		$vista->assign('error_language', FALSE);
-		$vista->assign('error_default_timezone', FALSE);
-
-		// Proceso lo enviado.
-		if (Request::method() == 'POST')
-		{
-			// Cargo valores enviados.
-			$cookie_secret = arr_get($_POST, 'cookie_secret', NULL);
-			$language = arr_get($_POST, 'language', NULL);
-			$default_timezone = arr_get($_POST, 'default_timezone', NULL);
-
-			// Asigno actuales.
-			$config['cookie_secret'] = $cookie_secret;
-			$config['language'] = $language;
-			$config['default_timezone'] = arr_get($tz_list, $default_timezone, 'UTC');
-			$vista->assign('config', $config->as_array());
-
-			// Marco sin error.
-			$error = FALSE;
-
-			// Verifico valores.
-			if (empty($cookie_secret) || strlen($cookie_secret) < 5)
-			{
-				$error = TRUE;
-				$vista->assign('error_cookie_secret', 'La clave de las cookies debe tener al menos 5 caracteres. Se recomiendan 20.');
-			}
-
-			if ( ! preg_match('/^[a-z]{3}$/', $language))
-			{
-				$error = TRUE;
-				$vista->assign('error_language', 'El lenguaje es incorrecto. Debe usar un código de 3 letras minúsculas.');
-			}
-
-			if ( ! in_array($default_timezone, array_keys($tz_list)))
-			{
-				$erro = TRUE;
-				$vista->assign('error_default_timezone', 'La zona horaria no es válida.');
-			}
-
-			if ( ! $error)
-			{
-				// Guardo.
-				$config->save();
-
-				// Marco el paso como terminado.
-				Installer_Step::get_instance()->terminado();
-
-				// Voy al siguiente.
-				Installer_Step::get_instance()->ir_al_paso();
-			}
-		}
-
-		// Asigno la vista a la plantilla base.
-		$this->template->assign('contenido', $vista->parse());
+		// Voy al siguiente.
+		Installer_Step::get_instance()->ir_al_paso();
 	}
 
 	/**
@@ -334,11 +276,17 @@ class Installer_Controller {
 		if (Request::method() == 'POST')
 		{
 			// Obtengo los datos.
-			foreach (array('driver', 'host', 'db_name', 'usuario', 'password') as $v)
-			{
-				$$v = isset($_POST[$v]) ? trim($_POST[$v]) : NULL;
-				$vista->assign($v, $$v);
-			}
+			$driver = isset($_POST['driver']) ? trim($_POST['driver']) : NULL;
+			$host = isset($_POST['host']) ? trim($_POST['host']) : NULL;
+			$db_name = isset($_POST['db_name']) ? trim($_POST['db_name']) : NULL;
+			$usuario = isset($_POST['usuario']) ? trim($_POST['usuario']) : NULL;
+			$password = isset($_POST['password']) ? trim($_POST['password']) : NULL;
+
+			$vista->assign('driver', $driver);
+			$vista->assign('host', $host);
+			$vista->assign('db_name', $db_name);
+			$vista->assign('usuario', $usuario);
+			$vista->assign('password', $password);
 
 			$error = FALSE;
 
@@ -395,7 +343,7 @@ class Installer_Controller {
 				if (Database::test($config))
 				{
 					// Genero archivo de configuración.
-					$o_cfg = Configuracion::factory(CONFIG_PATH.DS.'database.php', $config)->save();
+					Configuracion::factory(CONFIG_PATH.DS.'database.php', $config)->save();
 
 					// Marco el paso como terminado.
 					Installer_Step::get_instance()->terminado();
@@ -610,14 +558,7 @@ class Installer_Controller {
 		// Cargo la vista.
 		$vista = View::factory('configuracion');
 
-		// Cargamos las configuraciones.
-		$model_configuracion = Model_Configuracion::get_instance();
-
 		// Datos por defecto.
-		$vista->assign('nombre', $model_configuracion->get('nombre', ''));
-		$vista->assign('error_nombre', FALSE);
-		$vista->assign('descripcion', $model_configuracion->get('descripcion', ''));
-		$vista->assign('error_descripcion', FALSE);
 		$vista->assign('usuario', '');
 		$vista->assign('error_usuario', FALSE);
 		$vista->assign('email', '');
@@ -632,20 +573,17 @@ class Installer_Controller {
 		if (Request::method() == 'POST')
 		{
 			// Cargo los valores.
-			foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword', 'bd_password') as $v)
-			{
-				$$v = isset($_POST[$v]) ? trim($_POST[$v]) : '';
-			}
+			$usuario = isset($_POST['usuario']) ? trim($_POST['usuario']) : '';
+			$email = isset($_POST['email']) ? trim($_POST['email']) : '';
+			$password = isset($_POST['password']) ? trim($_POST['password']) : '';
+			$cpassword = isset($_POST['cpassword']) ? trim($_POST['cpassword']) : '';
+			$bd_password = isset($_POST['bd_password']) ? trim($_POST['bd_password']) : '';
 
-			// Limpio los valores.
-			$nombre = preg_replace('/\s+/', ' ', $_POST['nombre']);
-			$descripcion = preg_replace('/\s+/', ' ', $_POST['descripcion']);
-
-			// Asigno nuevos valores a las vistas.
-			foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
-			{
-				$vista->assign($v, $$v);
-			}
+			$vista->assign('usuario', $usuario);
+			$vista->assign('email', $email);
+			$vista->assign('password', $password);
+			$vista->assign('cpassword', $cpassword);
+			$vista->assign('bd_password', $bd_password);
 
 			$error = FALSE;
 
@@ -654,20 +592,6 @@ class Installer_Controller {
 			{
 				$error = TRUE;
 				$vista->assign('error_bd_password', 'La contraseña de la base de datos es incorrecta.');
-			}
-
-			// Verifico el nombre.
-			if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{2,20}$/iD', $nombre))
-			{
-				$error = TRUE;
-				$vista->assign('error_nombre', 'El nombre debe tener entre 2 y 20 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
-			}
-
-			// Verifico el contenido.
-			if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{5,30}$/iD', $descripcion))
-			{
-				$error = TRUE;
-				$vista->assign('error_descripcion', 'La descripción debe tener entre 5 y 30 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
 			}
 
 			// Verifico usuario.
@@ -720,8 +644,9 @@ class Installer_Controller {
 			if ( ! $error)
 			{
 				// Actualizo las configuraciones.
-				$model_configuracion->nombre = $nombre;
-				$model_configuracion->descripcion = $descripcion;
+				$model_configuracion = Model_Configuracion::get_instance();
+				$model_configuracion->nombre = 'Marifa';
+				$model_configuracion->descripcion = 'Tu comunidad de forma simple';
 
 				// Cargo modelo de usuarios.
 				$model_usuario = new Model_Usuario;

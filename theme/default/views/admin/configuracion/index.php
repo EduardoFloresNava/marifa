@@ -27,6 +27,22 @@
 	</fieldset>
 
 	<fieldset>
+		<legend>{@Datos del sistema:@}</legend>
+
+		<div class="control-group{if="$error_timezone"} error{elseif="$success_timezone"} success{/if}">
+			<label class="control-label" for="timezone">{@Zona horaria:@}</label>
+			<div class="controls">
+				<select name="timezone" id="timezone">
+					{loop="$timezones"}
+					<option value="{$value}"{if="$value === $timezone"}selected="selected"{/if}>{$value}</option>
+					{/loop}
+				</select>
+				<span class="help-inline">{if="$error_timezone"}{$error_timezone}{elseif="$success_timezone"}{$success_timezone}{else}{@Zona horaria a utilizar.@}{/if}</span>
+			</div>
+		</div>
+	</fieldset>
+
+	<fieldset>
 		<legend>{@Registro de usuarios:@}</legend>
 
 		<div class="control-group{if="$error_registro"} error{elseif="$success_registro"} success{/if}">
