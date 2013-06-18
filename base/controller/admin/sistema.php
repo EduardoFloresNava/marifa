@@ -63,7 +63,7 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$vista = View::factory('admin/sistema/index');
 
 		// Obtengo actualizaciones.
-		$actualizaciones_sistema = unserialize(base64_decode(Utils::configuracion()->get('update_sistema_actualizaciones', 'a:0:{}')));
+		$actualizaciones_sistema = unserialize(base64_decode(Utils::configuracion()->get('update_sistema_actualizaciones', 'YTowOnt9')));
 		$actualizaciones_last_check = Utils::configuracion()->get('update_sistema_last_check', NULL);
 
 		// Verifico si hay actualizaciones.
@@ -1557,18 +1557,18 @@ class Base_Controller_Admin_Sistema extends Controller {
 		$o_config = new Configuracion(CONFIG_PATH.DS.'upload.php');
 
 		// Asigno valores actuales.
-		$vista->assign('file_maxsize', get_readable_file_size($o_config['file_type']['max_size']));
-		$vista->assign('file_path', $o_config['file_type']['path']);
-		$vista->assign('file_usehash', (bool) $o_config['file_type']['use_hash']);
-		$vista->assign('image_maxsize', get_readable_file_size($o_config['image_data']['max_size']));
-		$vista->assign('image_min_px', implode('x', $o_config['image_data']['resolucion_minima']));
-		$vista->assign('image_max_px', implode('x', $o_config['image_data']['resolucion_maxima']));
-		$vista->assign('image_savemethod', $o_config['image']);
-		$vista->assign('image_disk_savepath', $o_config['image_disk']['save_path']);
-		$vista->assign('image_disk_saveurl', $o_config['image_disk']['base_url']);
-		$vista->assign('image_disk_usehash', (bool) $o_config['image_disk']['use_hash']);
-		$vista->assign('image_imgur_apikey', $o_config['image_imgur']['api_key']);
-		$vista->assign('image_imgur_timeout', (int) $o_config['image_imgur']['timeout']);
+		$vista->assign('file_maxsize', get_readable_file_size($o_config->get('file_type.max_size', 2097152)));
+		$vista->assign('file_path', $o_config->get('file_type.path', CACHE_PATH.'image'.DS));
+		$vista->assign('file_usehash', (bool) $o_config->get('file_type.use_hash', TRUE));
+		$vista->assign('image_maxsize', get_readable_file_size($o_config->get('image_data.max_size', 2097152)));
+		$vista->assign('image_min_px', implode('x', $o_config->get('image_data.resolucion_minima', array(50, 50))));
+		$vista->assign('image_max_px', implode('x', $o_config->get('image_data.resolucion_maxima', array(1000, 1000))));
+		$vista->assign('image_savemethod', $o_config->get('image', 'disk'));
+		$vista->assign('image_disk_savepath', $o_config->get('image_disk.save_path', CACHE_PATH.DS.'imagen'.DS));
+		$vista->assign('image_disk_saveurl', $o_config->get('image_disk.base_url', '/cache/imagen/'));
+		$vista->assign('image_disk_usehash', (bool) $o_config->get('image_disk.use_hash', TRUE));
+		$vista->assign('image_imgur_apikey', $o_config->get('image_imgur.api_key', ''));
+		$vista->assign('image_imgur_timeout', (int) $o_config->get('image_imgur.timeout', 10));
 
 		// Listado de métodos de almacenamiento de imágenes.
 		$image_save_methods = array(
