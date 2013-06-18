@@ -129,7 +129,7 @@ class Base_Model_Pagina extends Model_Dataset {
 	public function nueva($titulo, $contenido, $menu, $estado = self::ESTADO_OCULTO)
 	{
 		// Creo el objeto.
-		list ($id, ) = $this->db->insert('INSERT INTO '.$this->table.' (titulo, contenido, menu, estado, creacion, modificacion) VALUES (?, ?, ?, ?, ?, ?)', array($titulo, $contenido, $menu, $estado, date('Y/m/d H:i:s'), date('Y/m/d H:i:s')));
+		list ($id, ) = $this->db->insert('INSERT INTO '.$this->table.' (titulo, contenido, menu, estado, creacion, modificacion) VALUES (?, ?, ?, ?, ?, ?)', array($titulo, $contenido, $menu, $estado, date('Y/m/d H:i:s'), NULL));
 
 		// Lo asigno para cargar si corresponde.
 		if ($this->primary_key['id'] == NULL)
