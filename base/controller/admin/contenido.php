@@ -67,7 +67,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$vista->assign('post_estado', Model_Post::cantidad_agrupados());
 
 		// Cantidades de posts por categoría.
-		$vista->assign('posts_categorias', Model_Post::cantidad_categorias());
+		$vista->assign('posts_categorias', Model_Post::cantidad_categorias(10));
 
 		// Cantidad de comentarios en posts por estado.
 		$vista->assign('post_comentarios_estado', Model_Post_Comentario::cantidad_agrupados());
@@ -79,7 +79,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$vista->assign('foto_comentarios_estado', Model_Foto_Comentario::cantidad_agrupados());
 
 		// Cantidad de fotos por categoría.
-		$vista->assign('fotos_categorias', Model_Foto::cantidad_categorias());
+		$vista->assign('fotos_categorias', Model_Foto::cantidad_categorias(10));
 
 		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));

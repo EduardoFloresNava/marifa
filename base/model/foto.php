@@ -437,9 +437,16 @@ class Base_Model_Foto extends Model_Dataset {
 	 * Obtenemos listado de categorias que tienen posts y su cantidad.
 	 * @return array
 	 */
-	public static function cantidad_categorias()
+	public static function cantidad_categorias($limit = NULL)
 	{
-		return Database::get_instance()->query('SELECT categoria.nombre, COUNT(foto.id) AS total FROM foto INNER JOIN categoria ON categoria.id = foto.categoria_id GROUP BY foto.categoria_id ORDER BY total DESC')->get_pairs(array(Database_Query::FIELD_STRING, Database_Query::FIELD_INT));
+		if ($limit === NULL)
+		{
+			return Database::get_instance()->query('SELECT categoria.nombre, COUNT(foto.id) AS total FROM foto INNER JOIN categoria ON categoria.id = foto.categoria_id GROUP BY foto.categoria_id ORDER BY total DESC')->get_pairs(array(Database_Query::FIELD_STRING, Database_Query::FIELD_INT));
+		}
+		else
+		{
+			return Database::get_instance()->query('SELECT categoria.nombre, COUNT(foto.id) AS total FROM foto INNER JOIN categoria ON categoria.id = foto.categoria_id GROUP BY foto.categoria_id ORDER BY total DESC LIMIT '.$limit)->get_pairs(array(Database_Query::FIELD_STRING, Database_Query::FIELD_INT));
+		}
 	}
 
 	/**
