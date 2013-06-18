@@ -98,7 +98,7 @@ class Base_Model_Noticia extends Model_Dataset {
 	{
 		$data = $this->db->query('SELECT * FROM noticia WHERE estado = ? ORDER BY rand() LIMIT 1', self::ESTADO_VISIBLE)->get_record(Database_Query::FETCH_ASSOC, $this->fields);
 
-		if ($data !== NULL)
+		if ($data !== NULL && $data !== FALSE)
 		{
 			return new Model_Noticia($data['id'], $data);
 		}

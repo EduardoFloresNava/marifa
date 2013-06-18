@@ -119,7 +119,7 @@ class Base_Dispatcher {
 		if ($finish)
 		{
 			// Limpiamos el buffer.
-			ob_clean();
+			@ob_end_clean();
 
 			// Procesamos la consulta y terminamos.
 			die(self::rewrite_urls($url, TRUE));

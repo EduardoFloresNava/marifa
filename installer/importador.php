@@ -68,7 +68,7 @@ class Installer_Importador {
 		// Proceso listado y ejecuto.
 		foreach ($methods as $m)
 		{
-			// Verifico si es del timpo import_.
+			// Verifico si es del tipo import_.
 			$m_name = $m->getName();
 			if (substr($m_name, 0, 7) == 'import_')
 			{

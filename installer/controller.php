@@ -124,6 +124,12 @@ class Installer_Controller {
 		@touch(APP_BASE.'/plugin/plugin.php');
 		@touch(APP_BASE.'/config/database.php');
 
+		// Intento crear /theme/theme.php
+		if ( ! file_exists(APP_BASE.'/theme/theme.php'))
+		{
+			@touch(APP_BASE.'/theme/theme.php');
+		}
+
 		// Listado de requerimientos.
 		$reqs = array(
 			array('titulo' => 'Versión PHP', 'requerido' => '> 5.2', 'actual' => phpversion(), 'estado' => version_compare(PHP_VERSION, '5.2.0', '>=')),
