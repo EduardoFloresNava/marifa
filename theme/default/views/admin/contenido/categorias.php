@@ -14,15 +14,17 @@
 		<tr>
 			<th>Imagen</th>
 			<th>Nombre</th>
+			<th>SEO</th>
 			<th>Acciones</th>
 		</tr>
 	</thead>
 	<tbody>
 		{loop="$categorias"}
 		<tr>
-			<td><img src="{#THEME_URL#}/assets/img/categoria/{$value.imagen}" /></td>
+			<td><img src="{#THEME_URL#}/assets/img/categoria/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS, $value.imagen, 'small')"}" /></td>
 			<td>{$value.nombre}</td>
-			<td style="text-align: center;">
+			<td>{$value.seo}</td>
+			<td>
 				<div class="btn-group">
 					<a href="{#SITE_URL#}/admin/contenido/editar_categoria/{$value.id}" class="btn btn-mini btn-success show-tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>
 					<a href="{#SITE_URL#}/admin/contenido/eliminar_categoria/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Eliminar"><i class="icon-white icon-remove"></i></a>

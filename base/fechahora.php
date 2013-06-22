@@ -33,6 +33,46 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Fechahora extends DateTime {
 
 	/**
+	 * Creo objeto a partir de marca de tiempo.
+	 * Fallback para PHP 5.2+
+	 * @param int $timestamp Marca de tiempo.
+	 * @return Fechahora
+	 */
+	public static function createFromTimestamp($timestamp)
+	{
+		// Creo el objeto.
+		$o = new Fechahora();
+
+		// Seteo marca de tiempo.
+		$o->setTimestamp($timestamp);
+
+		// Devuelvo el objeto.
+		return $o;
+	}
+
+	/**
+	 * Actualizamos la fecha y hora a partir de la marca de tiempo.
+	 * Es un fallback para dar soporte a PHP 5.2+.
+	 * @param int $unixtimestamp Marca de tiempo a setear.
+	 * @return Fechahora Objeto para chaining.
+	 */
+	public function setTimestamp($unixtimestamp)
+	{
+		if (version_compare(PHP_VERSION, '5.3', '>='))
+		{
+			return parent::setTimestamp($unixtimestamp);
+		}
+		else
+		{
+			list($year, $month, $day, $hour, $minute, $second) = explode(' ', date('Y d m H i s', $unixtimestamp));
+			$this->setDate($year, $month, $day);
+			$this->setTime($hour, $minute, $second);
+
+			return $this;
+		}
+	}
+
+	/**
 	 * Obtenemos una fecha en formato amigable.
 	 * @return string
 	 */
@@ -59,27 +99,27 @@ class Base_Fechahora extends DateTime {
 
 		if ($diff->y != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->y, __('año', FALSE)));
+			return sprintf($key, $this->pluralize($diff->y, __('año', FALSE), __('años', FALSE)));
 		}
 
 		if ($diff->m != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->m, __('mes', FALSE)));
+			return sprintf($key, $this->pluralize($diff->m, __('mes', FALSE), __('meses', FALSE)));
 		}
 
 		if ($diff->d != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->d, __('día', FALSE)));
+			return sprintf($key, $this->pluralize($diff->d, __('día', FALSE), __('días', FALSE)));
 		}
 
 		if ($diff->h != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->h, __('hora', FALSE)));
+			return sprintf($key, $this->pluralize($diff->h, __('hora', FALSE), __('horas', FALSE)));
 		}
 
 		if ($diff->i != 0)
 		{
-			return sprintf($key, $this->pluralize($diff->i, __('minuto', FALSE)));
+			return sprintf($key, $this->pluralize($diff->i, __('minuto', FALSE), __('minutos', FALSE)));
 		}
 
 		return sprintf($key, __('instantes', FALSE));
@@ -99,9 +139,9 @@ class Base_Fechahora extends DateTime {
 	 * @param string $text Cadena en sigular.
 	 * @return string
 	 */
-	private function pluralize($count, $text)
+	private function pluralize($count, $singular, $plural)
 	{
-		return $count.(($count == 1) ? (" $text") : (" ${text}s"));
+		return $count.(($count == 1) ? (" $singular") : (" $plural"));
 	}
 
 }

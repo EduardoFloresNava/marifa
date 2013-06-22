@@ -24,7 +24,7 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Driver de almacenamiento de imagenes utilizando imgur.
+ * Driver de almacenamiento de imágenes utilizando imgur.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.1
@@ -66,7 +66,7 @@ class Base_Upload_Imagen_Driver_Imgur implements Upload_Imagen_Driver {
 		// Timeout.
 		curl_setopt($curl, CURLOPT_TIMEOUT, $this->config['timeout']);
 
-		// El resto de los parametros.
+		// El resto de los parámetros.
 		curl_setopt($curl, CURLOPT_URL, 'http://api.imgur.com/2/upload.json');
 		curl_setopt($curl, CURLOPT_POST, 1);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);

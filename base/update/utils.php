@@ -219,41 +219,26 @@ class Base_Update_Utils {
 	 */
 	public static function get_mime($path)
 	{
-		if (function_exists('finfo_open'))
-		{
-			$finfo = new finfo(FILEINFO_MIME);
-			$mime = $finfo->file($path);
+		// Cargo listado de Mimes.
+		$mimes = configuracion_obtener(CONFIG_PATH.DS.'mimes.php');
 
-			if (strpos($mime, ';') !== FALSE)
+		// Obtengo extensión.
+		$extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+		// Verifico imagenes (más efectivo.
+		if (preg_match('/^(?:jpe?g|png|[gt]if|bmp|swf)$/', $extension))
+		{
+			// Uso getimagesize() para buscar el mime-type.
+			$file = getimagesize($filename);
+
+			if (isset($file['mime']))
 			{
-				list ($mime, ) = explode(';', $mime);
+				return $file['mime'];
 			}
-			return $mime;
 		}
-		elseif (function_exists('mime_content_type'))
-		{
-			return mime_content_type($path);
-		}
-		else
-		{
-			// Obtengo la extensión.
-			$ext = pathinfo($path, PATHINFO_EXTENSION);
 
-			// Verifico el tipo.
-			//TODO: implementar mime's extra.
-			switch ($ext) {
-				case 'zip':
-					return 'application/zip';
-				case 'tar':
-					return 'application/x-tar';
-				case 'gz':
-					return 'application/x-gzip';
-				case 'bz2':
-					return 'application/x-bzip2';
-				default:
-					return 'application/octet-stream';
-			}
-		}
+		// Ultima instancia.
+		return isset($mimes[$extension]) ? $mimes[$extension][0] : FALSE;
 	}
 
 	/**
@@ -265,7 +250,9 @@ class Base_Update_Utils {
 	{
 		switch ($mime)
 		{
+			case 'application/x-zip':
 			case 'application/zip':
+			case 'application/x-zip-compressed':
 				return 'zip';
 			case 'application/x-tar':
 				return 'tar';
@@ -273,6 +260,52 @@ class Base_Update_Utils {
 				return 'gz';
 			case 'application/x-bzip2':
 				return 'bz2';
+			default:
+				return FALSE;
+		}
+	}
+
+	/**
+	 * Obtenemos el compresor a usar en función de la extensión del archivos.
+	 * @param string $ext Extensión del archivo.
+	 * @return string|boolean Compresor a usar.
+	 */
+	public static function extension2compresion($ext)
+	{
+		switch ($ext)
+		{
+			case 'zip':
+				return 'zip';
+			case 'tar':
+				return 'tar';
+			case 'tar.gz':
+			case 'gz':
+				return 'gz';
+			case 'tar.bz':
+			case 'bz':
+				return 'bz2';
+			default:
+				return FALSE;
+		}
+	}
+
+	/**
+	 * Obtenemos la extensión del archivo en función de la compresión.
+	 * @param string $ext Compresión del archivo.
+	 * @return string|boolean
+	 */
+	public static function compresion2extension($ext)
+	{
+		switch ($ext)
+		{
+			case 'zip':
+				return 'zip';
+			case 'tar':
+				return 'tar';
+			case 'gz':
+				return 'tar.gz';
+			case 'bz2':
+				return 'tar.bz';
 			default:
 				return FALSE;
 		}

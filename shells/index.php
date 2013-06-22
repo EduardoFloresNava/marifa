@@ -69,6 +69,8 @@ define('PLUGINS_PATH', 'plugin');
  */
 define('CACHE_PATH', APP_BASE.DS.'cache');
 
+date_default_timezone_set('utc');
+
 // Cargador de CLI.
 require_once (SHELL_PATH.DS.'classes'.DS.'loader.php');
 spl_autoload_register('Shell_Loader::load');

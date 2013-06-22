@@ -85,7 +85,8 @@ class Base_View {
 				'rmdir',
 		));
 
-		RainTPL::configure('check_template_update', TRUE);
+		// Solo verifico en depuración.
+		RainTPL::configure('check_template_update', ! PRODUCTION);
 
 		// Por defecto no permitimos etiquetas PHP.
 		// Es por seguridad y para mantener el patrón MVC.

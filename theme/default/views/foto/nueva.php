@@ -36,7 +36,7 @@
 				<div class="controls">
 					<input type="text" id="captcha" name="captcha" value="{$captcha}" />
 					<span class="help-block">{if="$error_captcha"}{$error_captcha}{else}Ingresa el código que aparece a continuación.{/if}</span>
-					<img src="/home/captcha" style="display: block;" />
+					<img src="{#SITE_URL#}/home/captcha" style="display: block;" />
 				</div>
 			</div>
 
@@ -45,7 +45,7 @@
 				<div class="controls">
 					<select class="input-xxlarge" name="categoria" id="categoria" size="10">
 						{loop="$categorias"}
-						<option style="padding: 3px 0 3px 22px; background: transparent url({#THEME_URL#}/assets/img/categoria/{$value.imagen}) no-repeat 2px center;" value="{$value.seo}"{if="$categoria == $value.seo"}selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
+						<option style="padding: 3px 0 3px 22px; background: transparent url({#THEME_URL#}/assets/img/categoria/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS, $value.imagen, 'small')"}) no-repeat 2px center;" value="{$value.seo}"{if="$categoria == $value.seo"}selected="selected"{/if}>{$value.nombre|htmlentities:ENT_NOQUOTES}</option>{/loop}
 					</select>
 					<span class="help-block">{if="$error_categoria"}{$error_categoria}{/if}</span>
 				</div>

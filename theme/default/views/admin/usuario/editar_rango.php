@@ -16,6 +16,14 @@
 		</div>
 	</div>
 
+	<div class="control-group{if="$error_descripcion"} error{/if}">
+		<label class="control-label" for="descripcion">Descripcion</label>
+		<div class="controls">
+			<textarea name="descripcion" id="descripcion" class="span10" >{$descripcion}</textarea>
+			<span class="help-block">{if="$error_descripcion"}{$error_descripcion}{/if}</span>
+		</div>
+	</div>
+
 	<div class="control-group{if="$error_color"} error{/if}">
 		<label class="control-label" for="color">Color</label>
 		<div class="controls">
@@ -29,7 +37,7 @@
 		<div class="controls">
 			<select name="imagen" id="imagen">
 				{loop="$imagenes_rangos"}
-				<option style="padding-left: 22px; background: transparent url({#THEME_URL#}/assets/img/rangos/{$value}) no-repeat 2px 0;" value="{$value}"{if="$value == $imagen"} selected="selected"{/if}>{$value}</option>
+				<option style="padding-left: 22px; background: transparent url({#THEME_URL#}/assets/img/rangos/{$value}) no-repeat 2px 0;" value="{$key}"{if="$key == $imagen"} selected="selected"{/if}>{$key}</option>
 				{/loop}
 			</select>
 			<span class="help-block">{if="$error_imagen"}{$error_imagen}{/if}</span>

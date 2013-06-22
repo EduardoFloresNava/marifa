@@ -118,7 +118,7 @@ class Shell_Controller_Plugin extends Shell_Controller {
 				$class_name = ucfirst($pname);
 
 				// Genero el listado de directorios.
-				foreach (array('controller', 'model', 'view', 'vendor', 'marifa') as $v)
+				foreach (array('controller', 'model', 'views', 'vendor', 'marifa') as $v)
 				{
 					mkdir($directorio.'/'.$v);
 				}

@@ -37,17 +37,17 @@ class Base_Controller_Admin_Home extends Controller {
 	 */
 	public function before()
 	{
-		// Verifico estar logueado.
+		// Verifico estar identificado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
 			Request::redirect('/usuario/login', TRUE);
 		}
 
 		// Verifico si tiene alguno de los permisos solicitados.
 		if ( ! self::permisos_acceso())
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permisos para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -60,7 +60,7 @@ class Base_Controller_Admin_Home extends Controller {
 	 */
 	public static function permisos_acceso()
 	{
-		// Verifico si tiene algun permiso.
+		// Verifico si tiene algún permiso.
 		$permisos = array(
 			Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR,
 			Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO,
@@ -71,64 +71,71 @@ class Base_Controller_Admin_Home extends Controller {
 	}
 
 	/**
-	 * Listado de menus activos.
-	 * @param string $activo Clave del listado de menus activa en la petición.
+	 * Listado de menúes activos.
+	 * @param string $activo Clave del listado de menúes activa en la petición.
 	 * @return array
 	 */
 	public static function submenu($activo)
 	{
-		$listado = array();
-		$listado['p_general'] = array('caption' => 'General');
-		$listado['index'] = array('link' => '/admin/', 'caption' => 'Inicio', 'active' => FALSE);
-		$listado['home_logs'] = array('link' => '/admin/home/logs', 'caption' => 'Log\'s', 'active' => FALSE);
+		// Objeto para manejo del menú.
+		$menu = new Menu('admin_menu');
+
+		// Información general.
+		$menu->group_set(__('General', FALSE), 'general');
+		$menu->element_set(__('Inicio', FALSE), '/admin/', 'index', 'general');
+		$menu->element_set(__('Log\'s', FALSE), '/admin/home/logs/', 'logs', 'general');
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_CONFIGURAR))
 		{
-			$listado['p_configuracion'] = array('caption' => 'Configuración');
-			$listado['configuracion'] = array('link' => '/admin/configuracion/', 'caption' => 'Configuración', 'active' => FALSE);
-			$listado['configuracion_seo'] = array('link' => '/admin/configuracion/seo', 'caption' => 'SEO', 'active' => FALSE);
-			$listado['configuracion_mantenimiento'] = array('link' => '/admin/configuracion/mantenimiento/', 'caption' => 'Modo Mantenimiento', 'active' => FALSE);
-			$listado['configuracion_temas'] = array('link' => '/admin/configuracion/temas/', 'caption' => 'Temas', 'active' => FALSE);
-			$listado['configuracion_plugins'] = array('link' => '/admin/configuracion/plugins/', 'caption' => 'Plugins', 'active' => FALSE);
-			$listado['configuracion_correo'] = array('link' => '/admin/configuracion/correo/', 'caption' => 'Correo', 'active' => FALSE);
-			$listado['configuracion_optimizar'] = array('link' => '/admin/configuracion/optimizar/', 'caption' => 'Optimizaciones', 'active' => FALSE);
+			// Sistema.
+			$menu->group_set(__('Sistema', FALSE), 'sistema');
+			$menu->element_set(__('Información', FALSE), '/admin/sistema/', 'informacion', 'sistema');
+			$menu->element_set(__('Temas', FALSE), '/admin/sistema/temas/', 'temas', 'sistema');
+			$menu->element_set(__('Plugins', FALSE), '/admin/sistema/plugins/', 'plugins', 'sistema');
+			$menu->element_set(__('Optimizaciones', FALSE), '/admin/sistema/optimizar/', 'optimizar', 'sistema');
+			$menu->element_set(__('Traducciones', FALSE), '/admin/sistema/traducciones/', 'traducciones', 'sistema');
+			$menu->element_set(__('Carga de archivos', FALSE), '/admin/sistema/upload/', 'carga_de_archivos', 'sistema');
+
+			// Configuraciones.
+			$menu->group_set(__('Configuración', FALSE), 'configuracion');
+			$menu->element_set(__('General', FALSE), '/admin/configuracion/', 'configuracion', 'configuracion');
+			$menu->element_set(__('SEO', FALSE), '/admin/configuracion/seo/', 'seo', 'configuracion');
+			$menu->element_set(__('Modo Mantenimiento', FALSE), '/admin/configuracion/mantenimiento/', 'mantenimiento', 'configuracion');
+			$menu->element_set(__('Correo', FALSE), '/admin/configuracion/correo/', 'correo', 'configuracion');
+			$menu->element_set(__('Base de Datos', FALSE), '/admin/configuracion/bd/', 'bd', 'configuracion');
+			$menu->element_set(__('Cache', FALSE), '/admin/configuracion/cache/', 'cache', 'configuracion');
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
 		{
-			$listado['p_contenido'] = array('caption' => 'Contenido');
-			$listado['contenido'] = array('link' => '/admin/contenido', 'caption' => 'Informe contenido', 'active' => FALSE);
-			$listado['contenido_posts'] = array('link' => '/admin/contenido/posts', 'caption' => 'Posts', 'active' => FALSE);
-			$listado['contenido_fotos'] = array('link' => '/admin/contenido/fotos', 'caption' => 'Fotos', 'active' => FALSE);
-			$listado['contenido_categorias'] = array('link' => '/admin/contenido/categorias', 'caption' => 'Categorias', 'active' => FALSE);
-			$listado['contenido_noticias'] = array('link' => '/admin/contenido/noticias/', 'caption' => 'Noticias', 'active' => FALSE);
+			$menu->group_set(__('Contenido', FALSE), 'contenido');
+			$menu->element_set(__('Resumen', FALSE), '/admin/contenido/', 'index', 'contenido');
+			$menu->element_set(__('Posts', FALSE), '/admin/contenido/posts/', 'posts', 'contenido');
+			$menu->element_set(__('Fotos', FALSE), '/admin/contenido/fotos/', 'fotos', 'contenido');
+			$menu->element_set(__('Categorías', FALSE), '/admin/contenido/categorias/', 'categorias', 'contenido');
+			$menu->element_set(__('Noticias', FALSE), '/admin/contenido/noticias/', 'noticias', 'contenido');
+			$menu->element_set(__('Contacto', FALSE), '/admin/contenido/contacto/', 'contacto', 'contenido', Model_Contacto::cantidad(Model_Contacto::ESTADO_NUEVO));
+			$menu->element_set(__('Páginas', FALSE), '/admin/contenido/paginas/', 'paginas', 'contenido');
 		}
 
 		if (Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_ADMINISTRAR))
 		{
-			$listado['p_usuarios'] = array('caption' => 'Usuarios');
-			$listado['usuario'] = array('link' => '/admin/usuario/', 'caption' => 'General', 'active' => FALSE);
-			$listado['usuario_sesiones'] = array('link' => '/admin/usuario/sesiones', 'caption' => 'Sesiones', 'active' => FALSE);
-			$listado['usuario_rangos'] = array('link' => '/admin/usuario/rangos', 'caption' => 'Rangos', 'active' => FALSE);
-			$listado['usuario_medallas'] = array('link' => '/admin/usuario/medallas', 'caption' => 'Medallas', 'active' => FALSE);
+			$menu->group_set(__('Usuarios', FALSE), 'usuarios');
+			$menu->element_set(__('General', FALSE), '/admin/usuario/', 'usuario', 'usuarios');
+			$menu->element_set(__('Sesiones', FALSE), '/admin/usuario/sesiones/', 'sesiones', 'usuarios');
+			$menu->element_set(__('Rangos', FALSE), '/admin/usuario/rangos/', 'rangos', 'usuarios');
+			$menu->element_set(__('Medallas', FALSE), '/admin/usuario/medallas/', 'medallas', 'usuarios');
 		}
 
-		if (isset($listado[$activo]))
+		// Envío respuesta.
+		$el = explode('.', $activo);
+		if (count($el) == 2)
 		{
-			$listado[$activo]['active'] = TRUE;
-		}
-
-		// Evento de procesamiento de los permisos.
-		$rst = Event::trigger('Admin.Home.Menu', array($listado, $activo));
-
-		// Verifico que procesamiento se debe enviar.
-		if (is_array($rst))
-		{
-			return $rst[0];
+			return $menu->as_array($el[1], $el[0], FALSE);
 		}
 		else
 		{
-			return $listado;
+			return $menu->as_array($activo, FALSE);
 		}
 	}
 
@@ -140,7 +147,13 @@ class Base_Controller_Admin_Home extends Controller {
 		// Cargamos la portada.
 		$vista = View::factory('admin/home/index');
 
-		// Ultimos usuarios.
+		// Verifico driver SQL.
+		if (Database::get_instance() instanceof Database_Driver_Mysql)
+		{
+			add_flash_message(FLASH_INFO, sprintf(__('<strong>¡Importante!</strong> Se recomienda utilizar MySQLi como driver por cuestiones de rendimiento y seguridad. Para editar estas configuraciones haga click <a href="%s/admin/configuracion/bd">aquí</a>.', FALSE), SITE_URL));
+		}
+
+		// Últimos usuarios.
 		$model_usuario = new Model_Usuario;
 		$usuarios = $model_usuario->listado(1, 5);
 		foreach ($usuarios as $k => $v)
@@ -152,25 +165,6 @@ class Base_Controller_Admin_Home extends Controller {
 		// Total de usuarios.
 		$vista->assign('usuarios_total', $model_usuario->cantidad());
 		unset($usuarios, $model_usuario);
-
-		// Obtenemos versiones de Marifa.
-		$rst = Cache::get_instance()->get('last_version');
-		if ( ! is_array($rst))
-		{
-			$rst = @json_decode(Utils::remote_call('https://api.github.com/repos/Marifa/marifa/tags'));
-			Cache::get_instance()->save('last_version', $rst, 60);
-		}
-
-		// Ordenamos y obtenemos la última y si podemos actualizar.
-		if (is_array($rst) && isset($rst[0]))
-		{
-			// Ordeno las versiones.
-			usort($rst, create_function('$a, $b', 'return version_compare(substr($b->name, 1), substr($a->name, 1));'));
-
-			$vista->assign('version', $rst[0]->name);
-			$vista->assign('version_new', version_compare(substr($rst[0]->name, 1), VERSION) > 0);
-			$vista->assign('download', array('zip' => $rst[0]->zipball_url, 'tar' => $rst[0]->tarball_url));
-		}
 
 		// Obtenemos contenido.
 		$rst = Database::get_instance()->query('SELECT * FROM ((SELECT "foto" as type, id, creacion AS fecha FROM foto ORDER BY fecha DESC LIMIT 5) UNION (SELECT "post" as type, id, fecha FROM post ORDER BY fecha DESC LIMIT 5)) as A ORDER BY fecha DESC LIMIT 5')->get_records();
@@ -202,17 +196,33 @@ class Base_Controller_Admin_Home extends Controller {
 
 		$vista->assign('contenido_total', Model_Post::s_cantidad() + Model_Foto::s_cantidad());
 
-		// Seteamos el menu.
+		// Obtenemos estado de ejecución de CronJob.
+		$vista->assign('cronjob_lastexecution', Utils::configuracion()->get('cronjob_last_execution', NULL));
+
+		// Estado de la cola de correos.
+		$vista->assign('email_queue_use', Configuracion::factory(CONFIG_PATH.DS.'email.php')->get('queue.use_queue', FALSE));
+		$vista->assign('email_queue_pending', $this->email_queue_count());
+
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', self::submenu('index'));
+		$admin_template->assign('top_bar', self::submenu('general.index'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Cantidad de trabajos pendientes en la cola de ejecución.
+	 * @return int
+	 */
+	protected function email_queue_count()
+	{
+		return count(glob(CACHE_PATH.DS.'email'.DS.'email_*'));
 	}
 
 	/**
@@ -233,7 +243,7 @@ class Base_Controller_Admin_Home extends Controller {
 			// Verifico si esta en la lista.
 			if ( ! in_array($file, $file_list))
 			{
-				add_flash_message(FLASH_ERROR, 'El archivo no es correcto.');
+				add_flash_message(FLASH_ERROR, __('El archivo no es correcto.', FALSE));
 				Request::redirect('/admin/home/logs/');
 			}
 
@@ -253,7 +263,7 @@ class Base_Controller_Admin_Home extends Controller {
 			foreach ($data as $v)
 			{
 				// Obtengo los datos.
-				preg_match('/\[(.*)\] \[(.*)\] (.*)/', $v, $aux);
+				preg_match('/\[(.*?)\] \[(.*?)\] (.*)/', $v, $aux);
 
 				// Verifico sea correcto.
 				if (count($aux) != 4)
@@ -266,23 +276,41 @@ class Base_Controller_Admin_Home extends Controller {
 			}
 			unset($data);
 
-			// Envio los datos a la vista.
+			// Envía los datos a la vista.
 			$vista->assign('lineas', $pd);
 			$vista->assign('actual', $file);
 			unset($pd);
 		}
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
 		unset($vista);
-		$admin_template->assign('top_bar', self::submenu('home_logs'));
+		$admin_template->assign('top_bar', self::submenu('general.logs'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Comprimo los log's antiguos.
+	 * Solo funciona si hay gzip disponible.
+	 */
+	public function action_comprimir_logs()
+	{
+		// Verifico si tengo gzip.
+		if ( ! function_exists('gzcompress'))
+		{
+			add_flash_message(FLASH_ERROR, __('No se encuentra disponible el soporte para GZIP. Para poder comprimir log\'s es necesario.', FALSE));
+			Request::redirect('/admin/home/logs');
+		}
+
+		Log::compress_old();
+		add_flash_message(FLASH_ERROR, __('No se encuentra disponible el soporte para GZIP. Para poder comprimir log\'s es necesario.', FALSE));
+		Request::redirect('/admin/home/logs');
 	}
 
 	/**
@@ -298,20 +326,52 @@ class Base_Controller_Admin_Home extends Controller {
 		// Verifico si esta en la lista.
 		if ( ! in_array($file, $file_list))
 		{
-			add_flash_message(FLASH_ERROR, 'El archivo de log que deseas eliminar no es correcto.');
+			add_flash_message(FLASH_ERROR, __('El archivo de log que deseas eliminar no es correcto.', FALSE));
 			Request::redirect('/admin/home/logs/');
 		}
 
 		// Elimino el archivo.
 		if (@unlink(APP_BASE.DS.'log'.DS.$file))
 		{
-			add_flash_message(FLASH_SUCCESS, 'El archivo de log se ha eliminado correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('El archivo de log se ha eliminado correctamente.', FALSE));
 			Request::redirect('/admin/home/logs/');
 		}
 		else
 		{
-			add_flash_message(FLASH_ERROR, 'Se ha producido un falla al borrar el archivo de logs. Verifique los permisos.');
+			add_flash_message(FLASH_ERROR, __('Se ha producido un falla al borrar el archivo de logs. Verifique los permisos.', FALSE));
 			Request::redirect('/admin/home/logs/');
 		}
+	}
+
+	/**
+	 * Borramos los logs que estén vacios.
+	 */
+	public function action_borrar_logs_vacios()
+	{
+		// Listado de archivos.
+		$file_list = glob(APP_BASE.DS.'log'.DS.'*.{log,log.gz}', GLOB_BRACE);
+		$file_list = array_map(create_function('$str', 'return substr($str, strlen(APP_BASE.DS.\'log\'.DS));'), $file_list);
+
+		// Borro y cuento la cantidad.
+		$c = 0;
+		foreach ($file_list as $f)
+		{
+			if (filesize(APP_BASE.DS.'log'.DS.$f) === 0)
+			{
+				$c++;
+				@unlink(APP_BASE.DS.'log'.DS.$f);
+			}
+		}
+
+		// Informamos y volvemos.
+		if ($c > 0)
+		{
+			add_flash_message(FLASH_SUCCESS, sprintf(__('Se han borrado %s logs vacios del sistema.', FALSE), $c));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('No hay logs vacios para borrar.', FALSE));
+		}
+		Request::redirect('/admin/home/logs/');
 	}
 }

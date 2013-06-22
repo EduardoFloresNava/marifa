@@ -34,29 +34,40 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Database_Driver_Mysql extends Database_Driver {
 
 	/**
-	 * Objeto de coneccion a la base de datos.
+	 * Objeto de conexión a la base de datos.
+	 * @var resource
 	 */
 	protected $conn = NULL;
 
 	/**
 	 * IP o Host de la base de datos
+	 * @var string
 	 */
 	protected $host;
 
 	/**
 	 * Usuario del Servidor.
+	 * @var string
 	 */
 	protected $user;
 
 	/**
 	 * Contraseña del Servidor.
+	 * @var string
 	 */
 	protected $pass;
 
 	/**
 	 * Nombre de la Base de datos.
+	 * @var string
 	 */
 	protected $db;
+
+	/**
+	 * Si se utiliza UTF-8 o no.
+	 * @var bool
+	 */
+	protected $utf8 = FALSE;
 
 	/**
 	 * Constructor de la clase.
@@ -74,6 +85,25 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 
 		// Conectamos a la base de datos.
 		$this->connect();
+
+		if ($data['utf8'])
+		{
+			$this->utf8 = TRUE;
+			mysql_set_charset('utf8');
+		}
+		else
+		{
+			$this->utf8 = FALSE;
+		}
+	}
+
+	/**
+	 * Obtengo si se debe usar o no UTF-8.
+	 * @return bool
+	 */
+	public function is_utf8()
+	{
+		return $this->utf8;
 	}
 
 	/**
@@ -94,7 +124,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 			$lst = array();
 			foreach ($rst as $v)
 			{
-				// Posibles keys
+				// Posibles claves
 				if (isset($v->possible_keys) && $v->possible_keys != NULL)
 				{
 					if ( ! isset($lst['posibles_keys']))
@@ -105,7 +135,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 					$lst['posibles_keys'][] = $v->possible_keys;
 				}
 
-				// Key
+				// Claves
 				if (isset($v->key) && $v->key != NULL)
 				{
 					if ( ! isset($lst['key']))
@@ -121,7 +151,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 					$lst['key'][] = $ks;
 				}
 
-				// Type
+				// Tipo
 				if (isset($v->type) && $v->type != NULL)
 				{
 					if ( ! isset($lst['type']))
@@ -131,14 +161,14 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 					$lst['type'][] = $v->type;
 				}
 
-				// Rows
+				// Filas
 				if (isset($v->rows) && $v->rows != NULL)
 				{
 					$lst['rows'] = (int) $v->rows;
 				}
 			}
 
-			// Tranformamos elemento a string.
+			// Transformamos elemento a cadena de caracteres.
 			foreach ($lst as $k => $v)
 			{
 				if (is_array($v))
@@ -194,7 +224,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	}
 
 	/**
-	 * Verificamos el estado de la conección a la base de datos.
+	 * Verificamos el estado de la conexión a la base de datos.
 	 * @author Cody Roodaka <roodakazo@hotmail.com>
 	 * @return bool
 	 */
@@ -211,11 +241,11 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	}
 
 	/**
-	 * Verifica si es una cadena de caracteres o un objeto a parsear en una
+	 * Verifica si es una cadena de caracteres o un objeto a procesar en una
 	 * consulta SQL. Realizando el pertinente parseo para obtener el SQL a
 	 * ejecutar.
-	 * @param mixed $query Objeto a parsear.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param mixed $query Objeto a procesar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return string Consulta SQL
 	 */
 	private function parse_query($query, $params = array())
@@ -228,7 +258,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	 * Realizamos una consulta de selección.
 	 *
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|Database_Driver_Mysql_Query Falso si hubo un error
 	 * o un objeto para obtener la información del resultado obtenido.
 	 * @author Cody Roodaka <roodakazo@hotmail.com>
@@ -243,7 +273,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		}
 		else
 		{
-			throw new Database_Exception('No hay una conección a la base de datos establecida.', 102);
+			throw new Database_Exception('No hay una conexión a la base de datos establecida.', 102);
 			return FALSE;
 		}
 	}
@@ -262,7 +292,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	/**
 	 * Realiza una inserción en la base de datos.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|int False cuando se produce un error, un arreglo con
 	 * el id de la inserción y el número de filas afectadas si fue correcto.
 	 * @author Cody Roodaka <roodakazo@hotmail.com>
@@ -296,7 +326,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		}
 		else
 		{
-			throw new Database_Exception('No hay una conección a la base de datos establecida.', 102);
+			throw new Database_Exception('No hay una conexión a la base de datos establecida.', 102);
 			return FALSE;
 		}
 	}
@@ -304,7 +334,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	/**
 	 * Borramos información de la base de datos.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|int False cuando se produce un error, el numero de filas
 	 * afectadas si fue correcto.
 	 * @author Cody Roodaka <roodakazo@hotmail.com>
@@ -335,7 +365,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		}
 		else
 		{
-			throw new Database_Exception('No hay una conección a la base de datos extablecida.', 102);
+			throw new Database_Exception('No hay una conexión a la base de datos establecida.', 102);
 			return FALSE;
 		}
 	}
@@ -343,7 +373,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 	/**
 	 * Realiza una actualización en la base de datos.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|int False cuando se produce un error, el numero de filas
 	 * afectadas si fue correcto.
 	 * @author Cody Roodaka <roodakazo@hotmail.com>
@@ -374,7 +404,7 @@ class Base_Database_Driver_Mysql extends Database_Driver {
 		}
 		else
 		{
-			throw new Database_Exception('No hay una conección a la base de datos establecida.', 102);
+			throw new Database_Exception('No hay una conexión a la base de datos establecida.', 102);
 			return FALSE;
 		}
 	}

@@ -5,7 +5,7 @@
 		<div class="span2 menu">
 			<ul class="nav nav-list">
 				{loop="top_bar"}{if="isset($value.link)"}<li{if="$value.active"}  class="active"{/if}>
-					<a href="{#SITE_URL#}{$value.link}">{$value.caption}{if="isset($value.cantidad) && $value.cantidad >= 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
+					<a href="{#SITE_URL#}{$value.link}">{$value.caption}{if="isset($value.cantidad) && $value.cantidad >= 0"} <span class="badge{if="$value.cantidad > 0"} badge-danger{else} badge-success{/if}">{$value.cantidad}</span>{/if}</a>
 				</li>
 				{else}<li class="nav-header">{$value.caption}</li>{/if}{/loop}
 			</ul>

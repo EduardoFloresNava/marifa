@@ -6,9 +6,12 @@ config/database.php
 config/update.php
 config/upload.php
 config/cache.php
+config/marifa.php
+config/email.php
 php_router.php
 /phpdoc/
 /cache/file/
 EXAMPLE
 TODO
 /theme/theme.php
+/cache/queue.txt

@@ -78,24 +78,29 @@ class Base_Model_Noticia extends Model_Dataset {
 	 * Constructor del mensaje.
 	 * @param int $id ID del mensaje a cargar.
 	 */
-	public function __construct($id = NULL)
+	public function __construct($id = NULL, $data = NULL)
 	{
 		parent::__construct();
+
+		if (is_array($data))
+		{
+			$this->data = $data;
+		}
 
 		$this->primary_key['id'] = $id;
 	}
 
 	/**
 	 * Obtenemos una noticia a mostrar.
+	 * @return Model_Noticia
 	 */
-	public static function get_active()
+	public function get_active()
 	{
-		$id = Database::get_instance()->query('SELECT id FROM noticia WHERE estado = ? ORDER BY rand() LIMIT 1', self::ESTADO_VISIBLE)->get_var(Database_Query::FIELD_INT);
+		$data = $this->db->query('SELECT * FROM noticia WHERE estado = ? ORDER BY rand() LIMIT 1', self::ESTADO_VISIBLE)->get_record(Database_Query::FETCH_ASSOC, $this->fields);
 
-		if ($id !== NULL)
+		if ($data !== NULL && $data !== FALSE)
 		{
-
-			return new Model_Noticia($id);
+			return new Model_Noticia($data['id'], $data);
 		}
 		else
 		{

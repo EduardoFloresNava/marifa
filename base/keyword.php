@@ -57,7 +57,8 @@ class Base_Keyword {
 	public function __construct()
 	{
 		// Cargo modelo de configuraciones.
-		$model_config = new Model_Configuracion;
+		$model_config = Model_Configuracion::get_instance();
+		$model_config->load_list(array('keyword_largo_minimo', 'keyword_ocurrencias_minima', 'keyword_palabras_comunes'));
 
 		// Obtengo las configuraciones.
 		$this->largo_minimo = (int) $model_config->get('keyword_largo_minimo', 3);

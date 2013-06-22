@@ -40,7 +40,7 @@ class Base_Controller_Cuenta extends Controller {
 		// Verificamos permisos.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para editar tu cuenta.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para editar tu cuenta.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
@@ -54,14 +54,19 @@ class Base_Controller_Cuenta extends Controller {
 	 */
 	protected function submenu($activo)
 	{
-		return array(
-			'index' => array('link' => '/cuenta', 'caption' => 'Cuenta', 'active' => $activo == 'index'),
-			'perfil' => array('link' => '/cuenta/perfil', 'caption' => 'Perfil', 'active' => $activo == 'perfil'),
-			'bloqueados' => array('link' => '/cuenta/bloqueados', 'caption' => 'Bloqueos', 'active' =>  $activo == 'bloqueados'),
-			'password' => array('link' => '/cuenta/password', 'caption' => 'Contraseña', 'active' =>  $activo == 'password'),
-			'nick' => array('link' => '/cuenta/nick', 'caption' => 'Nicks', 'active' =>  $activo == 'nick'),
-			'avisos' => array('link' => '/cuenta/avisos', 'caption' => 'Avisos', 'active' =>  $activo == 'avisos', 'cantidad' => Usuario::usuario()->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO)),
-		);
+		// Creo el menu.
+		$menu = new Menu('cuenta_menu');
+
+		// Agrego los elementos.
+		$menu->element_set(__('Cuenta', FALSE), '/cuenta/', 'index');
+		$menu->element_set(__('Perfil', FALSE), '/cuenta/perfil/', 'perfil');
+		$menu->element_set(__('Bloqueos', FALSE), '/cuenta/bloqueados/', 'bloqueados');
+		$menu->element_set(__('Contraseña', FALSE), '/cuenta/password/', 'password');
+		$menu->element_set(__('Nicks', FALSE), '/cuenta/nick/', 'nick');
+		$menu->element_set(__('Avisos', FALSE), '/cuenta/avisos/', 'avisos', NULL, Usuario::usuario()->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO));
+
+		// Devuelvo el menú procesado.
+		return $menu->as_array($activo);
 	}
 
 	/**
@@ -70,7 +75,7 @@ class Base_Controller_Cuenta extends Controller {
 	public function action_index()
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Cuenta');
+		$this->template->assign('title', __('Cuenta', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('cuenta/index');
@@ -79,7 +84,7 @@ class Base_Controller_Cuenta extends Controller {
 		$model_usuario = Usuario::usuario();
 		$model_usuario->perfil()->load_list(array('origen', 'sexo', 'nacimiento'));
 
-		// Seteamos los datos actuales.
+		// Asignamos los datos actuales.
 		$view->assign('error', array());
 		$view->assign('email', $model_usuario->email);
 		$view->assign('estado_email', 0);
@@ -90,7 +95,7 @@ class Base_Controller_Cuenta extends Controller {
 		$view->assign('nacimiento', explode('-', Utils::prop($model_usuario->perfil(), 'nacimiento')));
 		$view->assign('estado_nacimiento', 0);
 
-		// Listado de paises.
+		// Listado de países.
 		$lista_pais = configuracion_obtener(CONFIG_PATH.DS.'geonames.'.FILE_EXT);
 		$view->assign('paices', $lista_pais);
 
@@ -106,7 +111,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verificamos el formato de e-mail.
 				if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $_POST['email']))
 				{
-					$errors[] = 'La dirección de email es invólida.';
+					$errors[] = __('La dirección de E-Mail es inválida.', FALSE);
 					$view->assign('estado_email', -1);
 				}
 				else
@@ -119,7 +124,7 @@ class Base_Controller_Cuenta extends Controller {
 						// Verifico no exista un usuario con ese email.
 						if ($model_usuario->exists_email($m))
 						{
-							$errors[] = 'Ya existe un usuario con ese E-Mail.';
+							$errors[] = __('Ya existe un usuario con ese E-Mail.', FALSE);
 							$view->assign('estado_email', -1);
 						}
 						else
@@ -129,7 +134,7 @@ class Base_Controller_Cuenta extends Controller {
 							$model_usuario->cambiar_email($m);
 
 							$view->assign('email', $m);
-							$view->assign('success', 'Datos actualizados correctamente.');
+							$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 							$view->assign('estado_email', 1);
 						}
 						unset($m);
@@ -145,7 +150,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verificamos el valor.
 				if ($_POST['sexo'] != 'f' && $_POST['sexo'] != 'm')
 				{
-					$errors[] = 'El sexo seleccionado no es correcto.';
+					$errors[] = __('El sexo seleccionado no es correcto.', FALSE);
 					$view->assign('estado_sexo', -1);
 				}
 				else
@@ -157,7 +162,7 @@ class Base_Controller_Cuenta extends Controller {
 						$model_usuario->perfil()->sexo = trim($_POST['sexo']);
 
 						$view->assign('sexo', trim($_POST['sexo']));
-						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						$view->assign('estado_sexo', 1);
 					}
 				}
@@ -176,21 +181,21 @@ class Base_Controller_Cuenta extends Controller {
 				// Verificamos los rangos.
 				if ($dia < 1 || $dia > 31)
 				{
-					$errors[] = 'El día de nacimiento es incorrecto.';
+					$errors[] = __('El día de nacimiento es incorrecto.', FALSE);
 					$view->assign('estado_nacimiento', -1);
 					$error = TRUE;
 				}
 
 				if ($mes < 1 || $mes > 12)
 				{
-					$errors[] = 'El mes de nacimiento es incorrecto.';
+					$errors[] = __('El mes de nacimiento es incorrecto.', FALSE);
 					$view->assign('estado_nacimiento', -1);
 					$error = TRUE;
 				}
 
 				if ($ano < 1900 || $dia > date('Y'))
 				{
-					$errors[] = 'El año de nacimiento es incorrecto.';
+					$errors[] = __('El año de nacimiento es incorrecto.', FALSE);
 					$view->assign('estado_nacimiento', -1);
 					$error = TRUE;
 				}
@@ -200,7 +205,7 @@ class Base_Controller_Cuenta extends Controller {
 					// Validamos la fecha.
 					if ( ! checkdate($mes, $dia, $ano))
 					{
-						$errors[] = 'La fecha de nacimiento es incorrecta';
+						$errors[] = __('La fecha de nacimiento es incorrecta', FALSE);
 						$view->assign('estado_nacimiento', -1);
 					}
 					else
@@ -214,28 +219,28 @@ class Base_Controller_Cuenta extends Controller {
 							$model_usuario->perfil()->nacimiento = $fecha;
 							$view->assign('nacimiento', explode('-', $fecha));
 							$view->assign('estado_nacimiento', 1);
-							$view->assign('success', 'Datos actualizados correctamente.');
+							$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						}
 					}
 				}
 			}
 
-			// Verificamos el pais.
+			// Verificamos el país.
 			if (isset($_POST['origen']) && ! empty($_POST['origen']))
 			{
-				// Obtenemos el pais y el estado.
+				// Obtenemos el país y el estado.
 				list($pais, $estado) = explode('.', trim(strtoupper($_POST['origen'])));
 
 				if ( ! isset($lista_pais[$pais]))
 				{
-					$errors[] = 'El lugar de origen es incorrecto.';
+					$errors[] = __('El lugar de origen es incorrecto.', FALSE);
 					$view->assign('estado_origen', -1);
 				}
 				else
 				{
 					if ( ! isset($lista_pais[$pais][1][$estado]))
 					{
-						$errors[] = 'El lugar de origen es incorrecto.';
+						$errors[] = __('El lugar de origen es incorrecto.', FALSE);
 						$view->assign('estado_origen', -1);
 					}
 					else
@@ -246,7 +251,7 @@ class Base_Controller_Cuenta extends Controller {
 							$model_usuario->perfil()->origen = $pais.'.'.$estado;
 							$view->assign('origen', $pais.'.'.$estado);
 							$view->assign('estado_origen', 1);
-							$view->assign('success', 'Datos actualizados correctamente.');
+							$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						}
 					}
 				}
@@ -255,7 +260,7 @@ class Base_Controller_Cuenta extends Controller {
 			$view->assign('error', $errors);
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('index'));
 
@@ -269,7 +274,7 @@ class Base_Controller_Cuenta extends Controller {
 	public function action_perfil()
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Cuenta - Perfil');
+		$this->template->assign('title', __('Cuenta - Perfil', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('cuenta/perfil');
@@ -279,7 +284,7 @@ class Base_Controller_Cuenta extends Controller {
 
 		$view->assign('email', $model_usuario->email);
 
-		// Seteamos los datos actuales.
+		// Asignamos los datos actuales.
 		$view->assign('error', array());
 
 		$fields = array(
@@ -362,7 +367,7 @@ class Base_Controller_Cuenta extends Controller {
 				//TODO: Caracteres extra.
 				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/D', $_POST['nombre']))
 				{
-					$errors[] = 'El nombre seleccionado no es correcto.';
+					$errors[] = __('El nombre seleccionado no es correcto.', FALSE);
 					$view->assign('estado_nombre', -1);
 				}
 				else
@@ -373,7 +378,7 @@ class Base_Controller_Cuenta extends Controller {
 						// Actualizo nombre.
 						$model_usuario->perfil()->nombre = trim($_POST['nombre']);
 
-						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						$view->assign('estado_nombre', 1);
 					}
 				}
@@ -387,7 +392,7 @@ class Base_Controller_Cuenta extends Controller {
 				//TODO: Caracteres extra.
 				if ( ! preg_match('/^[a-zA-Z0-9\.,:\'"\s]{6,400}$/D', $_POST['mensaje_personal']))
 				{
-					$errors[] = 'El mensaje personal seleccionado no es correcto.';
+					$errors[] = __('El mensaje personal seleccionado no es correcto.', FALSE);
 					$view->assign('estado_mensaje_personal', -1);
 				}
 				else
@@ -398,7 +403,7 @@ class Base_Controller_Cuenta extends Controller {
 						// Actualizo nombre.
 						$model_usuario->perfil()->mensaje_personal = trim($_POST['mensaje_personal']);
 
-						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						$view->assign('estado_mensaje_personal', 1);
 					}
 				}
@@ -411,7 +416,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verificamos el formato.
 				if ( ! preg_match('/^(http|https):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i', $_POST['web']))
 				{
-					$errors[] = 'El sitio personal seleccionado no es correcto.';
+					$errors[] = __('El sitio personal seleccionado no es correcto.', FALSE);
 					$view->assign('estado_web', -1);
 				}
 				else
@@ -422,7 +427,7 @@ class Base_Controller_Cuenta extends Controller {
 						// Actualizo nombre.
 						$model_usuario->perfil()->web = trim($_POST['web']);
 
-						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						$view->assign('estado_web', 1);
 					}
 				}
@@ -435,7 +440,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verificamos el formato.
 				if ( ! preg_match('/^[a-z\d.]{5,}$/Di', $_POST['facebook']))
 				{
-					$errors[] = 'La URL de facebook no es correcta.';
+					$errors[] = __('La URL de facebook no es correcta.', FALSE);
 					$view->assign('estado_facebook', -1);
 				}
 				else
@@ -446,7 +451,7 @@ class Base_Controller_Cuenta extends Controller {
 						// Actualizo nombre.
 						$model_usuario->perfil()->facebook = trim($_POST['facebook']);
 
-						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						$view->assign('estado_facebook', 1);
 					}
 				}
@@ -459,7 +464,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verificamos el formato.
 				if ( ! preg_match('/^[a-z\d.]{5,}$/Di', $_POST['twitter']))
 				{
-					$errors[] = 'La URL de twitter no es correcta.';
+					$errors[] = __('La URL de twitter no es correcta.', FALSE);
 					$view->assign('estado_twitter', -1);
 				}
 				else
@@ -470,13 +475,13 @@ class Base_Controller_Cuenta extends Controller {
 						// Actualizo nombre.
 						$model_usuario->perfil()->twitter = trim($_POST['twitter']);
 
-						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						$view->assign('estado_twitter', 1);
 					}
 				}
 			}
 
-			// Validacion de checkboxes
+			// Validación de checkboxes
 			$me_gustaria_listado = array(
 				'hacer_amigos',
 				'conocer_gente_intereses',
@@ -495,7 +500,7 @@ class Base_Controller_Cuenta extends Controller {
 					// Actualizo nombre.
 					$model_usuario->perfil()->$key = $checked;
 
-					$view->assign('success', 'Datos actualizados correctamente.');
+					$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 					$view->assign($key, $checked);
 					$view->assign('estado_'.$key, 1);
 				}
@@ -510,7 +515,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verificamos el formato.
 				if ($altura <= 0 || $altura > 500)
 				{
-					$errors[] = 'La altura ingresada no es correcta.';
+					$errors[] = __('La altura ingresada no es correcta.', FALSE);
 					$view->assign('estado_mi_altura', -1);
 				}
 				else
@@ -521,7 +526,7 @@ class Base_Controller_Cuenta extends Controller {
 						// Actualizo nombre.
 						$model_usuario->perfil()->mi_altura = $altura;
 
-						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						$view->assign('estado_mi_altura', 1);
 					}
 				}
@@ -535,7 +540,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verificamos el formato.
 				if ($peso <= 0 || $peso > 1000)
 				{
-					$errors[] = 'El peso ingresado no es correcto.';
+					$errors[] = __('El peso ingresado no es correcto.', FALSE);
 					$view->assign('estado_mi_peso', -1);
 				}
 				else
@@ -546,7 +551,7 @@ class Base_Controller_Cuenta extends Controller {
 						// Actualizo nombre.
 						$model_usuario->perfil()->mi_peso = $peso;
 
-						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						$view->assign('estado_mi_peso', 1);
 					}
 				}
@@ -554,28 +559,28 @@ class Base_Controller_Cuenta extends Controller {
 
 			// Validaciones de select's.
 			$select_list = array(
-				'estado_civil' => array('El estado civil es incorrecto.', array('soltero', 'novio', 'casado', 'divorciado', 'viudo', 'en_algo')),
-				'hijos' => array('La información sobre sus hijos es incorrecta.', array('no_tengo', 'algun_dia', 'no_son_lo_mio', 'tengo_vivo_con_ellos', 'tengo_no_vivo_con_ellos')),
-				'vivo_con' => array('La información sobre quien vive es incorrecta.', array('solo', 'mis_padres', 'mi_pareja', 'con_amigos', 'otro')),
-				'color_pelo' => array('El color de pelo provisto es incorrecto.', array('negro', 'castano_oscuro', 'castano_claro', 'rubio', 'pelirrojo', 'gris', 'verde', 'naranja', 'morado', 'azul', 'canoso', 'tenido', 'rapado', 'calvo')),
-				'color_ojos' => array('El color de ojos provisto es incorrecto.', array('negros', 'marrones', 'celestes', 'verdes', 'grises')),
-				'complexion' => array('La complexión provista es incorrecta.', array('delgado', 'atletico', 'normal', 'kilos_mas', 'corpulento')),
-				'mi_dieta' => array('La dieta provista es incompleta.', array('vegetariana', 'lacto_vegetariana', 'organica', 'de_todo', 'comida_basura')),
-				'fumo' => array('La información sobre cuanto fuma es incorrecta.', array('no', 'casualmente', 'socialmente', 'regularmente', 'mucho')),
-				'tomo_alcohol' => array('La información sobre su consumo de alcohol es incorrecta.', array('no', 'casualmente', 'socialmente', 'regularmente', 'mucho')),
+				'estado_civil' => array(__('El estado civil es incorrecto.', FALSE), array('soltero', 'novio', 'casado', 'divorciado', 'viudo', 'en_algo')),
+				'hijos' => array(__('La información sobre sus hijos es incorrecta.', FALSE), array('no_tengo', 'algun_dia', 'no_son_lo_mio', 'tengo_vivo_con_ellos', 'tengo_no_vivo_con_ellos')),
+				'vivo_con' => array(__('La información sobre quien vive es incorrecta.', FALSE), array('solo', 'mis_padres', 'mi_pareja', 'con_amigos', 'otro')),
+				'color_pelo' => array(__('El color de pelo provisto es incorrecto.', FALSE), array('negro', 'castano_oscuro', 'castano_claro', 'rubio', 'pelirrojo', 'gris', 'verde', 'naranja', 'morado', 'azul', 'canoso', 'tenido', 'rapado', 'calvo')),
+				'color_ojos' => array(__('El color de ojos provisto es incorrecto.', FALSE), array('negros', 'marrones', 'celestes', 'verdes', 'grises')),
+				'complexion' => array(__('La complexión provista es incorrecta.', FALSE), array('delgado', 'atletico', 'normal', 'kilos_mas', 'corpulento')),
+				'mi_dieta' => array(__('La dieta provista es incompleta.', FALSE), array('vegetariana', 'lacto_vegetariana', 'organica', 'de_todo', 'comida_basura')),
+				'fumo' => array(__('La información sobre cuanto fuma es incorrecta.', FALSE), array('no', 'casualmente', 'socialmente', 'regularmente', 'mucho')),
+				'tomo_alcohol' => array(__('La información sobre su consumo de alcohol es incorrecta.', FALSE), array('no', 'casualmente', 'socialmente', 'regularmente', 'mucho')),
 
-				'estudios' => array('La información sobre sus estudios en incorrecta.', array('sin_estudios', 'primario_en_curso', 'primario_completo', 'secundario_en_curso', 'secundario_completo', 'terciario_en_curso', 'terciario_completo', 'universitario_en_curso', 'universitario_completo', 'post_grado_en_curso', 'post_grado_completo')),
-				'idioma_espanol' => array('La información sobre el idioma español es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
-				'idioma_ingles' => array('La información sobre el idioma inglés es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
-				'idioma_portugues' => array('La información sobre el idioma portugués es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
-				'idioma_frances' => array('La información sobre el idioma francés es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
-				'idioma_italiano' => array('La información sobre el idioma italiano es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
-				'idioma_aleman' => array('La información sobre el idioma alemán es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
-				'idioma_otro' => array('La información sobre el idioma otro es incorrecta.', array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'estudios' => array(__('La información sobre sus estudios en incorrecta.', FALSE), array('sin_estudios', 'primario_en_curso', 'primario_completo', 'secundario_en_curso', 'secundario_completo', 'terciario_en_curso', 'terciario_completo', 'universitario_en_curso', 'universitario_completo', 'post_grado_en_curso', 'post_grado_completo')),
+				'idioma_espanol' => array(__('La información sobre el idioma español es incorrecta.', FALSE), array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_ingles' => array(__('La información sobre el idioma inglés es incorrecta.', FALSE), array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_portugues' => array(__('La información sobre el idioma portugués es incorrecta.', FALSE), array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_frances' => array(__('La información sobre el idioma francés es incorrecta.', FALSE), array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_italiano' => array(__('La información sobre el idioma italiano es incorrecta.', FALSE), array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_aleman' => array(__('La información sobre el idioma alemán es incorrecta.', FALSE), array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
+				'idioma_otro' => array(__('La información sobre el idioma otro es incorrecta.', FALSE), array('sin_conocimiento', 'basico', 'intermedio', 'fluido', 'nativo')),
 
-				'sector' => array('El sector seleccionado es incorrecto.', array('sin_respuesta', 'abastecimiento', 'administracion', 'apoderado_aduanal', 'asesoria_en_comercio_exterior', 'asesoria_legal_internacional', 'asistente_de_trafico', 'auditoria', 'calidad', 'call_center', 'capacitacion_comercio_exterior', 'comercial', 'comercio_exterior', 'compras', 'compras_internacionalesimportacion', 'comunicacion_social', 'comunicaciones_externas', 'comunicaciones_internas', 'consultoria', 'consultorias_comercio_exterior', 'contabilidad', 'control_de_gestion', 'creatividad', 'diseno', 'distribucion', 'ecommerce', 'educacion', 'finanzas', 'finanzas_internacionales', 'gerencia_direccion_general', 'impuestos', 'ingenieria', 'internet', 'investigacion_y_desarrollo', 'jovenes_profesionales', 'legal', 'logistica', 'mantenimiento', 'marketing', 'medio_ambiente', 'mercadotecnia_internacional', 'multimedia', 'otra', 'pasantias', 'periodismo', 'planeamiento', 'produccion', 'produccion_e_ingenieria', 'recursos_humanos', 'relaciones_institucionales_publicas', 'salud', 'seguridad_industrial', 'servicios', 'soporte_tecnico', 'tecnologia', 'tecnologias_de_la_informacion', 'telecomunicaciones', 'telemarketing', 'traduccion', 'transporte', 'ventas', 'ventas_internacionalesexportacion')),
+				'sector' => array(__('El sector seleccionado es incorrecto.', FALSE), array('sin_respuesta', 'abastecimiento', 'administracion', 'apoderado_aduanal', 'asesoria_en_comercio_exterior', 'asesoria_legal_internacional', 'asistente_de_trafico', 'auditoria', 'calidad', 'call_center', 'capacitacion_comercio_exterior', 'comercial', 'comercio_exterior', 'compras', 'compras_internacionalesimportacion', 'comunicacion_social', 'comunicaciones_externas', 'comunicaciones_internas', 'consultoria', 'consultorias_comercio_exterior', 'contabilidad', 'control_de_gestion', 'creatividad', 'diseno', 'distribucion', 'ecommerce', 'educacion', 'finanzas', 'finanzas_internacionales', 'gerencia_direccion_general', 'impuestos', 'ingenieria', 'internet', 'investigacion_y_desarrollo', 'jovenes_profesionales', 'legal', 'logistica', 'mantenimiento', 'marketing', 'medio_ambiente', 'mercadotecnia_internacional', 'multimedia', 'otra', 'pasantias', 'periodismo', 'planeamiento', 'produccion', 'produccion_e_ingenieria', 'recursos_humanos', 'relaciones_institucionales_publicas', 'salud', 'seguridad_industrial', 'servicios', 'soporte_tecnico', 'tecnologia', 'tecnologias_de_la_informacion', 'telecomunicaciones', 'telemarketing', 'traduccion', 'transporte', 'ventas', 'ventas_internacionalesexportacion')),
 
-				'nivel_ingresos' => array('El nivel de ingresos seleccionado no es correcto.', array('sin_ingresos', 'bajos', 'intermedios', 'altos')),
+				'nivel_ingresos' => array(__('El nivel de ingresos seleccionado no es correcto.', FALSE), array('sin_ingresos', 'bajos', 'intermedios', 'altos')),
 			);
 			foreach ($select_list as $key => $datos)
 			{
@@ -596,7 +601,7 @@ class Base_Controller_Cuenta extends Controller {
 							// Actualizo nombre.
 							$model_usuario->perfil()->$key = trim($_POST[$key]);
 
-							$view->assign('success', 'Datos actualizados correctamente.');
+							$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 							$view->assign('estado_'.$key, 1);
 						}
 					}
@@ -611,7 +616,7 @@ class Base_Controller_Cuenta extends Controller {
 				//TODO: Caracteres extra.
 				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/D', $_POST['profesion']))
 				{
-					$errors[] = 'La profesión seleccionada no es correcta.';
+					$errors[] = __('La profesión seleccionada no es correcta.', FALSE);
 					$view->assign('estado_profesion', -1);
 				}
 				else
@@ -622,7 +627,7 @@ class Base_Controller_Cuenta extends Controller {
 						// Actualizo nombre.
 						$model_usuario->perfil()->profesion = trim($_POST['profesion']);
 
-						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						$view->assign('estado_profesion', 1);
 					}
 				}
@@ -636,7 +641,7 @@ class Base_Controller_Cuenta extends Controller {
 				//TODO: Caracteres extra.
 				if ( ! preg_match('/^[a-zA-Z0-9 ]{4,60}$/D', $_POST['empresa']))
 				{
-					$errors[] = 'La empresa seleccionada no es correcta.';
+					$errors[] = __('La empresa seleccionada no es correcta.', FALSE);
 					$view->assign('estado_empresa', -1);
 				}
 				else
@@ -647,7 +652,7 @@ class Base_Controller_Cuenta extends Controller {
 						// Actualizo nombre.
 						$model_usuario->perfil()->empresa = trim($_POST['empresa']);
 
-						$view->assign('success', 'Datos actualizados correctamente.');
+						$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 						$view->assign('estado_empresa', 1);
 					}
 				}
@@ -655,17 +660,17 @@ class Base_Controller_Cuenta extends Controller {
 
 			// Descripciones de gustos y demás de textareas.
 			$textareas = array(
-				'intereses_personales' => 'Los intereses personales son incorrectos.',
-				'habilidades_profesionales' => 'Las habilidades profesionales son incorrectas.',
-				'mis_intereses' => 'Los intereses son incorrectos.',
-				'hobbies' => 'Los hobbies son incorrectos.',
-				'series_tv_favoritas' => 'Las series de TV favoritas son incorrectas.',
-				'musica_favorita' => 'La música favorita es incorrecta.',
-				'deportes_y_equipos_favoritos' => 'Los deportes y equipos favoritos son incorrectos.',
-				'libros_favoritos' => 'Los libros favoritos son incorrectos.',
-				'peliculas_favoritas' => 'Las peliculas favoritas son incorrectas.',
-				'comida_favorita' => 'La comida favorita es incorrecta.',
-				'mis_heroes' => 'Los heroes son incorrectos.'
+				'intereses_personales' => __('Los intereses personales son incorrectos.', FALSE),
+				'habilidades_profesionales' => __('Las habilidades profesionales son incorrectas.', FALSE),
+				'mis_intereses' => __('Los intereses son incorrectos.', FALSE),
+				'hobbies' => __('Los hobbies son incorrectos.', FALSE),
+				'series_tv_favoritas' => __('Las series de TV favoritas son incorrectas.', FALSE),
+				'musica_favorita' => __('La música favorita es incorrecta.', FALSE),
+				'deportes_y_equipos_favoritos' => __('Los deportes y equipos favoritos son incorrectos.', FALSE),
+				'libros_favoritos' => __('Los libros favoritos son incorrectos.', FALSE),
+				'peliculas_favoritas' => __('Las películas favoritas son incorrectas.', FALSE),
+				'comida_favorita' => __('La comida favorita es incorrecta.', FALSE),
+				'mis_heroes' => __('Los héroes son incorrectos.', FALSE)
 			);
 			foreach ($textareas as $key => $value)
 			{
@@ -686,7 +691,7 @@ class Base_Controller_Cuenta extends Controller {
 							// Actualizo nombre.
 							$model_usuario->perfil()->$key = trim($_POST[$key]);
 
-							$view->assign('success', 'Datos actualizados correctamente.');
+							$view->assign('success', __('Datos actualizados correctamente.', FALSE));
 							$view->assign('estado_'.$key, 1);
 						}
 					}
@@ -697,7 +702,7 @@ class Base_Controller_Cuenta extends Controller {
 			$view->assign('error', $errors);
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('perfil'));
 
@@ -711,12 +716,12 @@ class Base_Controller_Cuenta extends Controller {
 	public function action_bloqueados()
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Cuenta - Bloqueos');
+		$this->template->assign('title', __('Cuenta - Bloqueos', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('cuenta/bloqueos');
 
-		// Seteo parametros.
+		// Asigno parámetros.
 		$view->assign('email', Usuario::usuario()->email);
 		$view->assign('usuario', '');
 		$view->assign('error_usuario', FALSE);
@@ -726,7 +731,7 @@ class Base_Controller_Cuenta extends Controller {
 			// Obtengo el usuario.
 			$usuario = isset($_POST['usuario']) ? trim($_POST['usuario']) : '';
 
-			// Seteo a la vista.
+			// Asigno a la vista.
 			$view->assign('usuario', $usuario);
 
 			$error = FALSE;
@@ -734,7 +739,7 @@ class Base_Controller_Cuenta extends Controller {
 			// Verifico el nick
 			if ( ! preg_match('/^[a-zA-Z0-9]{4,16}$/D', $usuario))
 			{
-				$view->assign('error_usuario', 'El usuario ingresado no es válido.');
+				$view->assign('error_usuario', __('El usuario ingresado no es válido.', FALSE));
 				$error = TRUE;
 			}
 
@@ -744,7 +749,7 @@ class Base_Controller_Cuenta extends Controller {
 				$model_usuario = new Model_Usuario;
 				if ( ! $model_usuario->exists_nick($usuario))
 				{
-					$view->assign('error_usuario', 'El usuario ingresado no es válido.');
+					$view->assign('error_usuario', __('El usuario ingresado no es válido.', FALSE));
 					$error = TRUE;
 				}
 				else
@@ -758,7 +763,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verifico no sea uno mismo.
 				if ($model_usuario->id === Usuario::$usuario_id)
 				{
-					$view->assign('error_usuario', 'El usuario ingresado no es válido.');
+					$view->assign('error_usuario', __('El usuario ingresado no es válido.', FALSE));
 					$error = TRUE;
 				}
 			}
@@ -768,7 +773,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verifico estado.
 				if ($model_usuario->estado !== Model_Usuario::ESTADO_ACTIVA)
 				{
-					$view->assign('error_usuario', 'El usuario ingresado no es válido.');
+					$view->assign('error_usuario', __('El usuario ingresado no es válido.', FALSE));
 					$error = TRUE;
 				}
 			}
@@ -778,7 +783,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verifico no se encuentre bloqueado.
 				if (Usuario::usuario()->esta_bloqueado($model_usuario->id))
 				{
-					$view->assign('error_usuario', 'El usuario ingresado no es válido.');
+					$view->assign('error_usuario', __('El usuario ingresado no es válido.', FALSE));
 					$error = TRUE;
 				}
 			}
@@ -788,7 +793,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Bloqueo el usuario.
 				Usuario::usuario()->bloquear($model_usuario->id);
 
-				// Envio el suceso.
+				// Envío el suceso.
 				$model_suceso = new Model_Suceso;
 				if (Usuario::$usuario_id != $model_usuario->id)
 				{
@@ -800,8 +805,8 @@ class Base_Controller_Cuenta extends Controller {
 					$model_suceso->crear($model_usuario->id, 'usuario_bloqueo', FALSE, Usuario::$usuario_id, $model_usuario->id, 0);
 				}
 
-				// Envio notificación.
-				add_flash_message(FLASH_SUCCESS, 'El usuario fue bloqueado correctamente.');
+				// Envío notificación.
+				add_flash_message(FLASH_SUCCESS, __('El usuario fue bloqueado correctamente.', FALSE));
 				Request::redirect('/cuenta/bloqueados');
 			}
 		}
@@ -815,7 +820,7 @@ class Base_Controller_Cuenta extends Controller {
 		}
 		$view->assign('bloqueos', $bloqueos);
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('bloqueados'));
 
@@ -829,7 +834,7 @@ class Base_Controller_Cuenta extends Controller {
 	public function action_password()
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Cuenta - Contraseña');
+		$this->template->assign('title', __('Cuenta - Contraseña', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('cuenta/password');
@@ -853,19 +858,19 @@ class Base_Controller_Cuenta extends Controller {
 			{
 				if ( ! isset($_POST['current']) || empty($_POST['current']))
 				{
-					$view->assign('error', 'Debe rellenar todos los datos.');
+					$view->assign('error', __('Debe rellenar todos los datos.', FALSE));
 					$view->assign('error_current', TRUE);
 				}
 
 				if ( ! isset($_POST['password']) || empty($_POST['password']))
 				{
-					$view->assign('error', 'Debe rellenar todos los datos.');
+					$view->assign('error', __('Debe rellenar todos los datos.', FALSE));
 					$view->assign('error_password', TRUE);
 				}
 
 				if ( ! isset($_POST['cpassword']) || empty($_POST['cpassword']))
 				{
-					$view->assign('error', 'Debe rellenar todos los datos.');
+					$view->assign('error', __('Debe rellenar todos los datos.', FALSE));
 					$view->assign('error_cpassword', TRUE);
 				}
 			}
@@ -876,12 +881,12 @@ class Base_Controller_Cuenta extends Controller {
 				{
 					if ($_POST['password'] != $_POST['cpassword'])
 					{
-						$view->assign('error', 'Las contraseñas ingresadas no coinciden.');
+						$view->assign('error', __('Las contraseñas ingresadas no coinciden.', FALSE));
 						$view->assign('error_password', TRUE);
 					}
 					else
 					{
-						$view->assign('error', 'La contraseña debe tener entre 6 y 20 caracteres alphanumericos.');
+						$view->assign('error', __('La contraseña debe tener entre 6 y 20 caracteres alphanumericos.', FALSE));
 						$view->assign('error_password', TRUE);
 					}
 				}
@@ -892,20 +897,20 @@ class Base_Controller_Cuenta extends Controller {
 
 					if ( ! $enc->check_password($_POST['current'], $model_usuario->password))
 					{
-						$view->assign('error', 'La contraseña es incorrecta.');
+						$view->assign('error', __('La contraseña es incorrecta.', FALSE));
 						$view->assign('error_current', TRUE);
 					}
 					else
 					{
-						// Actualizo la caontraseña.
+						// Actualizo la contraseña.
 						$model_usuario->actualizar_contrasena(trim($_POST['password']));
-						$view->assign('success', 'La contraseña se ha actualizado correctamente.');
+						$view->assign('success', __('La contraseña se ha actualizado correctamente.', FALSE));
 					}
 				}
 			}
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('password'));
 
@@ -919,7 +924,7 @@ class Base_Controller_Cuenta extends Controller {
 	public function action_nick()
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Cuenta - Nick');
+		$this->template->assign('title', __('Cuenta - Nick', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('cuenta/nick');
@@ -948,7 +953,7 @@ class Base_Controller_Cuenta extends Controller {
 		}
 		else
 		{
-			// Obtengo fecha de refgistro.
+			// Obtengo fecha de registro.
 			$fecha_cambio = Usuario::usuario()->registro->format('U');
 		}
 
@@ -962,7 +967,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verificamos los datos
 				if ( ! isset($_POST['nick']) || empty($_POST['nick']))
 				{
-					$view->assign('error_nick', 'Debe ingresar un nuevo nick.');
+					$view->assign('error_nick', __('Debe ingresar un nuevo nick.', FALSE));
 				}
 				else
 				{
@@ -971,7 +976,7 @@ class Base_Controller_Cuenta extends Controller {
 
 				if ( ! isset($_POST['password']) || empty($_POST['password']))
 				{
-					$view->assign('error_password', 'Debe ingresar su contraseña para validar el cambio.');
+					$view->assign('error_password', __('Debe ingresar su contraseña para validar el cambio.', FALSE));
 				}
 			}
 			else
@@ -984,7 +989,7 @@ class Base_Controller_Cuenta extends Controller {
 				// Verifico longitud Nick.
 				if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/D', $nick))
 				{
-					$view->assign('error_nick', 'El nick debe tener entre 4 y 20 caracteres alphanuméricos.');
+					$view->assign('error_nick', __('El nick debe tener entre 4 y 20 caracteres alphanuméricos.', FALSE));
 				}
 				else
 				{
@@ -993,21 +998,24 @@ class Base_Controller_Cuenta extends Controller {
 
 					if ( ! $enc->check_password($password, $model_usuario->password))
 					{
-						$view->assign('error_password', 'La contraseña es incorrecta.');
+						$view->assign('error_password', __('La contraseña es incorrecta.', FALSE));
 					}
 					else
 					{
+						// Cargo usuarios bloqueados.
+						$nicks_bloqueados = unserialize(Utils::configuracion()->get_default('usuarios_bloqueados', 'a:0:{}'));
+
 						// Verifico que no exista el nick.
-						if ($model_usuario->exists_nick($nick))
+						if (in_array($nick, $nicks_bloqueados) || $model_usuario->exists_nick($nick))
 						{
-							$view->assign('error_nick', 'El nick no está disponible.');
+							$view->assign('error_nick', __('El nick no está disponible.', FALSE));
 						}
 						else
 						{
 							// Verifico la cantidad de nick's.
 							if (count($nicks_reservados) >= 3)
 							{
-								$view->assign('error_nick', 'Has superado el máximo de nick\'s utilizados.');
+								$view->assign('error_nick', __('Has superado el máximo de nick\'s utilizados.', FALSE));
 							}
 							else
 							{
@@ -1026,13 +1034,13 @@ class Base_Controller_Cuenta extends Controller {
 									$model_suceso->crear(Usuario::$usuario_id, 'usuario_cambio_nick', Usuario::$usuario_id);
 
 									// Informamos resultado.
-									$view->assign('success', 'El nick se ha actualizado correctamente.');
+									$view->assign('success', __('El nick se ha actualizado correctamente.', FALSE));
 									$view->assign('nick', '');
 									$view->assign('nick_actual', $nick);
 								}
 								else
 								{
-									$view->assign('error_nick', 'Solo puedes cambiar tu nick cada 2 meses.');
+									$view->assign('error_nick', __('Solo puedes cambiar tu nick cada 2 meses.', FALSE));
 								}
 							}
 						}
@@ -1061,14 +1069,14 @@ class Base_Controller_Cuenta extends Controller {
 		// Verifico el formato.
 		if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/D', $nick))
 		{
-			add_flash_message(FLASH_ERROR, 'El nick que desea liberar no es correcto.');
+			add_flash_message(FLASH_ERROR, __('El nick que desea liberar no es correcto.', FALSE));
 			Request::redirect('/cuenta/nick');
 		}
 
 		// Verifico si es del usuario.
 		if ( ! in_array($nick, Usuario::usuario()->nicks()))
 		{
-			add_flash_message(FLASH_ERROR, 'El nick que desea liberar no es correcto.');
+			add_flash_message(FLASH_ERROR, __('El nick que desea liberar no es correcto.', FALSE));
 			Request::redirect('/cuenta/nick');
 		}
 
@@ -1076,7 +1084,7 @@ class Base_Controller_Cuenta extends Controller {
 		Usuario::usuario()->eliminar_nick($nick);
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, 'El nick se ha liberado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('El nick se ha liberado correctamente.', FALSE));
 		Request::redirect('/cuenta/nick');
 	}
 
@@ -1089,14 +1097,14 @@ class Base_Controller_Cuenta extends Controller {
 		// Verifico el formato.
 		if ( ! preg_match('/^[a-zA-Z0-9]{4,20}$/D', $nick))
 		{
-			add_flash_message(FLASH_ERROR, 'El nick que desea liberar no es correcto.');
+			add_flash_message(FLASH_ERROR, __('El nick que desea utilizar no es correcto.', FALSE));
 			Request::redirect('/cuenta/nick');
 		}
 
 		// Verifico si es del usuario.
 		if ( ! in_array($nick, Usuario::usuario()->nicks()))
 		{
-			add_flash_message(FLASH_ERROR, 'El nick que desea liberar no es correcto.');
+			add_flash_message(FLASH_ERROR, __('El nick que desea utilizar no es correcto.', FALSE));
 			Request::redirect('/cuenta/nick');
 		}
 
@@ -1110,7 +1118,7 @@ class Base_Controller_Cuenta extends Controller {
 		$model_suceso->crear(Usuario::$usuario_id, 'usuario_cambio_nick', Usuario::$usuario_id);
 
 		// Informo el resultado.
-		add_flash_message(FLASH_SUCCESS, 'El nick se ha actualizado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('El nick se ha actualizado correctamente.', FALSE));
 		Request::redirect('/cuenta/nick');
 	}
 
@@ -1120,7 +1128,7 @@ class Base_Controller_Cuenta extends Controller {
 	public function action_avisos()
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Cuenta - Avisos');
+		$this->template->assign('title', __('Cuenta - Avisos', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('cuenta/avisos');
@@ -1155,7 +1163,7 @@ class Base_Controller_Cuenta extends Controller {
 	}
 
 	/**
-	 * Marcamos un aviso como leido.
+	 * Marcamos un aviso como leído.
 	 * @param int $id ID del aviso.
 	 */
 	public function action_aviso_leido($id)
@@ -1168,29 +1176,29 @@ class Base_Controller_Cuenta extends Controller {
 		// Verifico existencia.
 		if ( ! $model_aviso->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El aviso que deseas marcar como visto no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El aviso que deseas marcar como visto no se encuentra disponible.', FALSE));
 			Request::redirect('/cuenta/avisos');
 		}
 
 		// Verifico sea del usuario.
 		if ($model_aviso->usuario_id !== Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, 'El aviso que deseas marcar como visto no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El aviso que deseas marcar como visto no se encuentra disponible.', FALSE));
 			Request::redirect('/cuenta/avisos');
 		}
 
 		// Verifico el estado.
 		if ($model_aviso->estado !== Model_Usuario_Aviso::ESTADO_NUEVO)
 		{
-			add_flash_message(FLASH_ERROR, 'El aviso que deseas marcar como visto no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El aviso que deseas marcar como visto no se encuentra disponible.', FALSE));
 			Request::redirect('/cuenta/avisos');
 		}
 
-		// Seteo como leido.
+		// Marco como leído.
 		$model_aviso->actualizar_campo('estado', Model_Usuario_Aviso::ESTADO_VISTO);
 
 		// Informo resultado.
-		add_flash_message(FLASH_SUCCESS, 'Aviso marcado como visto correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Aviso marcado como visto correctamente.', FALSE));
 		Request::redirect('/cuenta/avisos');
 	}
 
@@ -1208,22 +1216,22 @@ class Base_Controller_Cuenta extends Controller {
 		// Verifico existencia.
 		if ( ! $model_aviso->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El aviso que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El aviso que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/cuenta/avisos');
 		}
 
 		// Verifico sea del usuario.
 		if ($model_aviso->usuario_id !== Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, 'El aviso que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El aviso que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/cuenta/avisos');
 		}
 
-		// Seteo como oculto.
+		// Marco como oculto.
 		$model_aviso->actualizar_campo('estado', Model_Usuario_Aviso::ESTADO_OCULTO);
 
 		// Informo resultado.
-		add_flash_message(FLASH_SUCCESS, 'Aviso borrado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Aviso borrado correctamente.', FALSE));
 		Request::redirect('/cuenta/avisos');
 	}
 

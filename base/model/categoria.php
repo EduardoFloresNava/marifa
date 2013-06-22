@@ -96,7 +96,7 @@ class Base_Model_Categoria extends Model_Dataset {
 	 */
 	public function make_seo($nombre)
 	{
-		self::make_seo_s($nombre);
+		return self::make_seo_s($nombre);
 	}
 
 	/**
@@ -106,7 +106,7 @@ class Base_Model_Categoria extends Model_Dataset {
 	 */
 	public static function make_seo_s($nombre)
 	{
-		return preg_replace('/\s+/', '-', preg_replace('/[^A-Za-z0-9\s]/', '', str_replace(array('á', 'é', 'í', 'ó', 'ú', 'ñ'), array('a', 'e', 'i', 'o', 'u', 'n'), trim($nombre))));
+		return preg_replace('/\s+/u', '-', preg_replace('/[^a-z0-9\s]/u', '', str_replace(array('á', 'é', 'í', 'ó', 'ú', 'ñ'), array('a', 'e', 'i', 'o', 'u', 'n'), trim(strtolower($nombre)))));
 	}
 
 	/**
@@ -277,6 +277,15 @@ class Base_Model_Categoria extends Model_Dataset {
 	 */
 	public function lista()
 	{
-		return $this->db->query('SELECT id, seo, nombre, imagen FROM categoria ORDER BY nombre ASC')->get_records();
+		return $this->db->query('SELECT id, seo, nombre, imagen FROM categoria ORDER BY nombre ASC')
+				->get_records(
+						Database_Query::FETCH_ASSOC,
+						array(
+							'id'     => Database_Query::FIELD_INT,
+							'seo'    => Database_Query::FIELD_STRING,
+							'nombre' => Database_Query::FIELD_STRING,
+							'imagen' => Database_Query::FIELD_STRING
+						)
+				);
 	}
 }

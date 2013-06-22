@@ -90,6 +90,12 @@ abstract class Base_Database_Query implements Iterator {
 	protected $cast = NULL;
 
 	/**
+	 * Si hay que utilizar UTF-8.
+	 * @var bool
+	 */
+	protected $use_utf8 = TRUE;
+
+	/**
 	 * Asignamos el tipo por defecto usado cuando se devuelven datos.
 	 * @param int $type Tipo a usar.
 	 * @throws Database_Exception
@@ -138,7 +144,7 @@ abstract class Base_Database_Query implements Iterator {
 		}
 		elseif ($cast === self::FIELD_STRING)
 		{
-			return ($field === NULL) ? NULL : ( (string) $field);
+			return ($field === NULL) ? NULL : ($this->use_utf8 ? utf8_decode( (string) $field) : (string) $field);
 		}
 		elseif ($cast === self::FIELD_DATE || $cast === self::FIELD_DATETIME)
 		{

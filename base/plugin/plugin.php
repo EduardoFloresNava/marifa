@@ -239,7 +239,7 @@ class Base_Plugin_Plugin {
 	}
 
 	/**
-	 * Realizamos la generación de las nuevas clases del nucleo.
+	 * Realizamos la generación de las nuevas clases del núcleo.
 	 * @param string $base Path base para unir.
 	 */
 	private function merge_core($base = '')

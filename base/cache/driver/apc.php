@@ -79,7 +79,7 @@ class Base_Cache_Driver_Apc implements Base_Cache_Driver {
 	 * Verificamos si el driver es soportado por el sistema.
 	 * @return bool
 	 */
-	public function is_supported()
+	public static function is_supported()
 	{
 		if ( ! extension_loaded('apc') || ! function_exists('apc_store'))
 		{

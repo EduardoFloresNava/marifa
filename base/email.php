@@ -41,7 +41,7 @@ class Base_Email {
 	}
 
 	/**
-	 * Obtengo un transporte para el envio de e-mails.
+	 * Obtengo un transporte para el envío de e-mails.
 	 * @return Swift_SmtpTransport
 	 */
 	public static function get_transport()
@@ -61,7 +61,7 @@ class Base_Email {
 		// Verifico exista transporte.
 		if ( ! isset($config['transport']))
 		{
-			throw new Exception('El tranporte no se encuentra diponible.');
+			throw new Exception('El transporte no se encuentra disponible.');
 		}
 
 		// Armo nombre de la clase del transporte.
@@ -70,13 +70,13 @@ class Base_Email {
 		// Verifico exista el transporte.
 		if ( ! class_exists($transport_name))
 		{
-			throw new Exception("El tranporte '$transport_name' no se encuentra diponible.");
+			throw new Exception("El transporte '$transport_name' no se encuentra disponible.");
 		}
 
 		// Cargo el transporte.
 		$transporte = new $transport_name;
 
-		// Seteo el resto de configuraciones.
+		// Asigno el resto de configuraciones.
 		if (isset($config['parametros']) && is_array($config['parametros']))
 		{
 			foreach ($config['parametros'] as $k => $v)
@@ -120,16 +120,12 @@ class Base_Email {
 	}
 
 	/**
-	 * Obtenemos una instancia de Swift_Message configurada.
-	 * @return Swift_Message
+	 * Enviamos un mensaje haciendo uso de la cola de envio o de forma directa
+	 * si es necesario.
+	 * @param Swift_Message $message Mensaje a enviar.
 	 */
-	public static function get_message()
+	public static function send_queue_online($message)
 	{
-		self::start();
-		
-		// Creo el objeto.
-		$msg = new Swift_Message;
-		
 		// Cargo configuraciones.
 		if (file_exists(CONFIG_PATH.DS.'email.php'))
 		{
@@ -139,25 +135,57 @@ class Base_Email {
 		{
 			$config = array();
 		}
-		
+
+		if (isset($config['queue']) && isset($config['queue']['use_queue']) && $config['queue']['use_queue'] === TRUE)
+		{
+			$e = new Email_Queue;
+			$e->add($message);
+		}
+		else
+		{
+			self::get_mailer()->send($message);
+		}
+	}
+
+	/**
+	 * Obtenemos una instancia de Swift_Message configurada.
+	 * @return Swift_Message
+	 */
+	public static function get_message()
+	{
+		self::start();
+
+		// Creo el objeto.
+		$msg = new Swift_Message;
+
+		// Cargo configuraciones.
+		if (file_exists(CONFIG_PATH.DS.'email.php'))
+		{
+			$config = configuracion_obtener(CONFIG_PATH.DS.'email.php', FALSE);
+		}
+		else
+		{
+			$config = array();
+		}
+
 		// Verifico existencia.
 		if ( ! isset($config['from']) || ! is_array($config['from']))
 		{
 			throw new Exception("No se han definido los datos para la cabecera FROM.");
 		}
-		
+
 		// Verifico validez usuario.
 		if ( ! isset($config['from']['usuario']) || empty($config['from']['usuario']))
 		{
 			throw new Exception("El nombre ingresado para la cabecera FROM no es válido.");
 		}
-		
+
 		// Verifico validez del email.
 		if ( ! isset($config['from']['email']) || ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $config['from']['email']))
 		{
 			throw new Exception("El correo ingresado para la cabecera FROM no es válido.");
 		}
-		
+
 		// Seteo la cabecera.
 		$msg->setFrom($config['from']['email'], $config['from']['usuario']);
 

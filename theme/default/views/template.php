@@ -10,14 +10,19 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link href="{#THEME_URL#}/assets/css/bootstrap.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/font-awesome.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/bootstrap-responsive.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/bootstrap-notify.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/base.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/style.css" rel="stylesheet">
         {if="DEBUG"}<link href="{#THEME_URL#}/assets/css/profiler.css" rel="stylesheet">{/if}
 
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
           <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
+        <link rel="alternate" href="{#SITE_URL#}/rss/posts/" title="{if="isset($brand)"}{$brand}{else}Marifa{/if} - Posts" type="application/rss+xml" />
+        {if="Utils::configuracion()->get('habilitar_fotos', 1) == 1 && Utils::configuracion()->get('privacidad_fotos', 1) == 1"}<link rel="alternate" href="{#SITE_URL#}/rss/fotos/" title="{if="isset($brand)"}{$brand}{else}Marifa{/if} - Fotos" type="application/rss+xml" />{/if}
 
         <!-- Le fav and touch icons -->
         <link rel="shortcut icon" href="{#THEME_URL#}/assets/ico/favicon.ico">
@@ -43,7 +48,15 @@
                         <ul class="nav">
                             {loop="master_bar"}
                             <li{if="$value.active"}  class="active"{/if}>
-                                <a href="{#SITE_URL#}{$value.link}">{if="isset($value.icon)"}<i class="icon-white icon-{$value.icon}"></i> {/if}{$value.caption}{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
+                                <a href="{#SITE_URL#}{$value.link}">
+									{if="$key == 'sin_grupo.inicio'"}<i class="icon-white icon-home"></i> {/if}
+									{if="$key == 'sin_grupo.posts'"}<i class="icon-white icon-book"></i> {/if}
+									{if="$key == 'sin_grupo.fotos'"}<i class="icon-white icon-picture"></i> {/if}
+									{if="$key == 'sin_grupo.tops'"}<i class="icon-white icon-signal"></i> {/if}
+									{if="$key == 'sin_grupo.moderar'"}<i class="icon-white icon-eye-open"></i> {/if}
+									{if="$key == 'sin_grupo.admin'"}<i class="icon-white icon-certificate"></i> {/if}
+									{$value.caption}
+									{if="isset($value.cantidad) && $value.cantidad > 0"} <span class="badge{if="isset($value.tipo)"} badge-{$value.tipo}{/if}">{$value.cantidad}</span>{/if}</a>
                             </li>
                             {/loop}
                         </ul>
@@ -64,6 +77,7 @@
 					<div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><i class="icon icon-bullhorn"></i> {$noticia}</div>
 				{/if}
 			{/if}
+			{if="isset($is_locked) && $is_locked"}<div class="alert alert-info"><b>¡Importante!</b> El sitio se encuentra en modo mantenimiento, no todos los usuarios pueden acceder a el sitio.<a class="close" data-dismiss="alert">×</a></div>{/if}
 			{if="isset($top_bar)"}
 			<ul class="nav nav-tabs">
 				{loop="top_bar"}
@@ -73,7 +87,7 @@
 				{/loop}
 			</ul>
 			{/if}
-			{if="isset($is_locked) && $is_locked"}<div class="alert alert-info"><b>!Importante!</b> El sitio se encuentra en modo mantenimiento, no todos los usuarios pueden acceder a el sitio.<a class="close" data-dismiss="alert">×</a></div>{/if}
+			<div class="notifications center"></div>
 			{if="isset($flash_success)"}
 				{if="is_array($flash_success)"}
 				<div class="alert alert-success alert-container">
@@ -133,7 +147,9 @@
 		<script src="{#THEME_URL#}/assets/js/bbcode.markitup.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.masonry.min.js"></script>
 		<script src="{#THEME_URL#}/assets/js/jquery.textext.min.js"></script>
+		<script src="{#THEME_URL#}/assets/js/bootstrap-notify.js"></script>
 		<script src="{#THEME_URL#}/assets/js/base.js"></script>
+		<script src="{#THEME_URL#}/assets/js/ui.js"></script>
         {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}
     </body>
 </html>

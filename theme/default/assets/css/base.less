@@ -265,51 +265,6 @@ td .btn-toolbar {
     }
 }
 
-.ultimo-post-list {
-    margin: 10px 0;
-    border: 1px solid #D1D1D1;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-
-    .ultimo-post {
-        padding: 0px;
-
-        .categoria {
-            display: inline-block;
-            background: rgba(0, 0, 0, 0.05);
-            border-right: 1px solid rgba(0, 0, 0, 0.15);
-            padding: 10px;
-            float: left;
-        }
-
-        .contenido {
-            display: inline-block;
-            margin: 0 10px;
-
-            .titulo {
-                font-size: 16px;
-                line-height: 23px;
-            }
-
-            .info {
-                font-size: 11px;
-                line-height: 12px;
-            }
-        }
-
-        .fecha {
-            line-height: 38px;
-            float: right;
-            margin: 0 10px 0 5px;
-        }
-    }
-
-    .ultimo-post ~ .ultimo-post {
-        border-top: 1px solid #D1D1D1;
-    }
-}
-
 .leyenda span {
     color: #000000;
 }
@@ -575,11 +530,20 @@ a.user-icon {
 .fotos {
     h4 {
         text-align: center;
-        margin-bottom: 10px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
 
     h4 small {
         display: inline-block;
+    }
+
+    small {
+        color: #999999;
+        display: block;
+        margin-bottom: 10px;
+        text-align: center;
     }
 
     p.toolbar {
@@ -590,9 +554,15 @@ a.user-icon {
         margin: 0;
     }
 
+    .descripcion {
+        text-align: justify;
+    }
+
     .sumario
     {
         margin: 8px 0 0;
+        text-align: center;
+
         span {
             display: inline-block;
             color: #999;
@@ -941,10 +911,15 @@ ul.dropdown-menu {
             list-style: none;
             margin: 0;
         }
+
         li.total {
             border-top: 1px dashed rgba(0, 0, 0, 0.2);
             margin-top: 5px;
             padding-top: 3px;
+        }
+
+        .btn {
+            margin: 1px 0;
         }
     }
 
@@ -1021,6 +996,14 @@ h1.title, h2.title, h3.title, h4.title {
 
     small {
         float: right;
+    }
+
+    .label {
+        margin: 5px auto;
+    }
+
+    &.small-btn .btn-mini.pull-right {
+        margin: 3px 0 3px 5px;
     }
 }
 
@@ -1265,8 +1248,22 @@ h1.title, h2.title, h3.title, h4.title {
     }
 }
 
-#foto-menu-categoria {
+#foto-menu-categoria, #post-menu-categoria {
     margin: 0;
+}
+
+.home-list li a {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    display: block;
+    position: relative;
+
+    .pull-right {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1289,16 +1286,46 @@ h1.title, h2.title, h3.title, h4.title {
     }
 }
 
-.home-list li a {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow-x: hidden;
-    display: block;
-    position: relative;
+.last-comment-list {
+    list-style-position: inside;
+    margin-left: 5px;
 
-    .pull-right {
+    li {
+        max-height: 18px;
+        overflow: hidden;
+    }
+}
+
+.form-horizontal .control-element {
+    margin-bottom: 4px;
+}
+
+legend .label {
+    margin: 10px 5px;
+}
+
+/* Inicio estilo de los tops. */
+.top-list li a {
+    display: block;
+    overflow-x: hidden;
+    position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .badge {
         position: absolute;
-        top: 0;
         right: 0;
     }
 }
+
+/* Fin estilo de los tops. */
+
+/* INICIO Animación de carga de elementos. */
+.element-loader {
+    padding: 10px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5) url('../img/modal-loader.gif') center center no-repeat;
+    min-height: 24px;
+    min-width: 24px;
+}
+/* FIN animación carga elementos. */

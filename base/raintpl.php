@@ -83,10 +83,6 @@ class Base_RainTPL extends Lib_RainTPL {
 		{
 			// Es la vista de un plugin, verificamos el path.
 
-			// Obtenemos el nombre del plugin.
-			$s_list = explode('/', $tpl_name, 2);
-			$plugin = strtolower($s_list[1]);
-
 			// Obtengo partes de la URL.
 			list(, $plugin_name , $vista) = explode('/', $tpl_name, 3);
 
@@ -99,6 +95,11 @@ class Base_RainTPL extends Lib_RainTPL {
 
 			// Generamos el nombre de la vista.
 			$template_name = VIEW_PATH.THEME.DS.'views'.DS.$tpl_name;
+
+			if (THEME !== 'default' && ! file_exists(APP_BASE.DS.$template_name.'.'.FILE_EXT) && file_exists(APP_BASE.DS.VIEW_PATH.'default'.DS.'views'.DS.$tpl_name.'.'.FILE_EXT))
+			{
+				$template_name = VIEW_PATH.'default'.DS.'views'.DS.$tpl_name;
+			}
 		}
 
 		// Enviamos a rainTPL para que lo procese.

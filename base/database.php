@@ -32,7 +32,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Database {
 
 	/**
-	 * Intancia del Driver que maneja la base de datos.
+	 * Instancia del Driver que maneja la base de datos.
 	 */
 	private static $instance;
 
@@ -72,7 +72,7 @@ class Base_Database {
 			// Comprobamos que exista un driver asignado.
 			if ( ! isset($config['type']))
 			{
-				throw new Database_Exception('Los parametros de la base de datos son incorrectos. Verifique el driver.');
+				throw new Database_Exception('Los parámetros de la base de datos son incorrectos. Verifique el driver.');
 			}
 
 			// Generamos el nombre de la clase Driver.
@@ -85,11 +85,48 @@ class Base_Database {
 			}
 			else
 			{
-				// Instanciamos el Driver correspondiente.
+				// Creamos la instancia el Driver correspondiente.
 				self::$instance = new $driver($config);
 			}
 		}
 		return self::$instance;
+	}
+
+	/**
+	 * Verificamos una configuración de la base de datos.
+	 * @param array $config Arreglo de configuraciones de la base de datos.
+	 * @param bool $return_instance Si se devuelve la instancia o se asigna al singleton.
+	 * @return bool
+	 */
+	public static function test($config, $return_instance = FALSE)
+	{
+		// Generamos el nombre de la clase Driver.
+		$driver = 'Database_Driver_'.ucfirst(strtolower($config['type']));
+
+		// Comprobamos la existencia de ese Driver para manejar la BD.
+		if ( ! class_exists($driver))
+		{
+			return FALSE;
+		}
+		else
+		{
+			try {
+				// Creamos la instancia el Driver correspondiente.
+				if ($return_instance)
+				{
+					return new $driver($config);
+				}
+				else
+				{
+					self::$instance = new $driver($config);
+					return TRUE;
+				}
+			}
+			catch (Database_Exception $e)
+			{
+				return FALSE;
+			}
+		}
 	}
 
 	/**

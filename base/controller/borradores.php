@@ -33,14 +33,14 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Borradores extends Controller {
 
 	/**
-	 * Verifico que esté logueado para poder acceder a las secciones.
+	 * Verifico que esté identificado para poder acceder a las secciones.
 	 */
 	public function before()
 	{
-		// Verifico que esté logueado.
+		// Verifico que esté identificado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder ver los borradores.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder ver los borradores.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -56,8 +56,7 @@ class Base_Controller_Borradores extends Controller {
 		$vista = View::factory('borradores/index');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos datos de posts.
 		$model_post = new Model_Post;
@@ -97,18 +96,18 @@ class Base_Controller_Borradores extends Controller {
 			$borradores[$k] = $a;
 		}
 
-		// Seteo parámetros a la vista.
+		// Asigno parámetros a la vista.
 		$vista->assign('borradores', $borradores);
 		unset($borradores);
 
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $vista->parse());
 
 		// Título de la página.
-		$this->template->assign('title', 'Borradores');
+		$this->template->assign('title', __('Borradores', FALSE));
 	}
 
 }

@@ -56,7 +56,7 @@ class Base_Cache_Driver_Memcached implements Cache_Driver {
 
 	/**
 	 * Obtenemos un elemento de la cache.
-	 * @param string $id Clave del elemento abtener.
+	 * @param string $id Clave del elemento obtener.
 	 * @return mixed Información si fue correcto o FALSE en caso de error.
 	 */
 	public function get($id)
@@ -97,10 +97,19 @@ class Base_Cache_Driver_Memcached implements Cache_Driver {
 	}
 
 	/**
+	 * Verificamos el estado del servidor.
+	 * @return bool
+	 */
+	public function test()
+	{
+		return is_array($this->_memcached->getVersion());
+	}
+
+	/**
 	 * Verificamos si el driver es soportado por el sistema.
 	 * @return bool
 	 */
-	public function is_supported()
+	public static function is_supported()
 	{
 		if ( ! extension_loaded('memcached'))
 		{

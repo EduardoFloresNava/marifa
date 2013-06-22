@@ -33,14 +33,14 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Moderar_Papelera extends Controller {
 
 	/**
-	 * Verificamos que esté logueado para poder realizar las acciones.
+	 * Verificamos que esté identificado para poder realizar las acciones.
 	 */
 	public function before()
 	{
-		// Verifico esté logueado.
+		// Verifico esté identificado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -55,16 +55,15 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
-		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		// Cantidad de elementos por página.
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('/moderar/papelera/posts');
@@ -93,18 +92,21 @@ class Base_Controller_Moderar_Papelera extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de posts.
+		// Asignamos listado de posts.
 		$vista->assign('posts', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('papelera_posts'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('papelera.posts'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Papelera', FALSE).' - '.__('Posts', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -119,7 +121,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para restaurar posts.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para restaurar posts.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -132,14 +134,14 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'El posts que deseas restaurar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El posts que deseas restaurar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/papelera/posts');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR))
 		{
-			add_flash_message(FLASH_ERROR, 'El posts que deseas restaurar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El posts que deseas restaurar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/papelera/posts');
 		}
 
@@ -158,8 +160,14 @@ class Base_Controller_Moderar_Papelera extends Controller {
 			$model_suceso->crear($model_post->usuario_id, 'post_restaurar', FALSE, $post, Usuario::$usuario_id);
 		}
 
+		// Verifico actualización del rango.
+		$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+		// Verifico actualización medallas.
+		$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Post restaurado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Post restaurado correctamente.', FALSE));
 		Request::redirect('/moderar/papelera/posts');
 	}
 
@@ -172,7 +180,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_PAPELERA))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para borrar posts.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para borrar posts.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -185,14 +193,14 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_post->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'El post que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El post que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/papelera/posts');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_post->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR))
 		{
-			add_flash_message(FLASH_ERROR, 'El post que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El post que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/papelera/posts');
 		}
 
@@ -212,7 +220,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Post borrado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Post borrado correctamente.', FALSE));
 		Request::redirect('/moderar/papelera/posts');
 	}
 
@@ -225,7 +233,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -233,8 +241,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('/moderar/papelera/fotos');
@@ -263,18 +270,21 @@ class Base_Controller_Moderar_Papelera extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de fotos.
+		// Asigno listado de fotos.
 		$vista->assign('fotos', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('papelera_fotos'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('papelera.fotos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Papelera', FALSE).' - '.__('Fotos', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -289,7 +299,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para restaurar fotos.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para restaurar fotos.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -301,14 +311,14 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas restaurar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas restaurar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/papelera/fotos');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_foto->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas restaurar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas restaurar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/papelera/fotos');
 		}
 
@@ -327,8 +337,14 @@ class Base_Controller_Moderar_Papelera extends Controller {
 			$model_suceso->crear($model_foto->usuario_id, 'foto_restaurar', FALSE, $foto, Usuario::$usuario_id);
 		}
 
+		// Verifico actualización del rango.
+		$model_foto->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+
+		// Actualizo medalla.
+		$model_foto->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_FOTOS);
+
 		// Informamos resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Foto restaurada correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Foto restaurada correctamente.', FALSE));
 		Request::redirect('/moderar/papelera/fotos');
 	}
 
@@ -341,7 +357,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_PAPELERA))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para borrar fotos.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para borrar fotos.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -353,14 +369,14 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		// Verificamos exista.
 		if ( ! is_array($model_foto->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/papelera/fotos');
 		}
 
 		// Verifico el usuario y sus permisos.
 		if (Usuario::$usuario_id !== $model_foto->usuario_id || ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/papelera/fotos');
 		}
 
@@ -380,7 +396,7 @@ class Base_Controller_Moderar_Papelera extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, '<b>!Felicitaciones!</b> Foto borrada correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('<b>!Felicitaciones!</b> Foto borrada correctamente.', FALSE));
 		Request::redirect('/moderar/papelera/fotos');
 	}
 }

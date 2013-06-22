@@ -1,0 +1,19 @@
+<ul class="breadcrumb">
+    <li><a href="{#SITE_URL#}/admin/">Administración</a> <span class="divider">/</span></li>
+    <li><a href="{#SITE_URL#}/admin/sistema/">Sistema</a> <span class="divider">/</span></li>
+    <li class="active">Optimizaciones</li>
+</ul>
+<div class="header">
+	<h2>Optimizaciones</h2>
+</div>
+<div class="alert alert-info">
+	<strong>!Información!</strong> Las utilidades que se encuentran a continuación realizan optimizaciones para mejorar el rendimiento del sitio.
+	Estas optimizaciones no modifican el comportamiento del sitio y son seguras. Se recomienda ejecutarlas cuando modifica configuraciones y además de forma periódica.
+</div>
+<form action="" method="POST">
+	<div class="form-actions">
+		<button type="submit" name="submit" value="database" class="btn btn-large btn-success">Optimizar base de datos</button>
+		<button type="submit" name="submit" value="cache" class="btn btn-large btn-success">Limpiar cache</button>
+		<button type="submit" name="submit" value="compress-logs" class="btn btn-large btn-success">Comprimir log's</button>
+	</div>
+</form>

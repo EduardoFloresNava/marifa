@@ -33,7 +33,7 @@ return array(
 		'username'   => '',
 		'password'   => ''
 	),*/
-	
+
 	/**
 	 * Usuario que envia los correos.
 	 * Estos datos generan las cabeceras From.
@@ -41,5 +41,22 @@ return array(
 	'from' => array(
 		'usuario' => 'Nombre Completo',
 		'email' => 'ejemplo@ejemplo.com'
+	),
+
+	/**
+	 * Configuraciones del uso de la cola de envio de correos.
+	 */
+	'queue' => array(
+		// Si devemos o no utilizar la cola de envio de correos.
+		'use_queue' => TRUE,
+
+		// Cantidad máxima de correos por ejecución. NULL indica sin límite.
+		'limit' => NULL,
+
+		// Cantidad máxima de correos por hora.
+		'limit_hour' => NULL,
+
+		// Cantidad máxima de correos por día.
+		'limit_day' => NULL
 	),
 );

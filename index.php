@@ -41,10 +41,7 @@ else
 /**
  * Defino versión de marifa.
  */
-define('VERSION', '0.2.1');
-
-// Suprimimos advertencias de DateTime. Si lo deseas puedes poner una TZ estatica.
-date_default_timezone_set('UTC');
+define('VERSION', '0.3.0');
 
 // Defino producción para simplificar.
 define('PRODUCTION', ! DEBUG);
@@ -92,19 +89,14 @@ define('CACHE_PATH', APP_BASE.DS.'cache');
  */
 define('VENDOR_PATH', APP_BASE.DS.'vendor'.DS);
 
-/**
- * Iniciamos buffer.
- */
-ob_start();
-
 // Cargamos funciones varias.
 require_once (APP_BASE.DS.'function.php');
 
-// Iniciamos el proceso de carga automatica de librerias.
+// Iniciamos el proceso de carga automática de clases y archivos.
 spl_autoload_register('loader_load');
 
 /**
- * Defino la URL del sitio. Puede definirla manualemente. No debe terminar en /.
+ * Defino la URL del sitio. Puede definirla manualmente. No debe terminar en /.
  * Por ejemplo:
  * define('SITE_URL', 'http://demo.marifa.com.ar');
  */
@@ -126,35 +118,54 @@ if (PRODUCTION)
 			if (isset($_SESSION['step']) && $_SESSION['step'] >= 5)
 			{
 				// Intento eliminar.
-				@unlink('installer.php');
-				Update_Utils::unlink('installer');
+				@unlink(APP_BASE.DS.'installer.php');
+				Update_Utils::unlink(APP_BASE.DS.'installer');
 
 				// Redirecciono.
 				Request::redirect('/');
 			}
 		}
 
-		die('Debes eliminar el instalador para poder acceder al sitio. Para intentar de forma automática has click <a href="/?finish=1">aquí</a>.');
+		die('Debes eliminar el instalador para poder acceder al sitio. Para intentar de forma automática has click <a href="'.SITE_URL.'/?finish=1">aquí</a>.');
 	}
 }
 
 // Verifico MCrypt.
 extension_loaded('mcrypt') || die('Marifa necesita MCrypt para funcionar.');
 
+// Cargo configuraciones Base del sistema.
+$default_config = configuracion_obtener(CONFIG_PATH.DS.'marifa.php');
+
+date_default_timezone_set($default_config['default_timezone']);
+if (file_exists(APP_BASE.DS.'traducciones'.DS.$default_config['language'].'.php'))
+{
+	$GLOBALS['lang'] = configuracion_obtener(APP_BASE.DS.'traducciones'.DS.$default_config['language'].'.php');
+}
+else
+{
+	$GLOBALS['lang'] = NULL;
+}
+
+// Iniciamos las cookies.
+Cookie::start($default_config['cookie_secret']);
+
+// Borro configuraciones del sistema.
+unset($default_config);
+
 // Inicio logs.
 Log::setup(APP_BASE.DS.'log', '%d-%m-%Y.log', PRODUCTION ? Log::INFO : Log::DEBUG);
 
-// Iniciamos las cookies.
-Cookie::start('secret_cookie_key');
-
-// Iniciamos el usuario.
-Usuario::start();
+// Salida UTF-8.
+header('Content-type: text/html; charset=utf-8');
 
 // Cargo el tema actual.
 define('THEME', Theme::actual());
 
 // Iniciamos el manejo de errores.
 Error::get_instance()->start(DEBUG);
+
+// Iniciamos el usuario.
+Usuario::start();
 
 // Verificamos bloqueos.
 if (Mantenimiento::is_locked())
@@ -206,4 +217,4 @@ PRODUCTION || Profiler_Profiler::get_instance()->log_memory('Framework memory');
 // Cargamos el despachador y damos el control al controlador correspondiente.
 Dispatcher::dispatch();
 
-PRODUCTION || Profiler_Profiler::get_instance()->display();
+PRODUCTION || Request::is_ajax() || Profiler_Profiler::get_instance()->display();

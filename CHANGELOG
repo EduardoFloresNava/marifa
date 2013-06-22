@@ -1,8 +1,69 @@
+Marifa 0.3 []
+ - FEATURE: Sistema de actualización automática del núcleo.
+ - FEATURE: Driver de base de datos MySQLi.
+ - FEATURE: Implementado UTF-8 para conexiones a las bases de datos por defecto. Aumenta la seguridad.
+ - FEATURE: Agregadas configuraciones para ocultar la sección de fotos.
+ - FEATURE: Reorganizadas algunas categorías del menú de administración.
+ - FEATURE: Configuración de la base de datos desde el panel de administración.
+ - FEATURE: Los eventos envían los parámetros por referencia.
+ - FEATURE: Clase para facilitar el manejo de menús.
+ - FEATURE: Nuevo método para calcular Mime Type más homogéneo y confiable.
+ - FEATURE: Nuevo modo mantenimiento por usuario. Es un complemento al modo mantenimiento por IP.
+ - FEATURE: Actualizados y agregados títulos de los distintos controladores.
+ - FEATURE: Clase para manejo de iconos (medallas, rangos y categorías) para facilitar y dar más flexibilidad.
+ - FEATURE: Agregadas secciones para configurar cache, carga de archivos, base de datos y configuraciones base desde el panel de administración.
+ - FEATURE: Sistema de censuras de palabras.
+ - FEATURE: Los rangos ahora tienen una descripción.
+ - FEATURE: Prosibilidad de bloquear nombres de usuarios.
+ - FEATURE: Formulario de contacto con varias configuraciones.
+ - FEATURE: Implementados mensajes del sistema en la mensajería.
+ - FEATURE: Implementado sistema de páginas estáticas para mostrar contenido.
+ - FEATURE: Mejora de funcionamiento del modelo dataset.
+ - FEATURE: Mejora de plantillas en modo mantenimiento.
+ - FEATURE: Configuración del correo desde el panel de administración.
+ - FEATURE: Sistema para cola de envío de correos haciendo uso de un cronbjob.
+ - FEATURE: Boletines de noticias para enviar noticias a los usuarios por correo electrónico.
+ - FEATURE: Si no se encuentra la vista en un tema personalizado (distinto a default) se carga desde default.
+ - FEATURE: Mejora a la interface de los posts.
+ - FEATURE: Agregada la opción de borrar log's vacios.
+ - FIX: Ya no es necesaria la cache para el sistema de actualizaciones, se guardan en la BD.
+ - FIX: Arregladas las URL's de los captcha's.
+ - FIX: Problema de edición de categorías y mejora del SEO de las mismas.
+ - FIX: Mejorado el cálculo de cantidad de caracteres en captchas.
+ - FIX: Solucionado problema de plurales de fechas incrementales (fuzzy time).
+ - FIX: Archivo de vistas faltante en tema por defecto.
+ - FIX: Error en visualización de perfil de un usuario con suceso usuario_cambio_rango.
+ - FIX: Mejorada la descripción SEO de los post's.
+ - FIX: Problema de procesamiento de traducciones (si tiene @ no se procesaba).
+ - FIX: Listado de usuarios para un rango o medalla cuando hay usuarios que no han iniciado sesión nunca.
+
+Marifa 0.2.1 [10/02/2013]
+ - FIX: Problema en suceso 'shout_compartir'.
+ - FIX: Solucionada falla del modo mantenimiento.
+ - FIX: Solucionada falla de actualizaciones del campos del perfil.
+ - FIX: Error en rutas de paginación de comentarios.
+ - FIX: Se muestran archivo y linea en trazas de errores.
+ - FIX: Mejorado el cálculo de cantidad de caracteres en captchas.
+
+Marifa 0.2 [03/02/2013]
+ - FEATURE: Agregadas funciones en la consola para generación de plugins.
+ - FEATURE: Sistema de eventos para facilitar la creación de plugins.
+ - FEATURE: Implementado importador PHPost.
+ - FEATURE: Paginación de comentarios en posts y fotos.
+ - FEATURE: Algunas mejoras al instalador.
+ - FEATURE: Compresión de log's viejos.
+ - FIX: Solucionados algunos errores en las instalaciones en subdirectorios.
+ - FIX: Agregados htaccess para evitar listado de directorios.
+ - FIX: Error grave en el procesamiento de consultas.
+ - FIX: Solucionados errores en los contadores.
+ - FIX: Error en validación de medallas para posts y fotos.
+ - FIX: Paginación de lista de usuarios para evitar sobrecarga con muchos usuarios.
+
 Marifa 0.2RC4 [27/12/2012]
  - FEATURE: Rediseño del buscador.
  - FEATURE: Implementado UTF-8.
  - FEATURE: Iconos en las categorías de fotos y posts.
- - FEATURE: Se puede actualiza la categoria de una foto.
+ - FEATURE: Se puede actualiza la categoría de una foto.
  - FEATURE: Mejorados los títulos para mejora del SEO.
  - FEATURE: Implementadas URL's amigables.
  - FEATURE: Implementadas meta-etiquetas para mejorar el SEO.
@@ -23,11 +84,11 @@ Marifa 0.2RC2 [11/12/2012]
  - FEATURE: Se permiten agregar clases al núcleo desde plugins.
  - FEATURE: Mejora de la administración de usuarios.
  - FEATURE: Se agrupan los mensajes de error por tipo.
- - FEATURE: Implementadas las publicaciones en los muros de los usarios (shout's).
+ - FEATURE: Implementadas las publicaciones en los muros de los usuarios (shout's).
  - FEATURE: Mejorada la interface de los muros de los usuarios.
  - FEATURE: El tema por defecto es compatible para usarse en instalaciones con SUBDIRECTORIOS (i.e: http://marifa.com.ar/demo)
  - FIX: Error en el instalador producto del nuevo sistema de actualización.
- - FIX: Error en el primer logueo producto del calculo de puntos.
+ - FIX: Error en el primer inicio de sesión producto del calculo de puntos.
  - FIX: Solucionado problema de inserción de clases del núcleo para plugins.
  - FIX: Vista preliminar cuando se editan post's y fotos.
  - FIX: Problema de parseo de URL's en el BBCode.

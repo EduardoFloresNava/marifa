@@ -240,7 +240,7 @@ class Base_Log {
 				continue;
 			}
 
-			file_put_contents($file.'.gz', gzcompress(file_get_contents($file)));
+			Utils::compress_gzip($file, $file.'.gz');
 			unlink($file);
 		}
 	}

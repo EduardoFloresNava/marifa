@@ -34,22 +34,43 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Database_Driver_Pdo extends Database_Driver {
 
 	/**
+	 * Instancia de la clase PDO.
+	 * @var PDO
+	 */
+	protected $dbh;
+
+	/**
+	 * Si se utiliza UTF-8 o no.
+	 * @var bool
+	 */
+	protected $utf8 = FALSE;
+
+	/**
 	 * Constructor de la clase.
 	 *
-	 * Acá se debe presentar toda la lógica de conección a la base de datos
+	 * Acá se debe presentar toda la lógica de conexión a la base de datos
 	 * y dejar preparado en entorno para realizar consultas.
-	 * @param array $data Arreglo con los datos de conección a la base de datos.
+	 * @param array $data Arreglo con los datos de conexión a la base de datos.
 	 */
 	public function __construct($data)
 	{
-		// Obtenemos los parametros de conección.
+		// Obtenemos los parametros de conexión.
 		foreach (array('dsn', 'username', 'password', 'options') as $t)
 		{
 			$this->$t = isset($data[$t]) ? $data[$t] : NULL;
 		}
 
-		// Realizamos la conección.
+		// Realizamos la conexión.
 		$this->connect();
+	}
+
+	/**
+	 * Obtengo si se debe usar o no UTF-8.
+	 * @return bool
+	 */
+	public function is_utf8()
+	{
+		return $this->utf8;
 	}
 
 	/**
@@ -63,32 +84,41 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	}
 
 	/**
-	 * Realizamos la conección a la base de datos.
+	 * Realizamos la conexión a la base de datos.
 	 * @throws Database_Exception
 	 */
 	private function connect()
 	{
-		// Verificamos el estado de la conección.
+		// Verificamos el estado de la conexión.
 		if (isset($this->dbh))
 		{
 			// Ya esta conectado.
 			return TRUE;
 		}
 
-		// Realizamos la coneccion.
+		// Realizamos la conexión.
 		try
 		{
 			$this->dbh = new PDO($this->dsn, $this->username, $this->password, $this->options);
-			// Coneccion satisfactoria.
+
+			// Asigno si debo trabajar en UTF-8.
+			$qry = $this->dbh->query("SHOW VARIABLES LIKE 'character_set_client'");
+			$qry->execute();
+
+			if ($qry->fetch(PDO::FETCH_OBJ)->Value == 'utf8')
+			{
+				$this->utf8 = TRUE;
+			}
+
 			return TRUE;
 		}
 		catch (PDOException $e)
 		{
-			// Generamos la excepcion de base de datos.
+			// Generamos la excepción de base de datos.
 			throw new Database_Exception("No se pudo conectar a la base de datos: '{$e->getMessage()}'", $e->getCode());
 			// Mostramos que no nos pudimos conectar.
 			$this->dbh = NULL;
-			// Hubo un problema en la coneccion.
+			// Hubo un problema en la conexión.
 			return FALSE;
 		}
 	}
@@ -99,7 +129,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	 * Estás son las consultas que devuelven un objeto con
 	 * datos de la base de datos, como puede ser un SELECT.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return mixed Objeto resultado de la consulta.
 	 * @throws Database_Exception
 	 */
@@ -115,7 +145,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 		{
 			PRODUCTION || Profiler_Profiler::get_instance()->log_query($sth->queryString);
 			// Generamos un objeto para dar compatibilidad al resto de motores.
-			return new Database_Driver_Pdo_Query($sth);
+			return new Database_Driver_Pdo_Query($sth, $this->utf8);
 		}
 		else
 		{
@@ -179,7 +209,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	 */
 	protected function get_query_field($field, $object)
 	{
-		// Convertimos el arreglo a parametros.
+		// Convertimos el arreglo a parámetros.
 		if (is_object($object))
 		{
 			// Es un objeto, lo transformamos a una cadena.
@@ -227,7 +257,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	 * Son consultas que no devuelven un conjunto de datos, simplemente las
 	 * filas afectadas y si es una inserción, el id del posible campo automático.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|int False cuando se produce un error, un arreglo con
 	 * el id de la inserción y el número de filas afectadas si fue correcto.
 	 * @throws Database_Exception
@@ -273,7 +303,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	/**
 	 * Realiza una inserción en la base de datos.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|int False cuando se produce un error, un arreglo con
 	 * el id de la inserción y el número de filas afectadas si fue correcto.
 	 * @throws Database_Exception
@@ -287,7 +317,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	/**
 	 * Borramos información de la base de datos.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|int False cuando se produce un error, el numero de filas
 	 * afectadas si fue correcto.
 	 * @throws Database_Exception
@@ -311,7 +341,7 @@ class Base_Database_Driver_Pdo extends Database_Driver {
 	/**
 	 * Realiza una actualización en la base de datos.
 	 * @param string $query Consulta SQL.
-	 * @param array $params Arreglo con los parametros a reemplazar.
+	 * @param array $params Arreglo con los parámetros a reemplazar.
 	 * @return bool|int False cuando se produce un error, el numero de filas
 	 * afectadas si fue correcto.
 	 * @throws Database_Exception

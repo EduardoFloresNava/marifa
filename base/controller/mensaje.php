@@ -24,7 +24,7 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Controlador de mensajeria entre usuarios.
+ * Controlador de mensajería entre usuarios.
  *
  * @since      Versión 0.1
  * @package    Marifa\Base
@@ -53,11 +53,16 @@ class Base_Controller_Mensaje extends Controller {
 	 */
 	protected function submenu($activo)
 	{
-		return array(
-			'index' => array('link' => '/mensaje/', 'caption' => 'Bandeja entrada', 'active' => $activo == 'index', 'cantidad' => Usuario::usuario()->cantidad_mensajes_nuevos(), 'tipo' => 'success'),
-			'enviados' => array('link' => '/mensaje/enviados', 'caption' => 'Bandeja salida', 'active' => $activo == 'enviados'),
-			'nuevo' => array('link' => '/mensaje/nuevo', 'caption' => 'Enviar', 'active' => $activo == 'nuevo'),
-		);
+		// Creo el menú.
+		$menu = new Menu('mensaje_menu');
+
+		// Agrego los elementos.
+		$menu->element_set(__('Bandeja de entrada', FALSE), '/mensaje/', 'index', NULL, Usuario::usuario()->cantidad_mensajes_nuevos());
+		$menu->element_set(__('Bandeja de salida', FALSE), '/mensaje/enviados/', 'enviados');
+		$menu->element_set(__('Enviar', FALSE), '/mensaje/nuevo/', 'nuevo');
+
+		// Devuelvo el menú procesado.
+		return $menu->as_array($activo);
 	}
 
 	/**
@@ -67,11 +72,10 @@ class Base_Controller_Mensaje extends Controller {
 	public function action_index($pagina)
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Mensajes - Bandeja de entrada');
+		$this->template->assign('title', __('Mensajes - Bandeja de entrada', FALSE));
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$view = View::factory('mensaje/index');
@@ -122,11 +126,10 @@ class Base_Controller_Mensaje extends Controller {
 	public function action_enviados($pagina)
 	{
 		// Asignamos el título.
-		$this->template->assign('title', 'Mensajes - Bandeja de salida');
+		$this->template->assign('title', __('Mensajes - Bandeja de salida', FALSE));
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$view = View::factory('mensaje/enviados');
@@ -138,7 +141,7 @@ class Base_Controller_Mensaje extends Controller {
 		$model_mensajes = new Model_Mensaje;
 		$enviados = $model_mensajes->enviados(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
 
-		// Verifivo validez de la pagina.
+		// Verifico validez de la pagina.
 		if (count($enviados) == 0 && $pagina != 1)
 		{
 			Request::redirect('/mensaje/enviados/');
@@ -160,7 +163,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		$view->assign('enviados', $enviados);
-		unset($recibidos);
+		unset($enviados);
 
 		// Menu.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
@@ -177,7 +180,7 @@ class Base_Controller_Mensaje extends Controller {
 	 */
 	public function action_nuevo($tipo, $mensaje_id)
 	{
-		// Verificamos si es reenvio o respuesta.
+		// Verificamos si es reenvío o respuesta.
 		// 1 - Responder.
 		// 2 - Reenviar.
 		if ($tipo == 1 || $tipo == 2)
@@ -185,7 +188,7 @@ class Base_Controller_Mensaje extends Controller {
 			// Cargamos el mensaje padre.
 			$model_padre = new Model_Mensaje( (int) $mensaje_id);
 
-			if (is_array($model_padre->as_array()))
+			if ($model_padre->existe() && $model_padre->emisor_id !== NULL)
 			{
 				if ($model_padre->receptor_id == Usuario::$usuario_id)
 				{
@@ -196,7 +199,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Mensajes - Enviar mensaje');
+		$this->template->assign('title', __('Mensajes - Enviar mensaje', FALSE));
 
 		// Cargamos la vista.
 		$view = View::factory('mensaje/nuevo');
@@ -214,14 +217,14 @@ class Base_Controller_Mensaje extends Controller {
 			$view->assign($k, '');
 		}
 
-		// Obtenemos los datos y seteamos valores.
+		// Obtenemos los datos y asignamos valores.
 		foreach (array('para', 'asunto', 'contenido') as $k)
 		{
 			$$k = isset($_POST[$k]) ? $_POST[$k] : '';
 			$view->assign($k, $$k);
 		}
 
-		// Por defecto segun tipo de llamada.
+		// Por defecto según tipo de llamada.
 		if (isset($padre))
 		{
 			if ($tipo == 1)
@@ -244,14 +247,14 @@ class Base_Controller_Mensaje extends Controller {
 			// Verificamos el asunto.
 			if ( ! preg_match('/^[a-zA-Z0-9áéíóú\-,\.:\s]{6,60}$/D', $asunto))
 			{
-				$view->assign('error_asunto', 'El formato del asunto no es correcto.');
+				$view->assign('error_asunto', __('El formato del asunto no es correcto.', FALSE));
 				$error = TRUE;
 			}
 
 			// Verificamos lista de usuarios.
 			if ( ! preg_match('/^(([a-zA-Z0-9áéíóúAÉÍÓÚÑñ ]{4,16})(,(\s)?)?){1,}$/D', $para))
 			{
-				$view->assign('error_para', 'No introdujo una lista de usuarios válida.');
+				$view->assign('error_para', __('No introdujo una lista de usuarios válida.', FALSE));
 				$error = TRUE;
 			}
 			else
@@ -276,7 +279,7 @@ class Base_Controller_Mensaje extends Controller {
 							$model_usuario->load_by_nick($u);
 							if ($model_usuario->id == Usuario::$usuario_id)
 							{
-								$view->assign('error_para', "No puedes enviarte mensaje a ti mismo.");
+								$view->assign('error_para', __('No puedes enviarte mensaje a ti mismo.', FALSE));
 								$error = TRUE;
 								break;
 							}
@@ -285,7 +288,7 @@ class Base_Controller_Mensaje extends Controller {
 						}
 						else
 						{
-							$view->assign('error_para', "El usuario '$u' no es válido.");
+							$view->assign('error_para', sprintf(__('El usuario \'%s\' no es válido.', FALSE), $u));
 							$error = TRUE;
 						}
 					}
@@ -297,7 +300,7 @@ class Base_Controller_Mensaje extends Controller {
 			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
 			if ( ! isset($contenido_clean{10}) || isset($contenido{600}))
 			{
-				$view->assign('error_contenido', 'El mensaje debe tener entre 20 y 600 caractéres.');
+				$view->assign('error_contenido', __('El mensaje debe tener entre 20 y 600 caracteres.', FALSE));
 				$error = TRUE;
 			}
 			unset($contenido_clean);
@@ -346,13 +349,13 @@ class Base_Controller_Mensaje extends Controller {
 					}
 					else
 					{
-						$errors[] = "Se produjo un error cuando se creaba enviaba el mensaje a '{$u->nick}'. Reintente.";
+						$errors[] = sprintf(__('Se produjo un error cuando se creaba enviaba el mensaje a \'%s\'. Reintente.', FALSE), $u->nick);
 					}
 				}
 
 				if (count($errors) == 0)
 				{
-					add_flash_message(FLASH_SUCCESS, 'Mensajes enviados correctamente.');
+					add_flash_message(FLASH_SUCCESS, __('Mensajes enviados correctamente.', FALSE));
 					Request::redirect('/mensaje/');
 				}
 				else
@@ -362,7 +365,7 @@ class Base_Controller_Mensaje extends Controller {
 			}
 		}
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('nuevo'));
 
@@ -372,7 +375,7 @@ class Base_Controller_Mensaje extends Controller {
 
 	/**
 	 * Vemos un mensaje recibido por el usuario.
-	 * @param type $mensaje
+	 * @param int $mensaje
 	 */
 	public function action_ver($mensaje)
 	{
@@ -384,32 +387,32 @@ class Base_Controller_Mensaje extends Controller {
 
 		if ( ! is_array($model_mensaje->as_array()))
 		{
-			add_flash_message(FLASH_ERROR, 'El mensaje seleccionado no es válido.');
+			add_flash_message(FLASH_ERROR, __('El mensaje seleccionado no es válido.', FALSE));
 			Request::redirect('/mensaje/');
 		}
 
 		// Verificamos sea el receptor.
 		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
-			add_flash_message(FLASH_ERROR, 'El mensaje seleccionado no es válido.');
+			add_flash_message(FLASH_ERROR, __('El mensaje seleccionado no es válido.', FALSE));
 			Request::redirect('/mensaje/');
 		}
 
 		// Verifico el estado.
 		if ($model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
 		{
-			add_flash_message(FLASH_ERROR, 'El mensaje seleccionado no es válido.');
+			add_flash_message(FLASH_ERROR, __('El mensaje seleccionado no es válido.', FALSE));
 			Request::redirect('/mensaje/');
 		}
 
-		// Seteamos como leido.
+		// Seteamos como leído.
 		if ($model_mensaje->estado == Model_Mensaje::ESTADO_NUEVO)
 		{
 			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_LEIDO);
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Mensajes - '.$model_mensaje->asunto);
+		$this->template->assign('title', sprintf(__('Mensajes - %s', FALSE), $model_mensaje->asunto));
 
 		// Cargamos la vista.
 		$view = View::factory('mensaje/ver');
@@ -428,7 +431,7 @@ class Base_Controller_Mensaje extends Controller {
 		// Listado de mensajes hijos.
 		// $view->assign('hijos', $this->listado_conversacion($model_mensaje->padre_id));
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('nuevo'));
 
@@ -437,7 +440,7 @@ class Base_Controller_Mensaje extends Controller {
 	}
 
 	/**
-	 * Marcamos el mensaje como no leido
+	 * Marcamos el mensaje como no leído
 	 * @param int $mensaje ID del mensaje.
 	 */
 	public function action_noleido($mensaje)
@@ -450,26 +453,52 @@ class Base_Controller_Mensaje extends Controller {
 
 		if ( ! is_array($model_mensaje->as_array()))
 		{
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El mensaje que desea marcar como nuevo es incorrecto.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje que desea marcar como nuevo es incorrecto.', FALSE));
+			}
 			Request::redirect('/mensaje/');
 		}
 
 		// Verificamos sea el receptor.
 		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El mensaje que desea marcar como nuevo es incorrecto.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje que desea marcar como nuevo es incorrecto.', FALSE));
+			}
 			Request::redirect('/mensaje/');
 		}
 
-		// Seteamos como leido.
-		if ($model_mensaje->estado == Model_Mensaje::ESTADO_LEIDO)
-		{
-			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_NUEVO);
-		}
+		// Marcamos como no leído.
+		$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_NUEVO);
 
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			$view = View::factory('mensaje/ajax_index');
+			$view->assign('value', array_merge($model_mensaje->as_array(), array('emisor' => $model_mensaje->emisor()->as_array())));
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Mensaje marcado como nuevo correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Mensaje marcado como nuevo correctamente.', FALSE));
+		}
 		Request::redirect('/mensaje/');
 	}
 
 	/**
-	 * Marcamos el mensaje como leido.
+	 * Marcamos el mensaje como leído.
 	 * @param int $mensaje ID del mensaje.
 	 */
 	public function action_leido($mensaje)
@@ -482,21 +511,50 @@ class Base_Controller_Mensaje extends Controller {
 
 		if ( ! is_array($model_mensaje->as_array()))
 		{
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El mensaje que desea marcar como leido es incorrecto.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje que desea marcar como leido es incorrecto.', FALSE));
+			}
 			Request::redirect('/mensaje/');
 		}
 
 		// Verificamos sea el receptor.
 		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
 		{
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El mensaje que desea marcar como leido es incorrecto.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje que desea marcar como leido es incorrecto.', FALSE));
+			}
 			Request::redirect('/mensaje/');
 		}
 
-		// Seteamos como leido.
+		// Marcamos como leído.
 		if ($model_mensaje->estado == Model_Mensaje::ESTADO_NUEVO)
 		{
 			$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_LEIDO);
 		}
 
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			$view = View::factory('mensaje/ajax_index');
+			$view->assign('value', array_merge($model_mensaje->as_array(), array('emisor' => $model_mensaje->emisor()->as_array())));
+			die(json_encode(array('response' => 'ok', 'content' => array('html' => $view->parse(), 'message' => __('Mensaje marcado como leido correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Mensaje marcado como leido correctamente.', FALSE));
+		}
 		Request::redirect('/mensaje/');
 	}
 
@@ -524,7 +582,7 @@ class Base_Controller_Mensaje extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Mensajes - '.$model_mensaje->asunto);
+		$this->template->assign('title', sprintf(__('Mensajes - %s', FALSE), $model_mensaje->asunto));
 
 		// Cargamos la vista.
 		$view = View::factory('mensaje/enviado');
@@ -544,7 +602,7 @@ class Base_Controller_Mensaje extends Controller {
 		// Listado de mensajes hijos.
 		// $view->assign('hijos', $this->listado_conversacion($model_mensaje->padre_id));
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', $this->submenu('nuevo'));
 
@@ -583,7 +641,7 @@ class Base_Controller_Mensaje extends Controller {
 			$data['emisor'] = $modelo_padre->emisor()->as_array();
 			$data['receptor'] = $modelo_padre->receptor()->as_array();
 
-			// Cargamos el proximo post.
+			// Cargamos el próximo post.
 			$modelo_padre = $modelo_padre->padre();
 
 			// Agregamos elemento.
@@ -604,30 +662,32 @@ class Base_Controller_Mensaje extends Controller {
 		// Verificamos exista el mensaje.
 		$model_mensaje = new Model_Mensaje($mensaje);
 
-		if ( ! is_array($model_mensaje->as_array()))
+		if ( ! is_array($model_mensaje->as_array()) || Usuario::$usuario_id != $model_mensaje->receptor_id || $model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
 		{
-			add_flash_message(FLASH_ERROR, 'El mensaje a eliminar no existe.');
+			if (Request::is_ajax())
+			{
+				header('Content-Type: application/json');
+				die(json_encode(array('response' => 'error', 'content' => __('El mensaje a eliminar no existe.', FALSE))));
+			}
+			else
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje a eliminar no existe.', FALSE));
+			}
 			Request::redirect('/mensaje/');
 		}
 
-		// Verificamos sea el receptor.
-		if (Usuario::$usuario_id != $model_mensaje->receptor_id)
-		{
-			add_flash_message(FLASH_ERROR, 'El mensaje a eliminar no existe.');
-			Request::redirect('/mensaje/');
-		}
-
-		// Verifico el estado.
-		if ($model_mensaje->estado === Model_Mensaje::ESTADO_ELIMINADO)
-		{
-			add_flash_message(FLASH_ERROR, 'El mensaje a eliminar no existe.');
-			Request::redirect('/mensaje/');
-		}
-
-		// Seteamos como eliminado.
+		// Marcamos como eliminado.
 		$model_mensaje->actualizar_estado(Model_Mensaje::ESTADO_ELIMINADO);
 
-		add_flash_message(FLASH_SUCCESS, 'Mensaje eliminado correctamente.');
+		if (Request::is_ajax())
+		{
+			header('Content-Type: application/json');
+			die(json_encode(array('response' => 'ok', 'content' => array('message' => __('Mensaje eliminado correctamente.', FALSE)))));
+		}
+		else
+		{
+			add_flash_message(FLASH_SUCCESS, __('Mensaje eliminado correctamente.', FALSE));
+		}
 		Request::redirect('/mensaje/');
 	}
 
@@ -639,7 +699,7 @@ class Base_Controller_Mensaje extends Controller {
 		// Obtengo el contenido y evitamos XSS.
 		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
 
-		// Evito salida por template.
+		// Evito salida de la plantilla base.
 		$this->template = NULL;
 
 		// Proceso contenido.

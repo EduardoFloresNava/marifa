@@ -49,7 +49,7 @@ class Base_Dispatcher {
 
 		$url = trim($url, '/');
 
-		// En caso de ser /, la transformamos en vacia.
+		// En caso de ser /, la transformamos en vacía.
 		if ($url === '/')
 		{
 			$url = '';
@@ -95,7 +95,7 @@ class Base_Dispatcher {
 	/**
 	 * Realizamos una petición interna.
 	 *
-	 * Es una simulación que nos permite implementar HMVC que es muy util en
+	 * Es una simulación que nos permite implementar HMVC que es muy útil en
 	 * en algunas situaciones.
 	 *
 	 * En caso de ser incorrecta la petición, se emite una excepción informando dicho error.
@@ -119,15 +119,14 @@ class Base_Dispatcher {
 		if ($finish)
 		{
 			// Limpiamos el buffer.
-			ob_clean();
+			@ob_end_clean();
 
 			// Procesamos la consulta y terminamos.
 			die(self::rewrite_urls($url, TRUE));
 		}
 		else
 		{
-			// Iniciamos el buffer, esa para no mostrar nada por pantalla de esta
-			// peticion.
+			// Iniciamos el buffer, esa para no mostrar nada por pantalla de esta petición.
 			ob_start();
 
 			// Realizamos la llamada.
@@ -147,7 +146,7 @@ class Base_Dispatcher {
 	}
 
 	/**
-	 * Realizamos la reescritura de URL mediante el router.
+	 * Realizamos la re-escritura de URL mediante el enrutador.
 	 * @param string $url URL actual.
 	 * @param bool $throw Si en caso de error debe generar una excepción o mostrar un error.
 	 */
@@ -168,7 +167,23 @@ class Base_Dispatcher {
 			$routes = include(APP_BASE.DS.'routes.'.FILE_EXT);
 			foreach ($routes as $route)
 			{
-				call_user_func_array(array($router, 'map'), $route);
+				switch (count($route))
+				{
+					case 0:
+						call_user_func(array($router, 'map'));
+						break;
+					case 1:
+						call_user_func(array($router, 'map'), $route[0]);
+						break;
+					case 2:
+						call_user_func(array($router, 'map'), $route[0], $route[1]);
+						break;
+					case 3:
+						call_user_func(array($router, 'map'), $route[0], $route[1], $route[2]);
+						break;
+					default:
+						call_user_func_array(array($router, 'map'), $route);
+				}
 			}
 		}
 
@@ -186,7 +201,23 @@ class Base_Dispatcher {
 					$routes = include(APP_BASE.DS.PLUGINS_PATH.DS.$pl[0].DS.'routes.'.FILE_EXT);
 					foreach ($routes as $route)
 					{
-						call_user_func_array(array($router, 'map'), $route);
+						switch (count($route))
+						{
+							case 0:
+								call_user_func(array($router, 'map'));
+								break;
+							case 1:
+								call_user_func(array($router, 'map'), $route[0]);
+								break;
+							case 2:
+								call_user_func(array($router, 'map'), $route[0], $route[1]);
+								break;
+							case 3:
+								call_user_func(array($router, 'map'), $route[0], $route[1], $route[2]);
+								break;
+							default:
+								call_user_func_array(array($router, 'map'), $route);
+						}
 					}
 				}
 			}
@@ -198,16 +229,27 @@ class Base_Dispatcher {
 					$routes = include($v);
 					foreach ($routes as $route)
 					{
-						call_user_func_array(array($router, 'map'), $route);
+						switch (count($route))
+						{
+							case 0:
+								call_user_func(array($router, 'map'));
+								break;
+							case 1:
+								call_user_func(array($router, 'map'), $route[0]);
+								break;
+							case 2:
+								call_user_func(array($router, 'map'), $route[0], $route[1]);
+								break;
+							case 3:
+								call_user_func(array($router, 'map'), $route[0], $route[1], $route[2]);
+								break;
+							default:
+								call_user_func_array(array($router, 'map'), $route);
+						}
 					}
 				}
 			}
 		}
-		//$router->map('/login', array('controller' => 'usuario', 'action' => 'login'));
-		//$router->map('/login', '/usuario/login');
-		//TODO: Agregar rutas sistema.
-		//TODO: Agregar rutas plugins.
-
 
 		// Realizo enrutado.
 		//TODO: Métodos personalizados.
@@ -274,10 +316,10 @@ class Base_Dispatcher {
 			}
 			else
 			{
-				// Reproceso la URL.
+				// Vuelvo a procesar la URL.
 				$target = trim($target, '/');
 
-				// En caso de ser /, la transformamos en vacia.
+				// En caso de ser /, la transformamos en vacía.
 				if ($target === '/')
 				{
 					$target = '';
@@ -290,7 +332,7 @@ class Base_Dispatcher {
 			// Nombre de la acción.
 			$accion = $target['action'];
 
-			//Instanciamos el controllador
+			// Creo instancia del controlador.
 			if ( ! class_exists($controller))
 			{
 				if ( ! $throw)
@@ -441,7 +483,7 @@ class Base_Dispatcher {
 				// Normalizamos el nombre del controlador para usar en las clases.
 				$controller_name = 'Plugin_'.ucfirst($p_name).'_Controller_'.ucfirst($controller);
 
-				//Instanciamos el controllador
+				// Creo instancia del controlador.
 				if ( ! class_exists($controller_name))
 				{
 					if ( ! $throw)
@@ -515,7 +557,7 @@ class Base_Dispatcher {
 				// Normalizamos el nombre del controlador para usar en las clases.
 				$controller_name = 'Controller_'.ucfirst($directorio).'_'.ucfirst($controller);
 
-				//Instanciamos el controllador
+				// Creo instancia del controlador.
 				if (class_exists($controller_name))
 				{
 					// Verificamos exista método.
@@ -574,7 +616,7 @@ class Base_Dispatcher {
 		// Normalizamos el nombre del controlador para usar en las clases.
 		$controller_name = 'Controller_'.ucfirst($controller);
 
-		//Instanciamos el controllador
+		// Creo instancia del controlador.
 		if ( ! class_exists($controller_name))
 		{
 			if ( ! $throw)
@@ -617,6 +659,20 @@ class Base_Dispatcher {
 	 */
 	private static function call_controller($controller, $accion, $args, $plugin = NULL)
 	{
+		// Verifico modo mantenimiento.
+		if (Mantenimiento::is_locked(FALSE))
+		{
+			// Verifico si esta autenticado.
+			if ( ! Usuario::is_login() || Mantenimiento::is_locked_for(Usuario::$usuario_id, FALSE))
+			{
+				// Verifico el método.
+				if ($controller !== 'Controller_Mantenimiento')
+				{
+					Request::redirect('/mantenimiento/');
+				}
+			}
+		}
+
 		// Creo instancia del objeto.
 		$cont = new $controller;
 
@@ -624,7 +680,7 @@ class Base_Dispatcher {
 		$r_m = new ReflectionMethod($cont, 'action_'.$accion);
 		$p_n = $r_m->getNumberOfRequiredParameters();
 
-		// Expandemos el arreglo de parámetros con NULL si es necesario.
+		// Expando el arreglo de parámetros con NULL si es necesario.
 		while (count($args) < $p_n)
 		{
 			$args[] = NULL;

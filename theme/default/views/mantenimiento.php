@@ -26,7 +26,57 @@
     </head>
 
     <body>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="/">{if="isset($brand)"}{$brand}{else}Marifa{/if}</a>
+                    <div class="nav-collapse">
+                        <a class="btn btn-success pull-right" href="{#SITE_URL#}/mantenimiento/salir/">Cerrar sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="container">
+            {if="isset($flash_success)"}
+                {if="is_array($flash_success)"}
+                <div class="alert alert-success alert-container">
+                    {loop="$flash_success"}
+                    <div class="alert-item"><a class="close" data-dismiss="alert">×</a><i class="icon icon-ok"></i> {$value}</div>
+                    {/loop}
+                </div>
+                {else}
+                    <div class="alert alert-success"><a class="close" data-dismiss="alert">×</a><i class="icon icon-ok"></i> {$flash_success}</div>
+                {/if}
+            {/if}
+            {if="isset($flash_info)"}
+                {if="is_array($flash_info)"}
+                <div class="alert alert-info alert-container">
+                    {loop="$flash_info"}
+                    <div class="alert-item"><a class="close" data-dismiss="alert">×</a><i class="icon icon-info-sign"></i> {$value}</div>
+                    {/loop}
+                </div>
+                {else}
+                    <div class="alert alert-info"><a class="close" data-dismiss="alert">×</a><i class="icon icon-info-sign"></i> {$flash_info}</div>
+                {/if}
+            {/if}
+            {if="isset($flash_error)"}
+                {if="is_array($flash_error)"}
+                <div class="alert alert-container">
+                    {loop="$flash_error"}
+                    <div class="alert-item"><a class="close" data-dismiss="alert">×</a><i class="icon icon-remove-sign"></i> {$value}</div>
+                    {/loop}
+                </div>
+                {else}
+                    <div class="alert"><a class="close" data-dismiss="alert">×</a><i class="icon icon-remove-sign"></i> {$flash_error}</div>
+                {/if}
+            {/if}
+
 			<div class="row">
 				<div class="span12">
 					<div class="alert">

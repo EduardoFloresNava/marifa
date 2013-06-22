@@ -86,7 +86,7 @@ class Base_Utils {
 		$yiq = (($r*299)+($g*587)+($b*114))/1000;
 		return ($yiq >= 128) ? '000000' : 'FFFFFF';
 	}
-	
+
 	/**
 	 * Cargamos una URL.
 	 * @param string $url URL a cargar.
@@ -119,4 +119,169 @@ class Base_Utils {
 		}
 	}
 
+	/**
+	 * Realizamos la descarga de un archivo.
+	 * @param string $url Url del archivo a descargar.
+	 * @param string $file Archivo donde guardar la descarga.
+	 */
+	public static function download_file($url, $file)
+	{
+		// Verificamos presencia de cURL.
+		if (function_exists('curl_init'))
+		{
+			if (is_string($file))
+			{
+				// Abrimos el archivo.
+				$fp = fopen($file, 'w+');
+			}
+			else
+			{
+				$fp =& $file;
+			}
+
+			// Iniciamos el objeto.
+			$petition = curl_init();
+
+			// Configuramos la peticion.
+			curl_setopt($petition, CURLOPT_URL, $url);
+			curl_setopt($petition, CURLOPT_TIMEOUT, 50);
+			curl_setopt($petition, CURLOPT_FILE, $fp);
+			// curl_setopt($petition, CURLOPT_FOLLOWLOCATION, true);
+
+			// Realizamos la peticion.
+			curl_exec($petition);
+
+			// Verificamos presencia de errores.
+			if (curl_errno($petition) === 0)
+			{
+				curl_close($petition);
+				fclose($fp);
+				return TRUE;
+			}
+			else
+			{
+				fclose($fp);
+				//throw new HttpException(curl_error($petition), curl_errno($petition));
+				curl_close($petition);
+				return FALSE;
+			}
+		}
+		elseif (ini_get('allow_url_fopen') === TRUE)
+		{
+			// Intentamos con lectura remota.
+
+			// Tratamos de abrir el fichero.
+			$r_fp = @fopen($url, 'r');
+
+			// Verificamos su apertura.
+			if ( ! $r_fp)
+			{
+				return FALSE;
+			}
+
+			// Abrimos el local
+			if (is_string($file))
+			{
+				$l_fp = @fopen($file, 'w+');
+			}
+			else
+			{
+				$l_fp =& $file;
+			}
+
+			// Verificamos su apertura.
+			if ( ! $r_fp)
+			{
+				@fclose($r_fp);
+				return FALSE;
+			}
+
+			// Comenzamos a mover los bytes.
+			while ( ! feof($r_fp))
+			{
+				fwrite($l_fp, fread($r_fp, 1024));
+			}
+
+			// Cerramos los archivos.
+			@fclose($r_fp);
+			@fclose($l_fp);
+
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Obtenemos una instancia del modelo de configuraciones.
+	 * @return Model_Configuracion
+	 */
+	public static function configuracion()
+	{
+		return Model_Configuracion::get_instance();
+	}
+
+	/**
+	 * Verificamos si realmente se puede escribir en esa ruta.
+	 * @param string $file Archivo o directorio a verificar.
+	 * @return bool
+	 */
+	public static function is_really_writable($file)
+	{
+		// If we're on a Unix server with safe_mode off we call is_writable
+		if (DIRECTORY_SEPARATOR == '/' && @ini_get("safe_mode") == FALSE)
+		{
+			return is_writable($file);
+		}
+
+		// For windows servers and safe_mode "on" installations we'll actually
+		// write a file then read it.  Bah...
+		if (is_dir($file))
+		{
+			$file = rtrim($file, '/').'/'.md5(rand(1,100));
+
+			if (($fp = @fopen($file, 'ab')) === FALSE)
+			{
+				return FALSE;
+			}
+
+			fclose($fp);
+			@chmod($file, DIR_WRITE_MODE);
+			@unlink($file);
+			return TRUE;
+		}
+		elseif (($fp = @fopen($file, 'ab')) === FALSE)
+		{
+			return FALSE;
+		}
+
+		fclose($fp);
+		return TRUE;
+	}
+
+	/**
+	 * Comprimo un archivo con GZIP.
+	 * @param string $src Ruta del archivo a comprimir.
+	 * @param string $dst Ruta donde colocar el archivo comprimido.
+	 */
+	public static function compress_gzip($src, $dst)
+	{
+		// Abro archivo de lectura.
+		$fp = fopen($src, 'r');
+
+		// Abro archivo de escritura.
+		$zp = gzopen($dst, 'w9');
+
+		// Leo y escribo archivo.
+		while ( ! feof($fp))
+		{
+			gzwrite($zp, fread($fp, 512));
+		}
+
+		// Cierro archivos.
+		fclose($fp);
+		gzclose($zp);
+	}
 }

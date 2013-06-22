@@ -5,7 +5,7 @@
     <li class="active">Usuarios con la medalla <strong>{$medalla.nombre}</strong></li>
 </ul>
 <div class="header">
-	<h2>Usuarios con la medalla <img class="show-tooltip" title="{$medalla.nombre}" src="{#THEME_URL#}/assets/img/medallas/{$medalla.imagen}" width="20" height="20" /></h2>
+	<h2>Usuarios con la medalla <img class="show-tooltip" title="{$medalla.nombre}" src="{#THEME_URL#}/assets/img/medallas/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'medallas'.DS, $medalla.imagen, 'small')"}" width="16" height="16" /></h2>
 </div>
 <table class="table table-bordered">
 	<thead>
@@ -21,7 +21,7 @@
 		<tr>
 			<td><a href="{#SITE_URL#}/@{$value.nick}">{$value.nick}</a></td>
 			<td>{$value.email}</td>
-			<td>{$value.lastactive->fuzzy()}</td>
+			<td>{if="is_object($value.lastactive)"}{$value.lastactive->fuzzy()}{else}{@Nunca@}{/if}</td>
 			<td><span class="label label-{if="$value.estado == 0"}info">PENDIENTE{elseif="$value.estado == 1"}success">ACTIVO{elseif="$value.estado == 2"}warning">SUSPENDIDO{elseif="$value.estado == 3"}important">BANEADO{/if}</span></td>
 		</tr>
 		{else}

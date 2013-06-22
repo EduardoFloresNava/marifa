@@ -79,7 +79,7 @@ class Base_Cache {
 					throw new Exception("Invalid cache type '{$data['type']}'.");
 				}
 
-				// Verificamos los datos segun el tipo.
+				// Verificamos los datos según el tipo.
 				switch ($data['type'])
 				{
 					case 'dummy':
@@ -110,7 +110,7 @@ class Base_Cache {
 						self::$instance = new Cache_Driver_Memcached($data['hostname'], (int) $data['port'], (int) $data['weight']);
 						break;
 					case 'file':
-						// Obtenemos el path.
+						// Obtenemos la ruta.
 						$p = isset($data['path']) ? $data['path'] : (APP_BASE.DS.'cache'.DS.'file'.DS);
 
 						// Verificamos que tenga barra final.
@@ -125,7 +125,7 @@ class Base_Cache {
 							// Tratamos de crearlo.
 							@mkdir($p, 0777, TRUE);
 
-							// Reintentamos creacion.
+							// Reintentamos creación.
 							if ( ! file_exists($p) || ! is_dir($p))
 							{
 								throw new Exception('El directorio para la cache no existe.');

@@ -25,7 +25,7 @@ defined('APP_BASE') || die('No direct access allowed.');
 
 /**
  * Controlador para el manejo de usuarios.
- * Permite el inicio de sessión, registro, validar cuentas y recuperar contraseña.
+ * Permite el inicio de sesión, registro, validar cuentas y recuperar contraseña.
  *
  * @since      Versión 0.1
  * @package    Marifa\Base
@@ -40,27 +40,43 @@ class Base_Controller_Usuario extends Controller {
 	{
 		parent::before();
 
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu());
 	}
 
 	/**
-	 * Inicio de sessión de un usuario.
+	 * Inicio de sesión de un usuario.
 	 */
 	public function action_login()
 	{
 		// Verificamos si el usuario está conectado.
 		if (Usuario::is_login())
 		{
-			// Lo enviamos al perfil.
-			Request::redirect('/', FALSE, TRUE);
+			if (Request::is_ajax())
+			{
+				Request::http_response_code(303);
+				echo SITE_URL;
+				return;
+			}
+			else
+			{
+				// Lo enviamos al perfil.
+				Request::redirect('/', FALSE, TRUE);
+			}
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Ingreso');
+		$this->template->assign('title', __('Ingreso', FALSE));
 
 		// Cargamos la vista del usuario.
-		$view_usuario = View::factory('usuario/login');
+		if (Request::is_ajax())
+		{
+			$view_usuario = View::factory('usuario/login_modal_ajax');
+		}
+		else
+		{
+			$view_usuario = View::factory('usuario/login');
+		}
 
 		$view_usuario->assign('error', NULL);
 		$view_usuario->assign('error_nick', FALSE);
@@ -75,7 +91,22 @@ class Base_Controller_Usuario extends Controller {
 			// Verificamos estén ambos datos.
 			if ( ! isset($_POST['nick']) || empty($_POST['nick']) || ! isset($_POST['password']) || empty($_POST['password']))
 			{
-				$view_usuario->assign('error', 'Debe introducir el E-Mail o Usuario y la contraseña para poder acceder.');
+				// Verifico ajax.
+				if (Request::is_ajax())
+				{
+					echo json_encode(array(
+						'response' => 'ERROR',
+						'body' => array(
+							'error' => __('Debe introducir el E-Mail o Usuario y la contraseña para poder acceder.', FALSE),
+							'error_nick' => ! (isset($_POST['nick']) && ! empty($_POST['nick'])),
+							'error_password' => ! (isset($_POST['password']) && ! empty($_POST['password']))
+						),
+					));
+					return;
+				}
+
+				// Verifico campos.
+				$view_usuario->assign('error', __('Debe introducir el E-Mail o Usuario y la contraseña para poder acceder.', FALSE));
 				$view_usuario->assign('error_nick', ! (isset($_POST['nick']) && ! empty($_POST['nick'])));
 				$view_usuario->assign('error_password', ! (isset($_POST['password']) && ! empty($_POST['password'])));
 				$view_usuario->assign('nick', isset($_POST['nick']) ? $_POST['nick'] : '');
@@ -94,7 +125,20 @@ class Base_Controller_Usuario extends Controller {
 				switch ($rst)
 				{
 					case -1: // Datos inválidos.
-						$view_usuario->assign('error', 'Los datos introducidos son inválidos.');
+						if (Request::is_ajax())
+						{
+							echo json_encode(array(
+								'response' => 'ERROR',
+								'body' => array(
+									'error' => __('Los datos introducidos son inválidos.', FALSE),
+									'error_nick' => TRUE,
+									'error_password' => TRUE
+								),
+							));
+							return;
+						}
+
+						$view_usuario->assign('error', __('Los datos introducidos son inválidos.', FALSE));
 						$view_usuario->assign('error_nick', TRUE);
 						$view_usuario->assign('error_password', TRUE);
 						break;
@@ -108,17 +152,37 @@ class Base_Controller_Usuario extends Controller {
 						// Verifico si tiene advertencias si visualizar.
 						if ($model_usuario->cantidad_avisos(Model_Usuario_Aviso::ESTADO_NUEVO) > 0)
 						{
-							add_flash_message(FLASH_INFO, 'Tienes advertencias nuevas. Puedes verlas desde <a href="/cuenta/avisos/">aquí</a>.');
+							add_flash_message(FLASH_INFO, __(strintf('Tienes advertencias nuevas. Puedes verlas desde <a href="%s/cuenta/avisos/">aquí</a>.', SITE_URL), FALSE));
 						}
 
-						// Envio mensaje de bienvenida.
-						add_flash_message(FLASH_SUCCESS, 'Bienvenido.');
+						// Envío mensaje de bienvenida.
+						add_flash_message(FLASH_SUCCESS, __('Bienvenido.', FALSE));
 
-						// Lo envio a la portada.
+						// Informo que fue correcto.
+						if (Request::is_ajax())
+						{
+							echo json_encode(array('response' => 'OK', 'redirect' => SITE_URL.'/'));
+							return;
+						}
+
+						// Lo envío a la portada.
 						Request::redirect('/', FALSE, TRUE);
 						break;
 					case Model_Usuario::ESTADO_PENDIENTE:  // Cuenta por activar.
-						$view_usuario->assign('error', 'La cuenta no ha sido validada aún. Si no recibiste el correo de activación haz click <a href="/usuario/pedir_activacion/">aqui</a>');
+						if (Request::is_ajax())
+						{
+							echo json_encode(array(
+								'response' => 'ERROR',
+								'body' => array(
+									'error' => sprintf(__('La cuenta no ha sido validada aún. Si no recibiste el correo de activación haz click <a href="%s/usuario/pedir_activacion/">aquí</a>', FALSE), SITE_URL),
+									'error_nick' => FALSE,
+									'error_password' => FALSE
+								),
+							));
+							return;
+						}
+
+						$view_usuario->assign('error', sprintf(__('La cuenta no ha sido validada aún. Si no recibiste el correo de activación haz click <a href="%s/usuario/pedir_activacion/">aquí</a>', FALSE), SITE_URL));
 						break;
 					case Model_Usuario::ESTADO_SUSPENDIDA: // Cuenta suspendida.
 						// Obtenemos la suspensión.
@@ -133,11 +197,38 @@ class Base_Controller_Usuario extends Controller {
 						$restante = sprintf("%d:%02d:%02d", floor($seconds / 3600), floor($seconds % 3600 / 60), $seconds % 60);
 						unset($seconds);
 
+						if (Request::is_ajax())
+						{
+							echo json_encode(array(
+								'response' => 'ERROR',
+								'body' => array(
+									'error' => sprintf(__('%s te ha suspendido por %s debido a:<br /> %s', FALSE), $moderador['nick'], $restante, $motivo),
+									'error_nick' => FALSE,
+									'error_password' => FALSE
+								),
+							));
+							return;
+						}
+
 						$view_usuario->assign('error', sprintf(__('%s te ha suspendido por %s debido a:<br /> %s', FALSE), $moderador['nick'], $restante, $motivo));
 						break;
-					case Model_Usuario::ESTADO_BANEADA:    // Cuenta baneada.
+					case Model_Usuario::ESTADO_BANEADA:    // Cuenta bloqueada.
 						$baneo = $model_usuario->baneo();
-						$view_usuario->assign('error', sprintf(__('%s te ha baneado el %s debido a: <br /> %s', FALSE), $baneo->moderador()->nick, $baneo->fecha->format('d/m/Y H:i:s'), Decoda::procesar($baneo->razon)));
+
+						if (Request::is_ajax())
+						{
+							echo json_encode(array(
+								'response' => 'ERROR',
+								'body' => array(
+									'error' => sprintf(__('%s ha bloqueado esta cuenta el %s debido a: <br /> %s', FALSE), $baneo->moderador()->nick, $baneo->fecha->format('d/m/Y H:i:s'), Decoda::procesar($baneo->razon)),
+									'error_nick' => FALSE,
+									'error_password' => FALSE
+								),
+							));
+							return;
+						}
+
+						$view_usuario->assign('error', sprintf(__('%s ha bloqueado esta cuenta el %s debido a: <br /> %s', FALSE), $baneo->moderador()->nick, $baneo->fecha->format('d/m/Y H:i:s'), Decoda::procesar($baneo->razon)));
 				}
 
 				$view_usuario->assign('nick', $nick);
@@ -148,8 +239,16 @@ class Base_Controller_Usuario extends Controller {
 			$view_usuario->assign('nick', '');
 		}
 
-		// Agregamos el la vista a la plantilla.
-		$this->template->assign('contenido', $view_usuario->parse());
+		if (Request::is_ajax() && Request::method() == 'GET')
+		{
+			$this->template = NULL;
+			$view_usuario->show();
+		}
+		else
+		{
+			// Agregamos el la vista a la plantilla.
+			$this->template->assign('contenido', $view_usuario->parse());
+		}
 	}
 
 	/**
@@ -160,26 +259,55 @@ class Base_Controller_Usuario extends Controller {
 		// Verificamos si el usuario está conectado.
 		if (Usuario::is_login())
 		{
-			// Lo enviamos a la portada.
-			add_flash_message(FLASH_ERROR, 'No puedes registrarte si ya estás logueado.');
-			Request::redirect('/');
+			if (Request::is_ajax())
+			{
+				Request::http_response_code(303);
+				echo SITE_URL;
+				return;
+			}
+			else
+			{
+				// Lo enviamos al perfil.
+				Request::redirect('/', FALSE, TRUE);
+			}
 		}
 
-		// Configuraciones del sitio.
-		$model_config = new Model_Configuracion;
+		// Cargo configuraciones.
+		Model_Configuracion::get_instance()->load_list(array('registro', 'usuarios_bloqueados', 'rango_defecto', 'activacion_usuario'));
 
 		// Verifico si está abierto el registro.
-		if ( ! (bool) $model_config->get('registro', TRUE))
+		if ( ! (bool) Model_Configuracion::get_instance()->get('registro', TRUE))
 		{
-			add_flash_message(FLASH_ERROR, 'El registro se encuentra cerrado, no se pueden crear nuevas cuentas.');
-			Request::redirect('/usuario/login/');
+			if (Request::is_ajax())
+			{
+				// Informo que la petición es inválida.
+				Request::http_response_code(409);
+				__('El registro se encuentra cerrado, no se pueden crear nuevas cuentas.');
+				return;
+			}
+			else
+			{
+				// Informo que el registro no se encuentra disponible.
+				add_flash_message(FLASH_ERROR, __('El registro se encuentra cerrado, no se pueden crear nuevas cuentas.', FALSE));
+				Request::redirect('/usuario/login/');
+			}
 		}
 
+		// Cargamos modelo del usuario.
+		$model_usuario = new Model_Usuario;
+
 		// Asignamos el título.
-		$this->template->assign('title', 'Registro');
+		$this->template->assign('title', __('Registro', FALSE));
 
 		// Cargamos la vista del usuario.
-		$view_usuario = View::factory('usuario/register');
+		if (Request::is_ajax())
+		{
+			$view_usuario = View::factory('usuario/register_ajax');
+		}
+		else
+		{
+			$view_usuario = View::factory('usuario/register');
+		}
 
 		// Pasamos toda la información a la vista.
 		foreach (array('nick', 'email', 'password', 'c_password', 'captcha') as $field)
@@ -204,7 +332,7 @@ class Base_Controller_Usuario extends Controller {
 
 			if ($error)
 			{
-				$view_usuario->assign('error', 'Debe introducir todos los datos');
+				$view_usuario->assign('error', __('Debe introducir todos los datos', FALSE));
 			}
 			else
 			{
@@ -222,6 +350,20 @@ class Base_Controller_Usuario extends Controller {
 				{
 					$view_usuario->assign('error_nombre', TRUE);
 					$error = TRUE;
+				}
+				else // Verifico existencia.
+				{
+					// Proceso nick.
+					$nick = trim(preg_replace('/\s+/', ' ', $_POST['nick']));
+
+					// Listado de nombres de usaurios no permitidos.
+					$nicks_bloqueados = unserialize(Model_Configuracion::get_instance()->get_default('usuarios_bloqueados', 'a:0:{}'));
+
+					if (in_array($nick, $nicks_bloqueados))
+					{
+						$view_usuario->assign('error_nombre', __('Ya existe un usuario con ese nick.', FALSE));
+						$error = TRUE;
+					}
 				}
 
 				// Verificamos e-mail.
@@ -258,13 +400,10 @@ class Base_Controller_Usuario extends Controller {
 
 				if ($error)
 				{
-					$view_usuario->assign('error', 'Los datos introducidos no son válidos');
+					$view_usuario->assign('error', __('Los datos introducidos no son válidos', FALSE));
 				}
 				else
 				{
-					// Cargamos modelo del usuario.
-					$model_usuario = new Model_Usuario;
-
 					// Formateamos las entradas.
 					$nick = trim(preg_replace('/\s+/', ' ', $_POST['nick']));
 					$email = trim($_POST['email']);
@@ -272,7 +411,7 @@ class Base_Controller_Usuario extends Controller {
 
 					// Realizamos el registro.
 					try {
-						$id = $model_usuario->register($nick, $email, $password, (int) $model_config->get('rango_defecto', 1));
+						$id = $model_usuario->register($nick, $email, $password, (int) Model_Configuracion::get_instance()->get('rango_defecto', 1));
 					}
 					catch (Exception $e)
 					{
@@ -284,20 +423,20 @@ class Base_Controller_Usuario extends Controller {
 					if ($id)
 					{
 						// Verifico tipo de activación del usuario.
-						$t_act = (int) $model_config->get('activacion_usuario', 1);
+						$t_act = (int) Model_Configuracion::get_instance()->get('activacion_usuario', 1);
 
 						if ($t_act == 1)
 						{
-							// Genero el token de activacion.
+							// Genero el token de activación.
 							$model_activar = new Model_Usuario_Recuperacion;
 							$token = $model_activar->crear($id, $email, Model_Usuario_Recuperacion::TIPO_ACTIVACION);
 
 							// Configuraciones del sitio.
-							$model_config = new Model_Configuracion;
+							$model_config = Model_Configuracion::get_instance();
 
 							// Creo el mensaje de correo.
 							$message = Email::get_message();
-							$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
+							$message->setSubject(sprintf(__('Activación cuenta de %s', FALSE), $model_config->get('nombre', 'Marifa')));
 							$message->setTo($email, $nick);
 
 							// Cargo la vista.
@@ -307,9 +446,8 @@ class Base_Controller_Usuario extends Controller {
 							$message->setBody($message_view->parse());
 							unset($message_view);
 
-							// Envio el email.
-							$mailer = Email::get_mailer();
-							$mailer->send($message);
+							// Envío el email.
+							Email::send_queue_online($message);
 						}
 						elseif ($t_act == 2)
 						{
@@ -321,13 +459,37 @@ class Base_Controller_Usuario extends Controller {
 						switch ($t_act)
 						{
 							case 0: // Activación manual.
-								add_flash_message(FLASH_SUCCESS, 'El registro se ha realizado <strong>correctamente</strong>. Para poder acceder a su cuenta debe esperar que un administrador active su cuenta, cuando eso suceda serás notificado por correo.');
+								if (Request::is_ajax())
+								{
+									echo json_encode(array('response' => 'OK', 'body' => __('El registro se ha realizado <strong>correctamente</strong>. Para poder acceder a su cuenta debe esperar que un administrador active su cuenta, cuando eso suceda serás notificado por correo.', FALSE)));
+									return;
+								}
+								else
+								{
+									add_flash_message(FLASH_SUCCESS, __('El registro se ha realizado <strong>correctamente</strong>. Para poder acceder a su cuenta debe esperar que un administrador active su cuenta, cuando eso suceda serás notificado por correo.', FALSE));
+								}
 								break;
 							case 1: // Activación por e-mail.
-								add_flash_message(FLASH_SUCCESS, 'El registro se ha realizado <strong>correctamente</strong>. Para poder acceder a su cuenta debe seguir las instrucciones que fueron enviadas a su casilla de <strong>E-Mail</strong>.');
+								if (Request::is_ajax())
+								{
+									echo json_encode(array('response' => 'OK', 'body' => __('El registro se ha realizado <strong>correctamente</strong>. Para poder acceder a su cuenta debe seguir las instrucciones que fueron enviadas a su casilla de <strong>E-Mail</strong>.', FALSE)));
+									return;
+								}
+								else
+								{
+									add_flash_message(FLASH_SUCCESS, __('El registro se ha realizado <strong>correctamente</strong>. Para poder acceder a su cuenta debe seguir las instrucciones que fueron enviadas a su casilla de <strong>E-Mail</strong>.', FALSE));
+								}
 								break;
 							case 2: // Activación automática.
-								add_flash_message(FLASH_SUCCESS, 'El registro se ha realizado <strong>correctamente</strong>. Ya puedes acceder a tu cuenta iniciando sesión <a href="{#SITE_URL#}/usuario/login/">aquí</a>.');
+								if (Request::is_ajax())
+								{
+									echo json_encode(array('response' => 'OK', 'body' => sprintf(__('El registro se ha realizado <strong>correctamente</strong>. Ya puedes acceder a tu cuenta iniciando sesión <a href="%s/usuario/login/">aquí</a>.', FALSE), SITE_URL)));
+									return;
+								}
+								else
+								{
+									add_flash_message(FLASH_SUCCESS, sprintf(__('El registro se ha realizado <strong>correctamente</strong>. Ya puedes acceder a tu cuenta iniciando sesión <a href="%s/usuario/login/">aquí</a>.', FALSE), SITE_URL));
+								}
 								break;
 						}
 						Request::redirect('/login');
@@ -335,16 +497,120 @@ class Base_Controller_Usuario extends Controller {
 					else
 					{
 						// Error al registrar.
-						$view_usuario->assign('error', 'No se pudo crear la cuenta, por favor reintente.');
+						$view_usuario->assign('error', __('No se pudo crear la cuenta, por favor reintente.', FALSE));
 					}
 				}
 
 			}
 		}
 
-		// Agregamos el la vista a la plantilla.
-		$this->template->assign('contenido', $view_usuario->parse());
-		unset($view_usuario);
+		// Verifico vista ajax.
+		if (Request::is_ajax())
+		{
+			$view_usuario->show();
+			$this->template = NULL;
+		}
+		else
+		{
+			// Agregamos el la vista a la plantilla.
+			$this->template->assign('contenido', $view_usuario->parse());
+			unset($view_usuario);
+		}
+	}
+
+	/**
+	 * Obtenemos el formulario de registro.
+	 * Se usa para peticiones AJAX.
+	 */
+	public function action_register_form()
+	{
+		// Solo peticiones ajax. El resto a register.
+		if ( ! Request::is_ajax())
+		{
+			Request::redirect('/usuario/register', FALSE, TRUE);
+		}
+
+		// Verificamos si el usuario está conectado.
+		if (Usuario::is_login())
+		{
+			Request::http_response_code(303);
+			echo SITE_URL;
+			return;
+		}
+
+		// Verifico si está abierto el registro.
+		if ( ! (bool) Utils::configuracion()->get('registro', TRUE))
+		{
+			// Informo que la petición es inválida.
+			Request::http_response_code(409);
+			__('El registro se encuentra cerrado, no se pueden crear nuevas cuentas.');
+			return;
+		}
+
+		// Cargo y muestro la vista.
+		View::factory('usuario/register_modal_ajax')->show();
+
+		// Evito salida de la plantilla base.
+		$this->template = NULL;
+	}
+
+	/**
+	 * Verifico si el e-mail es válido y además que no esté en uso.
+	 */
+	public function action_validar_email()
+	{
+		// Obtengo el e-mail.
+		$email = arr_get($_POST, 'email', '');
+
+		// Verifico el formato.
+		if (preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $email))
+		{
+			$model_usuario = new Model_Usuario();
+			if ($model_usuario->exists_email($email))
+			{
+				echo json_encode(array('response' => 'ERROR', 'body' => __('Ya existe una cuenta con ese e-mail.', FALSE)));
+			}
+			else
+			{
+				echo json_encode(array('response' => 'OK', 'body' => ''));
+			}
+		}
+		else
+		{
+			// Informo que es inválido.
+			echo json_encode(array('response' => 'ERROR', 'body' => __('El formato no es correcto.', FALSE)));
+		}
+	}
+
+	/**
+	 * Verifico si el nick es válido y además que no esté en uso.
+	 */
+	public function action_validar_nick()
+	{
+		// Obtengo el nick.
+		$nick = arr_get($_POST, 'nick', '');
+
+		// Verifico el formato.
+		if (preg_match('/^[a-zA-Z0-9]{4,16}$/D', $nick))
+		{
+			// Cargo usuarios bloqueados.
+			$nicks_bloqueados = unserialize(Utils::configuracion()->get_default('usuarios_bloqueados', 'a:0:{}'));
+
+			$model_usuario = new Model_Usuario();
+			if (in_array($nick, $nicks_bloqueados) || $model_usuario->exists_nick($nick))
+			{
+				echo json_encode(array('response' => 'ERROR', 'body' => __('Ya existe una cuenta con ese nick.', FALSE)));
+			}
+			else
+			{
+				echo json_encode(array('response' => 'OK', 'body' => ''));
+			}
+		}
+		else
+		{
+			// Informo que es inválido.
+			echo json_encode(array('response' => 'ERROR', 'body' => __('El formato no es correcto.', FALSE)));
+		}
 	}
 
 	/**
@@ -357,14 +623,14 @@ class Base_Controller_Usuario extends Controller {
 		if (Usuario::is_login())
 		{
 			// Lo enviamos a la portada.
-			add_flash_message(FLASH_ERROR, 'No puedes registrarte si ya estás logueado.');
+			add_flash_message(FLASH_ERROR, __('No puedes registrarte si ya has iniciado sesión.', FALSE));
 			Request::redirect('/');
 		}
 
 		// Verifico formato del token.
 		if ( ! preg_match('/^[a-zA-Z0-9]{32}$/D', $token))
 		{
-			add_flash_message(FLASH_ERROR, 'La clave de activación no es correcta.');
+			add_flash_message(FLASH_ERROR, __('La clave de activación no es correcta.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -372,7 +638,7 @@ class Base_Controller_Usuario extends Controller {
 		$model_recuperacion = new Model_Usuario_Recuperacion;
 		if ( ! $model_recuperacion->es_valido($token, Model_Usuario_Recuperacion::TIPO_ACTIVACION))
 		{
-			add_flash_message(FLASH_ERROR, 'La clave de activación ha caducado.');
+			add_flash_message(FLASH_ERROR, __('La clave de activación ha caducado.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -391,12 +657,12 @@ class Base_Controller_Usuario extends Controller {
 		// Borramos el token.
 		$model_recuperacion->borrar();
 
-		add_flash_message(FLASH_SUCCESS, 'La cuenta se ha activado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('La cuenta se ha activado correctamente.', FALSE));
 		Request::redirect('/usuario/login');
 	}
 
 	/**
-	 * Pido el envio de una nueva clave de activación.
+	 * Pido el envío de una nueva clave de activación.
 	 */
 	public function action_pedir_activacion()
 	{
@@ -404,22 +670,22 @@ class Base_Controller_Usuario extends Controller {
 		if (Usuario::is_login())
 		{
 			// Lo enviamos a la portada.
-			add_flash_message(FLASH_ERROR, 'No puedes registrarte si ya estás logueado.');
+			add_flash_message(FLASH_ERROR, __('No puedes registrarte si ya has iniciado sesión.', FALSE));
 			Request::redirect('/');
 		}
 
 		// Configuraciones del sitio.
-		$model_config = new Model_Configuracion;
+		$model_config = Model_Configuracion::get_instance();
 
 		// Verifico el tipo de activación.
 		if ( (int) $model_config->get('activacion_usuario', 1) !== 1)
 		{
-			add_flash_message(FLASH_ERROR, 'No se pueden pedir correos de activación, este método no es correcto.');
+			add_flash_message(FLASH_ERROR, __('No se pueden pedir correos de activación, este método no es correcto.', FALSE));
 			Request::redirect('/usuario/login/');
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Activar cuenta');
+		$this->template->assign('title', __('Activar cuenta', FALSE));
 
 		// Cargamos la vista del usuario.
 		$view_usuario = View::factory('usuario/activar');
@@ -438,17 +704,17 @@ class Base_Controller_Usuario extends Controller {
 
 			if ( ! preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/D', $email))
 			{
-				$view_usuario->assign('error_email', 'La casilla de correo ingresada no es válida.');
+				$view_usuario->assign('error_email', __('La casilla de correo ingresada no es válida.', FALSE));
 				$error = TRUE;
 			}
 
 			if ( ! $error)
 			{
-				// Verfico existencia del correo.
+				// Verifico existencia del correo.
 				$model_usuario = new Model_Usuario;
 				if ( ! $model_usuario->exists_email($email))
 				{
-					$view_usuario->assign('error_email', 'La casilla de correo ingresada no se ha encontrado en nuestra base de datos.');
+					$view_usuario->assign('error_email', __('La casilla de correo ingresada no se ha encontrado en nuestra base de datos.', FALSE));
 					$error = TRUE;
 				}
 				else
@@ -463,7 +729,7 @@ class Base_Controller_Usuario extends Controller {
 				$model_usuario->load_by_email($email);
 				if ($model_usuario->estado !== Model_Usuario::ESTADO_PENDIENTE)
 				{
-					$view_usuario->assign('error_email', 'La casilla de correo ingresada no se ha encontrado en nuestra base de datos.');
+					$view_usuario->assign('error_email', __('La casilla de correo ingresada no se ha encontrado en nuestra base de datos.', FALSE));
 					$error = TRUE;
 				}
 				else
@@ -482,11 +748,11 @@ class Base_Controller_Usuario extends Controller {
 				$token = $model_recuperacion->crear($model_usuario->id, $email, Model_Usuario_Recuperacion::TIPO_ACTIVACION);
 
 				// Configuraciones del sitio.
-				$model_config = new Model_Configuracion;
+				$model_config = Model_Configuracion::get_instance();
 
 				// Creo el mensaje de correo.
 				$message = Email::get_message();
-				$message->setSubject('Activación cuenta de '.$model_config->get('nombre', 'Marifa'));
+				$message->setSubject(sprintf(__('Activación cuenta de %s', FALSE), $model_config->get('nombre', 'Marifa')));
 				$message->setTo($model_usuario->email, $model_usuario->nick);
 
 				// Cargo la vista.
@@ -496,12 +762,11 @@ class Base_Controller_Usuario extends Controller {
 				$message->setBody($message_view->parse());
 				unset($message_view);
 
-				// Envio el email.
-				$mailer = Email::get_mailer();
-				$mailer->send($message);
+				// Envío el email.
+				Email::send_queue_online($message);
 
 				// Registro completo.
-				add_flash_message(FLASH_SUCCESS, 'Se ha enviado un correo a tu cuenta de con los pasos de la activación de la cuenta. Recuerda que el enlace caduca en 24hs.');
+				add_flash_message(FLASH_SUCCESS, __('Se ha enviado un correo a tu cuenta de con los pasos de la activación de la cuenta. Recuerda que el enlace caduca en 24hs.', FALSE));
 				Request::redirect('/login');
 			}
 		}
@@ -523,7 +788,7 @@ class Base_Controller_Usuario extends Controller {
 		}
 
 		// Asignamos el título.
-		$this->template->assign('title', 'Recuperar clave');
+		$this->template->assign('title', __('Recuperar clave'), FALSE);
 
 		// Cargamos la vista del usuario.
 		$view_usuario = View::factory('usuario/recuperar');
@@ -542,14 +807,14 @@ class Base_Controller_Usuario extends Controller {
 
 			if ( ! $error)
 			{
-				// Verfico existencia del correo.
+				// Verifico existencia del correo.
 				$model_usuario = new Model_Usuario;
 				if ( ! $model_usuario->exists_email($email))
 				{
 					// Verifico existencia de nick.
 					if ( ! $model_usuario->exists_nick($email))
 					{
-						$view_usuario->assign('error_email', 'El nick o correo ingresado no existe.');
+						$view_usuario->assign('error_email', __('El nick o correo ingresado no existe.', FALSE));
 						$error = TRUE;
 					}
 					else
@@ -575,11 +840,11 @@ class Base_Controller_Usuario extends Controller {
 				$token = $model_recuperacion->crear($model_usuario->id, $model_usuario->email, Model_Usuario_Recuperacion::TIPO_RECUPERACION);
 
 				// Configuraciones del sitio.
-				$model_config = new Model_Configuracion;
+				$model_config = Model_Configuracion::get_instance();
 
 				// Creo el mensaje de correo.
 				$message = Email::get_message();
-				$message->setSubject('Restaurar contraseña de '.$model_config->get('nombre', 'Marifa'));
+				$message->setSubject(sprintf(__('Restaurar contraseña de %s', FALSE), $model_config->get('nombre', 'Marifa')));
 				$message->setTo($model_usuario->email, $model_usuario->nick);
 
 				// Cargo la vista.
@@ -590,11 +855,10 @@ class Base_Controller_Usuario extends Controller {
 				unset($message_view);
 
 				// Envio el email.
-				$mailer = Email::get_mailer();
-				$mailer->send($message);
+				Email::send_queue_online($message);
 
 				// Registro completo.
-				add_flash_message(FLASH_SUCCESS, 'Se ha enviado un correo a tu cuenta de con los pasos para restaurar tu clave de acceso. Recuerda que el enlace caduca en 24hs.');
+				add_flash_message(FLASH_SUCCESS, __('Se ha enviado un correo a tu cuenta de con los pasos para restaurar tu clave de acceso. Recuerda que el enlace caduca en 24hs.'), FALSE);
 				Request::redirect('/login');
 			}
 		}
@@ -619,7 +883,7 @@ class Base_Controller_Usuario extends Controller {
 		// Verifico formato del token.
 		if ( ! preg_match('/^[a-zA-Z0-9]{32}$/D', $token))
 		{
-			add_flash_message(FLASH_ERROR, 'La clave de restauración no es correcta.');
+			add_flash_message(FLASH_ERROR, __('La clave de restauración no es correcta.'), FALSE);
 			Request::redirect('/usuario/recuperar/');
 		}
 
@@ -627,7 +891,7 @@ class Base_Controller_Usuario extends Controller {
 		$model_recuperacion = new Model_Usuario_Recuperacion;
 		if ( ! $model_recuperacion->es_valido($token, Model_Usuario_Recuperacion::TIPO_RECUPERACION))
 		{
-			add_flash_message(FLASH_ERROR, 'La clave de restauración ha caducado.');
+			add_flash_message(FLASH_ERROR, __('La clave de restauración ha caducado.'), FALSE);
 			Request::redirect('/usuario/recuperar/');
 		}
 
@@ -652,7 +916,7 @@ class Base_Controller_Usuario extends Controller {
 			// Verificamos contraseña.
 			if ( ! preg_match('/^[a-zA-Z0-9\-_@\*\+\/#$%]{6,20}$/D', $password))
 			{
-				$view_usuario->assign('error_password', TRUE);
+				$view->assign('error_password', TRUE);
 				$error = TRUE;
 			}
 			else
@@ -660,7 +924,7 @@ class Base_Controller_Usuario extends Controller {
 				// Verificamos que concuerden.
 				if ($password != $cpassword)
 				{
-					$view_usuario->assign('error_cpassword', TRUE);
+					$view->assign('error_cpassword', TRUE);
 					$error = TRUE;
 				}
 			}
@@ -676,8 +940,8 @@ class Base_Controller_Usuario extends Controller {
 				// Borro el token.
 				$model_recuperacion->borrar();
 
-				// Notifico y envio al login.
-				add_flash_message(FLASH_SUCCESS, 'La contraseña se ha restaurado correctamente.');
+				// Notifico y envío al inicio de sesión.
+				add_flash_message(FLASH_SUCCESS, __('La contraseña se ha restaurado correctamente.'), FALSE);
 				Request::redirect('/usuario/login/');
 			}
 		}
@@ -686,16 +950,16 @@ class Base_Controller_Usuario extends Controller {
 		$this->template->assign('contenido', $view->parse());
 
 		// Título.
-		$this->template->assign('title', 'Restaurar contraseña');
+		$this->template->assign('title', __('Restaurar contraseña'), FALSE);
 	}
 
 	/**
-	 * Cerramos la sessión del usuario.
+	 * Cerramos la sesión del usuario.
 	 */
 	public function action_logout()
 	{
 		Usuario::logout();
-		add_flash_message(FLASH_SUCCESS, 'Gracias por su visita.');
+		add_flash_message(FLASH_SUCCESS, __('Gracias por su visita.'), FALSE);
 		Request::redirect('/');
 	}
 }

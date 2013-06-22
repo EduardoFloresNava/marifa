@@ -7,10 +7,10 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="{#THEME_URL#}/assets/css/bootstrap.css" rel="stylesheet">
+		<link href="{#THEME_URL#}/assets/css/bootstrap.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/bootstrap-responsive.css" rel="stylesheet">
         <link href="{#THEME_URL#}/assets/css/base.css" rel="stylesheet">
-        <link href="{#THEME_URL#}/assets/css/profiler.css" rel="stylesheet">
+        <link href="{#THEME_URL#}/assets/css/style.css" rel="stylesheet">
 
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -48,12 +48,6 @@
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="{#THEME_URL#}/assets/js/jquery.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-transition.js"></script>
         <script src="{#THEME_URL#}/assets/js/bootstrap-alert.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-dropdown.js"></script>
-        <script src="{#THEME_URL#}/assets/js/bootstrap-button.js"></script>
-		<script src="{#THEME_URL#}/assets/js/bootstrap-typeahead.js"></script>
-		<script src="{#THEME_URL#}/assets/js/base.js"></script>
-        {if="DEBUG"}<script src="{#THEME_URL#}/assets/js/jquery.php-profiler.js"></script>{/if}
     </body>
 </html>

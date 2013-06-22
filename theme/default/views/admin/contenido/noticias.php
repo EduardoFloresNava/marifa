@@ -6,6 +6,7 @@
 <div class="clearfix header">
 	<h2 class="pull-left">Noticias</h2>
 	<div class="btn-group pull-right">
+		<a href="{#SITE_URL#}/admin/contenido/nuevo_boletin/" class="btn btn-success"><i class="icon-white icon-plus"></i> Nuevo boletin</a>
 		<a href="{#SITE_URL#}/admin/contenido/nueva_noticia/" class="btn btn-success"><i class="icon-white icon-plus"></i> Nueva</a>
 		<a href="{#SITE_URL#}/admin/contenido/limpiar_noticias/" class="btn btn-danger"><i class="icon-white icon-remove"></i> Borrar todas</a>
 		<a href="{#SITE_URL#}/admin/contenido/ocultar_noticias/" class="btn btn-warning"><i class="icon-white icon-eye-close"></i> Desactivar todas</a>
@@ -33,7 +34,7 @@
 			<td style="text-align: center;">
 				<div class="btn-group">
 					<a href="{#SITE_URL#}/admin/contenido/editar_noticia/{$value.id}" class="btn btn-mini btn-info show-tooltip" title="Editar"><i class="icon-white icon-pencil"></i></a>
-					{if="$value.estado == 0"}<a href="/{#SITE_URL#}admin/contenido/estado_noticia/{$value.id}/1" class="btn btn-mini btn-success show-tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{else}<a href="{#SITE_URL#}/admin/contenido/estado_noticia/{$value.id}/0" class="btn btn-mini btn-inverse show-tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
+					{if="$value.estado == 0"}<a href="{#SITE_URL#}/admin/contenido/estado_noticia/{$value.id}/1" class="btn btn-mini btn-success show-tooltip" title="Mostrar"><i class="icon-white icon-eye-open"></i></a>{else}<a href="{#SITE_URL#}/admin/contenido/estado_noticia/{$value.id}/0" class="btn btn-mini btn-inverse show-tooltip" title="Ocultar"><i class="icon-white icon-eye-close"></i></a>{/if}
 					<a href="{#SITE_URL#}/admin/contenido/borrar_noticia/{$value.id}" class="btn btn-mini btn-danger show-tooltip" title="Borrar"><i class="icon-white icon-remove"></i></a>
 				</div>
 			</td>

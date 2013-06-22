@@ -22,7 +22,7 @@
 		<div class="controls">
 			<select name="imagen" id="imagen">
 				{loop="$imagenes_categorias"}
-				<option value="{$value}"{if="$value == $imagen"} selected="selected"{/if}>{$value}</option>
+				<option value="{$key}"{if="$key == $imagen"} selected="selected"{/if}>{$key}</option>
 				{/loop}
 			</select>
 			<span class="help-block">{if="$error_imagen"}{$error_imagen}{/if}</span>

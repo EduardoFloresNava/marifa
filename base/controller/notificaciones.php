@@ -40,7 +40,7 @@ class Base_Controller_Notificaciones extends Controller {
 	{
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a tus notificaciones.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a tus notificaciones.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -62,13 +62,12 @@ class Base_Controller_Notificaciones extends Controller {
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos notificaciones.
 		$sucesos = Suceso_Barra::obtener_listado_completo(Usuario::$usuario_id, $pagina, $cantidad_por_pagina);
 
-		// Verifivo validez de la pagina.
+		// Verifico validez de la pagina.
 		if (count($sucesos) == 0 && $pagina != 1)
 		{
 			Request::redirect('/notificaciones/');
@@ -127,6 +126,8 @@ class Base_Controller_Notificaciones extends Controller {
 		$view->assign('sucesos', $eventos);
 		unset($sucesos);
 
+		$this->template->assign('title', __('Notificaciones', FALSE));
+
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $view->parse());
 	}
@@ -139,11 +140,11 @@ class Base_Controller_Notificaciones extends Controller {
 		// Cargo sucesos.
 		$model_suceso = new Model_Suceso;
 
-		// Seteo como vistas.
+		// Marco como vistas.
 		$model_suceso->vistas(Usuario::$usuario_id);
 
-		// Notifico y redirecciono.
-		add_flash_message(FLASH_SUCCESS, 'Las notificaciones han sido marcadas como leidas correctamente.');
+		// Notifico y vuelvo.
+		add_flash_message(FLASH_SUCCESS, __('Las notificaciones han sido marcadas como leídas correctamente.', FALSE));
 		Request::redirect('/notificaciones/');
 	}
 
@@ -216,8 +217,7 @@ class Base_Controller_Notificaciones extends Controller {
 		$view = View::factory('notificaciones/sin_desplegar');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = 10;
 
 		// Cargamos notificaciones.
 		$sucesos = Suceso_Barra::obtener_listado_sin_desplegar(Usuario::$usuario_id, 1, $cantidad_por_pagina);
@@ -261,7 +261,7 @@ class Base_Controller_Notificaciones extends Controller {
 		// Evito plantilla base.
 		$this->template = NULL;
 
-		// Envio resultado.
+		// Envío resultado.
 		$view->show();
 
 		exit;

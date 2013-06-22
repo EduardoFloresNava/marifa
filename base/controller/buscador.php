@@ -24,7 +24,7 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Controlador para la busqueda de contenido en la web.
+ * Controlador para la búsqueda de contenido en la web.
  *
  * @since      Versión 0.1
  * @package    Marifa\Base
@@ -36,7 +36,7 @@ class Base_Controller_Buscador extends Controller {
 	 * Alias de action_q
 	 * @param string $query Cadena a buscar.
 	 * @param int $pagina Numero de página a mostrar.
-	 * @param string $categoria Nombre de la categoria a utilizar.
+	 * @param string $categoria Nombre de la categoría a utilizar.
 	 * @param string $usuario Nombre del usuario a utilizar.
 	 * @see action_q
 	 * @return mixed
@@ -50,7 +50,7 @@ class Base_Controller_Buscador extends Controller {
 	 * Buscamos un elemento.
 	 * @param string $query Cadena a buscar.
 	 * @param int $pagina Numero de página a mostrar.
-	 * @param string $categoria Nombre de la categoria a utilizar.
+	 * @param string $categoria Nombre de la categoría a utilizar.
 	 * @param string $usuario Nombre del usuario a utilizar.
 	 * @return mixed
 	 */
@@ -62,7 +62,7 @@ class Base_Controller_Buscador extends Controller {
 			// Query.
 			$q = isset($_POST['q']) ? urlencode($_POST['q']) : '';
 
-			// Categoria.
+			// Categoría.
 			$c = isset($_POST['categoria']) ? urlencode($_POST['categoria']) : '';
 
 			// Usuario
@@ -87,12 +87,12 @@ class Base_Controller_Buscador extends Controller {
 		// Limpiamos la consulta.
 		$query = preg_replace('/\s+/', ' ', urldecode(trim($query)));
 
-		// Limpiamos la categoria.
+		// Limpiamos la categoría.
 		$categoria = urldecode(trim($categoria));
 
 		if ($categoria !== 'todos')
 		{
-			// Cargamos la categoria.
+			// Cargamos la categoría.
 			$model_categoria = new Model_Categoria;
 			if ($model_categoria->existe_seo($categoria))
 			{
@@ -127,17 +127,16 @@ class Base_Controller_Buscador extends Controller {
 		if ( ! empty($query))
 		{
 			// Cantidad de elementos por pagina.
-			$model_configuracion = new Model_Configuracion;
-			$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+			$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 			// Formato de la página.
 			$pagina = ( (int) $pagina > 0) ? ( (int) $pagina) : 1;
 
-			// Realizamos la busqueda.
+			// Realizamos la búsqueda.
 			$model_post = new Model_Post;
 			list($listado, $cantidad) = $model_post->buscar($query, $pagina, $cantidad_por_pagina, isset($model_categoria) ? $model_categoria->id : NULL, isset($model_usuario) ? $model_usuario->id : NULL);
 
-			// Verifivo que la página seleccionada sea válida.
+			// Verifico que la página seleccionada sea válida.
 			if (count($listado) == 0 && $pagina != 1)
 			{
 				Request::redirect(sprintf('/buscador/q/%s/1/%s/%s', $query, isset($model_categoria) ? $model_categoria->seo : '', isset($model_usuario) ? $model_usuario->id : ''));
@@ -168,7 +167,7 @@ class Base_Controller_Buscador extends Controller {
 		// Armamos la vista.
 		$vista->assign('q', $query);
 
-		// Listado de categorias.
+		// Listado de categorías.
 		$mc = new Model_Categoria;
 		$vista->assign('categorias', $mc->lista());
 		unset($mc);
@@ -177,7 +176,7 @@ class Base_Controller_Buscador extends Controller {
 		// Usuario actual.
 		$vista->assign('usuario', isset($model_usuario) ? $model_usuario->nick : '');
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 		$this->template->assign('top_bar', Controller_Home::submenu('buscador'));
 
@@ -185,11 +184,11 @@ class Base_Controller_Buscador extends Controller {
 		$this->template->assign('contenido', $vista->parse());
 
 		// Título de la página.
-		$this->template->assign('title', 'Buscador');
+		$this->template->assign('title', __('Buscador', FALSE));
 	}
 
 	/**
-	 * Post con las mismas etiquetas que el selecionado.
+	 * Post con las mismas etiquetas que el seleccionado.
 	 * @param int $post ID del post a mostrar relacionados.
 	 * @param int $pagina Número de página a mostrar.
 	 */
@@ -214,13 +213,12 @@ class Base_Controller_Buscador extends Controller {
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
-		// Realizamos la busqueda.
+		// Realizamos la búsqueda.
 		list($listado, $cantidad) = $model_post->buscar_relacionados($pagina, $cantidad_por_pagina);
 
-		// Verifivo que la página seleccionada sea válida.
+		// Verifico que la página seleccionada sea válida.
 		if (count($listado) == 0 && $pagina != 1)
 		{
 			Request::redirect('/buscador/relacionados/'.$post);
@@ -254,14 +252,14 @@ class Base_Controller_Buscador extends Controller {
 		$vista->assign('relacionado', array('post' => $p));
 		unset($p);
 
-		// Listado de categorias.
+		// Listado de categorías.
 		$mc = new Model_Categoria;
 		$vista->assign('categorias', $mc->lista());
 		unset($mc);
 		$vista->assign('categoria', 'todos');
 		$vista->assign('usuario', '');
 
-		// Menu.
+		// Menú.
 		$this->template->assign('master_bar', parent::base_menu());
 		$this->template->assign('top_bar', Controller_Home::submenu('buscador'));
 
@@ -269,7 +267,7 @@ class Base_Controller_Buscador extends Controller {
 		$this->template->assign('contenido', $vista->parse());
 
 		// Título de la página.
-		$this->template->assign('title_raw', 'Busqueda relacionada a \''.$model_post->titulo.'\' en ');
+		$this->template->assign('title_raw', sprintf(__('Búsqueda relacionada a \'%s\' en ', FALSE), $model_post->titulo));
 	}
 
 	/**
@@ -285,8 +283,7 @@ class Base_Controller_Buscador extends Controller {
 		$vista = View::factory('buscador/pin');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
@@ -294,7 +291,7 @@ class Base_Controller_Buscador extends Controller {
 		// Obtengo por etiqueta.
 		list($cantidad, $shouts) = $model_shout->get_by_tag($etiqueta, $pagina, $cantidad_por_pagina);
 
-		// Verifivo que la página seleccionada sea válida.
+		// Verifico que la página seleccionada sea válida.
 		if (count($shouts) == 0 && $pagina != 1)
 		{
 			Request::redirect('/buscador/pin/'.$etiqueta);
@@ -321,7 +318,7 @@ class Base_Controller_Buscador extends Controller {
 			// Proceso valor si es tipo especial.
 			if ($v->tipo == Model_Shout::TIPO_VIDEO)
 			{
-				// Obtengo clase de video.
+				// Obtengo clase de vídeo.
 				$shouts[$k]['valor'] = explode(':', $v->valor);
 			}
 			elseif($v->tipo == Model_Shout::TIPO_ENLACE)
@@ -337,14 +334,14 @@ class Base_Controller_Buscador extends Controller {
 			$shouts[$k]['compartido'] = $v->cantidad_compartido();
 		}
 
-		// Seteo los shouts.
+		// Asigno los shouts.
 		$vista->assign('shouts', $shouts);
 		unset($shouts);
 
-		// Seteo etiqueta.
+		// Asigno etiqueta.
 		$vista->assign('etiqueta', $etiqueta);
 
-		// Seteo parámetros de la plantilla base.
+		// Asigno parámetros de la plantilla base.
 		$this->template->assign('master_bar', parent::base_menu());
 		$this->template->assign('top_bar', Controller_Home::submenu('buscador'));
 
@@ -352,7 +349,7 @@ class Base_Controller_Buscador extends Controller {
 		$this->template->assign('contenido', $vista->parse());
 
 		// Título de la página.
-		$this->template->assign('title', 'Pin - #'.$etiqueta);
+		$this->template->assign('title', sprintf(__('Pin - #%s', FALSE), $etiqueta));
 	}
 
 }

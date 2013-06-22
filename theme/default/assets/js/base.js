@@ -3,14 +3,14 @@
     $('#search .search-input button').click(function (e) {
         e.preventDefault();
         var usuario = $('#search .search-options input[name=usuario]').val(),
-            categoria = $('#search .search-options select[name=categoria]').val()
+            categoria = $('#search .search-options select[name=categoria]').val(),
             query = $('#search .search-input .query').val();
 
-        if (usuario != '')
+        if (usuario !== '')
         {
             window.location.href = window.site_url+'buscador/q/'+encodeURIComponent(query)+'/1/'+encodeURIComponent(categoria)+'/'+encodeURIComponent(usuario);
         }
-        else if(categoria != '' && categoria != 'todos')
+        else if(categoria !== '' && categoria !== 'todos')
         {
             window.location.href = window.site_url+'buscador/q/'+encodeURIComponent(query)+'/1/'+encodeURIComponent(categoria);
         }
@@ -30,7 +30,7 @@
 
 // Tooptips en los elementos.
 (function ($) {
-    $('a[rel="tooltip"],span[rel="tooltip"],.show-tooltip').tooltip();
+    $('a[rel="tooltip"],span[rel="tooltip"],.show-tooltip,[title]').tooltip();
 } (jQuery));
 
 // Grupos predefinidos de los permisos de rangos.
@@ -67,7 +67,7 @@
 
     $('#permiso-tipo-administrador').click(function (e) {
         $('form[name=permisos] input[type=checkbox]').each(function(key, value) {
-            if (this.id == 4)
+            if (this.id === 4)
             {
                 $(value).attr('checked', false);
             }
@@ -89,9 +89,9 @@
     }
 } (jQuery));
 
-/**
- * Notificaciones AJAX.
- */
+//
+// Notificaciones AJAX.
+//
 (function ($) {
     // Función para actualiza la cantidad de notificaciones pendientes.
     function cantidad_notificaciones(cantidad) {
@@ -115,9 +115,9 @@
     // Actualización de listado de sucesos y notificación de nuevos.
     if ($("#suceso-dropdown-button").length > 0)
     {
-        /**
-         * Cargamos las nuevas notificaciones.
-         */
+        //
+        // Cargamos las nuevas notificaciones.
+        //
         setInterval(function () {
             // Borro sucesos viejos.
             $(".pop-notification div.notification").remove();
@@ -125,9 +125,6 @@
             $.ajax({
                 url: window.site_url+'notificaciones/sin_desplegar',
                 dataType: 'json',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(textStatus);
-                },
                 success: function (data, textStatus, jqXHR) {
                     // Cargo los elementos.
                     $.each(data, function(index, value) {
@@ -153,13 +150,13 @@
             });
         }, 20000);
 
-        /**
-         * Marcamos como desplegados.
-         */
+        //
+        // Marcamos como desplegados.
+        //
         $('#suceso-dropdown-button').click(function(e) {
             // Cargo listado de sucesos nuevos.
             var sucesos = $("#suceso-dropdown li").map(function () {
-                if ($(this).attr('data-desplegado') != 1)
+                if ($(this).attr('data-desplegado') !== 1)
                 {
                     return ($(this).attr('id').toString().split('-')[1])*1;
                 }
@@ -170,16 +167,13 @@
             }).get();
 
             // Verifico si hay que marcar como desplegados.
-            if (sucesos.length > 0 && $("#suceso-dropdown").css('display') == 'none') {
+            if (sucesos.length > 0 && $("#suceso-dropdown").css('display') === 'none') {
                 $.ajax({
                     url: window.site_url+'notificaciones/desplegadas',
                     type: 'POST',
                     data: {sucesos: sucesos},
                     dataType: 'json',
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(textStatus);
-                    },
-                    success: function (data, textStatus, jqXHR) {
+                    success: function (data) {
                         // Marco elementos como desplegados.
                         $.each(data, function(index, value) {
                             $("#suceso-dropdown li#suceso-"+value).attr('data-desplegado', 1);
@@ -191,13 +185,13 @@
     }
 } (jQuery));
 
-/**
- * Limpieza de alertas anidadas de mensajes FLASH.
- */
+//
+// Limpieza de alertas anidadas de mensajes FLASH.
+//
 $('a[data-dismiss="alert"]').click(function (e) {
     if ($(this).parent().parent().is('.alert-container'))
     {
-        if ($(this).parent().parent().children('div.alert-item').length == 1)
+        if ($(this).parent().parent().children('div.alert-item').length === 1)
         {
             $(this).parent().parent().remove();
         }
@@ -207,9 +201,9 @@ $('a[data-dismiss="alert"]').click(function (e) {
     e.preventDefault();
 });
 
-/**
- * Sugerencias de usuarios para citas(@usuario) en publicaciones a los perfiles.
- */
+//
+// Sugerencias de usuarios para citas(@usuario) en publicaciones a los perfiles.
+//
 (function ($) {
     /**
      * Helper para posición del cursor.
@@ -227,7 +221,7 @@ $('a[data-dismiss="alert"]').click(function (e) {
             pos = Sel.text.length - SelLength;
         }
         return pos;
-    }
+    };
 
     /**
      * Inicio autocompletado.
@@ -277,10 +271,10 @@ $('a[data-dismiss="alert"]').click(function (e) {
                 clearItems: function () {
                     this.containerElement().find('li').remove();
                 },
-                /**onHideDropdown: function () {
-                    this.hideDropdown();
-                    this.input().focus();
-                },*/
+                //onHideDropdown: function () {
+                //    this.hideDropdown();
+                //    this.input().focus();
+                //},
                 onUpKeyDown: function (e) {
                     if (this.isDropdownVisible())
                     {
@@ -296,7 +290,7 @@ $('a[data-dismiss="alert"]').click(function (e) {
                     }
                     else
                     {
-                        this.getSuggestions()
+                        this.getSuggestions();
                     }
                     e.preventDefault();
                     e.stopImmediatePropagation();
@@ -333,7 +327,7 @@ $('a[data-dismiss="alert"]').click(function (e) {
                         selected = self.selectedSuggestionElement(),
                         prev = selected.prev();
 
-                    if(prev.length == 0)
+                    if(prev.length === 0)
                         return;
 
                     self.clearSelected();
@@ -380,7 +374,7 @@ $('a[data-dismiss="alert"]').click(function (e) {
             },
             itemManager: {
                 compareItems: function (item1, item2) {
-                    return item1 == item2;
+                    return item1 === item2;
                 },
                 filter: function (list, query) {
                     // Obtengo linea actual.
@@ -409,7 +403,7 @@ $('a[data-dismiss="alert"]').click(function (e) {
                     query_actual = query_actual.substr(ss).trim();
 
                     // Verifico si comienza con @.
-                    if (query_actual[0] == '@') {
+                    if (query_actual[0] === '@') {
                         q = query_actual.substr(1);
                     }
                     else
@@ -418,14 +412,14 @@ $('a[data-dismiss="alert"]').click(function (e) {
                     }
 
                     // No proceso vacia, envio todas.
-                    if (q == '')
+                    if (q === '')
                     {
                         return list;
                     }
 
                     // Devuelvo todas las que concuerden.
-                    return $.map(list, function(value, index) {
-                        if (value.substr(0, q.length) == q)
+                    return $.map(list, function(value) {
+                        if (value.substr(0, q.length) === q)
                         {
                             return value;
                         }
@@ -455,13 +449,13 @@ $('a[data-dismiss="alert"]').click(function (e) {
     $("#publicacion").attr('name', 'publicacion');
 }(jQuery));
 
-/**
- * Publicación de links, fotos y videos.
- */
+//
+// Publicación de links, fotos y videos.
+//
 (function ($) {
     $("#publicacion-tipo-texto, #publicacion-tipo-foto, #publicacion-tipo-enlace, #publicacion-tipo-video").click(function (e) {
         var tipo = $(this).attr('id').substr(17);
-        if ($('#publicacion-contenido input[name="tipo"]').val() != tipo)
+        if ($('#publicacion-contenido input[name="tipo"]').val() !== tipo)
         {
             // Actualizo valores de la barra.
             $('#publicacion-contenido input[name="tipo"]').val(tipo);
@@ -516,9 +510,9 @@ $('a[data-dismiss="alert"]').click(function (e) {
     });
 } (jQuery));
 
-/**
- * Generación automática de etiquetas en posts y fotos.
- */
+//
+// Generación automática de etiquetas en posts y fotos.
+//
 (function ($) {
     $('.generar-etiquetas').click(function (e) {
         e.preventDefault();
@@ -538,7 +532,6 @@ $('a[data-dismiss="alert"]').click(function (e) {
             type: 'POST',
             data: {contenido: $('#contenido').val()},
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log(textStatus);
                 $(this).removeAttr('disabled');
             },
             context: $(this),
@@ -550,29 +543,18 @@ $('a[data-dismiss="alert"]').click(function (e) {
     });
 } (jQuery));
 
-/**
- * Selección categorías fotos y posts.
- */
+//
+// Selección categorías fotos y posts.
+//
 (function ($) {
     $('#foto-menu-categoria').change(function () {
-        if ($(this).val() != '')
+        if ($(this).val() !== '')
         {
             location.href = window.site_url+'/foto/categoria/'+$(this).val();
         }
         else
         {
             location.href = window.site_url+'/foto/';
-        }
-    });
-
-    $('#post-menu-categoria').change(function () {
-        if ($(this).val() != '')
-        {
-            location.href = window.site_url+'/post/categoria/'+$(this).val();
-        }
-        else
-        {
-            location.href = window.site_url+'/post/';
         }
     });
 } (jQuery));

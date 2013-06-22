@@ -1,0 +1,122 @@
+{
+  "book": {
+    "small": "book.png"
+  },
+  "brujula": {
+    "small": "brujula.png"
+  },
+  "cake": {
+    "small": "cake.png"
+  },
+  "car": {
+    "small": "car.png"
+  },
+  "cohete": {
+    "small": "cohete.png"
+  },
+  "comic": {
+    "small": "comic.png"
+  },
+  "comments": {
+    "small": "comments.png"
+  },
+  "controller": {
+    "small": "controller.png"
+  },
+  "disk": {
+    "small": "disk.png"
+  },
+  "ebook": {
+    "small": "ebook.png"
+  },
+  "economy": {
+    "small": "economy.png"
+  },
+  "escuadra": {
+    "small": "escuadra.png"
+  },
+  "eye": {
+    "small": "eye.png"
+  },
+  "female": {
+    "small": "female.png"
+  },
+  "film": {
+    "small": "film.png"
+  },
+  "flash": {
+    "small": "flash.png"
+  },
+  "heart": {
+    "small": "heart.png"
+  },
+  "humor": {
+    "small": "humor.png"
+  },
+  "key": {
+    "small": "key.png"
+  },
+  "lab": {
+    "small": "lab.png"
+  },
+  "link": {
+    "small": "link.png"
+  },
+  "mac": {
+    "small": "mac.png"
+  },
+  "manga": {
+    "small": "manga.png"
+  },
+  "music": {
+    "small": "music.png"
+  },
+  "nature": {
+    "small": "nature.png"
+  },
+  "new": {
+    "small": "new.png"
+  },
+  "newspaper": {
+    "small": "newspaper.png"
+  },
+  "palette": {
+    "small": "palette.png"
+  },
+  "pet": {
+    "small": "pet.png"
+  },
+  "phone": {
+    "small": "phone.png"
+  },
+  "photo": {
+    "small": "photo.png"
+  },
+  "rainbow": {
+    "small": "rainbow.png"
+  },
+  "report": {
+    "small": "report.png"
+  },
+  "salva": {
+    "small": "salva.png"
+  },
+  "sport": {
+    "small": "sport.png"
+  },
+  "sticky": {
+    "small": "sticky.png"
+  },
+  "tscript": {
+    "small": "tscript.png"
+  },
+  "tux": {
+    "small": "tux.png"
+  },
+  "tv": {
+    "small": "tv.png"
+  },
+  "world": {
+    "small": "world.png"
+  }
+}

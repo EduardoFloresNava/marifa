@@ -40,7 +40,7 @@ class Base_Controller_Favoritos extends Controller {
 		// Verifico que esté logueado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a tus favoritos.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a tus favoritos.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -52,12 +52,15 @@ class Base_Controller_Favoritos extends Controller {
 	 */
 	public static function submenu($selected = NULL)
 	{
-		$data = array();
+		// Creo el menu.
+		$menu = new Menu('favoritos_menu');
 
-		$data['posts'] = array('link' => '/favoritos', 'caption' => 'Posts', 'active' => $selected == 'posts', 'cantidad' => Usuario::usuario()->cantidad_favoritos_posts());
-		$data['fotos'] = array('link' => '/favoritos/fotos', 'caption' => 'Fotos', 'active' => $selected == 'fotos', 'cantidad' => Usuario::usuario()->cantidad_favoritos_fotos());
+		// Arreglo elementos.
+		$menu->element_set(__('Posts', FALSE), '/favoritos/', 'posts', NULL, Usuario::usuario()->cantidad_favoritos_posts());
+		$menu->element_set(__('Fotos', FALSE), '/favoritos/fotos/', 'fotos', NULL, Usuario::usuario()->cantidad_favoritos_fotos());
 
-		return $data;
+		// Devuelvo el menú.
+		return $menu->as_array($selected);
 	}
 
 	/**
@@ -70,8 +73,7 @@ class Base_Controller_Favoritos extends Controller {
 		$vista = View::factory('favoritos/posts');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
@@ -79,7 +81,7 @@ class Base_Controller_Favoritos extends Controller {
 		// Cargamos el listado de favoritos.
 		$favoritos = Usuario::usuario()->listado_posts_favoritos($pagina, $cantidad_por_pagina);
 
-		// Verifivo que la página seleccionada sea válida.
+		// Verifico que la página seleccionada sea válida.
 		if (count($favoritos) == 0 && $pagina != 1)
 		{
 			Request::redirect('/favoritos/');
@@ -100,13 +102,16 @@ class Base_Controller_Favoritos extends Controller {
 			$favoritos[$k] = $a;
 		}
 
-		// Seteo parámetros a la vista.
+		// Asigno parámetros a la vista.
 		$vista->assign('favoritos', $favoritos);
 		unset($favoritos);
 
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', self::submenu('posts'));
+
+		// Asigno título.
+		$this->template->assign('title', __('Favoritos - Posts', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $vista->parse());
@@ -122,8 +127,7 @@ class Base_Controller_Favoritos extends Controller {
 		$vista = View::factory('favoritos/fotos');
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
@@ -131,7 +135,7 @@ class Base_Controller_Favoritos extends Controller {
 		// Cargamos el listado de favoritos.
 		$favoritos = Usuario::usuario()->listado_fotos_favoritos($pagina, $cantidad_por_pagina);
 
-		// Verifivo que la página seleccionada sea válida.
+		// Verifico que la página seleccionada sea válida.
 		if (count($favoritos) == 0 && $pagina != 1)
 		{
 			Request::redirect('/favoritos/fotos/');
@@ -152,13 +156,16 @@ class Base_Controller_Favoritos extends Controller {
 			$favoritos[$k] = $a;
 		}
 
-		// Seteo parámetros a la vista.
+		// Asigno parámetros a la vista.
 		$vista->assign('favoritos', $favoritos);
 		unset($favoritos);
 
-		// Seteo el menu.
+		// Asigno el menu.
 		$this->template->assign('master_bar', parent::base_menu('inicio'));
 		$this->template->assign('top_bar', self::submenu('fotos'));
+
+		// Asigno título.
+		$this->template->assign('title', __('Favoritos - Fotos', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $vista->parse());
@@ -176,14 +183,14 @@ class Base_Controller_Favoritos extends Controller {
 		// Verifico existencia.
 		if ( ! $model_post->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El post que quiere quitar de sus favoritos no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El post que quiere quitar de sus favoritos no se encuentra disponible.', FALSE));
 			Request::redirect('/favoritos/');
 		}
 
 		// Verifico sea favorito.
 		if ( ! $model_post->es_favorito(Usuario::$usuario_id))
 		{
-			add_flash_message(FLASH_ERROR, 'El post que quiere quitar de sus favoritos no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El post que quiere quitar de sus favoritos no se encuentra disponible.', FALSE));
 			Request::redirect('/favoritos/');
 		}
 
@@ -191,13 +198,13 @@ class Base_Controller_Favoritos extends Controller {
 		$model_post->quitar_favoritos(Usuario::$usuario_id);
 
 		// Informo resultado.
-		add_flash_message(FLASH_SUCCESS, 'El post se ha quitado correctamente de sus favoritos.');
+		add_flash_message(FLASH_SUCCESS, __('El post se ha quitado correctamente de sus favoritos.', FALSE));
 		Request::redirect('/favoritos/');
 	}
 
 	/**
 	 * Quitamos una foto de los favoritos.
-	 * @param int $post ID de la foto a quitar de los favoritos.
+	 * @param int $foto ID de la foto a quitar de los favoritos.
 	 */
 	public function action_borrar_foto($foto = NULL)
 	{
@@ -207,14 +214,14 @@ class Base_Controller_Favoritos extends Controller {
 		// Verifico existencia.
 		if ( ! $model_foto->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que quiere quitar de sus favoritos no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que quiere quitar de sus favoritos no se encuentra disponible.', FALSE));
 			Request::redirect('/favoritos/fotos/');
 		}
 
 		// Verifico sea favorito.
 		if ( ! $model_foto->es_favorito(Usuario::$usuario_id))
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que quiere quitar de sus favoritos no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que quiere quitar de sus favoritos no se encuentra disponible.', FALSE));
 			Request::redirect('/favoritos/fotos/');
 		}
 
@@ -222,7 +229,7 @@ class Base_Controller_Favoritos extends Controller {
 		$model_foto->quitar_favoritos(Usuario::$usuario_id);
 
 		// Informo resultado.
-		add_flash_message(FLASH_SUCCESS, 'La foto se ha quitado correctamente de sus favoritos.');
+		add_flash_message(FLASH_SUCCESS, __('La foto se ha quitado correctamente de sus favoritos.', FALSE));
 		Request::redirect('/favoritos/fotos/');
 	}
 

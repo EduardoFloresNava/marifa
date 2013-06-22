@@ -24,7 +24,7 @@
 defined('APP_BASE') || die('No direct access allowed.');
 
 /**
- * Driver de almacenamiento de imagenes en disco.
+ * Driver de almacenamiento de imágenes en disco.
  *
  * @author     Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
  * @since      Versión 0.1
@@ -69,7 +69,7 @@ class Base_Upload_Imagen_Driver_Disk implements Upload_Imagen_Driver {
 			$t_name = basename($path);
 		}
 
-		// Path donde guardar.
+		// Ruta donde guardar.
 		$target = $this->config['save_path'].$t_name;
 
 		// Verificamos path de destino.

@@ -48,11 +48,12 @@ class Installer_Controller {
 	protected $steps = array(
 		'index'          => array('titulo' => 'Inicio',          'posicion' => 1), // Portada.
 		'requerimientos' => array('titulo' => 'Requerimientos',  'posicion' => 2), // Requerimientos del entorno.
-		'bd'             => array('titulo' => 'BD',              'posicion' => 3), // Configuramos la conección a la base de datos.
-		'bd_install'     => array('titulo' => 'BD install',      'posicion' => 4), // Instalamos la Base de datos.
-		'importar'       => array('titulo' => 'Importar',        'posicion' => 5), // Importamos datos de otros lados.
-		'configuracion'  => array('titulo' => 'Configuraciones', 'posicion' => 6), // Configuramos el sistema.
-		'finalizacion'   => array('titulo' => 'Terminación',     'posicion' => 7) // Terminada la instalacion.
+		'datos_entorno'  => array('titulo' => 'Datos entorno',   'posicion' => 3), // Configuraciones esenciales del sistema referidas al entorno.
+		'bd'             => array('titulo' => 'BD',              'posicion' => 4), // Configuramos la conexión a la base de datos.
+		'bd_install'     => array('titulo' => 'BD install',      'posicion' => 5), // Instalamos la Base de datos.
+		'importar'       => array('titulo' => 'Importar',        'posicion' => 6), // Importamos datos de otros lados.
+		'configuracion'  => array('titulo' => 'Configuraciones', 'posicion' => 7), // Configuramos el sistema.
+		'finalizacion'   => array('titulo' => 'Terminación',     'posicion' => 8)  // Terminada la instalación.
 	);
 
 	/**
@@ -60,22 +61,22 @@ class Installer_Controller {
 	 */
 	public function before()
 	{
-		// Cargo manejador de pasos.
+		// Inicio la clase para manejar los pasos del instalador.
 		Installer_Step::get_instance()->setup($this->steps);
 
 		// Cargamos la plantilla base.
 		$this->template = View::factory('template');
 
-		// Contenido inicial vacio.
+		// Contenido inicial vacío.
 		$this->template->assign('contenido', '');
 	}
 
 	/**
-	 * Mostramos el template.
+	 * Mostramos la plantilla.
 	 */
 	public function after()
 	{
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('steps', Installer_Step::get_instance()->listado());
 
 		// Eventos flash.
@@ -87,7 +88,7 @@ class Installer_Controller {
 			}
 		}
 
-		// Muestro el template.
+		// Muestro la plantilla.
 		if (is_object($this->template) && ! Request::is_ajax())
 		{
 			$this->template->assign('execution', get_readable_file_size(memory_get_peak_usage() - START_MEMORY));
@@ -97,16 +98,17 @@ class Installer_Controller {
 
 	/**
 	 * Portada del instalador.
+	 * Simplemente da la bienvenida al usuario.
 	 */
 	public function action_index()
 	{
 		// Cargo la vista.
 		$vista = View::factory('index');
 
-		// Seteo el paso como terminado.
+		// Marco el paso como terminado.
 		Installer_Step::get_instance()->terminado();
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
@@ -122,12 +124,19 @@ class Installer_Controller {
 		@touch(APP_BASE.'/plugin/plugin.php');
 		@touch(APP_BASE.'/config/database.php');
 
+		// Intento crear /theme/theme.php
+		if ( ! file_exists(APP_BASE.'/theme/theme.php'))
+		{
+			@touch(APP_BASE.'/theme/theme.php');
+		}
+
 		// Listado de requerimientos.
 		$reqs = array(
 			array('titulo' => 'Versión PHP', 'requerido' => '> 5.2', 'actual' => phpversion(), 'estado' => version_compare(PHP_VERSION, '5.2.0', '>=')),
 			array('titulo' => 'MCrypt', 'requerido' => 'ON', 'actual' => extension_loaded('mcrypt') ? 'ON' : 'OFF', 'estado' => extension_loaded('mcrypt')),
 			'Base de Datos', // Separador.
-			array('titulo' => 'MySQL', 'requerido' => 'ON', 'actual' => function_exists('mysql_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysql_connect'), 'opcional' => class_exists('pdo')),
+			array('titulo' => 'MySQL', 'requerido' => 'ON', 'actual' => function_exists('mysql_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysql_connect'), 'opcional' => class_exists('pdo') || function_exists('mysqli_connect')),
+			array('titulo' => 'MySQLi', 'requerido' => 'ON', 'actual' => function_exists('mysqli_connect') ? 'ON' : 'OFF', 'estado' => function_exists('mysqli_connect'), 'opcional' => class_exists('pdo') || function_exists('mysql_connect')),
 			array('titulo' => 'PDO', 'requerido' => 'ON', 'actual' => class_exists('pdo') ? 'ON' : 'OFF', 'estado' => class_exists('pdo'), 'opcional' => function_exists('mysql_connect')),
 			'Cache',
 			array('titulo' => 'File', 'requerido' => 'ON', 'actual' => 'ON', 'estado' => is_writable(CACHE_PATH.DS.'file'), 'opcional' => TRUE),
@@ -146,7 +155,7 @@ class Installer_Controller {
 			array('titulo' => '/config/database.php', 'requerido' => 'ON', 'actual' => is_writable(APP_BASE.'/config/database.php') ? 'ON' : 'OFF', 'estado' => is_writable(APP_BASE.'/config/database.php')),
 		);
 
-		// Seteo el listado de requerimientos.
+		// Asigno el listado de requerimientos.
 		$vista->assign('requerimientos', $reqs);
 
 		// Verifico si puedo seguir.
@@ -174,7 +183,7 @@ class Installer_Controller {
 			}
 		}
 
-		// Seteo el paso como terminado.
+		// Marco el paso como terminado.
 		if ($is_ok)
 		{
 			Installer_Step::get_instance()->terminado();
@@ -183,8 +192,41 @@ class Installer_Controller {
 		// Paso estado a la vista.
 		$vista->assign('can_continue', $is_ok);
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
+	}
+
+	/**
+	 * Configuraciones base del sistema relacionadas al entorno.
+	 */
+	public function action_datos_entorno()
+	{
+		// Cargo configuración.
+		$config = new Configuracion(CONFIG_PATH.DS.'marifa.php');
+
+		// Asigno valores por defecto.
+		if ( ! isset($config['cookie_secret']))
+		{
+			$config['cookie_secret'] = Texto::random_string(20);
+		}
+
+		if ( ! isset($config['language']))
+		{
+			$config['language'] = 'esp';
+		}
+
+		if ( ! isset($config['default_timezone']))
+		{
+			$config['default_timezone'] = 'UTC';
+		}
+
+		$config->save();
+
+		// Marco el paso como terminado.
+		Installer_Step::get_instance()->terminado();
+
+		// Voy al siguiente.
+		Installer_Step::get_instance()->ir_al_paso();
 	}
 
 	/**
@@ -195,7 +237,7 @@ class Installer_Controller {
 		// Verifico estado de la base de datos.
 		if ($this->check_database())
 		{
-			// Seteo como terminado.
+			// Marco como terminado.
 			Installer_Step::get_instance()->terminado();
 
 			// Voy al siguiente.
@@ -213,6 +255,11 @@ class Installer_Controller {
 			$drivers['mysql'] = 'MySQL';
 		}
 
+		if (function_exists('mysqli_connect'))
+		{
+			$drivers['mysqli'] = 'MySQLi';
+		}
+
 		if (class_exists('pdo'))
 		{
 			$drivers['pdo'] = 'PDO';
@@ -221,7 +268,7 @@ class Installer_Controller {
 		$vista->assign('drivers', $drivers);
 
 		// Información por defecto.
-		$vista->assign('driver', isset($drivers['mysql']) ? 'mysql' : 'pdo');
+		$vista->assign('driver', isset($drivers['mysqli']) ? 'mysqli' : (isset($drivers['pdo']) ? 'pdo' : 'mysql'));
 		$vista->assign('error_driver', FALSE);
 		$vista->assign('host', '');
 		$vista->assign('error_host', FALSE);
@@ -235,11 +282,17 @@ class Installer_Controller {
 		if (Request::method() == 'POST')
 		{
 			// Obtengo los datos.
-			foreach (array('driver', 'host', 'db_name', 'usuario', 'password') as $v)
-			{
-				$$v = isset($_POST[$v]) ? trim($_POST[$v]) : NULL;
-				$vista->assign($v, $$v);
-			}
+			$driver = isset($_POST['driver']) ? trim($_POST['driver']) : NULL;
+			$host = isset($_POST['host']) ? trim($_POST['host']) : NULL;
+			$db_name = isset($_POST['db_name']) ? trim($_POST['db_name']) : NULL;
+			$usuario = isset($_POST['usuario']) ? trim($_POST['usuario']) : NULL;
+			$password = isset($_POST['password']) ? trim($_POST['password']) : NULL;
+
+			$vista->assign('driver', $driver);
+			$vista->assign('host', $host);
+			$vista->assign('db_name', $db_name);
+			$vista->assign('usuario', $usuario);
+			$vista->assign('password', $password);
 
 			$error = FALSE;
 
@@ -251,7 +304,7 @@ class Installer_Controller {
 			}
 
 			// Verifico lo datos.
-			if ($driver == 'mysql')
+			if ($driver == 'mysql' || $driver == 'mysqli')
 			{
 				if (empty($host))
 				{
@@ -272,37 +325,33 @@ class Installer_Controller {
 				{
 					// Genero arreglo de configuraciones.
 					$config = array(
-						'type' => $driver,
-						'dsn' => "mysql:dbname=$db_name;host=$host",
+						'type'     => $driver,
+						'dsn'      => "mysql:dbname=$db_name;host=$host;charset=utf-8",
 						'username' => $usuario,
-						'password' => $password
+						'password' => $password,
+						'options'  => array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'")
 					);
 				}
 				else
 				{
 					// Genero arreglo de configuraciones.
 					$config = array(
-						'type' => $driver,
-						'host' => $host,
-						'db_name' => $db_name,
+						'type'     => $driver,
+						'host'     => $host,
+						'db_name'  => $db_name,
 						'username' => $usuario,
-						'password' => $password
+						'password' => $password,
+						'utf8'     => TRUE
 					);
 				}
 
-				//FIXME: Puede generar una falla de inyección de código PHP.
-				//FIXME: Verificar presencia de ' y escaparlos.
-
-				// Genero template.
-				$tmp = '<?php defined(\'APP_BASE\') || die(\'No direct access allowed.\');'.PHP_EOL.'return '.$this->value_to_php($config).';';
-
-				// Guardo la configuración.
-				file_put_contents(CONFIG_PATH.DS.'database.php', $tmp);
-
-				// Intento conectar.
-				if ($this->check_database())
+				// Verifico conexión.
+				if (Database::test($config))
 				{
-					// Seteo el paso como terminado.
+					// Genero archivo de configuración.
+					Configuracion::factory(CONFIG_PATH.DS.'database.php', $config)->save();
+
+					// Marco el paso como terminado.
 					Installer_Step::get_instance()->terminado();
 
 					// Voy al siguiente.
@@ -322,70 +371,27 @@ class Installer_Controller {
 			}
 		}
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
 	/**
-	 * Verificamos si la conección es correcta.
+	 * Verificamos si la conexión es correcta.
 	 * @return bool
 	 */
-	private function check_database()
+	private function check_database($config = NULL)
 	{
 		// Verifico archivo de configuración.
-		if ( ! file_exists(CONFIG_PATH.DS.'database.php'))
+		if ($config === NULL && ! file_exists(CONFIG_PATH.DS.'database.php'))
 		{
 			return FALSE;
 		}
 
-		// Verifico los datos de conección.
-		try {
-			Database::get_instance(TRUE);
-			return TRUE;
-		}
-		catch (Database_Exception $e)
-		{
-			return FALSE;
-		}
-	}
+		// Cargo datos de donde verificar.
+		$datos = $config === NULL ? configuracion_obtener(CONFIG_PATH.DS.'database.php') : $config;
 
-	/**
-	 * Obtenemos la representación PHP de una variable.
-	 * @param mixed $value Variable a representar.
-	 * @return string
-	 */
-	private function value_to_php($value)
-	{
-		if ($value === TRUE || $value === FALSE)
-		{
-			return $value ? 'TRUE' : 'FALSE';
-		}
-		elseif (is_int($value) || is_float($value))
-		{
-			return "$value";
-		}
-		elseif (is_string($value))
-		{
-			return "'".str_replace("'", "\\'", $value)."'";
-		}
-		elseif (is_array($value))
-		{
-			$rst = array();
-			foreach ($value as $k => $v)
-			{
-				if (is_int($k))
-				{
-					$rst[] = $this->value_to_php($v);
-				}
-				else
-				{
-					$rst[] = "'$k' => ".$this->value_to_php($v);
-				}
-			}
-
-			return 'array('.implode(', ', $rst).')';
-		}
-		return 'NULL';
+		// Intento la conexión.
+		return Database::test($datos);
 	}
 
 	/**
@@ -431,7 +437,7 @@ class Installer_Controller {
 				// Agrego el título.
 				$lst[] = substr($u, 0, (-1) * (strlen(FILE_EXT) + 1));
 
-				// Listado de titulos.
+				// Listado de títulos.
 				$upd_aux_list = require(APP_BASE.DS.'installer'.DS.'update'.DS.$u);
 
 				foreach ($upd_aux_list as $k => $item)
@@ -447,6 +453,24 @@ class Installer_Controller {
 		{
 			// Cargo la base de datos.
 			$db = Database::get_instance();
+
+			// Ejecuto actualizaciones personalizadas.
+			$aux = scandir(APP_BASE.DS.'installer'.DS.'update_raw'.DS);
+			foreach ($aux as $u)
+			{
+				// Verifico sea un archivo válido.
+				if (substr($u, (-1) * strlen(FILE_EXT)) !== FILE_EXT)
+				{
+					continue;
+				}
+
+				// Verifico si debe ser importada.
+				if (version_compare($version_actual, substr($u, 0, (-1) * (strlen(FILE_EXT) + 1))) < 0)
+				{
+					// Ejecuto.
+					require(APP_BASE.DS.'installer'.DS.'update_raw'.DS.$u);
+				}
+			}
 
 			// Error global. Permite saber si todo fue correcto para continuar.
 			$error_global = FALSE;
@@ -518,7 +542,7 @@ class Installer_Controller {
 
 			if ( ! $error_global)
 			{
-				// Seteo el paso como terminado.
+				// Marco el paso como terminado.
 				Installer_Step::get_instance()->terminado();
 
 				$vista->assign('execute', TRUE);
@@ -528,7 +552,7 @@ class Installer_Controller {
 		// Paso listado resultado.
 		$vista->assign('consultas', $lst);
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
@@ -540,14 +564,7 @@ class Installer_Controller {
 		// Cargo la vista.
 		$vista = View::factory('configuracion');
 
-		// Cargamos las configuraciones.
-		$model_configuracion = new Model_Configuracion;
-
 		// Datos por defecto.
-		$vista->assign('nombre', $model_configuracion->get('nombre', ''));
-		$vista->assign('error_nombre', FALSE);
-		$vista->assign('descripcion', $model_configuracion->get('descripcion', ''));
-		$vista->assign('error_descripcion', FALSE);
 		$vista->assign('usuario', '');
 		$vista->assign('error_usuario', FALSE);
 		$vista->assign('email', '');
@@ -562,43 +579,25 @@ class Installer_Controller {
 		if (Request::method() == 'POST')
 		{
 			// Cargo los valores.
-			foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword', 'bd_password') as $v)
-			{
-				$$v = isset($_POST[$v]) ? trim($_POST[$v]) : '';
-			}
+			$usuario = isset($_POST['usuario']) ? trim($_POST['usuario']) : '';
+			$email = isset($_POST['email']) ? trim($_POST['email']) : '';
+			$password = isset($_POST['password']) ? trim($_POST['password']) : '';
+			$cpassword = isset($_POST['cpassword']) ? trim($_POST['cpassword']) : '';
+			$bd_password = isset($_POST['bd_password']) ? trim($_POST['bd_password']) : '';
 
-			// Limpio los valores.
-			$nombre = preg_replace('/\s+/', ' ', $_POST['nombre']);
-			$descripcion = preg_replace('/\s+/', ' ', $_POST['descripcion']);
-
-			// Seteo nuevos valores a las vistas.
-			foreach (array('nombre', 'descripcion', 'usuario', 'email', 'password', 'cpassword') as $v)
-			{
-				$vista->assign($v, $$v);
-			}
+			$vista->assign('usuario', $usuario);
+			$vista->assign('email', $email);
+			$vista->assign('password', $password);
+			$vista->assign('cpassword', $cpassword);
+			$vista->assign('bd_password', $bd_password);
 
 			$error = FALSE;
 
 			// Verifico la clave de la base de datos.
-			$cfg = configuracion_obtener(CONFIG_PATH.DS.'database.php');
-			if ($bd_password !== $cfg['password'])
+			if ($bd_password !== Configuracion::factory(CONFIG_PATH.DS.'database.php')->password)
 			{
 				$error = TRUE;
 				$vista->assign('error_bd_password', 'La contraseña de la base de datos es incorrecta.');
-			}
-
-			// Verifico el nombre.
-			if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{2,20}$/iD', $nombre))
-			{
-				$error = TRUE;
-				$vista->assign('error_nombre', 'El nombre debe tener entre 2 y 20 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
-			}
-
-			// Verifico el contenido.
-			if ( ! preg_match('/^[a-z0-9áéíóúñ !\-_\.]{5,30}$/iD', $descripcion))
-			{
-				$error = TRUE;
-				$vista->assign('error_descripcion', 'La descripción debe tener entre 5 y 30 caracteres. Pueden ser letras, números, espacios, !, -, _, . y \\');
 			}
 
 			// Verifico usuario.
@@ -651,8 +650,9 @@ class Installer_Controller {
 			if ( ! $error)
 			{
 				// Actualizo las configuraciones.
-				$model_configuracion->nombre = $nombre;
-				$model_configuracion->descripcion = $descripcion;
+				$model_configuracion = Model_Configuracion::get_instance();
+				$model_configuracion->nombre = 'Marifa';
+				$model_configuracion->descripcion = 'Tu comunidad de forma simple';
 
 				// Cargo modelo de usuarios.
 				$model_usuario = new Model_Usuario;
@@ -684,15 +684,15 @@ class Installer_Controller {
 					$model_usuario->actualizar_campo('estado', Model_Usuario::ESTADO_ACTIVA);
 				}
 
-				// Seteo el paso como terminado.
+				// Marco el paso como terminado.
 				Installer_Step::get_instance()->terminado();
 
-				// Redirecciono al siguiente.
+				// Envío al siguiente paso.
 				Installer_Step::get_instance()->ir_al_paso();
 			}
 		}
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
@@ -704,10 +704,10 @@ class Installer_Controller {
 		// Cargo la vista.
 		$vista = View::factory('finalizacion');
 
-		// Seteo el paso como terminado.
+		// Marco el paso como terminado.
 		Installer_Step::get_instance()->terminado();
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 
@@ -727,10 +727,16 @@ class Installer_Controller {
 			$drivers['mysql'] = 'MySQL';
 		}
 
+		if (function_exists('mysqli_connect'))
+		{
+			$drivers['mysqli'] = 'MySQLi';
+		}
+
 		if (class_exists('pdo'))
 		{
 			$drivers['pdo'] = 'PDO';
 		}
+
 		$vista->assign('drivers', $drivers);
 
 		// Listado de importadores.
@@ -740,7 +746,7 @@ class Installer_Controller {
 		// Información por defecto.
 		$vista->assign('importador', 'phpost');
 		$vista->assign('error_importador', FALSE);
-		$vista->assign('driver', isset($drivers['mysql']) ? 'mysql' : 'pdo');
+		$vista->assign('driver', isset($drivers['mysqli']) ? 'mysqli' : (isset($drivers['pdo']) ? 'pdo' : 'mysql'));
 		$vista->assign('error_driver', FALSE);
 		$vista->assign('host', '');
 		$vista->assign('error_host', FALSE);
@@ -830,15 +836,12 @@ class Installer_Controller {
 						);
 					}
 
-					// Realizo la conección.
-					try {
-						$db_tt = 'Database_Driver_'.ucfirst(strtolower($config['type']));
-						$db_instance = new $db_tt($config);
-					}
-					catch (Database_Exception $e)
+					$db_instance = Database::test($config, TRUE);
+
+					if ($db_instance === FALSE)
 					{
 						$error = TRUE;
-						add_flash_message(FLASH_ERROR, 'Los datos ingresados para la conección a la base de datos son incorrectos');
+						add_flash_message(FLASH_ERROR, 'Los datos ingresados para la conexión a la base de datos son incorrectos');
 					}
 				}
 
@@ -872,7 +875,7 @@ class Installer_Controller {
 			}
 		}
 
-		// Seteo la vista.
+		// Asigno la vista.
 		$this->template->assign('contenido', $vista->parse());
 	}
 }

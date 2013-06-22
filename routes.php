@@ -44,6 +44,9 @@
  */
 
 return array(
+	// Contacto.
+	array('/contacto/?', array('controller' => 'home', 'action' => 'contacto')),
+
 	array('/login/?', array('controller' => 'usuario', 'action' => 'login')), // Atajo al login.
 	array('/logout/?', array('controller' => 'usuario', 'action' => 'logout')), // Atajo al logout.
 	array('/register/?', array('controller' => 'usuario', 'action' => 'register')), // Atajo al registro.
@@ -59,6 +62,9 @@ return array(
 	array('/foto/categoria/:categoria/?:pagina?', array('controller' => 'foto', 'action' => 'index'), array('params_map' => array('pagina', 'categoria'))), // Atajo a las categorias.
 	array('/foto/:categoria/:id/:nombre\.:pagina\.html', array('controller' => 'foto', 'action' => 'ver'), array('params_map' => array('id', 'pagina'))), // URL a una foto con pagina de comentarios.
 	array('/foto/:categoria/:id/:nombre\.html', array('controller' => 'foto', 'action' => 'ver'), array('params_map' => array('id'))), // URL a una foto.
+
+	// Rutas para las páginas estáticas.
+	array('/paginas/:id\-:nombre\.html', array('controller' => 'pages', 'action' => 'ver'), array('params_map' => array('id'), 'filters' => array('id' => '(\d+)'))),
 
 	array('/\@:usuario/?:action?/?:pagina?/?:pagina_2?', array('controller' => 'perfil', 'action' => 'index')), // Atajo al perfil del usuario.
 );

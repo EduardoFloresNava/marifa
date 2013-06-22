@@ -267,7 +267,7 @@ class Base_Usuario {
 		// Verifico perdida de sessión.
 		if (isset($_SESSION['HTTP_USER_AGENT']))
 		{
-			if ($_SESSION['HTTP_USER_AGENT'] != md5($_SERVER['HTTP_USER_AGENT']))
+			if ($_SESSION['HTTP_USER_AGENT'] != md5(arr_get($_SERVER, 'HTTP_USER_AGENT', '')))
 			{
 				// Borro la session.
 				if (isset($_SESSION['usuario_id']))
@@ -282,7 +282,7 @@ class Base_Usuario {
 		}
 		else
 		{
-			$_SESSION['HTTP_USER_AGENT'] = md5($_SERVER['HTTP_USER_AGENT']);
+			$_SESSION['HTTP_USER_AGENT'] = md5(arr_get($_SERVER, 'HTTP_USER_AGENT', ''));
 		}
 	}
 }

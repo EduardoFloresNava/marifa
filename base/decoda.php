@@ -70,6 +70,7 @@ class Base_Decoda extends Decoda_Decoda {
 		$this->addFilter(new UrlFilter);
 		$this->addHook(new EmoticonHook(array('path' => THEME_URL.DS.'assets'.DS.'emoticons'.DS)));
 		$this->addHook(new ClickableHook);
+		$this->addHook(new CensurasHook());
 		$this->whitelist(
 				'b',
 				'i',
@@ -111,7 +112,7 @@ class Base_Decoda extends Decoda_Decoda {
 	/**
 	 * Procesado rápido de BBCode
 	 * @param type $string
-	 * @param bool $preview Si es preview o no. En preview no se envian sucesos.
+	 * @param bool $preview Si es vista preliminar o no. En vista preliminar no se envían sucesos.
 	 * @return type
 	 */
 	public static function procesar($string, $preview = TRUE)

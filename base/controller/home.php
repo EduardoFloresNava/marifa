@@ -38,30 +38,21 @@ class Base_Controller_Home extends Controller {
 	 */
 	public static function submenu($selected = NULL)
 	{
-		$data = array();
+		// Creo el menu.
+		$menu = new Menu('submenu_home');
 
 		// Listado de elemento OFFLINE.
-		$data['inicio'] = array('link' => '/', 'caption' => 'Inicio', 'active' => FALSE);
-		$data['usuarios'] = array('link' => '/home/usuarios', 'caption' => 'Usuarios', 'active' => FALSE);
-		$data['buscador'] = array('link' => '/buscador', 'caption' => 'Buscador', 'active' => FALSE);
+		$menu->element_set(__('Inicio', FALSE), '/', 'inicio');
+		$menu->element_set(__('Usuarios', FALSE), '/home/usuarios/', 'usuarios');
+		$menu->element_set(__('Buscador', FALSE), '/buscador/', 'buscador');
 
 		// Listado de elementos ONLINE.
 		if (Usuario::is_login())
 		{
-			$data['nuevo'] = array('link' => '/post/nuevo', 'caption' => 'Agregar Post', 'active' => FALSE);
+			$menu->element_set(__('Agregar Post', FALSE), '/post/nuevo/', 'nuevo');
 		}
 
-		// Seleccionamos elemento.
-		if ($selected !== NULL && isset($data[$selected]))
-		{
-			$data[$selected]['active'] = TRUE;
-		}
-		else
-		{
-			$data['inicio']['active'] = TRUE;
-		}
-
-		return $data;
+		return $menu->as_array($selected == NULL ? 'inicio' : $selected);
 	}
 
 	/**
@@ -87,7 +78,7 @@ class Base_Controller_Home extends Controller {
 		$img = new securimage;
 		$img->image_height = $heigth;
 		$img->image_width = $width;
-		$img->code_length = ceil($width / 30);
+		$img->code_length = ceil($width / $heigth * .7);
 		$img->show();
 
 		// Evito salida de depuración.
@@ -97,45 +88,51 @@ class Base_Controller_Home extends Controller {
 	/**
 	 * Portada del sitio.
 	 * @param int $pagina Número de página para lo últimos posts.
-	 * @param string $categoria Categoria de los posts. Si no se especifica se toman todas.
+	 * @param string $categoria Categoría de los posts. Si no se especifica se toman todas.
 	 */
 	public function action_index($pagina, $categoria = NULL)
 	{
 		// Cargamos la portada.
 		$portada = View::factory('home/index');
 
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
-		$this->template->assign('top_bar', self::submenu('inicio'));
 
-		// Verifico categoria.
+		// La barra es un elemento de la vista.
+		$portada->assign('top_bar', self::submenu('inicio'));
+
+		// Verifico categoría.
 		if ($categoria !== NULL)
 		{
 			// Verifico formato.
 			if ( ! preg_match('/[a-z0-9_]+/i', $categoria))
 			{
-				add_flash_message(FLASH_ERROR, 'La categoría no es correcta.');
+				add_flash_message(FLASH_ERROR, __('La categoría no es correcta.', FALSE));
 				Request::redirect('/post/'.$pagina);
 			}
 
-			// Cargo la categoria.
+			// Cargo la categoría.
 			$model_categoria = new Model_Categoria;
 
 			// Verifico sea válida.
 			if ( ! $model_categoria->existe_seo($categoria))
 			{
-				add_flash_message(FLASH_ERROR, 'La categoría no es correcta.');
+				add_flash_message(FLASH_ERROR, __('La categoría no es correcta.', FALSE));
 				Request::redirect('/post/'.$pagina);
 			}
 			else
 			{
-				// Cargo la categoria.
+				// Cargo la categoría.
 				$model_categoria->load_by_seo($categoria);
 			}
 		}
 
-		// Seteo id de la categoria.
+		// Asigno id de la categoría.
 		$categoria_id = isset($model_categoria) ? $model_categoria->id : NULL;
+
+		// Asigno categorías y actual.
+		$portada->assign('categorias', Model::factory('categoria')->lista());
+		$portada->assign('categoria', isset($model_categoria) ? $model_categoria->seo : NULL);
 
 		// Cargamos datos de posts.
 		$model_post = new Model_Post;
@@ -145,8 +142,7 @@ class Base_Controller_Home extends Controller {
 		$portada->assign('cantidad_comentarios_posts', $model_post->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
@@ -168,7 +164,7 @@ class Base_Controller_Home extends Controller {
 				$post_sticky[$k] = $a;
 			}
 
-			// Seteo y limpio.
+			// Asigno y limpio.
 			$portada->assign('sticky', $post_sticky);
 			unset($post_sticky);
 		}
@@ -177,10 +173,10 @@ class Base_Controller_Home extends Controller {
 			$portada->assign('sticky', array());
 		}
 
-		// Ultimos posts
+		// Últimos posts
 		$post_list = $model_post->obtener_ultimos($pagina, $cantidad_por_pagina, $categoria_id);
 
-		// Verifivo validez de la pagina.
+		// Verifico valides de la pagina.
 		if (count($post_list) == 0 && $pagina != 1)
 		{
 			Request::redirect('/');
@@ -190,11 +186,11 @@ class Base_Controller_Home extends Controller {
 		$paginador = new Paginator($model_post->cantidad(Model_Post::ESTADO_ACTIVO, $categoria_id, FALSE), $cantidad_por_pagina);
 		if ($categoria !== NULL)
 		{
-			$portada->assign('paginacion', $paginador->get_view($pagina, '/post/categoria/'.$categoria.'/%d'));
+			$portada->assign('paginacion', $paginador->get_view($pagina, SITE_URL.'/post/categoria/'.$categoria.'/%d'));
 		}
 		else
 		{
-			$portada->assign('paginacion', $paginador->get_view($pagina, '/post/%d/'));
+			$portada->assign('paginacion', $paginador->get_view($pagina, SITE_URL.'/post/%d/'));
 		}
 		unset($paginador);
 
@@ -274,31 +270,153 @@ class Base_Controller_Home extends Controller {
 		$portada->assign('usuario_top', $usuario_top_list);
 		unset($usuario_top_list, $model_usuario);
 
-		// Cargamos ultimas fotos.
-		$model_foto = new Model_Foto;
-		$foto_list = $model_foto->obtener_ultimas(1, 1);
-
-		// Extendemos la información de las fotos.
-		foreach ($foto_list as $k => $v)
+		// Verifico si se deben mostrar las fotos.
+		if (Utils::configuracion()->get('habilitar_fotos', 1) && (Utils::configuracion()->get('privacidad_fotos', 1) || Usuario::is_login()))
 		{
-			$foto_list[$k] = $v->as_array();
-			$foto_list[$k]['descripcion_clean'] = preg_replace('/\[([^\[\]]+)\]/', '', $v->descripcion);
-			$foto_list[$k]['categoria'] = $v->categoria()->as_array();
-		}
-		$portada->assign('ultimas_fotos', $foto_list);
-		unset($foto_list);
+			// Cargamos ultimas fotos.
+			$model_foto = new Model_Foto;
+			$foto_list = $model_foto->obtener_ultimas(1, 1);
 
-		// Cantidad fotos y comentarios en fotos.
-		$portada->assign('cantidad_fotos', $model_foto->cantidad(Model_Foto::ESTADO_ACTIVA));
-		$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
-		unset($model_foto);
+			// Extendemos la información de las fotos.
+			foreach ($foto_list as $k => $v)
+			{
+				$foto_list[$k] = $v->as_array();
+				$foto_list[$k]['descripcion_clean'] = preg_replace('/\[([^\[\]]+)\]/', '', $v->descripcion);
+				$foto_list[$k]['categoria'] = $v->categoria()->as_array();
+			}
+			$portada->assign('ultimas_fotos', $foto_list);
+			unset($foto_list);
+
+			// Cantidad fotos y comentarios en fotos.
+			$portada->assign('cantidad_fotos', $model_foto->cantidad(Model_Foto::ESTADO_ACTIVA));
+			$portada->assign('cantidad_comentarios_fotos', $model_foto->cantidad_comentarios(Model_Comentario::ESTADO_VISIBLE));
+			unset($model_foto);
+		}
 
 		// Titulo del sitio.
 		$this->template->assign('brand_title', '');
-		$this->template->assign('title_raw', $model_configuracion->nombre.' - '.$model_configuracion->descripcion);
+		$this->template->assign('title_raw', Model_Configuracion::get_instance()->nombre.' - '.Model_Configuracion::get_instance()->descripcion);
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());
+	}
+
+	/**
+	 * Mostramos el listado de últimos posts. ES UNA PETICION AJAX.
+	 * @param int $pagina Número de página para lo últimos posts.
+	 * @param string $categoria Categoría de los posts. Si no se especifica se toman todas.
+	 */
+	public function action_ultimos_posts($categoria, $pagina)
+	{
+		// Cargamos la portada.
+		$portada = View::factory('home/ultimos_posts_ajax');
+
+		// Verifico categoría.
+		if ($categoria !== NULL && $categoria !== 'todas')
+		{
+			// Verifico formato.
+			if ( ! preg_match('/[a-z0-9_]+/i', $categoria))
+			{
+				add_flash_message(FLASH_ERROR, __('La categoría no es correcta.', FALSE));
+				Request::redirect('/post/'.$pagina);
+			}
+
+			// Cargo la categoría.
+			$model_categoria = new Model_Categoria;
+
+			// Verifico sea válida.
+			if ( ! $model_categoria->existe_seo($categoria))
+			{
+				add_flash_message(FLASH_ERROR, __('La categoría no es correcta.', FALSE));
+				Request::redirect('/post/'.$pagina);
+			}
+			else
+			{
+				// Cargo la categoría.
+				$model_categoria->load_by_seo($categoria);
+			}
+		}
+
+		// Asigno id de la categoría.
+		$categoria_id = isset($model_categoria) ? $model_categoria->id : NULL;
+
+		// Cargamos datos de posts.
+		$model_post = new Model_Post;
+
+		// Cantidad posts y comentarios en posts.
+		$portada->assign('cantidad_posts', $model_post->cantidad(Model_Post::ESTADO_ACTIVO));
+
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
+
+		// Formato de la página.
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
+		if ($pagina == 1)
+		{
+			// Cargo fijos.
+			$post_sticky = $model_post->sticky(TRUE, $categoria_id);
+
+			// Extendemos la información de los posts.
+			foreach ($post_sticky as $k => $v)
+			{
+				$a = $v->as_array();
+				$a['usuario'] = $v->usuario()->as_array();
+				$a['puntos'] = $v->puntos();
+				$a['comentarios'] = $v->cantidad_comentarios(Model_Post_Comentario::ESTADO_VISIBLE);
+				$a['categoria'] = $v->categoria()->as_array();
+
+				$post_sticky[$k] = $a;
+			}
+
+			// Asigno y limpio.
+			$portada->assign('sticky', $post_sticky);
+			unset($post_sticky);
+		}
+		else
+		{
+			$portada->assign('sticky', array());
+		}
+
+		// Últimos posts
+		$post_list = $model_post->obtener_ultimos($pagina, $cantidad_por_pagina, $categoria_id);
+
+		// Verifico valides de la pagina.
+		if (count($post_list) == 0 && $pagina != 1)
+		{
+			Request::http_response_code(404);
+			die();
+		}
+
+		// Paginación.
+		$paginador = new Paginator($model_post->cantidad(Model_Post::ESTADO_ACTIVO, $categoria_id, FALSE), $cantidad_por_pagina);
+		if ($categoria !== NULL)
+		{
+			$portada->assign('paginacion', $paginador->get_view($pagina, SITE_URL.'/post/categoria/'.$categoria.'/%d'));
+		}
+		else
+		{
+			$portada->assign('paginacion', $paginador->get_view($pagina, SITE_URL.'/post/%d/'));
+		}
+		unset($paginador);
+
+		// Extendemos la información de los posts.
+		foreach ($post_list as $k => $v)
+		{
+			$a = $v->as_array();
+			$a['usuario'] = $v->usuario()->as_array();
+			$a['puntos'] = $v->puntos();
+			$a['comentarios'] = $v->cantidad_comentarios(Model_Post_Comentario::ESTADO_VISIBLE);
+			$a['categoria'] = $v->categoria()->as_array();
+
+			$post_list[$k] = $a;
+		}
+
+		$portada->assign('ultimos_posts', $post_list);
+		unset($post_list);
+
+		// Muestro salida.
+		$portada->show();
 	}
 
 	/**
@@ -310,13 +428,12 @@ class Base_Controller_Home extends Controller {
 		// Cargamos la portada.
 		$portada = View::factory('home/usuarios');
 
-		// Seteo el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('posts'));
 		$this->template->assign('top_bar', self::submenu('usuarios'));
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Formato de la página.
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
@@ -327,7 +444,7 @@ class Base_Controller_Home extends Controller {
 		// Cargo usuarios.
 		$listado = $model_usuario->listado($pagina, $cantidad_por_pagina);
 
-		// Verifivo validez de la pagina.
+		// Verifico validez de la pagina.
 		if (count($listado) == 0 && $pagina != 1)
 		{
 			Request::redirect('/home/usuarios/');
@@ -346,125 +463,153 @@ class Base_Controller_Home extends Controller {
 
 		// Paginación.
 		$paginador = new Paginator($model_usuario->cantidad(), $cantidad_por_pagina);
-		$portada->assign('paginacion', $paginador->get_view($pagina, '/home/usuarios/%d/'));
+		$portada->assign('paginacion', $paginador->get_view($pagina, SITE_URL.'/home/usuarios/%d/'));
 		unset($paginador);
 
 		$portada->assign('usuarios', $listado);
 		unset($listado);
+
+		// Asigno el título.
+		$this->template->assign('title', __('Usuarios', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $portada->parse());
 	}
 
 	/**
-	 * Prueba descarga de un plugin.
+	 * Fomulario de contacto.
 	 */
-	/**
-	public function action_install()
+	public function action_contacto()
 	{
-		Dispatcher::call(''); // Prueba del uso de memoria.
+		// Verifico el tipo.
+		$tipo_contacto = Utils::configuracion()->get('contacto_tipo', 1);
 
-		// Nombre del plugin.
-		$p_nombre = "Test Plugin";
-
-		// Borramos el plugin.
-		// if (file_exists(Plugin_Manager::nombre_as_path($p_nombre)))
-		// {
-		// Update_Utils::unlink(Plugin_Manager::nombre_as_path($p_nombre));
-		// }
-
-		// Objeto manejador de plugins.
-		$pkg_manager = Plugin_Manager::get_instance();
-
-		// Verificamos su existencia
-		$o_plugin = $pkg_manager->get(Plugin_Manager::make_name($p_nombre));
-
-		if ($o_plugin === NULL)
+		if ($tipo_contacto == 0)
 		{
-			// Realizamos la instalación.
-
-			// Cargamos el actualizador.
-			$o_updater = new Update_Updater;
-
-			// Descargamos el paquete e instalamos el paquete. Se usa 1 para mostrar actualizaciones.
-			if ($o_updater->install_package(Update_Utils::make_hash($p_nombre), 1))
-			{
-				// Actualizamos la cache.
-				$pkg_manager->regenerar_lista();
-
-				// Cargamos el paquete.
-				$o_plugin = new Plugin_Plugin($p_nombre);
-
-				// Realizamos la actualizacion.
-				$o_plugin->install();
-
-				// Activamos el paquete.
-				$pkg_manager->set_state(Plugin_Manager::make_name($p_nombre), TRUE, TRUE);
-
-				echo "Instalación existosa";
-			}
-			else
-			{
-				echo "Problema al realizar la instalación";
-			}
+			add_flash_message(FLASH_ERROR, __('No tiene permisos para acceder a esa sección.', FALSE));
+			Request::redirect('/');
 		}
-		else
+
+		// Menú principal.
+		$this->template->assign('master_bar', parent::base_menu('inicio'));
+
+		// Asignamos la vista.
+		$view = View::factory('/home/contacto');
+
+		// Valores por defecto.
+		$view->assign('nombre', '');
+		$view->assign('error_nombre', FALSE);
+		$view->assign('asunto', '');
+		$view->assign('error_asunto', FALSE);
+		$view->assign('mensaje', '');
+		$view->assign('error_mensaje', FALSE);
+
+		// Verifico datos enviados.
+		if (Request::method() == 'POST')
 		{
-			// Buscamos actualizaciones.
-			$upd_id = $o_plugin->check_updates();
+			// Marco sin errores.
+			$error = FALSE;
 
-			if ($upd_id === FALSE)
+			// Obtengo los campos.
+			$nombre = arr_get($_POST, 'nombre', '');
+			$asunto = arr_get($_POST, 'asunto', '');
+			$mensaje = arr_get($_POST, 'mensaje', '');
+
+			// Envío al formulario.
+			$view->assign('nombre', $nombre);
+			$view->assign('asunto', $asunto);
+			$view->assign('mensaje', $mensaje);
+
+			// Verifico nombre.
+			if ( ! isset($nombre{4}) || isset($nombre{100}))
 			{
-				echo "No hay actualizaciones";
+				$error = TRUE;
+				$view->assign('error_nombre', __('El nombre debe tener entre 4 y 100 caracteres.', FALSE));
 			}
-			else
+
+			// Verifico el asunto.
+			if ( ! isset($asunto{4}) || isset($asunto{100}))
 			{
-				// Instalamos la actualizacion.
+				$error = TRUE;
+				$view->assign('error_asunto', __('El asunto debe tener entre 4 y 100 caracteres.', FALSE));
+			}
 
-				// Desactivo el plugin.
-				if ($o_plugin->info()->estado)
+			// Verifico el mensaje.
+			if ( ! isset($mensaje{20}) || isset($mensaje{300}))
+			{
+				$error = TRUE;
+				$view->assign('error_mensaje', __('El mensaje debe tener entre 20 y 300 caracteres.', FALSE));
+			}
+
+			if ( ! $error)
+			{
+				// Verifico tipo de envío.
+				if ($tipo_contacto == 1)
 				{
-					$o_plugin->remove();
-				}
-
-				// Directorio del plugin.
-				$orig_path = Plugin_Manager::nombre_as_path($p_nombre);
-				$tmp_path = rtrim($orig_path, '/').'.bkp';
-
-				// Realizamos una copia.
-				Update_Utils::copyr($orig_path, $tmp_path);
-
-				// Borramos el original.
-				Update_Utils::unlink($orig_path);
-
-				// Cargamos el actualizador.
-				$o_updater = new Update_Updater;
-
-				// Descargamos el paquete e instalamos el paquete.
-				if ( ! $o_updater->install_package(Update_Utils::make_hash($p_nombre), $upd_id))
-				{
-					// Recuperamos el original.
-					Update_Utils::copyr($tmp_path, $orig_path);
-
-					echo "No se pudo actualizar a la versión $upd_id.";
+					$model_contacto = new Model_Contacto;
+					$model_contacto->nueva(htmlentities(trim($nombre), ENT_QUOTES, 'UTF-8'), htmlentities(trim($asunto), ENT_QUOTES, 'UTF-8'), htmlentities(trim($mensaje), ENT_QUOTES, 'UTF-8'));
 				}
 				else
 				{
-					echo "Actualización a la versión $upd_id exitosa.";
+					// Asunto del mensaje.
+					$asunto_mensaje = sprintf(__('CONTACTO: %s', FALSE), htmlentities(trim($asunto), ENT_QUOTES, 'UTF-8'));
+					$mensaje = sprintf(__("%s envió: \n %s", FALSE), htmlentities(trim($nombre), ENT_QUOTES, 'UTF-8'), htmlentities(trim($mensaje), ENT_QUOTES, 'UTF-8'));
+
+					// Obtengo a quienes enviar.
+					$listado_usuarios = explode(PHP_EOL, trim(Utils::configuracion()->get('contacto_valor', '')));
+
+					$usuarios_enviar = array();
+
+					foreach ($listado_usuarios as $v)
+					{
+						$v = trim($v);
+
+						if ($v{0} == '@')
+						{
+							// Cargo el modelo.
+							$model_rango = new Model_Usuario_Rango;
+
+							// Cargo el rango.
+							$model_rango->load(array('nombre' => substr($v, 1)));
+
+							// Verifico existencia.
+							if ($model_rango->existe())
+							{
+								array_merge($usuarios_enviar, $model_rango->listado_usuarios());
+							}
+						}
+						else
+						{
+							// Cargo el usuario.
+							$model_usuario = new Model_Usuario;
+
+							// Cargo el usuario.
+							$model_usuario->load_by_nick($v);
+
+							// Verifico existencia.
+							if ($model_usuario->existe())
+							{
+								$usuarios_enviar[] = $model_usuario->id;
+							}
+						}
+					}
+
+					// Envío los mensajes.
+					$model_mensaje = new Model_Mensaje;
+					$model_mensaje->enviar(NULL, array_unique($usuarios_enviar, SORT_NUMERIC), $asunto_mensaje, $mensaje);
+					unset($model_mensaje);
 				}
 
-				// Realizamos la instalación.
-				$o_plugin->install();
-
-				// Borramos la copia.
-				Update_Utils::unlink($tmp_path);
+				// Informo resultado.
+				add_flash_message(FLASH_SUCCESS, __('El mensaje se ha enviado correctamente.', FALSE));
+				Request::redirect('/');
 			}
 		}
 
-		if ( ! Request::is_cli())
-		{
-			echo "<br />";
-		}
-	}*/
+		// Compilamos la vista.
+		$this->template->assign('contenido', $view->parse());
 
+		// Seteamos título.
+		$this->template->assign('title', __('Contacto', FALSE));
+	}
 }

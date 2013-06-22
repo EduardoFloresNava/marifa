@@ -37,17 +37,17 @@ class Base_Controller_Admin_Contenido extends Controller {
 	 */
 	public function before()
 	{
-		// Verifico estar logueado.
+		// Verifico estar identificado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para acceder a esta sección.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para acceder a esta sección.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 
 		// Verifico los permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_SITIO_ADMINISTRAR_CONTENIDO))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permisos para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permisos para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -66,8 +66,8 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cantidades de posts por estado.
 		$vista->assign('post_estado', Model_Post::cantidad_agrupados());
 
-		// Cantidades de posts por categoria.
-		$vista->assign('posts_categorias', Model_Post::cantidad_categorias());
+		// Cantidades de posts por categoría.
+		$vista->assign('posts_categorias', Model_Post::cantidad_categorias(10));
 
 		// Cantidad de comentarios en posts por estado.
 		$vista->assign('post_comentarios_estado', Model_Post_Comentario::cantidad_agrupados());
@@ -78,17 +78,17 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Cantidad de comentarios en fotos por estado.
 		$vista->assign('foto_comentarios_estado', Model_Foto_Comentario::cantidad_agrupados());
 
-		// Cantidad de fotos por categoria.
-		$vista->assign('fotos_categorias', Model_Foto::cantidad_categorias());
+		// Cantidad de fotos por categoría.
+		$vista->assign('fotos_categorias', Model_Foto::cantidad_categorias(10));
 
-		// Seteamos el menu.
+		// Seteamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.index'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -105,8 +105,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$pagina = ( (int) $pagina > 0) ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Verifico el tipo de fotos a mostrar.
 		$tipo = ($tipo === NULL) ? NULL : ( (int) $tipo);
@@ -179,18 +178,18 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de posts.
+		// Asignamos listado de posts.
 		$vista->assign('posts', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_posts'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.posts'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -208,14 +207,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_post = new Model_Post($id);
 		if ( ! $model_post->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El post que deseas eliminar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El post que deseas eliminar no se encuentra disponible.', FALSE));
 			Request::redirect('/admin/contenido/posts/');
 		}
 
 		// Verifico cual es el estado actual.
 		if ($model_post->estado === Model_Post::ESTADO_BORRADO)
 		{
-			add_flash_message(FLASH_ERROR, 'El post que deseas eliminar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El post que deseas eliminar no se encuentra disponible.', FALSE));
 			Request::redirect('/admin/contenido/posts/');
 		}
 
@@ -232,7 +231,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -249,7 +248,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 			if ( ! in_array($tipo, array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)))
 			{
 				$error = TRUE;
-				$vista->assign('error_tipo', 'No ha seleccionado un tipo válido.');
+				$vista->assign('error_tipo', __('No ha seleccionado un tipo válido.', FALSE));
 			}
 			else
 			{
@@ -260,7 +259,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{10,200}$/iD', $razon))
 					{
 						$error = TRUE;
-						$vista->assign('error_razon', 'La razón dete tener entre 10 y 200 caractéres alphanuméricos.');
+						$vista->assign('error_razon', __('La razón debe tener entre 10 y 200 caracteres alphanuméricos.', FALSE));
 					}
 				}
 				else
@@ -287,19 +286,19 @@ class Base_Controller_Admin_Contenido extends Controller {
 				}
 
 				// Informamos el resultado.
-				add_flash_message(FLASH_SUCCESS, 'Post borrado correctamente.');
+				add_flash_message(FLASH_SUCCESS, __('Post borrado correctamente.', FALSE));
 				Request::redirect('/admin/contenido/posts/');
 			}
 		}
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_post'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.post'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -320,14 +319,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_post->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El post al cual le quiere cambiar el estado no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El post al cual le quiere cambiar el estado no se encuentra disponible.', FALSE));
 			Request::redirect('/admin/contenido/posts');
 		}
 
 		// Obtengo el estado.
 		switch ($model_post->estado)
 		{
-			case 0: // Activo
+			case Model_Post::ESTADO_ACTIVO: // Activo
 				if ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
@@ -335,7 +334,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					// Actualizo el estado.
 					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -347,8 +346,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'El post se a eliminado correctamente.');
+					add_flash_message(FLASH_SUCCESS, __('El post se a eliminado correctamente.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				elseif ($estado == Model_Post::ESTADO_OCULTO)
@@ -358,7 +363,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 					// Actualizo el estado.
 					$model_post->actualizar_estado(Model_Post::ESTADO_OCULTO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -370,18 +375,24 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_ocultar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 5)
+				elseif ($estado == Model_Post::ESTADO_RECHAZADO)
 				{
 					// Rechazamos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(5);
+					$model_post->actualizar_estado(Model_Post::ESTADO_RECHAZADO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -393,18 +404,24 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 6)
+				elseif ($estado == Model_Post::ESTADO_PAPELERA)
 				{
 					// Enviamos a la papelera.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(6);
+					$model_post->actualizar_estado(Model_Post::ESTADO_PAPELERA);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -416,26 +433,32 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_papelera', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
+					add_flash_message(FLASH_ERROR, __('No puedes realizar esa acción.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
-			case 1: // Borrador
-				if ($estado == 2)
+			case Model_Post::ESTADO_BORRADOR: // Borrador
+				if ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -447,31 +470,37 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
+					add_flash_message(FLASH_ERROR, __('No puedes realizar esa acción.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
-			case 2: // Borrado
+			case Model_Post::ESTADO_BORRADO: // Borrado
 				// No hay acciones posibles a este punto.
-				add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
+				add_flash_message(FLASH_ERROR, __('No puedes realizar esa acción.', FALSE));
 				Request::redirect('/admin/contenido/posts');
 				break;
-			case 3: // Pendiente
-				if ($estado == 0)
+			case Model_Post::ESTADO_PENDIENTE: // Pendiente
+				if ($estado == Model_Post::ESTADO_ACTIVO)
 				{
 					// Aprobamos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(0);
+					$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -483,18 +512,24 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 5)
+				elseif ($estado == Model_Post::ESTADO_RECHAZADO)
 				{
 					// Rechazamos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(5);
+					$model_post->actualizar_estado(Model_Post::ESTADO_RECHAZADO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -506,18 +541,24 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 0);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2)
+				elseif ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -529,26 +570,32 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
+					add_flash_message(FLASH_ERROR, __('No puedes realizar esa acción.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
-			case 4: // Oculto
-				if ($estado == 0)
+			case Model_Post::ESTADO_OCULTO: // Oculto
+				if ($estado == Model_Estado::ESTADO_ACTIVO)
 				{
 					// Mostrar.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(0);
+					$model_post->actualizar_estado(Model_Estado::ESTADO_ACTIVO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -560,18 +607,24 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_ocultar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2)
+				elseif ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -583,26 +636,32 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
+					add_flash_message(FLASH_ERROR, __('No puedes realizar esa acción.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
-			case 5: // Rechazado
-				if ($estado == 0)
+			case Model_Post::ESTADO_RECHAZADO: // Rechazado
+				if ($estado == Model_Post::ESTADO_ACTIVO)
 				{
 					// Aprobamos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(0);
+					$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -614,18 +673,24 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_aprobar', FALSE, $model_post->id, Usuario::$usuario_id, 1);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2)
+				elseif ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -637,26 +702,32 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
+					add_flash_message(FLASH_ERROR, __('No puedes realizar esa acción.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
-			case 6: // Papelera
-				if ($estado == 0)
+			case Model_Post::ESTADO_PAPELERA: // Papelera
+				if ($estado == Model_Post::ESTADO_ACTIVO)
 				{
 					// Restauramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(0);
+					$model_post->actualizar_estado(Model_Post::ESTADO_ACTIVO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -668,18 +739,24 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_restaurar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
-				elseif ($estado == 2)
+				elseif ($estado == Model_Post::ESTADO_BORRADO)
 				{
 					// Borramos.
 
 					// Actualizo el estado.
-					$model_post->actualizar_estado(2);
+					$model_post->actualizar_estado(Model_Post::ESTADO_BORRADO);
 
-					// Envio el suceso.
+					// Envío el suceso.
 					$model_suceso = new Model_Suceso;
 					if (Usuario::$usuario_id != $model_post->usuario_id)
 					{
@@ -691,14 +768,20 @@ class Base_Controller_Admin_Contenido extends Controller {
 						$model_suceso->crear($model_post->usuario_id, 'post_borrar', FALSE, $model_post->id, Usuario::$usuario_id);
 					}
 
+					// Verifico actualización del rango.
+					$model_post->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_POST);
+
+					// Verifico actualización medallas.
+					$model_post->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_POSTS);
+
 					// Informo el resultado
-					add_flash_message(FLASH_SUCCESS, 'Actualización correcta.');
+					add_flash_message(FLASH_SUCCESS, __('Actualización correcta.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				else
 				{
 					// Acción no permitida.
-					add_flash_message(FLASH_ERROR, 'No puedes realizar esa acción.');
+					add_flash_message(FLASH_ERROR, __('No puedes realizar esa acción.', FALSE));
 					Request::redirect('/admin/contenido/posts');
 				}
 				break;
@@ -736,8 +819,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/fotos');
@@ -775,18 +857,18 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de fotos.
+		// Asignamos listado de fotos.
 		$vista->assign('fotos', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_fotos'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.fotos'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -804,21 +886,21 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_foto->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'No existe la foto que quiere ocultar.');
+			add_flash_message(FLASH_ERROR, __('No existe la foto que quiere ocultar.', FALSE));
 			Request::redirect('/admin/contenido/fotos');
 		}
 
 		// Verifico que esté activa.
 		if ($model_foto->estado == Model_Foto::ESTADO_OCULTA)
 		{
-			add_flash_message(FLASH_ERROR, 'La foto ya se encuentra oculta.');
+			add_flash_message(FLASH_ERROR, __('La foto ya se encuentra oculta.', FALSE));
 			Request::redirect('/admin/contenido/fotos');
 		}
 
 		// Ocultamos la foto.
 		$model_foto->actualizar_estado(Model_Foto::ESTADO_OCULTA);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id != $model_foto->usuario_id)
 		{
@@ -830,13 +912,19 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$model_suceso->crear($model_foto->usuario_id, 'foto_ocultar', FALSE, $model_foto->id, Usuario::$usuario_id, 0);
 		}
 
+		// Verifico actualización del rango.
+		$model_foto->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+
+		// Actualizo medalla.
+		$model_foto->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_FOTOS);
+
 		// Informamos.
-		add_flash_message(FLASH_SUCCESS, 'Foto ocultada correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Foto ocultada correctamente.', FALSE));
 		Request::redirect('/admin/contenido/fotos');
 	}
 
 	/**
-	 * Seteamos como visible una foto.
+	 * Marcamos como visible una foto.
 	 * @param int $id ID de la foto a mostrar
 	 */
 	public function action_mostrar_foto($id)
@@ -847,21 +935,21 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_foto->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'No existe la foto que quiere mostrar.');
+			add_flash_message(FLASH_ERROR, __('No existe la foto que quiere mostrar.', FALSE));
 			Request::redirect('/admin/contenido/fotos');
 		}
 
 		// Verifico que esté oculta.
 		if ($model_foto->estado == Model_Foto::ESTADO_ACTIVA)
 		{
-			add_flash_message(FLASH_ERROR, 'La foto ya se encuentra visible.');
+			add_flash_message(FLASH_ERROR, __('La foto ya se encuentra visible.', FALSE));
 			Request::redirect('/admin/contenido/fotos');
 		}
 
 		// Mostramos la foto.
 		$model_foto->actualizar_estado(Model_Foto::ESTADO_ACTIVA);
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id != $model_foto->usuario_id)
 		{
@@ -873,8 +961,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$model_suceso->crear($model_foto->usuario_id, 'foto_ocultar', FALSE, $model_foto->id, Usuario::$usuario_id, 1);
 		}
 
+		// Verifico actualización del rango.
+		$model_foto->usuario()->actualizar_rango(Model_Usuario_Rango::TIPO_FOTOS);
+
+		// Actualizo medalla.
+		$model_foto->usuario()->actualizar_medallas(Model_Medalla::CONDICION_USUARIO_FOTOS);
+
 		// Informamos.
-		add_flash_message(FLASH_SUCCESS, 'Foto seteada como visible correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('La foto se ha marcado como visible correctamente.', FALSE));
 		Request::redirect('/admin/contenido/fotos');
 	}
 
@@ -890,14 +984,14 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Verifico que exista.
 		if ( ! $model_foto->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'No existe la foto que quiere mostrar.');
+			add_flash_message(FLASH_ERROR, __('No existe la foto que quiere mostrar.', FALSE));
 			Request::redirect('/admin/contenido/fotos');
 		}
 
 		// Borramos la foto.
 		$model_foto->borrar();
 
-		// Envio el suceso.
+		// Envío el suceso.
 		$model_suceso = new Model_Suceso;
 		if (Usuario::$usuario_id != $model_foto->usuario_id)
 		{
@@ -910,52 +1004,52 @@ class Base_Controller_Admin_Contenido extends Controller {
 		}
 
 		// Informamos.
-		add_flash_message(FLASH_SUCCESS, 'Foto borrrada correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Foto borrada correctamente.', FALSE));
 		Request::redirect('/admin/contenido/fotos');
 	}
 
 	/**
-	 * Listado de categorias de los posts, fotos y comunidades.
+	 * Listado de categorías de los posts, fotos y comunidades.
 	 */
 	public function action_categorias()
 	{
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/categorias');
 
-		// Modelo de categorias.
+		// Modelo de categorías.
 		$model_categorias = new Model_Categoria;
 
-		// Cargamos el listado de categorias.
+		// Cargamos el listado de categorías.
 		$lst = $model_categorias->lista();
 
-		// Seteamos listado de las categorias.
+		// Asignamos listado de las categorías.
 		$vista->assign('categorias', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_categorias'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.categorias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**
-	 * Agregamos una nueva categoria.
+	 * Agregamos una nueva categoría.
 	 */
 	public function action_agregar_categoria()
 	{
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/nueva_categoria');
 
-		// Cargamos el listado de imagens para rangos disponibles.
-		$imagenes_categorias = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS);
-		unset($imagenes_categorias[1], $imagenes_categorias[0]); // Quitamos . y ..
+		// Cargamos el listado de imágenes para rangos disponibles.
+		$o_iconos = new Icono(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS);
+		$imagenes_categorias = $o_iconos->listado_elementos('small');
 
 		$vista->assign('imagenes_categorias', $imagenes_categorias);
 
@@ -967,7 +1061,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -979,17 +1073,17 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$vista->assign('imagen', $imagen);
 
 			// Verificamos el nombre.
-			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{3,50}$/iD', $nombre))
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ ,\.:;\-_]{3,50}$/iD', $nombre))
 			{
 				$error = TRUE;
-				$vista->assign('error_nombre', 'El nombre de la categoria deben ser entre 5 y 32 caractéres alphanuméricos.');
+				$vista->assign('error_nombre', __('El nombre de la categoría deben ser entre 5 y 32 caracteres alphanuméricos.', FALSE));
 			}
 
 			// Verificamos la imagen.
-			if ( ! in_array($imagen, $imagenes_categorias))
+			if ( ! in_array($imagen, array_keys($imagenes_categorias)))
 			{
 				$error = TRUE;
-				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
+				$vista->assign('error_imagen', __('No ha seleccionado una imagen válida.', FALSE));
 			}
 
 			$model_categoria = new Model_Categoria;
@@ -1000,94 +1094,94 @@ class Base_Controller_Admin_Contenido extends Controller {
 				if ($model_categoria->existe_seo($model_categoria->make_seo($nombre)))
 				{
 					$error = TRUE;
-					$vista->assign('error_nombre', 'Ya existe una categoria con ese nombre seo.');
+					$vista->assign('error_nombre', __('Ya existe una categoría con ese nombre seo.', FALSE));
 				}
 			}
 
 
 			if ( ! $error)
 			{
-				// Creo la categoria.
+				// Creo la categoría.
 				$model_categoria->nueva($nombre, $imagen);
 
-				add_flash_message(FLASH_SUCCESS, 'Categoria creada correctamente.');
+				add_flash_message(FLASH_SUCCESS, __('Categoría creada correctamente.', FALSE));
 				Request::redirect('/admin/contenido/categorias');
 			}
 		}
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_categorias'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.categorias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**
-	 * Borramos una categoria.
-	 * @param int $id ID de la categoria a borrar.
+	 * Borramos una categoría.
+	 * @param int $id ID de la categoría a borrar.
 	 */
 	public function action_eliminar_categoria($id)
 	{
-		// Cargamos el modelo de la categoria.
+		// Cargamos el modelo de la categoría.
 		$model_categoria = new Model_Categoria( (int) $id);
 
 		// Verifico que exista.
 		if ( ! $model_categoria->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'No exista la categoria que quiere borrar.');
+			add_flash_message(FLASH_ERROR, __('No exista la categoría que quiere borrar.', FALSE));
 			Request::redirect('/admin/contenido/categorias');
 		}
 
 		// Verifico no tenga posts ni fotos.
 		if ($model_categoria->tiene_fotos() || $model_categoria->tiene_posts())
 		{
-			add_flash_message(FLASH_ERROR, 'No se puede borrar la categoria porque tiene fotos y/o posts asociados.');
+			add_flash_message(FLASH_ERROR, __('No se puede borrar la categoría porque tiene fotos y/o posts asociados.', FALSE));
 			Request::redirect('/admin/contenido/categorias');
 		}
 
-		// Verifico existan otras categorias.
+		// Verifico existan otras categorías.
 		if ($model_categoria->cantidad() <= 1)
 		{
-			add_flash_message(FLASH_ERROR, 'No se puede borrar la categoría porque es la única existente.');
+			add_flash_message(FLASH_ERROR, __('No se puede borrar la categoría porque es la única existente.', FALSE));
 			Request::redirect('/admin/contenido/categorias');
 		}
 
-		// Borramos la categoria.
+		// Borramos la categoría.
 		$model_categoria->borrar();
 
 		// Informamos.
-		add_flash_message(FLASH_SUCCESS, 'Categoria eliminada correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Categoría eliminada correctamente.', FALSE));
 		Request::redirect('/admin/contenido/categorias');
 	}
 
 	/**
-	 * Editamos una categoria existente.
-	 * @param int $id ID de la categoria a editar.
+	 * Editamos una categoría existente.
+	 * @param int $id ID de la categoría a editar.
 	 */
 	public function action_editar_categoria($id)
 	{
-		// Cargamos el modelo de la categoria.
+		// Cargamos el modelo de la categoría.
 		$model_categoria = new Model_Categoria( (int) $id);
 
 		// Verifico que exista.
 		if ( ! $model_categoria->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'No exista la categoria que quiere editar.');
+			add_flash_message(FLASH_ERROR, __('No exista la categoría que quiere editar.', FALSE));
 			Request::redirect('/admin/contenido/categorias');
 		}
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/editar_categoria');
 
-		// Cargamos el listado de imagens para rangos disponibles.
-		$imagenes_categorias = scandir(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS);
-		unset($imagenes_categorias[1], $imagenes_categorias[0]); // Quitamos . y ..
+		// Cargamos el listado de imágenes para rangos disponibles.
+		$o_iconos = new Icono(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'categoria'.DS);
+		$imagenes_categorias = $o_iconos->listado_elementos('small');
 
 		$vista->assign('imagenes_categorias', $imagenes_categorias);
 
@@ -1099,7 +1193,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marcamos sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -1111,17 +1205,17 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$vista->assign('imagen', $imagen);
 
 			// Verificamos el nombre.
-			if ( ! preg_match('/^[a-z0-9\sáéíóúñ]{3,50}$/iD', $nombre))
+			if ( ! preg_match('/^[a-z0-9\sáéíóúñ ,\.:;\-_]{3,50}$/iD', $nombre))
 			{
 				$error = TRUE;
-				$vista->assign('error_nombre', 'El nombre de la categoria deben ser entre 5 y 32 caractéres alphanuméricos.');
+				$vista->assign('error_nombre', __('El nombre de la categoría deben ser entre 3 y 50 caracteres alphanuméricos.', FALSE));
 			}
 
 			// Verificamos la imagen.
-			if ( ! in_array($imagen, $imagenes_categorias))
+			if ( ! in_array($imagen, array_keys($imagenes_categorias)))
 			{
 				$error = TRUE;
-				$vista->assign('error_imagen', 'No ha seleccionado una imagen válida.');
+				$vista->assign('error_imagen', __('No ha seleccionado una imagen válida.', FALSE));
 			}
 
 			if ( ! $error)
@@ -1130,7 +1224,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 				if ($model_categoria->existe_seo($model_categoria->make_seo($nombre), TRUE))
 				{
 					$error = TRUE;
-					$vista->assign('error_nombre', 'Ya existe una categoria con ese nombre seo.');
+					$vista->assign('error_nombre', __('Ya existe una categoría con ese nombre seo.', FALSE));
 				}
 			}
 
@@ -1150,18 +1244,18 @@ class Base_Controller_Admin_Contenido extends Controller {
 				}
 
 				// Informamos suceso.
-				add_flash_message(FLASH_SUCCESS, 'Información actualizada correctamente');
+				add_flash_message(FLASH_SUCCESS, __('Información actualizada correctamente', FALSE));
 			}
 		}
 
-		// Seteamos el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_categorias'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.categorias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1177,8 +1271,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
 
 		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('admin/contenido/noticias');
@@ -1205,18 +1298,18 @@ class Base_Controller_Admin_Contenido extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de noticias.
+		// Asignamos listado de noticias.
 		$vista->assign('noticias', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_noticias'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1246,13 +1339,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 			// Obtenemos estado por defecto.
 			$visible = isset($_POST['visible']) ? ($_POST['visible'] == 1) : FALSE;
 
-			// Quitamos BBCode para dimenciones.
+			// Quitamos BBCode para dimensiones.
 			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
 
 			if ( ! isset($contenido_clean{10}) || isset($contenido_clean{200}))
 			{
 				$error = TRUE;
-				$vista->assign('error_contenido', 'El contenido debe tener entre 10 y 200 caractéres');
+				$vista->assign('error_contenido', __('El contenido debe tener entre 10 y 200 caracteres', FALSE));
 			}
 			unset($contenido_clean);
 
@@ -1265,24 +1358,125 @@ class Base_Controller_Admin_Contenido extends Controller {
 				$model_noticia = new Model_Noticia;
 				$model_noticia->nuevo(Usuario::$usuario_id, $contenido, $visible ? Model_Noticia::ESTADO_VISIBLE : Model_Noticia::ESTADO_OCULTO);
 
-				//TODO: agregar suceso de administracion.
+				//TODO: agregar suceso de administración.
 
-				// Seteo FLASH message.
-				add_flash_message(FLASH_SUCCESS, 'La noticia se creó correctamente');
-
-				// Redireccionamos.
+				// Informo y vuelvo.
+				add_flash_message(FLASH_SUCCESS, __('La noticia se creó correctamente', FALSE));
 				Request::redirect('/admin/contenido/noticias');
 			}
 		}
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_noticias'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Nuevo boletin de noticias por correo.
+	 */
+	public function action_nuevo_boletin()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/nuevo_boletin');
+
+		$model_rango = new Model_Usuario_Rango;
+
+		// Valores por defecto y errores.
+		$vista->assign('titulo', '');
+		$vista->assign('error_titulo', FALSE);
+		$vista->assign('contenido', '');
+		$vista->assign('error_contenido', FALSE);
+		$vista->assign('grupos', array());
+		$vista->assign('error_grupos', FALSE);
+		$vista->assign('grupos_disponibles', $model_rango->to_list());
+
+		if (Request::method() == 'POST')
+		{
+			// Obtengo datos.
+			$titulo = isset($_POST['titulo']) ? trim($_POST['titulo']) : '';
+			$contenido = isset($_POST['contenido']) ? trim($_POST['contenido']) : '';
+			$grupos = isset($_POST['grupos']) ? $_POST['grupos'] : '';
+
+			// Reenvio valores.
+			$vista->assign('titulo', $titulo);
+			$vista->assign('contenido', $contenido);
+			$vista->assign('grupos', $grupos);
+
+			// Valido datos.
+			$errors = FALSE;
+
+			if ( ! isset($titulo{5}) || isset($titulo{50}))
+			{
+				$errors = TRUE;
+				$vista->assign('error_titulo', __('El título del boletín debe tener entre 5 y 50 caracteres.', FALSE));
+			}
+
+			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
+			if ( ! isset($contenido_clean{10}) || isset($contenido_clean{500}))
+			{
+				$errors = TRUE;
+				$vista->assign('error_contenido', __('El contenido debe tener entre 10 y 500 caracteres.', FALSE));
+			}
+			unset($contenido_clean);
+
+			if ( ! is_array($grupos) || count($grupos) < 1)
+			{
+				$errors = TRUE;
+				$vista->assign('error_grupos', ___('Debe seleccionar al menos a un grupo de usuarios.', FALSE));
+			}
+			else
+			{
+				// Convierto ID's en números.
+				$ids = array();
+				foreach ($grupos as $v)
+				{
+					$ids[] = (int) $v;
+				}
+
+				// Cantidad de correos.
+				$c_users = Database::get_instance()->query('SELECT COUNT(*) FROM usuario WHERE rango IN (?)', array($ids))->get_var(Database_Query::FIELD_INT);
+				if ($c_users <= 0)
+				{
+					$errors = TRUE;
+					$vista->assign('error_grupos', __('Los grupos seleccionados no poseen usuarios.', FALSE));
+				}
+			}
+
+			if ( ! $errors)
+			{
+				// Genero BBCode.
+				$contenido = Decoda::procesar($contenido);
+
+				// Creo el mensaje de correo.
+				$message = Email::get_message();
+				$message->setSubject($titulo);
+				$message->setBody($contenido, 'text/html', 'UTF-8');
+				$message->setBcc(Database::get_instance()->query('SELECT email, nick FROM usuario WHERE rango IN (?)', array($ids))->get_pairs(Database_Query::FIELD_STRING, Database_Query::FIELD_STRING));
+
+				// Envío el email.
+				Email::send_queue_online($message);
+
+				add_flash_message(FLASH_SUCCESS, sprintf(__('El boletín de noticias se ha enviado correctamente a %s usuarios.', FALSE), $c_users));
+				Request::redirect('/admin/contenido/noticias');
+			}
+		}
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -1296,7 +1490,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		// Obtengo el contenido y evitamos XSS.
 		$contenido = isset($_POST['contenido']) ? htmlentities($_POST['contenido'], ENT_NOQUOTES, 'UTF-8') : '';
 
-		// Evito salida por template.
+		// Evito salida de la plantilla base.
 		$this->template = NULL;
 
 		// Proceso contenido.
@@ -1320,12 +1514,12 @@ class Base_Controller_Admin_Contenido extends Controller {
 			if ($estado)
 			{
 				$model_noticia->activar();
-				add_flash_message(FLASH_SUCCESS, 'Se habilitó correctamente la noticia #'.$id);
+				add_flash_message(FLASH_SUCCESS, sprintf(__('Se habilitó correctamente la noticia #%s', FALSE), $id));
 			}
 			else
 			{
 				$model_noticia->desactivar();
-				add_flash_message(FLASH_SUCCESS, 'Se ocultó correctamente la noticia #'.$id);
+				add_flash_message(FLASH_SUCCESS, sprintf(__('Se ocultó correctamente la noticia #%s', FALSE), $id));
 			}
 		}
 		Request::redirect('/admin/contenido/noticias');
@@ -1338,7 +1532,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 	{
 		$model_noticia = new Model_Noticia;
 		$model_noticia->desactivar_todas();
-		add_flash_message(FLASH_SUCCESS, 'Se han ocultado correctamente todas las noticias.');
+		add_flash_message(FLASH_SUCCESS, __('Se han ocultado correctamente todas las noticias.', FALSE));
 		Request::redirect('/admin/contenido/noticias');
 	}
 
@@ -1355,7 +1549,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		{
 			// Borramos la noticia.
 			$model_noticia->eliminar();
-			add_flash_message(FLASH_SUCCESS, 'Se borró correctamente la noticia #'.$id);
+			add_flash_message(FLASH_SUCCESS, sprintf(__('Se borró correctamente la noticia #%s', FALSE), $id));
 		}
 		Request::redirect('/admin/contenido/noticias');
 	}
@@ -1367,7 +1561,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 	{
 		$model_noticia = new Model_Noticia;
 		$model_noticia->eliminar_todas();
-		add_flash_message(FLASH_SUCCESS, 'Se han borrado correctamente todas las noticias.');
+		add_flash_message(FLASH_SUCCESS, __('Se han borrado correctamente todas las noticias.', FALSE));
 		Request::redirect('/admin/contenido/noticias');
 	}
 
@@ -1381,7 +1575,7 @@ class Base_Controller_Admin_Contenido extends Controller {
 		$model_noticia = new Model_Noticia( (int) $id);
 		if ( ! $model_noticia->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'Noticia incorrecta.');
+			add_flash_message(FLASH_ERROR, __('Noticia incorrecta.', FALSE));
 			Request::redirect('/admin/contenido/noticias');
 		}
 
@@ -1400,13 +1594,13 @@ class Base_Controller_Admin_Contenido extends Controller {
 			// Obtenemos el contenido.
 			$contenido = isset($_POST['contenido']) ? $_POST['contenido'] : NULL;
 
-			// Quitamos BBCode para dimenciones.
+			// Quitamos BBCode para dimensiones.
 			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
 
 			if ( ! isset($contenido_clean{10}) || isset($contenido_clean{200}))
 			{
 				$error = TRUE;
-				$vista->assign('error_contenido', 'El contenido debe tener entre 10 y 200 caractéres');
+				$vista->assign('error_contenido', __('El contenido debe tener entre 10 y 200 caracteres', FALSE));
 			}
 			else
 			{
@@ -1416,22 +1610,496 @@ class Base_Controller_Admin_Contenido extends Controller {
 				// Actualizamos el contenido.
 				$model_noticia->actualizar_contenido($contenido);
 				$vista->assign('contenido', $model_noticia->contenido);
-				add_flash_message(FLASH_SUCCESS, 'Contenido actualizado correctamente');
+				add_flash_message(FLASH_SUCCESS, __('Contenido actualizado correctamente', FALSE));
 			}
 			unset($contenido_clean);
 		}
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('admin'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('admin/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido_noticias'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.noticias'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
+	/**
+	 * Obtenemos listado de mensaje de contacto.
+	 * @param int $pagina Número de página que mostrar.
+	 */
+	public function action_contacto($pagina)
+	{
+		// Formato de la página.
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = Utils::configuracion()->get('elementos_pagina', 20);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/contacto');
+
+		// Modelo de contacto.
+		$model_contacto = new Model_Contacto;
+
+		// Cargamos el listado de noticias.
+		$lst = $model_contacto->listado($pagina, $cantidad_por_pagina);
+
+		// Paginación.
+		$total = Model_Contacto::cantidad();
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/contacto/%s/'));
+
+		// Obtenemos datos de las noticias.
+		foreach ($lst as $k => $v)
+		{
+			$lst[$k] =  $v->as_array();
+		}
+
+		// Asignamos listado de contacto.
+		$vista->assign('contactos', $lst);
+		unset($lst);
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.contacto'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Cambiamos el estado de uno o varios mensajes de contacto.
+	 * @param int $estado Estado a asignar.
+	 * @param int $id ID del mensaje de contacto a modificar, NULL para todos.
+	 */
+	public function action_estado_contacto($estado, $id = NULL)
+	{
+		// Verifico estado.
+		$estado = (int) $estado;
+
+		if ($estado !== 0 && $estado !== 1)
+		{
+			add_flash_message(FLASH_ERROR, __('El estado que desea aseignar al mensaje de contacto es incorrecto.'));
+			Request::redirect('admin/contenido/contacto/');
+		}
+
+		// Verifico el mensaje de contacto.
+		if ($id !== NULL)
+		{
+			$model_contacto = new Model_Contacto( (int) $id);
+
+			if ( ! $model_contacto->existe())
+			{
+				add_flash_message(FLASH_ERROR, __('El mensaje de contacto al que desea cambiarle el estado es incorrecto.'));
+				Request::redirect('admin/contenido/contacto/');
+			}
+		}
+		else
+		{
+			$model_contacto = new Model_Contacto;
+		}
+
+		// Actualizo el estado.
+		$model_contacto->actualizar_campos(array('estado' => $estado));
+
+		// Informo y vuelvo.
+		add_flash_message(FLASH_SUCCESS, __('Se ha actualizado correctamente el estado del mensaje de contacto', FALSE));
+		Request::redirect('admin/contenido/contacto/');
+	}
+
+	/**
+	 * Veo detalles del mensaje de contacto.
+	 * @param int $id ID del mensaje de contacto a ver los detalles.
+	 */
+	public function action_ver_contacto($id)
+	{
+		// Cargo mensaje de contacto.
+		$model_contacto = new Model_Contacto( (int) $id);
+
+		// Verifico existencia.
+		if ( ! $model_contacto->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('El mensaje de contacto no se encuentra disponible.'));
+			Request::redirect('admin/contenido/contacto/');
+		}
+
+		// Lo marco como visto.
+		$model_contacto->actualizar_campo('estado', Model_Contacto::ESTADO_VISTO);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/ver_contacto');
+
+		// Asignamos datos del contacto.
+		$vista->assign('contacto', $model_contacto->as_array());
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.contacto'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Borro un mensaje de contacto.
+	 * @param int $id ID del mensaje de contacto a eliminar.
+	 */
+	public function action_eliminar_contacto($id)
+	{
+		// Verifico ID.
+		if ($id == NULL)
+		{
+			add_flash_message(FLASH_ERROR, __('El mensaje de contacto que desea borrar es incorrecto.'));
+			Request::redirect('admin/contenido/contacto/');
+		}
+
+		// Cargo mensaje de contacto.
+		$model_contacto = new Model_Contacto( (int) $id);
+
+		// Verifico existencia.
+		if ( ! $model_contacto->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('El mensaje de contacto que desea borrar es incorrecto.'));
+			Request::redirect('admin/contenido/contacto/');
+		}
+
+		// Borro.
+		$model_contacto->delete();
+
+		// Informo y vuelvo.
+		add_flash_message(FLASH_SUCCESS, __('Se ha borrado correctamente el mensaje de contacto', FALSE));
+		Request::redirect('admin/contenido/contacto/');
+	}
+
+	/**
+	 * Listado de páginas.
+	 * @param int $pagina Número de página a mostrar.
+	 */
+	public function action_paginas($pagina)
+	{
+		// Formato de la página.
+		$pagina = ( (int) $pagina) > 0 ? ( (int) $pagina) : 1;
+
+		// Cantidad de elementos por pagina.
+		$cantidad_por_pagina = Utils::configuracion()->get('elementos_pagina', 20);
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/paginas');
+
+		// Modelo de páginas.
+		$model_pagina = new Model_Pagina;
+
+		// Cargamos el listado de noticias.
+		$lst = $model_pagina->listado($pagina, $cantidad_por_pagina);
+
+		// Paginación.
+		$total = Model_Pagina::cantidad();
+		$paginador = new Paginator($total, $cantidad_por_pagina);
+		$vista->assign('paginacion', $paginador->get_view($pagina, '/admin/contenido/paginas/%s/'));
+
+		// Obtenemos datos de las noticias.
+		foreach ($lst as $k => $v)
+		{
+			$lst[$k] =  $v->as_array();
+		}
+
+		// Asignamos listado de páginas.
+		$vista->assign('paginas', $lst);
+		unset($lst);
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.paginas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Creamos una nueva página.
+	 */
+	public function action_nueva_pagina()
+	{
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/nueva_pagina');
+
+		// Asigno datos por defecto.
+		$vista->assign('titulo', '');
+		$vista->assign('error_titulo', FALSE);
+		$vista->assign('menu', '');
+		$vista->assign('error_menu', FALSE);
+		$vista->assign('estado', '');
+		$vista->assign('error_estado', FALSE);
+		$vista->assign('contenido', '');
+		$vista->assign('error_contenido', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Marco sin errores.
+			$error = FALSE;
+
+			// Cargo los valores.
+			$titulo = trim(arr_get($_POST, 'titulo', ''));
+			$menu = (int) arr_get($_POST, 'menu', '');
+			$estado = (int) arr_get($_POST, 'estado', '');
+			$contenido = trim(arr_get($_POST, 'contenido', ''));
+
+			// Reenvio valores.
+			$vista->assign('titulo', $titulo);
+			$vista->assign('menu', $menu);
+			$vista->assign('estado', $estado);
+			$vista->assign('contenido', $contenido);
+
+			// Verifico los valores.
+			if ($menu < 0 || $menu > 2)
+			{
+				$error = TRUE;
+				$vista->assign('error_menu', __('El menu en donde colocar la página seleccionado es incorrecto.', FALSE));
+			}
+
+			if ($estado !== 0 && $estado !== 1)
+			{
+				$error = TRUE;
+				$vista->assign('error_estado', __('El estado de la página seleccionado es incorrecto.', FALSE));
+			}
+
+			if ( ! isset($titulo{5}) || isset($titulo{100}))
+			{
+				$error = TRUE;
+				$vista->assign('error_titulo', __('El título debe tener entre 5 y 100 caracteres.', FALSE));
+			}
+
+			if ( ! isset($contenido{5}) || isset($contenido{16777216}))
+			{
+				$error = TRUE;
+				$vista->assign('error_contenido', __('El contenido debe tener entre 5 y 16777216 caracteres.', FALSE));
+			}
+
+			if ( ! $error)
+			{
+				// Cargo el modelo.
+				$model_pagina = new Model_Pagina;
+
+				// Creo la página.
+				$model_pagina->nueva($titulo, $contenido, $menu, $estado);
+
+				// Informo y vuelvo.
+				add_flash_message(FLASH_SUCCESS, __('La página se ha creado correctamente.', FALSE));
+				Request::redirect('admin/contenido/paginas');
+			}
+		}
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.paginas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Editamos una nueva página.
+	 * @param int $id Id de la página aeditar.
+	 */
+	public function action_editar_pagina($id)
+	{
+		// Cargo la página.
+		$model_pagina = new Model_Pagina( (int) $id);
+		$model_pagina->load();
+
+		// Verifico existencia.
+		if ( ! $model_pagina->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('La página que deseas editar no se encuentra disponible.', FALSE));
+			Request::redirect('/admin/contenido/paginas');
+		}
+
+		// Cargamos la vista.
+		$vista = View::factory('admin/contenido/editar_pagina');
+
+		// Asigno datos por defecto.
+		$vista->assign('titulo', $model_pagina->titulo);
+		$vista->assign('error_titulo', FALSE);
+		$vista->assign('menu', $model_pagina->menu);
+		$vista->assign('error_menu', FALSE);
+		$vista->assign('estado', $model_pagina->estado);
+		$vista->assign('error_estado', FALSE);
+		$vista->assign('contenido', $model_pagina->contenido);
+		$vista->assign('error_contenido', FALSE);
+
+		if (Request::method() == 'POST')
+		{
+			// Marco sin errores.
+			$error = FALSE;
+
+			// Cargo los valores.
+			$titulo = trim(arr_get($_POST, 'titulo', ''));
+			$menu = (int) arr_get($_POST, 'menu', '');
+			$estado = (int) arr_get($_POST, 'estado', '');
+			$contenido = trim(arr_get($_POST, 'contenido', ''));
+
+			// Reenvio valores.
+			$vista->assign('titulo', $titulo);
+			$vista->assign('menu', $menu);
+			$vista->assign('estado', $estado);
+			$vista->assign('contenido', $contenido);
+
+			// Verifico los valores.
+			if ($menu < 0 || $menu > 2)
+			{
+				$error = TRUE;
+				$vista->assign('error_menu', __('El menu en donde colocar la página seleccionado es incorrecto.', FALSE));
+			}
+
+			if ($estado !== 0 && $estado !== 1)
+			{
+				$error = TRUE;
+				$vista->assign('error_estado', __('El estado de la página seleccionado es incorrecto.', FALSE));
+			}
+
+			if ( ! isset($titulo{5}) || isset($titulo{100}))
+			{
+				$error = TRUE;
+				$vista->assign('error_titulo', __('El título debe tener entre 5 y 100 caracteres.', FALSE));
+			}
+
+			if ( ! isset($contenido{5}) || isset($contenido{16777216}))
+			{
+				$error = TRUE;
+				$vista->assign('error_contenido', __('El contenido debe tener entre 5 y 16777216 caracteres.', FALSE));
+			}
+
+			if ( ! $error)
+			{
+				// Datos a actualizar.
+				$campos_actualizar = array();
+
+				if ($model_pagina->titulo !== $titulo)
+				{
+					$campos_actualizar['titulo'] = $titulo;
+				}
+
+				if ($model_pagina->menu !== $menu)
+				{
+					$campos_actualizar['menu'] = $menu;
+				}
+
+				if ($model_pagina->estado !== $estado)
+				{
+					$campos_actualizar['estado'] = $estado;
+				}
+
+				if ($model_pagina->contenido !== $contenido)
+				{
+					$campos_actualizar['contenido'] = $contenido;
+				}
+
+				// Verifico si es necesario actualizar.
+				if (count($campos_actualizar) > 0)
+				{
+					// Actualizo fecha modificación.
+					$campos_actualizar['modificacion'] = date(BD_DATETIME);
+
+					// Actualizo los campos.
+					$model_pagina->actualizar_campos($campos_actualizar);
+				}
+
+				// Informo.
+				add_flash_message(FLASH_SUCCESS, __('La página se ha actualizado correctamente.', FALSE));
+			}
+		}
+
+		// Asignamos el menú.
+		$this->template->assign('master_bar', parent::base_menu('admin'));
+
+		// Cargamos plantilla administración.
+		$admin_template = View::factory('admin/template');
+		$admin_template->assign('contenido', $vista->parse());
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Admin_Home::submenu('contenido.paginas'));
+
+		// Asignamos la vista a la plantilla base.
+		$this->template->assign('contenido', $admin_template->parse());
+	}
+
+	/**
+	 * Cambiamos el estado de una página.
+	 * @param int $pagina ID de la página a cambiar el estado.
+	 * @param int $estado Estado a asignar a la página.
+	 */
+	public function action_estado_pagina($pagina, $estado)
+	{
+		// Verifico estado.
+		if ($estado != 0 && $estado != 1)
+		{
+			add_flash_message(FLASH_ERROR, __('La página a la que deseas cambiarle el estado no se encuentra disponible.', FALSE));
+			Request::redirect('/admin/contenido/paginas');
+		}
+
+		// Cargo la página.
+		$model_pagina = new Model_Pagina( (int) $pagina);
+
+		// Verifico existencia.
+		if ( ! $model_pagina->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('La página a la que deseas cambiarle el estado no se encuentra disponible.', FALSE));
+			Request::redirect('/admin/contenido/paginas');
+		}
+
+		// Actualizo el estado.
+		$model_pagina->actualizar_campo('estado', (int) $estado);
+
+		// Informo y vuelvo.
+		add_flash_message(FLASH_SUCCESS, __('Se ha cambiado correctamente el estado a la página.', FALSE));
+		Request::redirect('/admin/contenido/paginas');
+	}
+
+	/**
+	 * Eliminamos una página.
+	 * @param int $pagina ID de la página a eliminar.
+	 */
+	public function action_borrar_pagina($pagina)
+	{
+		// Cargo la página.
+		$model_pagina = new Model_Pagina( (int) $pagina);
+
+		// Verifico existencia.
+		if ( ! $model_pagina->existe())
+		{
+			add_flash_message(FLASH_ERROR, __('La página a la que deseas eliminar no se encuentra disponible.', FALSE));
+			Request::redirect('/admin/contenido/paginas');
+		}
+
+		// Actualizo el estado.
+		$model_pagina->delete();
+
+		// Informo y vuelvo.
+		add_flash_message(FLASH_SUCCESS, __('Se ha eliminar correctamente la página.', FALSE));
+		Request::redirect('/admin/contenido/paginas');
+	}
 }

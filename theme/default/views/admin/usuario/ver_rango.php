@@ -5,13 +5,17 @@
     <li class="active">Detalles</li>
 </ul>
 <div class="header clearfix">
-	<h2 class="pull-left">Detalles del rango <img src="{#THEME_URL#}/assets/img/rangos/{$rango.imagen}" /> <span style="color: #{function="sprintf('%06s', dechex($rango.color))"};">{$rango.nombre}</span>{if="$rango.id == $rango_defecto"} <span class="label label-info">POR DEFECTO</span>{/if}</h2>
+	<h2 class="pull-left">Detalles del rango <img src="{#THEME_URL#}/assets/img/rangos/{function="Icono::elemento(VIEW_PATH.THEME.DS.'assets'.DS.'img'.DS.'rangos'.DS, $rango.imagen, 'small')"}" /> <span style="color: #{function="sprintf('%06s', dechex($rango.color))"};">{$rango.nombre}</span>{if="$rango.id == $rango_defecto"} <span class="label label-info">POR DEFECTO</span>{/if}</h2>
 	<div class="btn-group pull-right">
 		<a href="{#SITE_URL#}/admin/usuario/editar_rango/{$rango.id}" class="btn btn-info"><i class="icon-white icon-pencil"></i> Editar</a>
 		<a href="{#SITE_URL#}/admin/usuario/rangos" class="btn btn-success"><i class="icon-white icon-arrow-left"></i> Volver</a>
 	</div>
 </div>
 <table class="table table-bordered">
+	<tr>
+		<th>Descripción</th>
+		<td>{$rango.descripcion}</td>
+	</tr>
 	<tr>
 		<th>Tipo</th>
 		<td>{if="$rango.tipo == 0"}Especial{elseif="$rango.tipo == 1"}Puntos{elseif="$rango.tipo == 2"}Posts{elseif="$rango.tipo == 3"}Fotos{else}Comentarios{/if}</td>

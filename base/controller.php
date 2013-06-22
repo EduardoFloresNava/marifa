@@ -61,7 +61,7 @@ class Base_Controller {
 		$this->template = View::factory('template');
 
 		// Cargo las noticias.
-		$noticia = Model_Noticia::get_active();
+		$noticia = Model::factory('Noticia')->get_active();
 		if ($noticia !== NULL)
 		{
 			$this->template->assign('noticia', Decoda::procesar($noticia->contenido));
@@ -69,9 +69,21 @@ class Base_Controller {
 		unset($noticia);
 
 		// Cargo nombre del sitio.
-		$model_config = new Model_Configuracion;
-		$this->template->assign('brand', $model_config->get('nombre', 'Marifa'));
-		$this->template->assign('brand_title', $model_config->get('nombre', 'Marifa'));
+		$model_config = Utils::configuracion();
+		$model_config->load_list(array('nombre', 'descripcion', 'contacto_tipo', 'contacto_valor', 'habilitar_fotos', 'privacidad_fotos'));
+		$this->template->assign('brand', $model_config->get('nombre', __('Marifa', FALSE)));
+		$this->template->assign('brand_title', $model_config->get('nombre', __('Marifa', FALSE)));
+		$this->template->assign('descripcion', $model_config->get('descripcion', __('Tu comunidad de forma simple', FALSE)));
+
+		// Cargo datos de contacto.
+		if ($model_config->get('contacto_tipo', 1) == 0)
+		{
+			$this->template->assign('contacto_url', trim($model_config->get('contacto_valor', '')));
+		}
+		else
+		{
+			$this->template->assign('contacto_url', SITE_URL.'/contacto');
+		}
 
 		// Acciones para menu offline.
 		if ( ! Usuario::is_login())
@@ -86,9 +98,32 @@ class Base_Controller {
 		$this->template->assign('contenido', '');
 
 		// Seteo si es mantenimiento.
-		$m = new Mantenimiento;
-		$this->template->assign('is_locked', $m->is_locked());
-		unset($m);
+		$this->template->assign('is_locked', Mantenimiento::is_locked() || Mantenimiento::is_locked(FALSE));
+
+		// Cargo menú de páginas estáticas.
+		$this->load_paginas_menu();
+	}
+
+	/**
+	 * Cargo páginas estáticas a los menues.
+	 */
+	protected function load_paginas_menu()
+	{
+		// Obtengo las del pie.
+		$elementos_pie = Model::factory('Pagina')->menu_pie();
+
+		// Creo el menu.
+		$menu = new Menu('paginas_pie');
+
+		// Agrego elementos.
+		foreach ($elementos_pie as $k => $v)
+		{
+			$menu->element_set($v, '/paginas/'.$k.'-'.Texto::make_seo($v).'.html', 'pagina_'.$k);
+		}
+
+		// Asigno el menu.
+		$this->template->assign('menu_pie_pagina', $menu->as_array(NULL));
+		unset($elementos_pie, $menu);
 	}
 
 	/**
@@ -104,7 +139,7 @@ class Base_Controller {
 		$vista->assign('usuario', Usuario::usuario()->as_array());
 
 		// Sucesos.
-		$lst = Suceso_Barra::obtener_listado(Usuario::$usuario_id, 1, 20);
+		$lst = Suceso_Barra::obtener_listado(Usuario::$usuario_id, 1, 10);
 
 		$eventos = array();
 		foreach ($lst as $v)
@@ -186,31 +221,35 @@ class Base_Controller {
 	 */
 	public function after()
 	{
-		// Eventos flash.
-		foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
+		// Verificamos que sea un objeto.
+		if (is_object($this->template))
 		{
-			if (isset($_SESSION[$k]))
+			// Eventos flash.
+			foreach (array('flash_success', 'flash_info', 'flash_error') as $k)
 			{
-				$this->template->assign($k, get_flash($k));
+				if (isset($_SESSION[$k]))
+				{
+					$this->template->assign($k, get_flash($k));
+				}
 			}
-		}
 
-		// Proceso los elementos de la cabecera y el pie.
-		$header = '';
-		foreach ($this->header as $v)
-		{
-			$header .= (string) $v;
-		}
-		$this->template->assign('header', $header);
-		unset($v, $header);
+			// Proceso los elementos de la cabecera y el pie.
+			$header = '';
+			foreach ($this->header as $v)
+			{
+				$header .= (string) $v;
+			}
+			$this->template->assign('header', $header);
+			unset($v, $header);
 
-		$footer = '';
-		foreach ($this->footer as $v)
-		{
-			$footer .= (string) $v;
+			$footer = '';
+			foreach ($this->footer as $v)
+			{
+				$footer .= (string) $v;
+			}
+			$this->template->assign('footer', $footer);
+			unset($v, $footer);
 		}
-		$this->template->assign('footer', $footer);
-		unset($v, $footer);
 
 		// Compilo y muestro la plantilla.
 		if (is_object($this->template) && ! Request::is_ajax())
@@ -227,40 +266,45 @@ class Base_Controller {
 	 */
 	protected function base_menu($selected = NULL)
 	{
-		$data = array();
+		// Creo el menu.
+		$menu = new Menu('base_menu');
 
 		// Listado de elementos ONLINE.
 		if (Usuario::is_login())
 		{
-			$data['inicio'] = array('link' => '/perfil/', 'caption' => 'Inicio', 'icon' => 'home', 'active' => FALSE);
+			$menu->element_set(__('Inicio', FALSE), '/perfil/', 'inicio');
 		}
 
 		// Listado de elemento OFFLINE.
-		$data['posts'] = array('link' => '/', 'caption' => 'Posts', 'icon' => 'book', 'active' => FALSE);
-		$data['fotos'] = array('link' => '/foto/', 'caption' => 'Fotos', 'icon' => 'picture', 'active' => FALSE);
-		$data['tops'] = array('link' => '/tops/', 'caption' => 'TOPs', 'icon' => 'signal', 'active' => FALSE);
+		$menu->element_set(__('Posts', FALSE), '/', 'posts');
+
+		// Verifico sección de fotos habilitada y su privacidad.
+		if (Utils::configuracion()->get('habilitar_fotos', 1) && (Utils::configuracion()->get('privacidad_fotos', 1) || Usuario::is_login()))
+		{
+			$menu->element_set(__('Fotos', FALSE), '/foto/', 'fotos');
+		}
+		$menu->element_set(__('TOPs', FALSE), '/tops/', 'tops');
 
 		// Listado elemento por permisos.
 		if (Controller_Moderar_Home::permisos_acceso())
 		{
-			$data['moderar'] = array('link' => '/moderar/', 'caption' => 'Moderación', 'icon' => 'eye-open', 'active' => FALSE, 'tipo' => 'important', 'cantidad' => Controller_Moderar_Home::cantidad_pendiente());
+			$menu->element_set(__('Moderar', FALSE), '/moderar/', 'moderar', NULL, Controller_Moderar_Home::cantidad_pendiente());
 		}
 
 		if (Controller_Admin_Home::permisos_acceso())
 		{
-			$data['admin'] = array('link' => '/admin/', 'caption' => 'Administración', 'icon' => 'certificate', 'active' => FALSE);
+			$menu->element_set(__('Administración', FALSE), '/admin/', 'admin');
 		}
 
-		// Seleccionamos elemento.
-		if ($selected !== NULL && isset($data[$selected]))
+		// Obtengo las del pie.
+		$elementos_pie = Model::factory('Pagina')->menu_superior();
+
+		// Agrego elementos.
+		foreach ($elementos_pie as $k => $v)
 		{
-			$data[$selected]['active'] = TRUE;
-		}
-		else
-		{
-			$data['posts']['active'] = TRUE;
+			$menu->element_set($v, '/paginas/'.$k.'-'.Texto::make_seo($v).'.html', 'pagina_'.$k);
 		}
 
-		return $data;
+		return $menu->as_array($selected == NULL ? 'posts' : $selected);
 	}
 }

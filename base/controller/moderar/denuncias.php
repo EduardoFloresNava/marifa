@@ -33,14 +33,14 @@ defined('APP_BASE') || die('No direct access allowed.');
 class Base_Controller_Moderar_Denuncias extends Controller {
 
 	/**
-	 * Verificamos que el usuario esté logueado.
+	 * Verificamos que el usuario esté identificado.
 	 */
 	public function before()
 	{
-		// Verifico que esté logueado.
+		// Verifico que esté identificado.
 		if ( ! Usuario::is_login())
 		{
-			add_flash_message(FLASH_ERROR, 'Debes iniciar sessión para poder acceder a esta sección.');
+			add_flash_message(FLASH_ERROR, __('Debes iniciar sesión para poder acceder a esta sección.', FALSE));
 			Request::redirect('/usuario/login');
 		}
 		parent::before();
@@ -56,7 +56,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -73,9 +73,8 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$tipo = 0;
 		}
 
-		// Cantidad de elementos por pagina.
-		$model_configuracion = new Model_Configuracion;
-		$cantidad_por_pagina = $model_configuracion->get('elementos_pagina', 20);
+		// Cantidad de elementos por página.
+		$cantidad_por_pagina = Model_Configuracion::get_instance()->get('elementos_pagina', 20);
 
 		// Cargamos la vista.
 		$vista = View::factory('moderar/denuncias/posts');
@@ -112,25 +111,28 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de denuncias.
+		// Asignamos listado de denuncias.
 		$vista->assign('denuncias', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_posts'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.posts'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Posts', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**
-	 * Vermos los detalles de una denuncia.
+	 * Vemos los detalles de una denuncia.
 	 * @param int $denuncia ID de la denuncia a ver.
 	 */
 	public function action_detalle_post($denuncia)
@@ -138,7 +140,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -151,14 +153,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico exista.
 		if ( ! $model_denuncia->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'La denuncia que deseas visualizar no es correcta.');
+			add_flash_message(FLASH_ERROR, __('La denuncia que deseas visualizar no es correcta.', FALSE));
 			Request::redirect('/modedar/denuncias/posts');
 		}
 
 		// Cargo la vista.
 		$vista = View::factory('moderar/denuncias/detalle_post');
 
-		// Seteamos los datos.
+		// Asignamos los datos.
 		$vista->assign('denuncia', $model_denuncia->as_array());
 		$vista->assign('denunciante', $model_denuncia->usuario()->as_array());
 
@@ -167,14 +169,17 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$vista->assign('post', $post);
 		unset($post);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_posts'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.posts'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Post', FALSE).' - '.__('Detalles'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -190,7 +195,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -201,14 +206,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_denuncia = new Model_Post_Denuncia($denuncia);
 		if ( ! $model_denuncia->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La denuncia que deseas cerrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Post_Denuncia::ESTADO_PENDIENTE)
 		{
-			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La denuncia que deseas cerrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
@@ -217,7 +222,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			// Actualizo el estado.
 			$model_denuncia->actualizar_campo('estado', Model_Post_Denuncia::ESTADO_RECHAZADA);
 
-			// Envio el suceso.
+			// Envío el suceso.
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $model_denuncia->usuario_id)
 			{
@@ -230,14 +235,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informo resultado.
-			add_flash_message(FLASH_SUCCESS, 'Denuncia rechazada correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('Denuncia rechazada correctamente.', FALSE));
 		}
 		else
 		{
 			// Actualizo el estado.
 			$model_denuncia->actualizar_campo('estado', Model_Post_Denuncia::ESTADO_APLICADA);
 
-			// Envio el suceso.
+			// Envío el suceso.
 			$model_suceso = new Model_Suceso;
 			if (Usuario::$usuario_id != $model_denuncia->usuario_id)
 			{
@@ -250,7 +255,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informo resultado.
-			add_flash_message(FLASH_SUCCESS, 'Denuncia aceptada correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('Denuncia aceptada correctamente.', FALSE));
 		}
 		Request::redirect('/moderar/denuncias/posts');
 	}
@@ -264,7 +269,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -275,21 +280,21 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico existencia del post.
 		if ( ! $model_post->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El post que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El post que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
 		// Verifico los permisos.
 		if (Usuario::$usuario_id !== $model_post->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_POST_ELIMINAR))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permisos para realizar esa acción.');
+			add_flash_message(FLASH_ERROR, __('No tienes permisos para realizar esa acción.', FALSE));
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
 		// Verifico el estado.
 		if ($model_post->estado === Model_Post::ESTADO_BORRADO)
 		{
-			add_flash_message(FLASH_ERROR, 'El post que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El post que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/posts');
 		}
 
@@ -309,21 +314,21 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, 'Post eliminado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Post eliminado correctamente.', FALSE));
 		Request::redirect('/moderar/denuncias/posts');
 	}
 
 	/**
 	 * Listado de fotos con denuncias.
 	 * @param int $pagina Número de página a mostrar.
-	 * @param int $tipo Tipo de denuncias a fotos a mostar.
+	 * @param int $tipo Tipo de denuncias a fotos a mostrar.
 	 */
 	public function action_fotos($pagina, $tipo)
 	{
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -378,25 +383,28 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de denuncias.
+		// Asignamos listado de denuncias.
 		$vista->assign('denuncias', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_fotos'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.fotos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Fotos', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**
-	 * Vermos los detalles de una denuncia a una foto.
+	 * Vemos los detalles de una denuncia a una foto.
 	 * @param int $denuncia ID de la denuncia de la cual se quiere ver.
 	 */
 	public function action_detalle_foto($denuncia)
@@ -404,7 +412,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -417,14 +425,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico exista.
 		if ( ! $model_denuncia->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'La denuncia que deseas visualizar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La denuncia que deseas visualizar no se encuentra disponible.', FALSE));
 			Request::redirect('/modedar/denuncias/fotos');
 		}
 
 		// Cargo la vista.
 		$vista = View::factory('moderar/denuncias/detalle_foto');
 
-		// Seteamos los datos.
+		// Asignamos los datos.
 		$vista->assign('denuncia', $model_denuncia->as_array());
 		$vista->assign('denunciante', $model_denuncia->usuario()->as_array());
 
@@ -433,14 +441,17 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$vista->assign('foto', $foto);
 		unset($foto);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_fotos'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.fotos'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Foto', FALSE).' - '.__('Detalles'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -456,7 +467,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -467,14 +478,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_denuncia = new Model_Foto_Denuncia($denuncia);
 		if ( ! $model_denuncia->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La denuncia que deseas cerrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Foto_Denuncia::ESTADO_PENDIENTE)
 		{
-			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La denuncia que deseas cerrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
@@ -496,7 +507,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informamos el resultado.
-			add_flash_message(FLASH_SUCCESS, 'Denuncia aceptada correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('Denuncia aceptada correctamente.', FALSE));
 		}
 		else
 		{
@@ -516,7 +527,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informamos el resultado.
-			add_flash_message(FLASH_SUCCESS, 'Denuncia aceptada correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('Denuncia aceptada correctamente.', FALSE));
 		}
 		Request::redirect('/moderar/denuncias/fotos');
 	}
@@ -530,7 +541,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -541,21 +552,21 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico existencia del post.
 		if ( ! $model_foto->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
 		// Verifico los permisos.
 		if (Usuario::$usuario_id !== $model_foto->usuario_id && ! Usuario::permiso(Model_Usuario_Rango::PERMISO_FOTO_ELIMINAR))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permisos para realizar esa acción.');
+			add_flash_message(FLASH_ERROR, __('No tienes permisos para realizar esa acción.', FALSE));
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
 		// Verifico el estado.
 		if ($model_foto->estado === Model_Foto::ESTADO_BORRADA)
 		{
-			add_flash_message(FLASH_ERROR, 'La foto que deseas borrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La foto que deseas borrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/fotos');
 		}
 
@@ -575,7 +586,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		}
 
 		// Informamos el resultado.
-		add_flash_message(FLASH_SUCCESS, 'Post eliminado correctamente.');
+		add_flash_message(FLASH_SUCCESS, __('Post eliminado correctamente.', FALSE));
 		Request::redirect('/moderar/denuncias/fotos');
 	}
 
@@ -589,7 +600,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -643,25 +654,28 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$lst[$k] = $a;
 		}
 
-		// Seteamos listado de denuncias.
+		// Asignamos listado de denuncias.
 		$vista->assign('denuncias', $lst);
 		unset($lst);
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_usuarios'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Usuarios', FALSE));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
 	}
 
 	/**
-	 * Vermos los detalles de una denuncia a un usuario.
+	 * Vemos los detalles de una denuncia a un usuario.
 	 * @param int $denuncia ID de la denuncia a ver lo detalles.
 	 */
 	public function action_detalle_usuario($denuncia)
@@ -669,7 +683,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -682,26 +696,29 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico exista.
 		if ( ! $model_denuncia->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'La denuncia que deseas visualizar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La denuncia que deseas visualizar no se encuentra disponible.', FALSE));
 			Request::redirect('/modedar/denuncias/usuarios');
 		}
 
 		// Cargo la vista.
 		$vista = View::factory('moderar/denuncias/detalle_usuario');
 
-		// Seteamos los datos.
+		// Asignamos los datos.
 		$vista->assign('denuncia', $model_denuncia->as_array());
 		$vista->assign('denunciante', $model_denuncia->usuario()->as_array());
 		$vista->assign('denunciado', $model_denuncia->denunciado()->as_array());
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_usuarios'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Usuario', FALSE).' - '.__('Detalles'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -717,7 +734,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
@@ -728,14 +745,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_denuncia = new Model_Usuario_Denuncia($denuncia);
 		if ( ! $model_denuncia->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La denuncia que deseas cerrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/usuarios');
 		}
 
 		// Verifico el estado.
 		if ($model_denuncia->estado !== Model_Usuario_Denuncia::ESTADO_PENDIENTE)
 		{
-			add_flash_message(FLASH_ERROR, 'La denuncia que deseas cerrar no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('La denuncia que deseas cerrar no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/usuarios');
 		}
 
@@ -757,7 +774,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informamos el resultado.
-			add_flash_message(FLASH_SUCCESS, 'Denuncia rechazada correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('Denuncia rechazada correctamente.', FALSE));
 		}
 		else
 		{
@@ -777,7 +794,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 
 			// Informamos el resultado.
-			add_flash_message(FLASH_SUCCESS, 'Denuncia aceptada correctamente.');
+			add_flash_message(FLASH_SUCCESS, __('Denuncia aceptada correctamente.', FALSE));
 		}
 		Request::redirect('/moderar/denuncias/usuarios');
 	}
@@ -791,14 +808,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, 'El usuario que deseas advertir no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El usuario que deseas advertir no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -809,7 +826,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El usuario que deseas advertir no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El usuario que deseas advertir no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -827,7 +844,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marco sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -842,16 +859,16 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			if ( ! preg_match('/^[a-záéíóúñ ,.:;\-_]{5,100}$/Di', $asunto))
 			{
 				$error = TRUE;
-				$vista->assign('error_asunto', 'El asunto de la advertencia debe tener entre 5 y 100 caractéres alphanuméricos.');
+				$vista->assign('error_asunto', __('El asunto de la advertencia debe tener entre 5 y 100 caracteres alphanuméricos.', FALSE));
 			}
 
-			// Quitamos BBCode para dimenciones.
+			// Quitamos BBCode para dimensiones.
 			$contenido_clean = preg_replace('/\[([^\[\]]+)\]/', '', $contenido);
 
 			if ( ! isset($contenido_clean{10}) || isset($contenido_clean{200}))
 			{
 				$error = TRUE;
-				$vista->assign('error_contenido', 'El contenido debe tener entre 10 y 200 caractéres');
+				$vista->assign('error_contenido', __('El contenido debe tener entre 10 y 200 caracteres', FALSE));
 			}
 			unset($contenido_clean);
 
@@ -877,19 +894,22 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 				}
 
 				// Informamos el resultado.
-				add_flash_message(FLASH_SUCCESS, 'Advertencia enviada correctamente.');
+				add_flash_message(FLASH_SUCCESS, __('Advertencia enviada correctamente.', FALSE));
 				Request::redirect('/moderar/denuncias/usuarios/');
 			}
 		}
 
-		// Seteamos el menu.
+		// Asigno el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_usuarios'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Usuario', FALSE).' - '.__('Advertir'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());
@@ -904,14 +924,14 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		// Verifico permisos.
 		if ( ! Usuario::permiso(Model_Usuario_Rango::PERMISO_USUARIO_VER_DENUNCIAS))
 		{
-			add_flash_message(FLASH_ERROR, 'No tienes permiso para acceder a esa sección.');
+			add_flash_message(FLASH_ERROR, __('No tienes permiso para acceder a esa sección.', FALSE));
 			Request::redirect('/');
 		}
 
 		// Verificamos no sea actual.
 		if ($id == Usuario::$usuario_id)
 		{
-			add_flash_message(FLASH_ERROR, 'No puedes enviarte una advertencia a vos mismo.');
+			add_flash_message(FLASH_ERROR, __('No puedes enviarte una advertencia a vos mismo.', FALSE));
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -922,7 +942,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 		$model_usuario = new Model_Usuario($id);
 		if ( ! $model_usuario->existe())
 		{
-			add_flash_message(FLASH_ERROR, 'El usuario que deseas suspender no se encuentra disponible.');
+			add_flash_message(FLASH_ERROR, __('El usuario que deseas suspender no se encuentra disponible.', FALSE));
 			Request::redirect('/moderar/denuncias/usuarios/');
 		}
 
@@ -936,7 +956,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			}
 			else
 			{
-				add_flash_message(FLASH_ERROR, 'El usuario que deseas suspender no se encuentra disponible.');
+				add_flash_message(FLASH_ERROR, __('El usuario que deseas suspender no se encuentra disponible.', FALSE));
 				Request::redirect('/moderar/denuncias/usuarios/');
 			}
 		}
@@ -956,7 +976,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 
 		if (Request::method() == 'POST')
 		{
-			// Seteamos sin error.
+			// Marco sin error.
 			$error = FALSE;
 
 			// Obtenemos los campos.
@@ -967,13 +987,13 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			$vista->assign('motivo', $motivo);
 			$vista->assign('fin', $fin);
 
-			// Quitamos BBCode para dimenciones.
+			// Quitamos BBCode para dimensiones.
 			$motivo_clean = preg_replace('/\[([^\[\]]+)\]/', '', $motivo);
 
 			if ( ! isset($motivo_clean{10}) || isset($motivo_clean{200}))
 			{
 				$error = TRUE;
-				$vista->assign('error_motivo', 'El motivo debe tener entre 10 y 200 caractéres');
+				$vista->assign('error_motivo', __('El motivo debe tener entre 10 y 200 caracteres', FALSE));
 			}
 			unset($motivo_clean);
 
@@ -981,7 +1001,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 			if (empty($fin))
 			{
 				$error = TRUE;
-				$vista->assign('error_fin', 'La fecha de finalización no es correcta.');
+				$vista->assign('error_fin', __('La fecha de finalización no es correcta.', FALSE));
 			}
 			else
 			{
@@ -990,7 +1010,7 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 				if ($fin <= time())
 				{
 					$error = TRUE;
-					$vista->assign('error_fin', 'La fecha de finalización no es correcta.');
+					$vista->assign('error_fin', __('La fecha de finalización no es correcta.', FALSE));
 				}
 			}
 
@@ -1015,20 +1035,23 @@ class Base_Controller_Moderar_Denuncias extends Controller {
 					$model_suceso->crear($id, 'usuario_suspender', FALSE, $s_id);
 				}
 
-				// Seteamos mensaje flash y volvemos.
-				add_flash_message(FLASH_SUCCESS, 'Usuario suspendido correctamente.');
+				// Asignamos mensaje flash y volvemos.
+				add_flash_message(FLASH_SUCCESS, __('Usuario suspendido correctamente.', FALSE));
 				Request::redirect('/moderar/denuncias/usuarios/');
 			}
 		}
 
-		// Seteamos el menu.
+		// Asignamos el menú.
 		$this->template->assign('master_bar', parent::base_menu('moderar'));
 
-		// Cargamos plantilla administracion.
+		// Cargamos plantilla administración.
 		$admin_template = View::factory('moderar/template');
 		$admin_template->assign('contenido', $vista->parse());
-		unset($portada);
-		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias_usuarios'));
+		unset($vista);
+		$admin_template->assign('top_bar', Controller_Moderar_Home::submenu('denuncias.usuarios'));
+
+		// Asigno el título.
+		$this->template->assign('title', __('Moderación', FALSE).' - '. __('Denuncias', FALSE).' - '.__('Usuario', FALSE).' - '.__('Suspender'));
 
 		// Asignamos la vista a la plantilla base.
 		$this->template->assign('contenido', $admin_template->parse());

@@ -52,14 +52,15 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 	protected $cant = NULL;
 
 	/**
-	 * Contructor de la clase.
+	 * Constructor de la clase.
 	 *
 	 * @param PDOStatement $query
 	 * @author Ignacio Daniel Rostagno <ignaciorostagno@vijona.com.ar>
 	 */
-	public function __construct($query)
+	public function __construct($query, $utf_8 = FALSE)
 	{
 		$this->query = $query;
+		$this->use_utf8 = $utf_8;
 	}
 
 	/**
@@ -146,7 +147,7 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 				// Obtenemos el arreglo.
 				$resultado = $this->query->fetch($this->fetch_mode_pdo($type));
 
-				// Evitamos cast de consultas erroneas o vacias.
+				// Evitamos cast de consultas erróneas o vacías.
 				if ( ! is_array($resultado))
 				{
 					return $resultado;
@@ -159,7 +160,10 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 				$c = count($resultado);
 				for ($i = 0; $i < $c; $i++)
 				{
-					$resultado[$i] = $this->cast_field($resultado[$i], $cast[$i]);
+					if (isset($resultado[$i]))
+					{
+						$resultado[$i] = $this->cast_field($resultado[$i], $cast[$i]);
+					}
 				}
 
 				return $resultado;
@@ -167,7 +171,7 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 				// Obtenemos el objeto.
 				$object = $this->query->fetch($this->fetch_mode_pdo($type));
 
-				// Evitamos cast de consultas erroneas o vacias.
+				// Evitamos cast de consultas erróneas o vacías.
 				if ( ! is_object($object))
 				{
 					return $object;
@@ -179,7 +183,10 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 				// Realizamos el cast.
 				foreach ($cast as $k => $v)
 				{
-					$object->$k = $this->cast_field($object->$k, $v);
+					if (isset($object->$k))
+					{
+						$object->$k = $this->cast_field($object->$k, $v);
+					}
 				}
 
 				return $object;
@@ -188,7 +195,7 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 				// Obtenemos el arreglo.
 				$resultado = $this->query->fetch($this->fetch_mode_pdo($type));
 
-				// Evitamos cast de consultas erroneas o vacias.
+				// Evitamos cast de consultas erróneas o vacías.
 				if ( ! is_array($resultado))
 				{
 					return $resultado;
@@ -200,7 +207,10 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 				// Realizamos el cast.
 				foreach ($cast as $k => $v)
 				{
-					$resultado[$k] = $this->cast_field($resultado[$k], $v);
+					if (isset($resultado[$k]))
+					{
+						$resultado[$k] = $this->cast_field($resultado[$k], $v);
+					}
 				}
 
 				return $resultado;
@@ -238,13 +248,13 @@ class Base_Database_Driver_Pdo_Query extends Database_Query {
 	 */
 	public function current()
 	{
-		// Si no hay cast usamos forma corta para minimizar la perdidad de rendimiento.
+		// Si no hay cast usamos forma corta para minimizar la perdida de rendimiento.
 		if ($this->cast === NULL)
 		{
 			return $this->query->fetch($this->fetch_mode_pdo($this->fetch_type), PDO::FETCH_ORI_ABS, $this->position);
 		}
 
-		switch ($type)
+		switch ($this->fetch_type)
 		{
 			case Database_Query::FETCH_NUM:
 				// Obtenemos el arreglo.

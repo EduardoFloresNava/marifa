@@ -38,6 +38,15 @@ class Base_Theme {
 	 */
 	protected static $theme;
 
+	public static function check_theme()
+	{
+		// Verifico si necesito regenerar la cache.
+		if ( ! file_exists(APP_BASE.DS.VIEW_PATH.'theme.php') || @filesize(APP_BASE.DS.VIEW_PATH.'theme.php') == 0)
+		{
+			self::generar_cache();
+		}
+	}
+
 	/**
 	 * Obtengo el tema actual. Si no hay cache la genera y lo obtiene.
 	 * @param bool $force_global Forzamos la carga de la permanente o utilizamos la session.
@@ -46,10 +55,7 @@ class Base_Theme {
 	public static function actual($force_global = FALSE)
 	{
 		// Verifico si necesito regenerar la cache.
-		if ( ! file_exists(APP_BASE.DS.VIEW_PATH.'theme.php'))
-		{
-			self::generar_cache();
-		}
+		self::check_theme();
 
 		// Devolvemos de disco sin cachear.
 		if ($force_global)
@@ -90,10 +96,7 @@ class Base_Theme {
 	public static function lista($regenerar = FALSE)
 	{
 		// Verifico si hay que regenerar la cache.
-		if ($regenerar || ! file_exists(APP_BASE.DS.VIEW_PATH.'theme.php'))
-		{
-			return self::generar_cache();
-		}
+		self::check_theme();
 		$themes = array();
 
 		// Abro archivo de temas.
@@ -148,7 +151,7 @@ class Base_Theme {
 		// Verifico si existe actual, sino seteo el primero.
 		if ($actual === NULL)
 		{
-			if (file_exists(APP_BASE.DS.VIEW_PATH.'theme.php'))
+			if (file_exists(APP_BASE.DS.VIEW_PATH.'theme.php') && @filesize(APP_BASE.DS.VIEW_PATH.'theme.php') != 0)
 			{
 				$actual = self::actual(TRUE);
 			}
