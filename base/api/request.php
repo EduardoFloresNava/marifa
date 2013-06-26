@@ -76,7 +76,7 @@ abstract class Base_Api_Request {
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+			@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 			curl_setopt($ch, CURLOPT_REFERER, SITE_URL);
 			$rst = curl_exec($ch);
 
@@ -156,7 +156,7 @@ abstract class Base_Api_Request {
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+			@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 			curl_setopt($ch, CURLOPT_REFERER, SITE_URL);
 			$rst = curl_exec($ch);
 
@@ -224,7 +224,7 @@ abstract class Base_Api_Request {
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+			@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 			curl_setopt($ch, CURLOPT_REFERER, SITE_URL);
 			$rst = curl_exec($ch);
 
@@ -320,7 +320,7 @@ abstract class Base_Api_Request {
 
             // Parámetros generales.
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+			@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
             curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:20.0) Gecko/20100101 Firefox/20.0");
 
             // Abro donde guardar.
