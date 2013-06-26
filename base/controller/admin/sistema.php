@@ -1522,6 +1522,11 @@ class Base_Controller_Admin_Sistema extends Controller {
 		// Obtengo listado de archivos.
 		$archivos = glob(APP_BASE.DS.'traducciones'.DS.'*.php');
 
+		if ( ! is_array($archivos))
+		{
+			return array();
+		}
+
 		// Borro directorio y extensión.
 		foreach ($archivos as $k => $v)
 		{
