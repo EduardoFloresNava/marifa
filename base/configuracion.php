@@ -41,7 +41,7 @@ class Base_Configuracion implements ArrayAccess {
 	 * Listado de propiedades del archivo de configuraciones.
 	 * @var array
 	 */
-	protected $datos;
+	protected $datos = array();
 
 	/**
 	 * Constructor de la clase.
